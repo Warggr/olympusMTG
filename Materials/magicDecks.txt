@@ -1,0 +1,16 @@
+<Chandra>
+4 <Merfolk> U C {3U,T: you draw 1.<x>A merfolk that draws cards.} 1/1
+4 <Liliana of the Veil> 1BB P {} \3/
+4 <Duskmantle Seer> 2UB C {<x>The future of standard.} 2/4
+4 <Mox Opal> 0 A {T::you add 2.}
+9 <Island> U L {T::you add 2.}
+9 <Swamp> B L {T::you add 3.}
+/
+<Jace>
+4 <Goblin> 1R C {} 0/2
+4 <Bear> 1G C {} 2/2
+4 <Tibalt, the Fiend-Blooded> RR P {} \2/
+4 <Mox Sapphire> 0 A {T::you add 5.<x>The suns of Dominaria have shown upon purest nature only once.}
+9 <Mountain> R L {T::you add 4.}
+9 <Forest> G L {T::you add 5.}
+/
