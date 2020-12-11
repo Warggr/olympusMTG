@@ -1,9 +1,9 @@
 CC = g++
 CFLAGS = -Wall -Werror -g
 LFLAGS = -lallegro -lallegro_font -lallegro_image -lallegro_primitives -lallegro_ttf
-IDIR = HFiles
-ODIR = obj
-CDIR = CFiles
+IDIR = source/HFiles
+ODIR = .obj
+CDIR = source/CFiles
 
 _ALLDEPS = olympus_main.h 1general.h 2cards.h 3modifs.h 4game.h 5board.h 6abilities.h 7options.h 8resolvables.h 9abstractIo.h 10triggers.h 11abstractUI.h head1_constants.h head2_mana.h head3_readfiles.h
 

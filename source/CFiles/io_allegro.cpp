@@ -132,7 +132,7 @@ char Allegro_io::get_direction_key(){
 void must_init(bool test, const char *description){
     if(test) return;
 
-    printf("couldn't initialize %s\n", description);
+    std::cout << "couldn't initialize " << description << std::endl;
     exit(1);
 }
 
@@ -154,10 +154,10 @@ Allegro_io::Allegro_io(){
 
 	must_init(al_init_font_addon(), "fonts");
 	must_init(al_init_ttf_addon(), "TTF");
-	fonts[0] = al_load_ttf_font("BelerenBold.ttf", 20, 0); must_init(fonts[0], "beleren");
-	fonts[1] = al_load_ttf_font("BelerenBold.ttf", 15, 0);
-	fonts[2] = al_load_ttf_font("BelerenBold.ttf", 30, 0);
-	fonts[3] = al_load_ttf_font("BelerenBold.ttf", 15, 0); must_init(fonts[3], "matrixB");
+	fonts[0] = al_load_ttf_font("Materials/fonts/BelerenBold.ttf", 20, 0); must_init(fonts[0], "beleren");
+	fonts[1] = al_load_ttf_font("Materials/fonts/BelerenBold.ttf", 15, 0);
+	fonts[2] = al_load_ttf_font("Materials/fonts/BelerenBold.ttf", 30, 0);
+	fonts[3] = al_load_ttf_font("Materials/fonts/matrixb.ttf", 15, 0); must_init(fonts[3], "matrixB");
 
 	must_init(al_init_primitives_addon(), "primitives");
 	must_init(al_init_image_addon(), "images");
@@ -174,7 +174,7 @@ Allegro_io::Allegro_io(){
 		watermarks[i] = al_load_bitmap(&((std::string) "Materials/images/watermark_" + colornames[i] + ".png")[0]);
 		pt_box[i] = al_load_bitmap(&((std::string) "Materials/images/" + colornames[i] + "pt.png")[0]);
 	}
-	card_back = al_load_bitmap("Materials/images/card_back.jpeg");
+	card_back = al_load_bitmap("Materials/images/card_back.jpeg"); must_init(card_back, "Card back image");
 	wallpaper = al_load_bitmap("Materials/images/wallpapers/Omnath.jpg");
 	tapsymbol = al_load_bitmap("Materials/images/tapsymbol.png");
 	basiclands = al_load_bitmap("Materials/images/basic_lands.jpg");
