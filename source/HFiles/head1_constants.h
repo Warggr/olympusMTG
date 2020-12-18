@@ -33,9 +33,9 @@ namespace olympus{
 	}
 
 	extern const int nb_abilities;
-	extern const char* const all_abilities[7];
+	extern const char* const all_abilities[10];
 
-	extern const std::string abilities_descriptions[7];
+	extern const std::string abilities_descriptions[10];
 }
 
 #endif //OLYMPUS_HEADER_CONSTANTS_H

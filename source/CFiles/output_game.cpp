@@ -98,8 +98,3 @@ void CardZone::disp(int y, int z) const {
 	god.myIO->disp_cardback(y, z);
 	god.myIO->print_text(std::to_string(size), 0, y+20, z+20);
 }
-
-std::ofstream& externVarContainer::gdebug(char password){
-	if((password & wanted_debug) != 0) return debug_log;
-	else return verbose_debug;
-}

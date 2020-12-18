@@ -15,7 +15,7 @@ CardOracle::CardOracle(std::ifstream& myfile, std::string n, Mana c, char t): na
 		char section_name = 1; //1 for 'ability text'
 		if(type == 0 || type == 5) section_name = 0; //0 for 'oncast/on_etb text'
 		while(1){ //loop to read all sections
-			god.gdebug(DBG_READFILE) << "Expecting section n°" << section_name << std::endl;
+			god.gdebug(DBG_READFILE) << "Expecting section n°" << (int) section_name << std::endl;
 			bool is_the_end;
 			switch(section_name){
 				case 0: is_the_end = read_section_onresolve(myfile, &on_cast); break;
@@ -58,7 +58,7 @@ CardOracle::CardOracle(std::ifstream& myfile, std::string n, Mana c, char t): na
 			check_safepoint(myfile, '/', "just after loyalty number");
 		}
 	}
-	else check_safepoint(myfile, '\n', "after having given all necessary infos about the card");
+	check_safepoint(myfile, '\n', "after having given all necessary infos about the card");
 }
 
 bool read_section_flavor(std::ifstream& myfile, char** flavor_text, char offset_text){
@@ -80,7 +80,9 @@ bool read_section_flavor(std::ifstream& myfile, char** flavor_text, char offset_
 		*flavor_text = new char [len + offset_text];
 		myfile.get(*flavor_text + offset_text, len);
 		(*flavor_text)[len + offset_text - 1] = '\0';
-		god.gdebug(DBG_READFILE) << "Read full flavor: '" << *flavor_text << "'\n";
+		god.gdebug(DBG_READFILE) << "Read full flavor: '";
+		for(int i=0; i<offset_text; i++) god.gdebug(DBG_READFILE) << (int) (*flavor_text)[i];
+		god.gdebug(DBG_READFILE) << (*flavor_text)[(int) offset_text] << std::endl;
 		if(myfile.get() == '}') return true;
 		else return false;
 	}

@@ -11,6 +11,8 @@ public:
 	void setEffects(PreResolvable* preRes) { effects = preRes; };
 	void trigger(Player* pl, Targeter* origin) const;
 	std::string describe(int typeoftrig, std::string name) const;
+	void write_binary(std::ofstream& bFile) const;
+	void read_binary(std::ifstream& bFile);
 };
 
 extern const int PermETB;

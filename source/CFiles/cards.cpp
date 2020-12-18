@@ -1,17 +1,17 @@
 #include "../HFiles/olympus_main.h"
-#include <random>
+#include <cstdlib>
+#include <ctime>
 
 void CardZone::shuffle(){
-	static std::default_random_engine rndnumber;
+	srand(time(NULL));
 	std::forward_list<Card*> newlist;
 	for(int i=0; i<size; i++){
-		int r = rndnumber() % (size-i);
+		int r = rand() % (size-i);
 		
 		auto start = cards.before_begin();
 		for(int j = 0; j < r; j++) start++; //start shows predecessor of swapped Card
 		cards.splice_after(newlist.before_begin(), newlist, start);
 	}
-
 	cards = newlist;
 }
 

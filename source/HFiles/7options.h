@@ -54,8 +54,10 @@ private:
 	bool ismanaability;
 public:
 	PermOption(): Option(0, 0, 0), effects(0), tapsymbol(false), ismanaability(false) {}; //make clear it wasn't initialized
-	~PermOption() {};
+	~PermOption() {delete effects; };
 	void fillout(Mana cost, PreResolvable* preRes, bool tapsymbol, bool ismanaability);
+	void read_binary(std::ifstream& bFile);
+	void write_binary(std::ofstream& bFile) const;
 
 	void check_and_pop(int n_of_zone, Player* pl){}; //would check whether option is still applicable
 	Resolvable* cast_opt(Player* pl);

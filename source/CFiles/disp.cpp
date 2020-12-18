@@ -35,11 +35,11 @@ void Land::disp(int left, int top, int width, int height, bool highlight) const 
 
 void Creature::disp(int left, int top, int width, int height, bool highlight) const {
 	Permanent::disp(left, top, width, height, highlight);
-	char pt[6]; sprintf(pt, "%d/%d", power, toughness);
+	char pt[6]; sprintf(pt, "%d/%d", get_power(), get_toughness());
 	god.myIO->print_text(pt, Abstract_io::BLACK, left + width/2, top + height - 20);
 }
 
-void CardOracle::poster() const {	
+void CardOracle::poster() const {
 	const char* nametypes[] = {"Instant", "Land", "Artifact", "Planeswalker", "Creature", "Sorcery"};
 	std::vector<std::string> all_text;
 	if(on_cast) all_text.push_back(on_cast->describe(name));

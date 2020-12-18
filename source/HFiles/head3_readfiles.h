@@ -4,6 +4,9 @@
 void check_safepoint(std::ifstream& myfile, char c, const char* message);
 void check_safepoint(std::ifstream& myfile, char c, const char* message);
 
+void set_canary(char canary, std::ofstream& bFile);
+void check_canary(char canary, std::ifstream& bFile);
+
 void raise_error(std::string message);
 
 bool read_section_onresolve(std::ifstream& myfile, PreResolvable** preRes);

@@ -11,8 +11,8 @@ const char olympus::trigger_types::PermBecomes = 3;
 const char olympus::trigger_types::CreaAttacks = 4;
 const char olympus::trigger_types::DamageableIsDamaged = 5;
 
-const int olympus::nb_abilities = 7;
-const char* const olympus::all_abilities[] = {"ping", "draw", "add_life", "set_life", "add", "destroy", "counter"};
+const int olympus::nb_abilities = 8;
+const char* const olympus::all_abilities[] = {"ping", "draw", "add_life", "set_life", "add", "destroy", "counter", "p_power", "p_toughness", "put_counter"};
 
 const int Default_ui::leftbarY = 400;
 const int Default_ui::rightbarY = 400;
@@ -40,7 +40,10 @@ const std::string olympus::abilities_descriptions[] = {"~ deals ? damage to targ
 "Your life total becomes ?",
 "Add one mana of color ?",
 "Destroy something",
-"Counter target spell or ability" };
+"Counter target spell or ability",
+"Target creature gains +?/+0 until end of turn"
+"Target creature gains +0/+? until end of turn"
+"Put ? +1/+1 counters on target creature" };
 
 const std::string olympus::trigger_descriptions[] = {"~ enters the battlefield",
 "~ leaves the battlefield",

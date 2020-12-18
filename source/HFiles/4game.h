@@ -46,7 +46,7 @@ public:
 	Mana possiblepool;
 	Mana manapool;
 
-	Player(std::ifstream& myfile, Game* gm, char id);
+	Player(const char* deck_name, Game* gm, char id);
 	~Player();
 
 	const std::string& get_name() const {static const std::string descr(name); return descr; };
@@ -120,8 +120,8 @@ private:
 public:
 	bool haswon;
 
-	Game(const char* filename){Game(filename, 0); };
-	Game(const char* filename, char debug_flags);
+	Game(const char* deck_1, const char* deck_2){Game(deck_1, deck_2, 0); };
+	Game(const char* deck_1, const char* deck_2, char debug_flags);
 	~Game();
 	void disp() const;
 	void addtolog(const char* new_entry);

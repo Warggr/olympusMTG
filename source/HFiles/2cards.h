@@ -18,6 +18,7 @@ private:
 	//In the end, it will only be flavor text, once everything will have reAchEd BlEsSed PeRFEcTIoN...
 	//BeHOLD OUR GREAT WORK... ALL WILL BE ALL WILL ALL WILL BE ONE LONG LIVE PHYREXIA WSHHSHHHYRXXXHHYWWWYXRIA
 public:
+	CardOracle(std::ifstream& bFile);
 	CardOracle(std::ifstream& myfile, std::string n, Mana c, char t);
 
 	std::string describe() const;
@@ -32,6 +33,7 @@ public:
 	void get_permabs(PermOption** pr, int* nb_opts) const {*pr = first_actab; *nb_opts = nb_actabs; };
 	void get_triggers(const char type, TriggerEvent& trigEv) const ;
 	const char* get_flavor_text() const {return flavor_text; };
+	void write_binary(std::ofstream& bFile) const;
 };
 
 class Card: public Target{
@@ -49,7 +51,8 @@ public:
 	void getpt(int* pow, int* tou) const {oracle->getpt(pow, tou); };
 	void get_permabs(PermOption** pr, int* nb_opts) const {oracle->get_permabs(pr, nb_opts); };
 	void get_triggers(const char type, TriggerEvent& trigEv) const {oracle->get_triggers(type, trigEv); };
-	const char* get_flavor_text() const {return oracle->get_flavor_text(); };
+	const char* get_flavor_text() const {return oracle->get_flavor_text(); }
+	void write_binary(std::ofstream& bFile) const {oracle->write_binary(bFile); }
 };
 
 class CardZone{
@@ -59,8 +62,9 @@ private:
 public:
 	std::forward_list<Card*> cards;
 
-	void init(std::ifstream& myfile);
-	void init_name(const char* n){ size=0; for(int i=0; i<10; i++) name[i] = n[i]; };
+	void init(std::ifstream& textfile, std::ofstream& binaryOut);
+	void init(std::ifstream& bFile);
+	void init_name(const char* n){ for(int i=0; i<10; i++) name[i] = n[i]; };
 	void shuffle();
 	int drawto(CardZone* target, int nb_cards);
 	void takeonecard(Card* c){size++; cards.push_front(c); };

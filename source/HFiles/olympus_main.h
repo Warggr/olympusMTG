@@ -29,8 +29,6 @@ class Player;
 
 struct Phase;
 
-//THE FIRST RULE OF OLYMPUS: Cards are SACRED. Cards represent a printed piece of paper, 
-//and will be the reference for creating and initializing permanents, options or spells.
 class CardOracle;
 class Card;
 class CardZone;
@@ -48,7 +46,6 @@ class PermOption;
 
 class Resolvable; //similar to option, except it is on the stack and parameters have already been chosen.
 class Spell;
-//class PermAbility;
 
 class Trigger;
 class TriggerEvent;
@@ -61,7 +58,7 @@ class Abstract_ui;
 class Abstract_io;
 class _UIElement;
 
-typedef class _UIElement UIElement;
+typedef _UIElement UIElement;
 
 class Dictionary;
 
@@ -86,7 +83,7 @@ extern struct externVarContainer god;
 #include "1general.h"
 #include "2cards.h"
 #include "3modifs.h" //requires Target from General
-#include "4game.h" //Player contains CardZone, CardZone contains Card
+#include "4game.h" //Player contains CardZone
 #include "5board.h" //requires Targeter for some inline operations
 #include "6abilities.h"
 #include "7options.h"

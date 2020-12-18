@@ -14,14 +14,19 @@ void raise_error(std::string message){
 	exit(1);
 }
 
-externVarContainer::externVarContainer(): game(0), debug_log(), verbose_debug(), wanted_debug(0), myUI(0), myIO(0){
+std::ofstream& externVarContainer::gdebug(char password){
+	if((password & wanted_debug) != 0) return debug_log;
+	else return verbose_debug;
+}
+
+externVarContainer::externVarContainer(): game(0), wanted_debug(0), myUI(0), myIO(0){
 	debug_log.open("debug_info.txt", std::ifstream::trunc);
 	verbose_debug.open("debug_verbose.txt", std::ifstream::trunc);
 }
 
 struct externVarContainer god;
 
-Game::Game(const char* filename, char debug_flags): stack(0), haswon(false){
+Game::Game(const char* deck_1, const char* deck_2, char debug_flags): stack(0), haswon(false){
 	god.game = this;
 	god.myIO = new Allegro_io;
 	god.myUI = new Default_ui(god.myIO);
@@ -29,36 +34,61 @@ Game::Game(const char* filename, char debug_flags): stack(0), haswon(false){
 	stack_ui = god.myUI->declare_element(Abstract_ui::ELTYPE_STACK, 0);
 	logbook_ui = god.myUI->declare_element(Abstract_ui::ELTYPE_LOGBOOK, 0);
 
-	std::ifstream myfile(filename);
-	if(!myfile){
-		raise_error("File read error!");
-	}
-	for(int i=0; i<2; i++){
-		players[i] = new Player(myfile, this, i+1);
-	}
+	players[0] = new Player(deck_1, this, 1);
+	players[1] = new Player(deck_2, this, 2);
 	Player* oppptr = players[1];
 	for(int i=0; i<2; i++){
 		players[i]->set_opp(oppptr);
 		oppptr = players[i];
 	}
 	active_player = players[0];
-	myfile.close();
 	for(int i=0; i<LOGLEN; i++){
 		logbook[i] = 0;
 	}
 }
 
-Player::Player(std::ifstream& myfile, Game* gm, char id): Damageable(20), state(0xe0), player_id(id), permUI{0}, optZone(0), metagame(gm) {
+Player::Player(const char* deck_name, Game* gm, char id): Damageable(20), name{0}, state(0xe0), player_id(id), permUI{0}, optZone(0), metagame(gm) {
 	target_flags = 0x80;
-	myfile.get(); //<
-	myfile.get(name, 10, '>'); //get max. 10 characters, ending with '>'
-	myfile.get(); // newline
-	
+
+	std::string cacheName = std::string("Materials/decks/.binary/deck") + (char)(id + '0');
+	std::ifstream inputCache(cacheName, std::ios::binary | std::ios::in);
+	if(inputCache.is_open()){
+		std::cout << "Binary preformatted file found!" << std::endl;
+		char x;
+		check_canary('<', inputCache);
+		inputCache.read(&x, sizeof(char));
+		inputCache.read(name, x * sizeof(char));
+		check_canary('-', inputCache);
+
+		myzones[0].init(inputCache);
+		inputCache.close();
+	}
+	else{
+		std::cout << "Binary file not found.";
+		std::ifstream myfile(std::string("Materials/decks/") + deck_name + ".mtgoly");
+		if(!myfile.is_open()) raise_error("Deck name not found");
+
+		std::ofstream outputCache(".tmp", std::ios::binary | std::ios::out);
+		set_canary('<', outputCache);
+
+		std::cout << "Interpreting plain text deck..." << std::endl;
+		myfile.get(); //<
+		myfile.get(name, 10, '>'); //get max. 10 characters, without ending '>'
+		char x; for(x = 0; name[(int) x] != '\0'; x++);
+		outputCache.write(&x, sizeof(char));
+		outputCache.write(name, x * sizeof(char));
+		set_canary('-', outputCache);
+
+		myfile.get(); // newline
+		myzones[0].init(myfile, outputCache);
+		outputCache.close();
+		rename(".tmp", cacheName.c_str());
+		myfile.close();
+	}
+
 	myzones[0].init_name("Library");
 	myzones[1].init_name("Graveyard");
 	myzones[2].init_name("Exile");
-	myzones[0].init(myfile);
-	myfile.get(); //getting '/' character
 
 	myzones[0].shuffle();
 	myoptions[0] = NULL;
@@ -73,16 +103,14 @@ Player::Player(std::ifstream& myfile, Game* gm, char id): Damageable(20), state(
 	}
 }
 
-void CardZone::init(std::ifstream& myfile){
+void CardZone::init(std::ifstream& myfile, std::ofstream& binaryLog){
 	size = 0;
-	while(1){
-		int nb = 0;
+	set_canary('o', binaryLog);
+	while(myfile.peek() != EOF){ //EOF char not encountered
+		char nb = 0;
 		char cardname[30];
-		if(myfile.peek() == '/'){
-			myfile.get();
-			return;
-		}
-		myfile >> std::skipws >> nb; //getting number of cards
+		int nb_i;
+		myfile >> std::skipws >> nb_i; nb = (char) nb_i; //getting number of cards
 		check_safepoint(myfile, ' ', "before card name");
 		check_safepoint(myfile, '<', "before card name"); //<
 		myfile.get(cardname, 30, '>'); //get max. 30 characters, ending with '>'
@@ -104,12 +132,17 @@ void CardZone::init(std::ifstream& myfile){
 			case 'S': type=5; break;
 			default: raise_error(std::string("while reading decks: ") + typeOfCard + " is not a card type");
 		}
+		binaryLog.write(&nb, sizeof(char));
 		std::shared_ptr<CardOracle> cardrules = std::make_unique<CardOracle>(myfile, cardname, cost, type); //stops after newline
+		cardrules->write_binary(binaryLog);
 		for(char i=0; i<nb; i++){
 			Card* first = new Card(cardrules);
 			cards.push_front(first);
 			size++;
 		}
-		god.gdebug(DBG_X_READFILE) << nb << "cards of type" << typeOfCard << "named" << cardname << "created\n";
+		god.gdebug(DBG_X_READFILE) << (int) nb << "cards of type" << typeOfCard << "named" << cardname << "created" << std::endl;
 	}
+	char x = 0; //! zero cards means 'end of file'
+	binaryLog.write(&x, sizeof(char));
+	set_canary('m', binaryLog);
 }

@@ -100,17 +100,34 @@ public:
 
 void must_init(bool test, const char *description);
 
-/*class Ncurses_io: public Abstract_io {
-private:
-	WINDOW* winzones[4];
+/*class Ncurses_io{
+	WINDOW* 
 public:
-	Ncurses_io();
-	~Ncurses_io();
-	void disp_permanent(const int type, int position);
-	void poster(int y, int z, std::string name, Mana manacost, int color, std::string types, int nb_lines, std::string* lines, int power, int toughness);
-	void print_text(std::string const text, const char color, const int x, const int y);
-	void refresh_display();
-	void disp_mana(const Mana mana, const int topz, const int endy);
+	~Ncurses_io(){};
+	//void getcoordinates(int* maxX, int* maxY, char* resolution) = 0;
+	void getResolution(int* posterYSize, int* posterZSize) = 0;
+
+	void fulldisp() = 0;
+	void draw_permanent(int left, int top, int width, int height, char color, bool tapped, bool highlight, bool basicImg) = 0;
+	void refresh_display() = 0;
+	void print_text(std::string const text, char color, int y, int z) = 0;
+	void disp_mana(Mana mana, int endy, int topz) = 0;
+	void draw_rectangle(char color, int y, int z, int dy, int dz, int linewidth) = 0;
+	bool attack_switch(int leftY, int rightY, int topZ, int arrowlength) = 0;
+	void draw_full_rectangle(char color, int left, int top, int width, int height) = 0;
+	void erase_surface(int left, int top, int width, int height) = 0;
+	void disp_header(int y, int z, int width, int height, const char* name, int life, char phase, bool highlight, Mana pool) = 0;
+	char get_direction_key() = 0;
+	int getInt(int lowerBound, int upperBound) = 0;
+
+	Creature* blocker_switch(const Creature& blocker, int blockerY, int blockerZ,
+		std::list<Creature>& attackers, UIElement* attacker_io,
+		int creatureWidth, int creatureDepth) = 0;
+	void poster(const std::string name, Mana manacost, char color, const char* types,
+		const std::vector<std::string> lines, int power, int toughness, char frametype, bool watermark) = 0;
+	void disp_cardback(int y, int z) = 0;
+	void message(const char* message) = 0;
+	void message(std::string message) = 0;
 };*/
 
 #endif //OLYMPUS_9_ABSTRACT_IO

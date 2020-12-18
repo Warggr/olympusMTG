@@ -37,7 +37,9 @@ class PreResolvable{ //a Resolvable is a stack object with a list of targets and
 	char nb_parameters;
 	char* parameters;
 public:
-	PreResolvable(): nb_parameters(0), parameters(0){};
+	PreResolvable(): fab(nullptr), nb_parameters(0), parameters(0){};
+	PreResolvable(std::ifstream& bFile);
+	void write_binary(std::ofstream& bFile) const;
 	bool init(std::ifstream& myfile);
 	std::string describe(std::string known_sourcename) const;
 	void disp(int y, int z, int ySize, int zSize, std::string origin_name) const; //mimicks a Resolvable on top of the stack
@@ -54,10 +56,12 @@ protected:
 	std::unique_ptr<Ability> next;
 public:
 	Ability(std::unique_ptr<Ability>& a, char p1, char t, char p2): type(t), param1(p1), param2(p2), next(std::move(a)){};
+	Ability(std::ifstream& bFile);
 	std::string describe(std::string cardname) const;
 	void activate(Targeter* list_of_targets, Player* ctrl, Target* origin) const;
 	void set_param(char a, char b){if(a==0) param1 = b; else param2 = b; };
 	void set_type(char t){type = t; };
+	void write_binary(std::ofstream& bFile) const;
 };
 
 #endif //OLYMPUS_CLASSES_ABILITIES_6_H

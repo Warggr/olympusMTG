@@ -41,9 +41,14 @@ public:
 class Creature: public Permanent, public Damageable{
 private:
 	TriggerEvent triggers_creature[4]; //attacks - blocks - becomes blocked - isn't blocked
-	int power;
-	int toughness;
+	int self_power; //layer 7a, characteristics-defining effects
+	int self_toughness;
+	int set_power; //layer 7b
+	int set_toughness;
+	int added_power; //layer 7c. By default these values are volatile and are reset at end of turn
+	int added_toughness;
 	int nb_counters;
+	bool pt_switched; //layer 7d
 
 	bool is_attacking;
 	bool is_block; //used for both blocking and blocked
@@ -59,10 +64,12 @@ public:
 	void add_blocker(Creature* bl);
 	void set_blocking(){is_block = true; };
 	void resolve_attack(Player* nextopponent);
-	int get_power() const {return power; };
-	int get_toughness() const {return toughness; };
+	int get_power() const {if(pt_switched) return set_power + added_power; else return set_toughness + added_toughness; };
+	int get_toughness() const {if(pt_switched) return set_toughness + added_toughness; else return set_power + added_power; };
 	void destroy(bool wasattacking);
 	void exile(bool wasattacking);
+	void plus_power(char dpower){added_power += dpower; };
+	void plus_toughness(char dtoughness){added_toughness += dtoughness; };
 };
 
 class Planeswalker: public Permanent, public Damageable{

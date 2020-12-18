@@ -30,6 +30,12 @@ void Ability::activate(Targeter* list_of_targets, Player* ctrl, Target* origin) 
 		case 6:
 			(dynamic_cast<Resolvable*> (target1))->counter(ctrl->metagame);
 			break;
+		case 7:
+			(dynamic_cast<Creature*> (target1))->plus_power(param2);
+			break;
+		case 8:
+			(dynamic_cast<Creature*> (target1))->plus_toughness(param2);
+			break;
 		default:
 			god.gdebug(DBG_IMPORTANT | DBG_INTERNAL) << "Internal error: this ability ("<< type <<") hasn't been implemented yet\n";
 	}

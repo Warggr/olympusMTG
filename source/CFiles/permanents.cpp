@@ -67,8 +67,10 @@ Creature::Creature(Card* src, Player* pl): Permanent(src, pl, 3), Damageable(0, 
 	target_flags = 0x50; //Permanent(0x40) and Creature (0x10)
 
 	const char* tmp = src->get_flavor_text();
-	power = tmp[0];
-	toughness = tmp[1];
+	self_power = tmp[0];
+	self_toughness = tmp[1];
+	set_power = tmp[0];
+	set_toughness = tmp[1];
 	src->get_triggers(olympus::trigger_types::CreaAttacks, triggers_creature[0]);
 }
 
@@ -150,7 +152,7 @@ void Land::untap(){
 }
 
 void Creature::hit(Damageable* tgt){
-	tgt->damage(power);
+	tgt->damage(get_power());
 }
 
 /*void Creature::hit(std::list<Creature>::iterator tgt){
