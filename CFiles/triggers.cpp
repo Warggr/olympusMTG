@@ -1,11 +1,15 @@
 #include "../HFiles/olympus_main.h"
 
-void TriggerEvent::trigger(Player* pl, Targeter* origin) const {
+void TriggerEvent::trigger(Player* pl, Target* origin) const {
 	for(auto iter = all_triggers.begin(); iter != all_triggers.end(); iter++) (*iter)->trigger(pl, origin);
 }
 
-void Trigger::trigger(Player* pl, Targeter* origin) const {
+void Trigger::trigger(Player* pl, Target* origin) const {
 	pl->addtoPrestack(effects, origin);
+}
+
+PlayerPreStackElement::PlayerPreStackElement(PreResolvable *p, Target *org): preRes(p) {
+    origin = std::make_unique<Targeter>(org);
 }
 
 /* A BRIEF HISTORY OF TRIGGERS

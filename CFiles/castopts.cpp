@@ -35,13 +35,14 @@ Spell::Spell(Card* src, Player* ct):
 Resolvable(ct, src->get_preRes()), source(src) {
 }
 
-Resolvable::Resolvable(Player* ct, const PreResolvable* tocast, Targeter* org): ctrl(ct), origin(org){
+Resolvable::Resolvable(Player* ct, const PreResolvable* tocast, Target* org): ctrl(ct){
 	//Technically, Resolvables are put on the stack, then targets are chosen. Olympus decided that objects with no targets chosen were PreRes
 	//and thus not on the stack. However, it should be displayed somewhere.
-	target_flags = 0x20;	
+	origin = std::make_unique<Targeter>(org);
+	target_flags = 0x20;
 	if(tocast){
 		nb_targets = tocast->getNbParams();
-		list_of_targets = new Targeter[nb_targets];
+		list_of_targets = new Targeter[nb_targets]; //the last being for the origin
 		on_resolve = tocast->getFab();
 		if(nb_targets){
 			std::string name = "this spell or ability";
@@ -62,7 +63,7 @@ Resolvable::Resolvable(Player* ct, const PreResolvable* tocast, Targeter* org): 
 	}
 }
 
-void Option::pop(int n_of_zone, Player* pl){
+void Option::pop(int n_of_zone, Player* pl) const{
 	if(prev) prev->next = next;
 	else pl->set_myoptions(n_of_zone, next);
 	if(next) next->prev = prev;

@@ -16,8 +16,7 @@ void Spell::resolve(){
 }
 
 void Resolvable::resolve(){
-	Target* origin = list_of_targets[(int) nb_targets].getTarget();
-	if(on_resolve) on_resolve->activate(list_of_targets, ctrl, origin);
+	if(on_resolve) on_resolve->activate(list_of_targets, ctrl, origin->getTarget());
 	//the 'if(on_resolve) is there only for two reasons: 1. programming rigorism and 2.Throes of Chaos'
 	//really EVERY instant or sorcery will have an on_resolve (except of course Throes of Chaos)
 }
@@ -50,7 +49,7 @@ Land::Land(Card* src, Player* pl): Permanent(src, pl, 0){
 	pl->check_too_expensive();
 }
 
-Permanent::Permanent(Card* src, Player* pl, int nb_zone): flags(1), source(src), ctrl(pl), color(source->get_color()){
+Permanent::Permanent(Card* src, Player* pl, int nb_zone): flags(1), keywords(0), source(src), ctrl(pl), color(source->get_color()), nb_actabs(0), first_actab(0) {
 	target_flags = 0x40;
 	name = source->get_name();
 	src->get_permabs(&first_actab, &nb_actabs);
@@ -59,10 +58,10 @@ Permanent::Permanent(Card* src, Player* pl, int nb_zone): flags(1), source(src),
 	src->get_triggers(olympus::trigger_types::PermStateChange, triggers_permanent[2]);
 	src->get_triggers(olympus::trigger_types::PermBecomes, triggers_permanent[3]);
 	pl->disp_zone(3);
-	triggers_permanent[0].trigger(pl, new Targeter(this));
+	triggers_permanent[0].trigger(pl, this);
 }
 
-Creature::Creature(Card* src, Player* pl): Permanent(src, pl, 3), Damageable(0, src), nb_counters(0), is_attacking(false), is_block(false), assigned_bl(0){
+Creature::Creature(Card* src, Player* pl): Permanent(src, pl, 3), Damageable(0, src){
 	target_flags = 0x50; //Permanent(0x40) and Creature (0x10)
 
 	const char* tmp = src->get_flavor_text();
@@ -79,11 +78,11 @@ Damageable::Damageable(int lif, Card* source): life(lif){
 
 void Player::remove_permanent(Permanent* perm, int nb_zone){
 	switch(nb_zone){
-		case 1: remove_permanent_inlist<Land>(mylands, dynamic_cast<Land*>(perm));
-		case 2: remove_permanent_inlist<Artifact>(myartos, dynamic_cast<Artifact*>(perm));
-		case 3: remove_permanent_inlist<Planeswalker>(mysuperfriends, dynamic_cast<Planeswalker*>(perm));
-		case 4: remove_permanent_inlist<Creature>(mycreas, dynamic_cast<Creature*>(perm));
-		case 5: remove_permanent_inlist<Creature>(myattackers, dynamic_cast<Creature*>(perm));
+	    case 1: remove_permanent_inlist<Land>(mylands, dynamic_cast<Land*>(perm)); break;
+		case 2: remove_permanent_inlist<Artifact>(myartos, dynamic_cast<Artifact*>(perm)); break;
+		case 3: remove_permanent_inlist<Planeswalker>(mysuperfriends, dynamic_cast<Planeswalker*>(perm)); break;
+		case 4: remove_permanent_inlist<Creature>(mycreas, dynamic_cast<Creature*>(perm)); break;
+		case 5: remove_permanent_inlist<Creature>(myattackers, dynamic_cast<Creature*>(perm)); break;
 #ifdef NDEBUG
 		default: raise_error("Permanent of no type?");
 #endif
@@ -114,12 +113,12 @@ void Permanent::destroy(){
 
 void Creature::destroy(bool wasattacking){
 	ctrl->puttozone(source, 1); //putting source in graveyard
-	ctrl->remove_permanent(this, wasattacking ? 3 : 4); //TODO: check whether the creature is attacking and whether (... , 5) would not be appropriate
+	ctrl->remove_permanent(this, wasattacking ? 5 : 4);
 }
 
 void Creature::exile(bool wasattacking){
 	ctrl->puttozone(source, 2); //putting source in exile
-	ctrl->remove_permanent(this, wasattacking ? 4 : 3);
+	ctrl->remove_permanent(this, wasattacking ? 5 : 4);
 }
 
 bool Permanent::directactivate(){
@@ -169,5 +168,5 @@ void Planeswalker::activate() {
         default: x = 0; break;
     }
     loyalty -= loyalty_costs[(int) x];
-    god.game->addtostack(new Resolvable(ctrl, loyalty_abs + x, new Targeter((Target*) this)));
+    god.game->addtostack(new Resolvable(ctrl, loyalty_abs + x, (Target*) this));
 }

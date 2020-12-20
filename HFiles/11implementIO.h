@@ -43,7 +43,7 @@ class Allegro_io: public Abstract_io {
 private:
 	ALLEGRO_FONT* fonts[4]; //normal - small - enormous - matrixB
 	ALLEGRO_COLOR registeredColors[12];
-	ALLEGRO_TIMER* timer;
+	//ALLEGRO_TIMER* timer;
 	ALLEGRO_EVENT_QUEUE* queue;
 	ALLEGRO_DISPLAY* window;
 	

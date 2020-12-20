@@ -9,7 +9,7 @@
 //In short: Resolvables contains (an array of) Targeters, and Targets contain (a list of) Targeter pointers
 //Additionally, Triggers contain an Origin targeter, which is little more than a pointer. such targeters are called 'interenal targeters' and have actually no game relevance
 
-struct Targeter{
+class Targeter{
 private:
 	Target* content;
 	std::string name; //will be remembered even after the target dies
@@ -18,7 +18,7 @@ public:
 	char colorIdentity; //-1 means it's an "internal" targeter, such as the one linking an ability to its origin.
 	//you can't, of course, have protection from 'internal' targeters
 
-	Targeter(Target* tar): valid(true) {setTarget(tar); };
+	Targeter(Target* tar);
 	Targeter(): valid(true) {god.gdebug(DBG_TARGETING) << " Creating a Targeter\n"; };
 	~Targeter(); //removes references to itself from its victim
 	void setTarget(Target* tgt);

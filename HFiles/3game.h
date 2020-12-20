@@ -16,9 +16,9 @@
 
 struct PlayerPreStackElement{
 	PreResolvable* preRes;
-	Targeter* origin;
+	std::unique_ptr<Targeter> origin;
 
-	PlayerPreStackElement(PreResolvable* p, Targeter* org): preRes(p), origin(org) {};
+	PlayerPreStackElement(PreResolvable* p, Target* org);
 };
 
 class Player: public Damageable{
@@ -68,10 +68,8 @@ public:
 		PermType* iterate_boardsubzone(char* direction, std::list<PermType>& perms, UIElement* ui, bool isactivation);
 	Permanent* iterate_boardsubzone(char* direction, int xzone, bool istapland);
 	bool disp_opt(bool sorceryspeed) const;
-	int disp_myopts(char* pos, int typeofopt, char a) const;
 	void dispOptsOfCertainType(int y, int z, int dy, int dz, int* pos, int type, bool castable) const;
-	void clear_opts();
-	void addtoPrestack(PreResolvable* triggered_ability, Targeter* origin){prestack.emplace_front(triggered_ability, origin); };
+	void addtoPrestack(PreResolvable* triggered_ability, Target* origin){prestack.emplace_front(triggered_ability, origin); };
 	bool add_triggers_to_stack();
 
 	Option* choose_opt(bool sorceryspeed);

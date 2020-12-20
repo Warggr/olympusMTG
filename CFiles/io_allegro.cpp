@@ -145,7 +145,7 @@ Allegro_io::Allegro_io(){
 	queue = al_create_event_queue();
 	must_init(queue, "queue");
 
-	al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
+	//al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
 	al_set_new_display_option(ALLEGRO_SINGLE_BUFFER, 1, ALLEGRO_SUGGEST);
 	al_set_new_bitmap_flags(ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR);
 
@@ -205,7 +205,7 @@ Allegro_io::Allegro_io(){
 Allegro_io::~Allegro_io(){
 	al_destroy_font(fonts[0]);
     al_destroy_display(window);
-    al_destroy_timer(timer);
+    //al_destroy_timer(timer);
     al_destroy_event_queue(queue);
 
 	for(int i=0; i<16; i++) al_destroy_bitmap(ManaNumSym[i]);

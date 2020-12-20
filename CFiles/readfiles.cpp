@@ -1,5 +1,7 @@
 #include "../HFiles/olympus_main.h"
 
+#define OLYMPUS_BINARYCOMPAT_VERSION 1
+
 void check_safepoint(std::ifstream& myfile, char c, const char* message){
 	char x = myfile.get();
 	if(x != c){
@@ -52,8 +54,10 @@ Player::Player(const char* deck_name, Game* gm, char id): Damageable(20), name{0
 
 	std::string cacheName = std::string("Materials/decks/.binary/deck") + (char)(id + '0');
 	std::ifstream inputCache(cacheName, std::ios::binary | std::ios::in);
-	if(inputCache.is_open()){
-		std::cout << "Binary preformatted file found!" << std::endl;
+    int version = 0;
+	if(inputCache.is_open()) inputCache.read((char*) &version, sizeof(int));
+	if(version == OLYMPUS_BINARYCOMPAT_VERSION){
+	    std::cout << "Binary preformatted file found!" << std::endl;
 		char x;
 		check_canary('<', inputCache);
 		inputCache.read(&x, sizeof(char));
@@ -69,6 +73,8 @@ Player::Player(const char* deck_name, Game* gm, char id): Damageable(20), name{0
 		if(!myfile.is_open()) raise_error("Deck name not found");
 
 		std::ofstream outputCache(".tmp", std::ios::binary | std::ios::out);
+		int i = OLYMPUS_BINARYCOMPAT_VERSION;
+		outputCache.write((char*) &i, sizeof(int));
 		set_canary('<', outputCache);
 
 		std::cout << "Interpreting plain text deck..." << std::endl;

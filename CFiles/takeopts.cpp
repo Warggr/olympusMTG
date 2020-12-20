@@ -104,9 +104,8 @@ bool Player::add_triggers_to_stack(){
 	if(prestack.empty()) return false;
 	//TODO: the player may order his triggers
 	while(!(prestack.empty())){
-		Resolvable* res = new Resolvable(this, prestack.front().preRes, prestack.front().origin);
+		Resolvable* res = new Resolvable(this, prestack.front().preRes, prestack.front().origin->getTarget());
 		metagame->addtostack(res);
-		delete prestack.front().origin; //this was a one-use targeter to remember the permanent that had caused the trigger
 		prestack.pop_front();
 	}
 	return true;

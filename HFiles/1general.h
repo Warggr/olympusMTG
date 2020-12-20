@@ -10,7 +10,7 @@ class TriggerEvent{ //contains all X-action triggers of a certain object, i.e. a
 	int id_arg2;
 	int id_arg3;
 public:
-	void trigger(Player* pl, Targeter* origin) const;
+	void trigger(Player* pl, Target* origin) const;
 	void add_trigger(Trigger* trig){all_triggers.push_front(trig); };
 	std::string describe(int typeoftrig, std::string cardname) const;
 };

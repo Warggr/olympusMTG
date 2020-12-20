@@ -8,7 +8,7 @@ private:
 	PreResolvable* effects; //and then the effects. The PreResolvable contains everything necessary to choose targets and put ability onto the stack.
 public:
 	void setEffects(PreResolvable* preRes) { effects = preRes; };
-	void trigger(Player* pl, Targeter* origin) const;
+	void trigger(Player* pl, Target* origin) const;
 	std::string describe(int typeoftrig, std::string name) const;
 	void write_binary(std::ofstream& bFile) const;
 	void read_binary(std::ifstream& bFile);

@@ -1,4 +1,4 @@
-#include "head2_mana.h"
+#include "../HFiles/head2_mana.h"
 
 bool Mana::operator>=(Mana cost) const {
 	for(int i=0; i<7; i++){ //checking total and all five colors

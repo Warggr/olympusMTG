@@ -7,6 +7,14 @@ void Targeter::setTarget(Target* tar){
 	name = tar->get_name();
 }
 
+Targeter::Targeter(Target* tar): valid(true) {
+    if(tar == 0){
+        valid = false;
+        content = 0;
+    }
+    else setTarget(tar);
+}
+
 void Target::add_persecutor(Targeter* tar){
 	//god.gdebug(DBG_TARGETING) << "This Target "<<this<<" is the target of a Targeter" <<tar<<std::endl;
 	to_target.push_front(tar);

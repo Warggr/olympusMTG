@@ -5,9 +5,10 @@
 
 class Mana{
 private:
-	int mana; //0xXcgrbuw1, in inverse order of priority
+    int mana; //0xXcgrbuw1, in inverse order of priority
 public:
 	Mana(): mana(0){};
+    Mana(int i): mana(i){};
 	Mana(const char* x);
 	std::string m2t() const;
 	bool operator>=(Mana pool) const;

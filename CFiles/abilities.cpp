@@ -6,17 +6,17 @@ void Player::add_mana(char c){
 
 void Player::damage(int nb_damage, Target* origin){
 	life -= nb_damage;
-	is_damaged.trigger(this, new Targeter(this));
+	is_damaged.trigger(this, this);
 }
 
 void Creature::damage(int nb_damage, Target* origin){
 	life -= nb_damage;
-	is_damaged.trigger(ctrl, new Targeter(this));
+	is_damaged.trigger(ctrl, this);
 }
 
 void Planeswalker::damage(int nb_damage, Target* origin){
 	life -= nb_damage;
-	is_damaged.trigger(ctrl, new Targeter(this));
+	is_damaged.trigger(ctrl, this);
 }
 
 void Ability::activate(Targeter* list_of_targets, Player* ctrl, Target* origin) const {

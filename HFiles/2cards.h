@@ -63,6 +63,7 @@ private:
 	char name[10];
 	int size;
 public:
+    CardZone(): name{0}, size(0) {};
 	std::forward_list<Card*> cards;
 
 	void init(std::ifstream& textfile, std::ofstream& binaryOut);

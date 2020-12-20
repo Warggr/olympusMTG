@@ -46,13 +46,13 @@ private:
 	int self_toughness;
 	int set_power; //layer 7b
 	int set_toughness;
-	int added_power; //layer 7c. By default these values are volatile and are reset at end of turn
-	int added_toughness;
-	int nb_counters;
-	bool pt_switched; //layer 7d
+	int added_power{0}; //layer 7c. By default these values are volatile and are reset at end of turn
+	int added_toughness{0};
+	int nb_counters{0};
+	bool pt_switched{false}; //layer 7d
 
-	bool is_attacking;
-	bool is_block; //used for both blocking and blocked
+	bool is_attacking{false};
+	bool is_block{false}; //used for both blocking and blocked
 	std::list<Creature*> assigned_bl; //this might actually become invalidated if the attacker dies midcombat. A Targeter would be better, but this is for another day
 public:
 	Creature(Card* src, Player* pl);

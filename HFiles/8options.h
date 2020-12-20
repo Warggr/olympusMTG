@@ -13,7 +13,7 @@ public:
 	virtual void ragnarok(){ if(next) next->ragnarok(); delete this; }; //called to destroy a full option zone
 
 	virtual void check_and_pop(int n_of_zone, Player* pl); //default behavior: removes spell from list
-	void pop(int, Player*);
+	void pop(int, Player*) const;
 	virtual Resolvable* cast_opt(Player* pl) = 0;
 	virtual bool iscastable(const Player* pl) const;
 	virtual void disp(int y, int z, bool highlight, bool castable) const = 0;
@@ -53,7 +53,7 @@ private:
 	bool tapsymbol;
 	bool ismanaability;
 public:
-	PermOption(): Option(0, 0, 0), effects(0), tapsymbol(false), ismanaability(false) {}; //make clear it wasn't initialized
+	PermOption(): Option(0, 0, (int) 0), effects(0), tapsymbol(false), ismanaability(false) {}; //make clear it wasn't initialized
 	~PermOption() {delete effects; };
 	void fillout(Mana cost, PreResolvable* preRes, bool tapsymbol, bool ismanaability);
 	void read_binary(std::ifstream& bFile);

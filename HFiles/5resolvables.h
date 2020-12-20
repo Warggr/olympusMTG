@@ -16,13 +16,13 @@ We could imagine sth like "do blah. If you have this and that, copy this ability
 class Resolvable: virtual public Target{
 protected:
 	Player* ctrl;
-	Targeter* origin; //the one every 'this' refers to, such as 'when this exploits a creature', 'this deals damage', ...
+	std::unique_ptr<Targeter> origin; //the one every 'this' refers to, such as 'when this exploits a creature', 'this deals damage', ...
 	char nb_targets;
 	Targeter* list_of_targets;
 	const Ability* on_resolve; //we can't change the Ability, since it's a Card characteristics
 	static const std::string description;
 public:
-	Resolvable(Player* ct, const PreResolvable* preRes, Targeter* origin = 0);
+    Resolvable(Player* ct, const PreResolvable* preRes, Target* origin = 0);
 	virtual ~Resolvable();
 	virtual void resolve(); //this is what a resolvable is about
 	virtual std::string describe() const {return description; };
