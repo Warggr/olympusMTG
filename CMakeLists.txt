@@ -8,8 +8,8 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
 
-include_directories(source/HFiles)
-file(GLOB SOURCES "source/CFiles/*.cpp")
+include_directories(HFiles)
+file(GLOB SOURCES "CFiles/*.cpp")
 
 set(IOLib "allegro" CACHE STRING "Use Allegro as I/O library")
 set_property(CACHE IOLib PROPERTY STRINGS allegro ncurses)
@@ -37,9 +37,9 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 endif() 
 
-configure_file(olympus_main.h.in source/HFiles/olympus_main.h)
+configure_file(olympus_main.h.in source/olympus_main.h)
 
-add_subdirectory(source/Dictionary)
+add_subdirectory(Dictionary)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ..)
