@@ -1,4 +1,5 @@
-#include "../HFiles/olympus_main.h"
+#include ".header_link.h"
+#include "../HFiles/9modifs.h"
 
 void Player::add_mana(char c){
 	manapool += c;
@@ -43,7 +44,7 @@ void Ability::activate(Targeter* list_of_targets, Player* ctrl, Target* origin) 
 	    case 6:
             (dynamic_cast<Permanent*>(target1))->exile(); break;
 		case 7:
-			(dynamic_cast<Resolvable*> (target1))->counter(ctrl->metagame); break;
+			(dynamic_cast<Resolvable*> (target1))->counter(god.game); break;
 		case 8:
 			(dynamic_cast<Creature*> (target1))->plus_power(param2); break;
 		case 9:

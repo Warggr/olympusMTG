@@ -1,4 +1,4 @@
-#include "../HFiles/olympus_main.h"
+#include ".header_link.h"
 
 #include <algorithm>
 //GUIDELINE: anything that calls statebasedactions() should be able to return afterwards
@@ -21,7 +21,7 @@ struct Phase{ //AFAIK there are no "additional step" cards, but there might be s
 };
 
 bool Player::turn(){
-	metagame->addtolog("Starting your turn");
+	god.game->addtolog("Starting your turn");
 	std::forward_list<const Phase*> thisTurnsOrder = defaultPhaseOrder;
 	for(auto & iter : thisTurnsOrder){
 		if((*iter)(this)) return true;
@@ -41,7 +41,7 @@ void Player::untapstep(){
 	state = state & 15; //resetting time and land flags
 	nb_mainphase = 0;
 	for_each_perm([](Permanent& p){p.declare_beginturn(); });
-	metagame->disp();
+	god.game->disp();
 }
 
 void Player::upkeepstep(){}
@@ -52,7 +52,7 @@ void Player::mainphasemainstep(){
 	nb_mainphase++;
 	SET_TIME_FLAGS(0x20);
 	if(nb_mainphase != 0) state += 0x80;
-	metagame->addtolog(" Starting main phase");
+	god.game->addtolog(" Starting main phase");
 	choicephase(true);
 }
 void Player::declareattackersstep(){

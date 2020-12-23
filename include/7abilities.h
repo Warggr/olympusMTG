@@ -16,7 +16,7 @@ public:
 	bool init(std::ifstream& myfile);
 	std::string describe(std::string known_sourcename) const;
 	void disp(int y, int z, int ySize, int zSize, std::string origin_name) const; //mimicks a Resolvable on top of the stack
-	const Ability* getFab() const {return &(*fab); }; //i know, it's dangerous and it destroys the sense of having smart pointers. But hey, it makes more sense than a shared ptr
+	Ability* getFab() const {return &(*fab); }; //i know, it's dangerous and it destroys the sense of having smart pointers. But hey, it makes more sense than a shared ptr
 	char getNbParams() const {return nb_parameters; };
 	const char* getParams() const {return parameters; };
 };

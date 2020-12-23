@@ -1,4 +1,6 @@
-#include "../HFiles/olympus_main.h"
+#include ".header_link.h"
+#include "../HFiles/8options.h"
+#include "../HFiles/9modifs.h"
 
 Game::~Game(){
 	god.gdebug(DBG_RAGNAROK) << "Destroying the game...\n";

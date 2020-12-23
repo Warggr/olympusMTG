@@ -8,21 +8,24 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
 
-include_directories(HFiles)
-file(GLOB SOURCES "CFiles/*.cpp")
+set(HEADER_DIR "${PROJECT_SOURCE_DIR}/include")
+set(SOURCE_DIR "${PROJECT_SOURCE_DIR}/CFiles")
+configure_file(${SOURCE_DIR}/header_link.h ${SOURCE_DIR}/.header_link.h)
 
-set(IOLib "allegro" CACHE STRING "Use Allegro as I/O library")
-set_property(CACHE IOLib PROPERTY STRINGS allegro ncurses)
+include_directories($HEADER_DIR)
+file(GLOB SOURCES "${SOURCE_DIR}/*.cpp")
 
- if(IOLib STREQUAL "allegro")
-    list(APPEND EXTRA_LIBS allegro allegro_font allegro_primitives allegro_image allegro_ttf)
-elseif(IOLib EQUAL "ncurses")
-    list(APPEND EXTRA_LIBS ncurses)
-endif()
+set(IOLib "Allegro" CACHE STRING "Use Allegro as I/O library")
+set_property(CACHE IOLib PROPERTY STRINGS "Allegro" "Ncurses")
+
+add_subdirectory(Dictionary)
+add_subdirectory(IOLib)
+add_subdirectory(UILib)
+add_subdirectory(Mana)
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR
     "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    set(warnings "-Wall")
+    set(warnings "-Wall -Werror")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     set(warnings "/W4 /WX /EHsc")
 endif()
@@ -35,17 +38,17 @@ endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
-endif() 
+endif()
 
-configure_file(olympus_main.h.in source/olympus_main.h)
-
-add_subdirectory(Dictionary)
+configure_file(${HEADER_DIR}/olympus_main.h ${HEADER_DIR}/.olympus_main.h)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ..)
 
 target_link_libraries(olympus PUBLIC OlympicDict)
-target_link_libraries(olympus PUBLIC ${EXTRA_LIBS})
+target_link_libraries(olympus PUBLIC Mana)
+target_link_libraries(olympus PUBLIC ${UILIB})
+target_link_libraries(olympus PUBLIC ${IOLIB})
 
 target_include_directories(olympus PUBLIC
 	"${PROJECT_BINARY_DIR}"

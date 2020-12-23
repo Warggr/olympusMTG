@@ -1,4 +1,8 @@
-#include "../HFiles/olympus_main.h"
+#include "11allegroIO.h"
+#include <list>
+#include <iostream>
+
+Abstract_io* new_IOLib(){return new Allegro_io; }
 
 void Allegro_io::draw_permanent(int left, int top, int width, int height, char color, bool tapped, bool highlight, bool basicImg){
 	if(basicImg) al_draw_scaled_bitmap(basiclands, 384*(color-1), (500-384)/2, 384, 384, left, top, width, height, 0);
@@ -126,6 +130,12 @@ char Allegro_io::get_direction_key(){
 			case ALLEGRO_EVENT_DISPLAY_CLOSE:
 				god.minimalKill();
 				exit(1);
+			case ALLEGRO_EVENT_MOUSE_AXES:
+				mousey = event.mouse.x; mousez = event.mouse.y;
+				god.myUI->report_mouse_move(event.mouse.x, event.mouse.y);
+				return olympus::directions::MOUSE;
+			case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
+				return olympus::directions::ENTER;
 		}
 	}
 }
@@ -180,6 +190,7 @@ Allegro_io::Allegro_io(){
 	tapsymbol = al_load_bitmap("Materials/images/tapsymbol.png");
 	basiclands = al_load_bitmap("Materials/images/basic_lands.jpg");
 	loyalty = al_load_bitmap("Materials/images/loyalty.png");
+	cursor = al_load_bitmap("Materials/interface/Cursor_Fang.png");
 
 	registeredColors[0] = al_map_rgb(255, 255, 255); //white
 	registeredColors[1] = al_map_rgb(0, 0, 0); //black;
@@ -198,6 +209,8 @@ Allegro_io::Allegro_io(){
 	al_register_event_source(queue, al_get_display_event_source(window));
 	al_register_event_source(queue, al_get_mouse_event_source());
 	al_hide_mouse_cursor(window);
+	screenFloor = al_create_bitmap(al_get_display_width(window), al_get_display_height(window));
+	al_set_target_bitmap(screenFloor);
 
 	al_draw_bitmap(wallpaper, 0, 0, 0);
 }
@@ -214,6 +227,9 @@ Allegro_io::~Allegro_io(){
 	al_destroy_bitmap(wallpaper);
 	al_destroy_bitmap(card_back);
 	al_destroy_bitmap(tapsymbol);
+	al_destroy_bitmap(basiclands);
+	al_destroy_bitmap(loyalty);
+	al_destroy_bitmap(cursor);
 }
 
 void Allegro_io::disp_cardback(int y, int z){
@@ -232,6 +248,20 @@ void Allegro_io::print_text(std::string text, char color, int y, int z){
 	al_draw_text(fonts[0], registeredColors[(int) color], y, z, 0, &(text[0]));
 }
 
+void Allegro_io::refresh_display(){
+	al_set_target_bitmap(al_get_backbuffer(window));
+	al_draw_bitmap(screenFloor, 0, 0, 0);
+	al_draw_bitmap(cursor, mousey, mousez, 0);
+	al_flip_display();
+	al_set_target_bitmap(screenFloor);
+}
+
 void Allegro_io::fulldisp(){
 	al_draw_bitmap(wallpaper, 0, 0, 0);
 }
+
+const int Abstract_io::BLACK = 1;
+const int Abstract_io::WHITE = 0;
+const int Abstract_io::GREY = 2;
+const int Abstract_io::HIGH1 = 10;
+const int Abstract_io::HIGH2 = 11;

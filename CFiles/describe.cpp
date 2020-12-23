@@ -1,4 +1,6 @@
-#include "../HFiles/olympus_main.h"
+#include ".header_link.h"
+#include "../HFiles/8options.h"
+#include "../HFiles/10triggers.h"
 
 std::string PreResolvable::describe(std::string name) const {
 	return fab->describe(name);

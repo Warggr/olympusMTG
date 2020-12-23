@@ -1,4 +1,6 @@
-#include "../HFiles/olympus_main.h"
+#include ".header_link.h"
+#include "../HFiles/9modifs.h"
+#include "../HFiles/8options.h"
 
 Resolvable* Game::popfromstack(){
 	if(stack.empty()) return 0;
@@ -53,7 +55,7 @@ Resolvable::Resolvable(Player* ct, const PreResolvable* tocast, Target* org): ct
 		for(int i=0; i<nb_targets; i++){
 			god.myIO->message("Choose a target");
 			Player* asker = ct;
-			list_of_targets[i].setTarget( ct->iterate(true, &asker, params[i]) );
+			list_of_targets[i].setTarget( god.myUI->iterate(true, &asker, params[i]) );
 		}
 	}
 	else{ //the resolvable, e.g. a permanent spell, has no on_resolve abilities

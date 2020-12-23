@@ -1,4 +1,23 @@
-#include "../HFiles/olympus_main.h"
+#include "12defaultUI.h"
+
+Abstract_ui* new_UILib(Abstract_io* IOLib){return new Default_ui(IOLib); }
+
+void Default_ui::normalize_gridy_gridz(int* gridy, int* gridz){
+	if(mousey < boardY){
+		*gridy = 0;
+		if(mousez < playerZ) *gridz = 0;
+		else if(mousez > playerZ + 10*permanentZSize - 15) *gridz = 11;
+		else *gridz = (mousez - playerZ) / (permanentZSize+permanentZMargin);
+	}
+	else if(mousey < boardY + leftbarY){
+		*gridy = 1;
+		mousey -= boardY;
+	}
+	else{
+		*gridy = 2;
+	}
+	god.gdebug(DBG_IOUI) << "Mouse @" << mousey << ":" << mousez << " causes movement to " << *gridy << ":" << *gridz << std::endl;
+}
 
 _UIElement::_UIElement(int left, int top, int _ySize, int _zSize, int offset, int _maxItems, bool direction):
 topZ(top), leftY(left), yOffset(0), zOffset(0), ySize(_ySize), zSize(_zSize), maxItems(_maxItems) {
@@ -8,7 +27,7 @@ topZ(top), leftY(left), yOffset(0), zOffset(0), ySize(_ySize), zSize(_zSize), ma
 		topZ += zOffset;
 		leftY += yOffset;
 	}
-	std::cout << "Dimensions: -" << left <<"-"<< left + maxItems*yOffset + ySize <<"-,|"<< top <<"|"<< top + maxItems*zOffset + zSize << std::endl;
+	//std::cout << "Dimensions: -" << left <<"-"<< left + maxItems*yOffset + ySize <<"-,|"<< top <<"|"<< top + maxItems*zOffset + zSize << std::endl;
 }
 
 UIElement* Default_ui::get_optionzone(){
@@ -91,3 +110,59 @@ void Default_ui::get_player_coords(char player_id, int* py, int* pz, int* wide, 
 	*libz = *gravez;
 	*exilz = *gravez;
 }
+
+bool Default_ui::chooseattackers(std::list<Creature>& cowards, std::list<Creature>& warriors, char player_id){
+	myIO->message("Choose Attackers");
+	bool ret = false;
+	int i = 0;
+	int y, z, yOff, zOff, ySize, zSize;
+	permanentZones[(player_id-1) * 5 + 3]->get_coordinates(&y, &z, &yOff, &zOff, &ySize, &zSize);
+	for(std::list<Creature>::iterator iter = cowards.begin(); iter != cowards.end(); i++){
+		if((iter->get_flags()&3) == 3){ //untapped and no summoning sickness
+			int zPos = (player_id == 1) ? z + i*zOff + zSize : z + i*zOff; //getting either top or bottom Z
+			bool attacks = myIO->attack_switch(y + i*yOff, ySize, zPos, (player_id == 1) ? 20 : -20);
+			if(attacks){
+				std::list<Creature>::iterator newatt = iter;
+				newatt->disp(y+i*yOff, z+i*zOff, ySize, zSize, false); //disp creature normally
+				newatt->reset_flags(1); //tap creature
+				iter++;
+				warriors.splice(warriors.begin(), cowards, newatt); //move creature to list "warriors"
+				ret = true;
+			}
+			else{
+				iter->disp(y+i*yOff, z+i*zOff, ySize, zSize, false); //disp creature normally
+				iter++;
+			}
+		}
+		else iter++;
+	}
+	return ret;
+}
+
+void Default_ui::chooseblockers(std::list<Creature>& defenders, std::list<Creature>& attackers, UIElement* defenderDisplay, UIElement* attackerDisplay){
+	int pos = 0;
+	for(std::list<Creature>::iterator blocker = defenders.begin(); blocker != defenders.end(); blocker++){
+		if(blocker->get_flags()&1){ //untapped
+			int y, z;
+			defenderDisplay->get_coordinates(pos, &y, &z);
+			Creature* evilguy = myIO->blocker_switch(*blocker, y, z, attackers, attackerDisplay, permanentYSize, permanentZSize);
+			if(evilguy){
+				blocker->set_blocking();
+				evilguy->add_blocker(&(*blocker));
+			}
+		}
+		pos++;
+	}
+}
+
+const int Default_ui::leftbarY = 400;
+const int Default_ui::rightbarY = 400;
+const int Default_ui::stackZ = 200;
+const int Default_ui::optionsZ = 300;
+const int Default_ui::playerZ = 70;
+const int Default_ui::iozZ = 200;
+const int Default_ui::permanentZSize = 80;
+const int Default_ui::permanentYSize = 80;
+const int Default_ui::boardY = (permanentYSize + 5) * 10;
+const int Default_ui::optionZSize = 30;
+const int Default_ui::permanentZMargin = 2;

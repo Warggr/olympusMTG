@@ -1,4 +1,6 @@
-#include "../HFiles/olympus_main.h"
+#include ".header_link.h"
+#include "../HFiles/8options.h"
+#include "../HFiles/10triggers.h"
 
 void Resolvable::disp(int y, int z, int width, int height, bool highlight) const {
 	std::string text = describe();

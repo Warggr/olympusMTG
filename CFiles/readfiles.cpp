@@ -1,4 +1,6 @@
-#include "../HFiles/olympus_main.h"
+#include ".header_link.h"
+#include "../HFiles/head3_readfiles.h"
+#include "../HFiles/9modifs.h" //there seems to be an implicit deletion of Card which implies deleting a Targeter or something?
 
 #define OLYMPUS_BINARYCOMPAT_VERSION 1
 
@@ -30,14 +32,14 @@ struct externVarContainer god;
 
 Game::Game(const char* deck_1, const char* deck_2, char debug_flags): stack(0), haswon(false){
 	god.game = this;
-	god.myIO = new Allegro_io;
-	god.myUI = new Default_ui(god.myIO);
+	god.myIO = new_IOLib();
+	god.myUI = new_UILib(god.myIO);
 	god.wanted_debug = debug_flags;
 	stack_ui = god.myUI->declare_element(Abstract_ui::ELTYPE_STACK, 0);
 	logbook_ui = god.myUI->declare_element(Abstract_ui::ELTYPE_LOGBOOK, 0);
 
-	players[0] = new Player(deck_1, this, 1);
-	players[1] = new Player(deck_2, this, 2);
+	players[0] = new Player(deck_1, 1);
+	players[1] = new Player(deck_2, 2);
 	Player* oppptr = players[1];
 	for(int i=0; i<2; i++){
 		players[i]->set_opp(oppptr);
@@ -49,7 +51,7 @@ Game::Game(const char* deck_1, const char* deck_2, char debug_flags): stack(0), 
 	}
 }
 
-Player::Player(const char* deck_name, Game* gm, char id): Damageable(20), name{0}, state(0xe0), player_id(id), permUI{0}, optZone(0), metagame(gm) {
+Player::Player(const char* deck_name, char id): Damageable(20), name{0}, state(0xe0), player_id(id), permUI{0}, optZone(0){
 	target_flags = 0x80;
 
 	std::string cacheName = std::string("Materials/decks/.binary/deck") + (char)(id + '0');
@@ -146,7 +148,7 @@ void CardZone::init(std::ifstream& myfile, std::ofstream& binaryLog){
 			cards.push_front(first);
 			size++;
 		}
-		god.gdebug(DBG_X_READFILE) << (int) nb << "cards of type" << typeOfCard << "named" << cardname << "created" << std::endl;
+		god.gdebug(DBG_X_READFILE) << (int) nb << "cards of type " << typeOfCard << " named " << cardname << " created" << std::endl;
 	}
 	char x = 0; //! zero cards means 'end of file'
 	binaryLog.write(&x, sizeof(char));

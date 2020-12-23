@@ -1,4 +1,4 @@
-#include "../HFiles/olympus_main.h"
+#include ".header_link.h"
 
 const int olympus::nb_trigtypes = 6;
 const char* const olympus::all_trigtypes[] = {"etb", "ltb", "statechange", "becomes", "attacks", "is_damaged"}; //! the dictionary sorts only lowercase letters and _.
@@ -13,24 +13,6 @@ const char olympus::trigger_types::DamageableIsDamaged = 5;
 
 const int olympus::nb_abilities = 12;
 const char* const olympus::all_abilities[] = {"ping", "draw", "add_life", "set_life", "add", "destroy", "exile", "counter", "p_power", "p_toughness", "put_counter", "untap"};
-
-const int Default_ui::leftbarY = 400;
-const int Default_ui::rightbarY = 400;
-const int Default_ui::stackZ = 200;
-const int Default_ui::optionsZ = 300;
-const int Default_ui::playerZ = 70;
-const int Default_ui::iozZ = 200;
-const int Default_ui::permanentZSize = 80;
-const int Default_ui::permanentYSize = 80;
-const int Default_ui::boardY = (permanentYSize + 5) * 10;
-const int Default_ui::optionZSize = 30;
-const int Default_ui::permanentZMargin = 2;
-
-const int Abstract_io::BLACK = 1;
-const int Abstract_io::WHITE = 0;
-const int Abstract_io::GREY = 2;
-const int Abstract_io::HIGH1 = 10;
-const int Abstract_io::HIGH2 = 11;
 
 const std::string Resolvable::description = "this spell or ability";
 

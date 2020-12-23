@@ -4,6 +4,10 @@
 #include <fstream>
 #include <iostream>
 
+#define MANUAL_IMPORT_OF_OLYMPUS_HEADERS
+#include "../include/.olympus_main.h"
+#undef MANUAL_IMPORT_OF_OLYMPUS_HEADERS
+
 bool read_section_flavor(std::ifstream& myfile, char** flavor_text, char offset_text);
 bool read_section_abils(std::ifstream& myfile, int* nb_actabs, PermOption** first_actab);
 bool read_section_triggers(std::ifstream& myfile, int* nb_triggers, char** typeof_triggers, Trigger** triggers);

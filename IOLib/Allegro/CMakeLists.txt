@@ -1,0 +1,2 @@
+add_library(IOAllegro STATIC io_allegro.cpp io_allegro_combat.cpp)
+target_link_libraries(IOAllegro allegro allegro_font allegro_primitives allegro_image allegro_ttf)

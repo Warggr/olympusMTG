@@ -1,4 +1,5 @@
-#include "../HFiles/olympus_main.h"
+#include ".header_link.h"
+#include "../HFiles/10triggers.h"
 #include <cstdlib>
 #include <ctime>
 
@@ -38,7 +39,7 @@ void CardOracle::get_triggers(const char type, TriggerEvent& trigEv) const{
 	for(int i=0; i<nb_triggers; i++){
 		if(typeof_triggers[i] == type){
 			trigEv.add_trigger(&(triggers[i]));
-			std::cout << "Trigger of type " << type << "was found and added" << std::endl;
+			//std::cout << "Trigger of type " << type << "was found and added" << std::endl;
 		}
 	}
 }

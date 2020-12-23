@@ -1,4 +1,4 @@
-#include "../HFiles/olympus_main.h"
+#include ".header_link.h"
 
 void Game::disp_log() const {
 	int y, z, yOffset, zOffset;

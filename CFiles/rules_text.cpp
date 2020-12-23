@@ -1,4 +1,7 @@
-#include "../HFiles/olympus_main.h"
+#include ".header_link.h"
+#include "../HFiles/8options.h"
+#include "../HFiles/10triggers.h"
+#include "../HFiles/head3_readfiles.h"
 #include "../Dictionary/head4_dictionary.h"
 
 CardOracle::CardOracle(std::ifstream& myfile, std::string n, Mana c, char t): name(n), cost(c), type(t), on_cast(0), nb_actabs(0), first_actab(0), nb_triggers(0), typeof_triggers(0), triggers(0), flavor_text(0){ //stops after having read newline

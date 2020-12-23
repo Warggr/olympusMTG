@@ -1,4 +1,7 @@
-#include "../HFiles/olympus_main.h"
+#include ".header_link.h"
+#include "../HFiles/head3_readfiles.h"
+#include "../HFiles/8options.h"
+#include "../HFiles/10triggers.h"
 
 void set_canary(char canary, std::ofstream& bFile){
 	bFile.write(&canary, sizeof(char));

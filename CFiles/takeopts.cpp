@@ -1,4 +1,6 @@
-#include "../HFiles/olympus_main.h"
+#include ".header_link.h"
+#include "../HFiles/8options.h"
+#include "../HFiles/9modifs.h"
 
 //Player calls choicephase.
 //Player::choicephase calls choose_and_use_opt. Calls check_and_pop. Popped option is returned and cast (aka added to stack, or land put in play)
@@ -12,13 +14,13 @@ void Player::choicephase(bool sorceryspeed){
 	while(1){
 		int i = 0;
 		Player* currentprio = this;
-		metagame->statebasedactions(); //"before any player receives priority, state-based actions are done"
+		god.game->statebasedactions(); //"before any player receives priority, state-based actions are done"
 		add_triggers_to_stack(); nextopponent->add_triggers_to_stack();
-		while(metagame->stackisempty() && i==0){
+		while(god.game->stackisempty() && i==0){
 			if(!choose_and_use_opt(sorceryspeed)) {i=1; currentprio = currentprio->nextopponent; }
 		}
 		while(i!=2){
-			//metagame->statebasedactions(); //Rigorously SBA are checked here, just before giving priority
+			//god.game->statebasedactions(); //Rigorously SBA are checked here, just before giving priority
 			//But c'mon, in what case will states have changed just by casting a spell?
 			if(currentprio->choose_and_use_opt(false)) i=0;
 			else{
@@ -26,33 +28,18 @@ void Player::choicephase(bool sorceryspeed){
 				currentprio = currentprio->nextopponent;
 			}
 		} //two passes in a row; resolving first spell
-		Resolvable* toresolve = metagame->popfromstack();
+		Resolvable* toresolve = god.game->popfromstack();
 		if(toresolve){
 			god.gdebug(DBG_TARGETING) << "RESOLVING A SPELL\n";
 			toresolve->resolve();
 			delete toresolve;
-			metagame->disp();
+			god.game->disp();
 		}
 		else return; //if there is no first spell, then the phase/step ends
 	}
 }
 
 bool Player::choose_and_use_opt(bool sorceryspeed){ //AKA "giving priority". Returns false if a pass option was chosen
-	Option* choice = choose_opt(sorceryspeed); //chooses opt, returns 0 if passing was chosen
-	if(!choice) return false;
-	Resolvable* cast = choice->cast_opt(this); //casts the spell
-	if(cast){
-		metagame->addtostack(cast);
-		metagame->disp_stack();
-	}
-	else{
-		disp_zone(0); //the stack might have changed, or the lands
-	}
-	god.myIO->refresh_display();
-	return true;
-}
-
-Option* Player::choose_opt(bool sorceryspeed){ //asks user to choose option and pops that option
 	if(!disp_opt(sorceryspeed)){
 		god.myUI->clear_opts();
 		return NULL;
@@ -62,42 +49,19 @@ Option* Player::choose_opt(bool sorceryspeed){ //asks user to choose option and 
 	for(metapos = 0; !iter && metapos<3; metapos++){
 		iter = myoptions[metapos];
 	}
-	int y, z, dy, dz;
-	optZone->get_coordinates(&y, &z, &dy, &dz);
-	metapos--;
-	int pos = 0;
-	while(1){
-		char dir = god.myIO->get_direction_key();
-		iter->disp(y + pos*dy, z + pos*dz, false, iter->iscastable(this));
-		switch(dir){
-			case olympus::directions::DOWN: get_down(&iter, &pos, &metapos); break;
-			case olympus::directions::UP: get_up(&iter, &pos, &metapos); break;
-			case olympus::directions::SPACE:
-				god.myUI->clear_opts();
-				return NULL;
-			case olympus::directions::ENTER:
-				if(iter->iscastable(this)){ //ENTER
-					iter->check_and_pop(metapos, this);
-					god.myUI->clear_opts();
-					return iter;
-				}
-				else god.myIO->message("This opportunity can't be cast");
-				break;
-			case olympus::directions::LEFT:{
-				Player* pl = this;
-				Target* activated = iterate(false, &pl, 0x40);
-				if(activated){
-					if(pl == this){
-						(dynamic_cast<Permanent*> (activated))->activate();
-					}
-					else god.myIO->message("Can't activate your opponent's abilities");
-				}
-			} break;
-		}
-		iter->disp(y + pos*dy, z+pos*dz, true, iter->iscastable(this));
-		god.myIO->refresh_display();
+	Option* choice = god.myUI->choose_opt(0, sorceryspeed, iter, this, metapos); //chooses opt, returns 0 if passing was chosen
+	//TODO: replace above 0 by a real value corresponding to the mouse position
+	if(!choice) return false;
+	Resolvable* cast = choice->cast_opt(this); //casts the spell
+	if(cast){
+		god.game->addtostack(cast);
+		god.game->disp_stack();
 	}
-	return 0;
+	else{
+		disp_zone(0); //the stack might have changed, or the lands
+	}
+	god.myIO->refresh_display();
+	return true;
 }
 
 bool Player::add_triggers_to_stack(){
@@ -105,42 +69,48 @@ bool Player::add_triggers_to_stack(){
 	//TODO: the player may order his triggers
 	while(!(prestack.empty())){
 		Resolvable* res = new Resolvable(this, prestack.front().preRes, prestack.front().origin->getTarget());
-		metagame->addtostack(res);
+		god.game->addtostack(res);
 		prestack.pop_front();
 	}
 	return true;
 }
 
-void Player::get_down(Option** iter, int* pos, int* metapos) const {
-	if((**iter).next){
-		(*pos)++;
-		(*iter) = (*iter)->next;
+bool Player::get_down(Option*& iter, int& pos, int& metapos) const {
+	if(iter->next){
+		pos++;
+		iter = iter->next;
+		return true;
 	}
 	else{
-		int i = (*metapos)+1;
+		int i = metapos+1;
 		while(i < NBMYOPTS-1 && myoptions[i] == 0) i++;
 		if(myoptions[i]){
-			(*metapos) = i;
-			(*pos)++;
-			(*iter) = myoptions[*metapos];
+			metapos = i;
+			pos++;
+			iter = myoptions[metapos];
+			return true;
 		}
+		else return false;
 	}
 }
 
-void Player::get_up(Option** iter, int* pos, int* metapos) const {
-	if((**iter).prev){
-		(*pos)--;
-		(*iter) = (*iter)->prev;
+bool Player::get_up(Option*& iter, int& pos, int& metapos) const {
+	if(iter->prev){
+		pos--;
+		iter = iter->prev;
+		return true;
 	}
 	else{
-		int i = (*metapos)-1;
+		int i = metapos-1;
 		while(i>=0 && myoptions[i] == 0) i--;
 		if(i>=0 && myoptions[i]){
-			(*metapos) = i;
-			(*pos)--;
-			(*iter) = myoptions[*metapos];
-			while((*iter)->next) *iter = (*iter)->next;
+			metapos = i;
+			pos--;
+			iter = myoptions[metapos];
+			while(iter->next) iter = iter->next;
+			return true;
 		}
+		else return false;
 	}
 }
 

@@ -1,4 +1,5 @@
-#include "../HFiles/olympus_main.h"
+#include ".header_link.h"
+#include "../HFiles/8options.h"
 
 void PermOption::fillout(Mana c, PreResolvable* preRes, bool ts, bool ismana){
 	cost = c; effects = preRes; tapsymbol = ts, ismanaability = ismana;
@@ -22,7 +23,7 @@ void Player::draw(int nb_cards){
 	for(int i=0; i<nb_cards; i++){
 		if(myzones[0].cards.empty()){
 			set_flags(4);
-			metagame->haswon = true;
+			god.game->haswon = true;
 			return;
 		}
 		Card* crd = myzones[0].cards.front();

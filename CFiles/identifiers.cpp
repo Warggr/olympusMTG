@@ -1,4 +1,4 @@
-#include "../HFiles/olympus_main.h"
+#include ".header_link.h"
 
 /* An identifier will be an int containing all relevant properties of a game object, which can be a:
 player (000) - permanent(001) - creature(010) - zone(011) - ability(100) - card(101) - spell(110) - enums(111)

@@ -1,20 +1,17 @@
-#ifndef OLYMPUS_9_ABSTRACT_IO
-#define OLYMPUS_9_ABSTRACT_IO
+#ifndef OLYMPUS_6_ABSTRACT_IO
+#define OLYMPUS_6_ABSTRACT_IO
 
 #include <vector>
+#include <string>
+#include "../Mana/head2_mana.h"
+#include "4board.h"
 
 class Abstract_io{
 protected:
-	int posterY;
-	int posterZ;
-	int messageY;
-	int messageZ;
+	int posterY, posterZ;
+	int messageY, messageZ;
 public:
-	static const int BLACK;
-	static const int WHITE;
-	static const int GREY;
-	static const int HIGH1;
-	static const int HIGH2;
+	static const int BLACK, WHITE, GREY, HIGH1, HIGH2;
 
 	virtual ~Abstract_io(){};
 	//virtual void getcoordinates(int* maxX, int* maxY, char* resolution) = 0;
@@ -48,10 +45,7 @@ class Abstract_ui{
 protected:
 	Abstract_io* myIO;
 public:
-	static const int ELTYPE_STACK = 0;
-	static const int ELTYPE_LOGBOOK = 1;
-	static const int ELTYPE_OPTIONS = 2;
-	static const int ELTYPE_PERMANENTS = 3;
+	static const int ELTYPE_STACK = 0, ELTYPE_LOGBOOK = 1, ELTYPE_OPTIONS = 2, ELTYPE_PERMANENTS = 3;
 
 	Abstract_ui(Abstract_io* IO): myIO(IO){};
 	virtual ~Abstract_ui(){};
@@ -65,16 +59,16 @@ public:
 	virtual void chooseblockers(std::list<Creature>& defenders, std::list<Creature>& attackers, UIElement* defenderDisplay, UIElement* attackerDisplay) = 0;
 	virtual void clear_opts() = 0;
 	virtual UIElement* get_optionzone() = 0;
+	virtual Target* iterate(bool needstarget, Player** pl, char returntypeflags) = 0;
+	virtual Option* choose_opt(float zOffset, bool sorceryspeed, Option* firstopt, Player* asker, int metapos) = 0;
+	virtual void report_mouse_move(float x, float y) = 0;
 };
 
 class _UIElement{
 private:
-	int topZ;
-	int leftY;
-	int yOffset;
-	int zOffset;
-	int ySize;
-	int zSize;
+	int topZ, leftY;
+	int yOffset, zOffset;
+	int ySize, zSize;
 	int maxItems;
 public:
 	static const bool horizontal = true;
@@ -98,4 +92,9 @@ public:
 	}
 };
 
-#endif //OLYMPUS_9_ABSTRACT_IO
+typedef _UIElement UIElement;
+
+Abstract_io* new_IOLib();
+Abstract_ui* new_UILib(Abstract_io* IOLib);
+
+#endif //OLYMPUS_6_ABSTRACT_IO

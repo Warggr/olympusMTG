@@ -1,8 +1,6 @@
-#define MANUAL_IMPORT_OF_OLYMPUS_HEADERS
-#include "olympus_main.h"
 #include "../Dictionary/head4_dictionary.h"
-#include "head3_readfiles.h"
-#include "head1_constants.h"
+#include "../HFiles/head3_readfiles.h"
+#include "../include/head1_constants.h"
 #include <fstream>
 #include <cstring>
 #include <iostream>

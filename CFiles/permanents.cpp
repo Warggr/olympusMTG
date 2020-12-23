@@ -1,4 +1,6 @@
-#include "../HFiles/olympus_main.h"
+#include ".header_link.h"
+#include "../HFiles/8options.h"
+#include "../HFiles/9modifs.h"
 
 //Resolvables are deleted externally by takeopts after having been resolved.
 //As a general rule, the one to take the Resolvable out of the stack is the one to destroy it
@@ -28,7 +30,7 @@ Resolvable* PlayLand::cast_opt(Player* pl){
 }
 
 void Player::resolve_playland(Card* source){
-	metagame->addtolog("  Land played");
+	god.game->addtolog("  Land played");
 	set_flags(16);
 	insert_permanent(source);
 }

@@ -1,9 +1,9 @@
 #ifndef OLYMPUS_CLASSES_H
 #define OLYMPUS_CLASSES_H
 
-#define Olympus_VERSION_MAJOR 1
-#define Olympus_VERSION_MINOR 0
-#define IO_ALLEGRO
+#define Olympus_VERSION_MAJOR @Olympus_VERSION_MAJOR@
+#define Olympus_VERSION_MINOR @Olympus_VERSION_MINOR@
+#cmakedefine IO_ALLEGRO
 
 #define LOGLEN 7
 
@@ -57,21 +57,43 @@ typedef _UIElement UIElement;
 
 class Dictionary;
 
+struct externVarContainer{
+	Game* game;
+	std::ofstream debug_log, verbose_debug;
+	char wanted_debug;
+	Abstract_ui* myUI;
+	Abstract_io* myIO;
+
+	externVarContainer();
+	std::ofstream& gdebug(char password);
+	void minimalKill();
+};
+
+extern struct externVarContainer god;
+
+#include "1general.h"
 #ifndef MANUAL_IMPORT_OF_OLYMPUS_HEADERS
 #include "head1_constants.h"
-#include "head2_mana.h"
-#include "head3_readfiles.h"
-#include "1general.h"
 #include "2cards.h"
-#include "3game.h"
+#include "3player.h"
 #include "4board.h"
 #include "5resolvables.h"
 #include "6abstractIO.h"
 #include "7abilities.h" //contains PreResolvable which is kinda important and needed by Options
-#include "8options.h"
-#include "9modifs.h"
-#include "10triggers.h"
-#include "11implementIO.h"
+#include "8game.h"
+// The following are considered unimportant and must be imported manually
+//#include "8options.h"
+//#include "9modifs.h"
+//#include "10triggers.h"
+//#include "13game.h" 
 #endif
+
+#define DBG_IMPORTANT 0x1
+#define DBG_READFILE 0x2
+#define DBG_X_READFILE 0x4
+#define DBG_INTERNAL 0x8
+#define DBG_TARGETING 0x10
+#define DBG_RAGNAROK 0x20
+#define DBG_IOUI 0x40
 
 #endif //OLYMPUS_CLASSES_H

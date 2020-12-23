@@ -1,7 +1,11 @@
-#ifndef OLYMPUS_CLASSES_GAME_1_H
-#define OLYMPUS_CLASSES_GAME_1_H
+#ifndef OLYMPUS_CLASSES_PLAYER_3_H
+#define OLYMPUS_CLASSES_PLAYER_3_H
 
 #include <forward_list>
+#include <memory>
+#include "../Mana/head2_mana.h"
+#include "1general.h"
+#include "2cards.h"
 
 #define NBMYOPTS 5
 #define INSTANTOPTS 0
@@ -43,12 +47,11 @@ public:
 	static const std::forward_list<const Phase*> defaultPhaseOrder; //this will be copied and used as a template at the beginning of each turn
 
 	Player* nextopponent;
-	Game* metagame;
 	Mana highestpool;
 	Mana possiblepool;
 	Mana manapool;
 
-	Player(const char* deck_name, Game* gm, char id);
+	Player(const char* deck_name, char id);
 	~Player();
 
 	const std::string& get_name() const {static const std::string descr(name); return descr; };
@@ -62,21 +65,19 @@ public:
 	void disp() const;
 	void disp_header(bool highlight = false) const;
 	void disp_zone(int nbzone) const;
-	Target* iterate(bool needstarget, Player** pl, char returntypeflags) const;
 	Player* iterate_self(char* direction);
 	template <class PermType>
-		PermType* iterate_boardsubzone(char* direction, std::list<PermType>& perms, UIElement* ui, bool isactivation);
-	Permanent* iterate_boardsubzone(char* direction, int xzone, bool istapland);
+		PermType* iterate_boardsubzone(float offset, char* direction, std::list<PermType>& perms, UIElement* ui, bool isactivation);
+	Permanent* iterate_boardsubzone(float offset, char* direction, int xzone, bool istapland);
 	bool disp_opt(bool sorceryspeed) const;
 	void dispOptsOfCertainType(int y, int z, int dy, int dz, int* pos, int type, bool castable) const;
 	void addtoPrestack(PreResolvable* triggered_ability, Target* origin){prestack.emplace_front(triggered_ability, origin); };
 	bool add_triggers_to_stack();
 
-	Option* choose_opt(bool sorceryspeed);
 	bool choose_and_use_opt(bool sorceryspeed);
 	void choicephase(bool sorceryspeed);
-	void get_up(Option** iter, int* pos, int* metapos) const;
-	void get_down(Option** iter, int* pos, int* metapos) const;
+	bool get_up(Option*& iter, int& pos, int& metapos) const;
+	bool get_down(Option*& iter, int& pos, int& metapos) const;
 	
 	void insert_permanent(Card* source);
 	void remove_permanent(Permanent* perm, int nb_zone);
@@ -107,40 +108,6 @@ public:
 
 	bool statebasedactions();
 	bool turn();
-};
-
-class Game{
-private:
-	std::forward_list<Resolvable*> stack; //Guideline: the stack has full ownership of Resolvables. Any function calling popfromstack is responsible for deleting the resolvable
-	Player* players[2];
-	Player* active_player;
-	char* logbook[LOGLEN];
-	UIElement* stack_ui;
-	UIElement* logbook_ui;
-public:
-	bool haswon;
-
-	Game(const char* deck_1, const char* deck_2){Game(deck_1, deck_2, 0); };
-	Game(const char* deck_1, const char* deck_2, char debug_flags);
-	~Game();
-	void disp() const;
-	void addtolog(const char* new_entry);
-	void disp_log() const;
-	void disp_stack() const;
-	void disp_preRes(const PreResolvable* preRes, const std::string& origin_name) const;
-
-	void play(){
-		while(1){
-			if(players[0]->turn() || players[1]->turn()) break;
-		}
-	}
-	void addtostack(Resolvable* rs){stack.push_front(rs); };
-	Resolvable* popfromstack();
-	bool stackisempty(){return stack.empty(); };
-	void remove_from_stack(Resolvable* rs);
-	void statebasedactions();
-
-	Resolvable* iterate_stack(char* direction);
 };
 
 /*void Game::remove_from_stack(Resolvable* rs){
