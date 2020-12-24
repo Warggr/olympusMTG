@@ -27,13 +27,13 @@ private:
 
 	static const int fullcardY = 375, fullcardZ = 523;
 	int mousey, mousez;
+	void refresh_display();
 public:
 	Allegro_io();
 	~Allegro_io();
 
 	void fulldisp();
 	void draw_permanent(int left, int top, int width, int height, char color, bool tapped, bool highlight, bool basicImg);
-	void refresh_display();
 	void poster(const std::string name, Mana manacost, char color, const char* types,
 		const std::vector<std::string> lines, int power, int toughness, char frametype, bool watermark);
 	void print_text(std::string const text, const char color, const int x, const int y);

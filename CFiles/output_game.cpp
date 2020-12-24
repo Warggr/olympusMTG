@@ -16,7 +16,7 @@ void Game::disp() const {
 	}
 	disp_log();
 	disp_stack();
-	god.myIO->refresh_display();
+	//god.myIO->refresh_display();
 }
 
 void Game::disp_preRes(const PreResolvable* preRes, const std::string& origin_name) const {

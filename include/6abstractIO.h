@@ -20,7 +20,7 @@ public:
 
 	virtual void fulldisp() = 0;
 	virtual void draw_permanent(int left, int top, int width, int height, char color, bool tapped, bool highlight, bool basicImg) = 0;
-	virtual void refresh_display() = 0;
+	//virtual void refresh_display() = 0;
 	virtual void print_text(std::string const text, char color, int y, int z) = 0;
 	virtual void disp_mana(Mana mana, int endy, int topz) = 0;
 	virtual void draw_rectangle(char color, int y, int z, int dy, int dz, int linewidth) = 0;
@@ -60,7 +60,7 @@ public:
 	virtual void clear_opts() = 0;
 	virtual UIElement* get_optionzone() = 0;
 	virtual Target* iterate(bool needstarget, Player** pl, char returntypeflags) = 0;
-	virtual Option* choose_opt(float zOffset, bool sorceryspeed, Option* firstopt, Player* asker, int metapos) = 0;
+	virtual Option* choose_opt(bool sorceryspeed, Option* firstopt, Player* asker, int metapos) = 0;
 	virtual void report_mouse_move(float x, float y) = 0;
 };
 

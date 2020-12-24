@@ -114,6 +114,7 @@ void Allegro_io::message(const std::string text){
 
 char Allegro_io::get_direction_key(){
 	while(1){
+		refresh_display();
 		ALLEGRO_EVENT event;
 		al_wait_for_event(queue, &event);
 		switch(event.type){

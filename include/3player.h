@@ -30,7 +30,7 @@ private:
 	char name[10];
 	unsigned char state; //MSB t1-t2-t3-land-milled out- 0 life -?-? LSB; t3 = 32
 	//upkeep (000) main1(001) afterattack(010) afterblock(011) afterfirstdamage(100) main2(101) end(110) nonactive(111)
-	Option* myoptions[NBMYOPTS]; //castable: all (mostly instants) - sorceries - lands
+	Option* myoptions[NBMYOPTS]{0}; //castable: all (mostly instants) - sorceries - lands
 	//not castable: too expensive instants - too expensive for the turn - sorcery-speed- castable only next turn (lands, tap)
 	CardZone myzones[3]; //library - graveyard - exile
 	std::forward_list<PlayerPreStackElement> prestack;

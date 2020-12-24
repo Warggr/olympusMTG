@@ -49,7 +49,7 @@ bool Player::choose_and_use_opt(bool sorceryspeed){ //AKA "giving priority". Ret
 	for(metapos = 0; !iter && metapos<3; metapos++){
 		iter = myoptions[metapos];
 	}
-	Option* choice = god.myUI->choose_opt(0, sorceryspeed, iter, this, metapos); //chooses opt, returns 0 if passing was chosen
+	Option* choice = god.myUI->choose_opt(sorceryspeed, iter, this, metapos); //chooses opt, returns 0 if passing was chosen
 	//TODO: replace above 0 by a real value corresponding to the mouse position
 	if(!choice) return false;
 	Resolvable* cast = choice->cast_opt(this); //casts the spell
@@ -60,7 +60,7 @@ bool Player::choose_and_use_opt(bool sorceryspeed){ //AKA "giving priority". Ret
 	else{
 		disp_zone(0); //the stack might have changed, or the lands
 	}
-	god.myIO->refresh_display();
+	//god.myIO->refresh_display();
 	return true;
 }
 
@@ -126,7 +126,7 @@ bool Player::disp_opt(bool sorceryspeed) const {
 		if(sorceryspeed && !(state & 16) && myoptions[LANDOPTS]) ret = true;
 	dispOptsOfCertainType(y, z, dy, dz, &pos, TOOEXPENSIVE, false);
 
-	god.myIO->refresh_display();
+	//god.myIO->refresh_display();
 	return ret;
 }
 

@@ -15,6 +15,8 @@ private:
 	static const int permanentZMargin;
 	float mousey{0};
 	float mousez{0};
+	bool mouseActive;
+	char direction;
 	_UIElement* playerPerms[2], *permanentZones[10];
 	_UIElement* stackZone, * optionZone, * logbookZone;
 public:
@@ -27,8 +29,8 @@ public:
 	void clear_opts();
 	UIElement* get_optionzone();
 	Target* iterate(bool needstarget, Player** pl, char returntypeflags);
-	Option* choose_opt(float zOffset, bool sorceryspeed, Option* firstopt, Player* asker, int metapos);
-	void report_mouse_move(float y, float z){mousey = y; mousez = z; };
+	Option* choose_opt(bool sorceryspeed, Option* firstopt, Player* asker, int metapos);
+	void report_mouse_move(float y, float z){mousey = y; mousez = z; mouseActive = true; };
 	void normalize_gridy_gridz(int* gridy, int* gridz);
 };
 

@@ -22,8 +22,11 @@ Permanent* Player::iterate_boardsubzone(float yOffset, char* direction, int zzon
 	}
 }
 
+#include <iostream>
+
 template <class PermType>
 PermType* Player::iterate_boardsubzone(float offset, char* direction, std::list<PermType>& perms, UIElement* ui, bool isactivation){
+	std::cout << "Started iterating subzone" << std::endl;
 	if(perms.empty()){
 		if(*direction == olympus::directions::MOUSE) *direction = olympus::directions::NOTONOBJECT;
 		return 0;
@@ -41,7 +44,7 @@ PermType* Player::iterate_boardsubzone(float offset, char* direction, std::list<
 	}
 	iter->disp(y, z, yWidth, zHeight, true);
 	while(1){
-		god.myIO->refresh_display();
+		//god.myIO->refresh_display();
 		char getkey = god.myIO->get_direction_key();
 		iter->disp(y, z, yWidth, zHeight, false);
 		switch(getkey){
@@ -80,10 +83,11 @@ PermType* Player::iterate_boardsubzone(float offset, char* direction, std::list<
 }
 
 Player* Player::iterate_self(char* direction){
+	std::cout << "Started iterating player" << std::endl;
 	god.myIO->message("Iterating player");
 	while(1){
 		disp_header(true);
-		god.myIO->refresh_display();
+		//god.myIO->refresh_display();
 		char getkey = god.myIO->get_direction_key();
 		disp_header(false);
 		switch(getkey){
@@ -109,6 +113,7 @@ Player* Player::iterate_self(char* direction){
 }
 
 Resolvable* Game::iterate_stack(float zImposed, char* direction){
+	std::cout << "Started iterating stack" << std::endl;
 	if(stack.empty()){
 		//*direction = olympus::directions::LEFT;
 		return 0;
@@ -118,7 +123,7 @@ Resolvable* Game::iterate_stack(float zImposed, char* direction){
 	int y, z, yOffset, zOffset, ySize, zSize;
 	stack_ui->get_coordinates(&y, &z, &yOffset, &zOffset, &ySize, &zSize);
 	while(z + zOffset < zImposed){
-		y += yOffset; z += zOffset;
+		z += zOffset;
 		counterstack.push_front(ret);
 		ret++;
 		if(ret == stack.end()){
@@ -127,11 +132,12 @@ Resolvable* Game::iterate_stack(float zImposed, char* direction){
 		}
 	}
 	(*ret)->disp(y, z, ySize, zSize, true);
-	god.myIO->refresh_display();
+	//god.myIO->refresh_display();
 	while(1){
 		int a = god.myIO->get_direction_key();
 		(*ret)->disp(y, z, ySize, zSize, false);
 		switch(a){
+			case olympus::directions::MOUSE:
 			case olympus::directions::SPACE: //SPACE
 				return 0;
 			case olympus::directions::ENTER: //ENTER
@@ -161,7 +167,7 @@ Resolvable* Game::iterate_stack(float zImposed, char* direction){
 			}
 		}
 		(*ret)->disp(y, z, ySize, zSize, true);
-		god.myIO->refresh_display();
+		//god.myIO->refresh_display();
 	}
 	return 0;
 }

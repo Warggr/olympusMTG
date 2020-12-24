@@ -3,8 +3,8 @@
 #include <iostream>
 
 Target* Default_ui::iterate(bool needstarget, Player** pl, char returntypeflags){
+	std::cout << "Started global Iterate" << std::endl;
 	bool hasroot = true;
-	char direction = olympus::directions::LEFT;
 	Target* ret;
 	int gridy = 0;
 	int gridz = 0;
@@ -26,12 +26,12 @@ Target* Default_ui::iterate(bool needstarget, Player** pl, char returntypeflags)
 		}
 		else{
 			if(direction == olympus::directions::NOTONOBJECT){
+				//myIO->refresh_display();
 				direction = myIO->get_direction_key();
 				if(direction != olympus::directions::MOUSE){
 					gridy = 0;
 					gridz = 0;
 				}
-				else normalize_gridy_gridz(&gridy, &gridz);
 			}
 			switch(direction){
 				case olympus::directions::LEFT: gridy -= 1; break;
@@ -39,13 +39,13 @@ Target* Default_ui::iterate(bool needstarget, Player** pl, char returntypeflags)
 				case olympus::directions::UP: gridz += 1; break;
 				case olympus::directions::DOWN: gridz -= 1; break;
 				case olympus::directions::MOUSE:
+					//std::cout << "Mouse movement detected" << std::endl;
 					normalize_gridy_gridz(&gridy, &gridz);
-					god.myIO->message("Mouse detected");
 					break;
 				default: if(!needstarget) return 0;
 			}
 		}
-		if(direction != olympus::directions::MOUSE){mousey = 0; mousez = 0; } 
+		if(direction != olympus::directions::MOUSE){mouseActive = false; }
 		if(gridy == 2){
 			if(!needstarget) return 0;
 			else gridy = 1;
@@ -60,11 +60,19 @@ Target* Default_ui::iterate(bool needstarget, Player** pl, char returntypeflags)
 	}
 }
 
-Option* Default_ui::choose_opt(float zOffset, bool sorceryspeed, Option* iter, Player* asker, int metapos){ //asks user to choose option and pops that option
+Option* Default_ui::choose_opt(bool sorceryspeed, Option* iter, Player* asker, int metapos){ //asks user to choose option and pops that option
+	std::cout << "Started global ChooseOpt" << std::endl;
 	int y, z, dy, dz;
 	optionZone->get_coordinates(&y, &z, &dy, &dz);
-	metapos--;
 	int pos = 0;
+	if(mouseActive){
+		while(z + (pos+1)*dz < mousez){
+			if(!asker->get_down(iter, pos, metapos)) break;
+		}
+		while(z + pos*dz > mousez){
+			if(!asker->get_up(iter, pos, metapos)) break;
+		}
+	}
 	while(1){
 		char dir = myIO->get_direction_key();
 		iter->disp(y + pos*dy, z + pos*dz, false, iter->iscastable(asker));
@@ -82,19 +90,24 @@ Option* Default_ui::choose_opt(float zOffset, bool sorceryspeed, Option* iter, P
 				}
 				else myIO->message("This opportunity can't be cast");
 				break;
-			case olympus::directions::MOUSE:
+			case olympus::directions::MOUSE: {
+				mouseActive = true;
+				bool gotthere = true;
 				if(mousey > boardY + leftbarY){
 					while(z + (pos+1)*dz < mousez){
-						if(!asker->get_down(iter, pos, metapos)) break;
+						if(!asker->get_down(iter, pos, metapos)){ gotthere = false; break; }
 					}
 					while(z + pos*dz > mousez){
-						if(!asker->get_up(iter, pos, metapos)) break;
+						if(!asker->get_up(iter, pos, metapos)){ gotthere = false; break; }
 					}
-					break;
+					if(!gotthere){ //option is too high, or too low
+						mouseActive = false;
+					}
 				}
-				//else continue to:
-			case olympus::directions::LEFT:{ //when mouse is called, iterate by default. Iterate will know what to do and maybe give back control asap.
+				} //if we're below option zone, or if we went left, continue to: 
+			case olympus::directions::LEFT:{
 				Player* pl = asker;
+				direction = olympus::directions::LEFT;
 				Target* activated = iterate(false, &pl, 0x40);
 				if(activated){
 					if(pl == asker){
@@ -105,7 +118,7 @@ Option* Default_ui::choose_opt(float zOffset, bool sorceryspeed, Option* iter, P
 			} break;
 		}
 		iter->disp(y + pos*dy, z+pos*dz, true, iter->iscastable(asker));
-		myIO->refresh_display();
+		//myIO->refresh_display();
 	}
 	return 0;
 }
