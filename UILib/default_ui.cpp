@@ -2,21 +2,19 @@
 
 Abstract_ui* new_UILib(Abstract_io* IOLib){return new Default_ui(IOLib); }
 
-void Default_ui::normalize_gridy_gridz(int* gridy, int* gridz){
-	if(mousey < boardY){
-		*gridy = 0;
-		if(mousez < playerZ) *gridz = 0;
-		else if(mousez > playerZ + 10*permanentZSize - 15) *gridz = 11;
-		else *gridz = (mousez - playerZ) / (permanentZSize+permanentZMargin);
+void Default_ui::normalize_gridy_gridz(){
+	if(myIO->gmouseY() < boardY){
+		gridy = 0;
+		if(myIO->gmouseZ() < playerZ) gridz = 0;
+		else if(myIO->gmouseZ() > playerZ + 10*permanentZSize - 15) gridz = 11;
+		else gridz = (myIO->gmouseZ() - playerZ) / (permanentZSize+permanentZMargin) - 1;
 	}
-	else if(mousey < boardY + leftbarY){
-		*gridy = 1;
-		mousey -= boardY;
+	else if(myIO->gmouseY() < boardY + leftbarY){
+		gridy = 1;
 	}
 	else{
-		*gridy = 2;
+		gridy = 2;
 	}
-	god.gdebug(DBG_IOUI) << "Mouse @" << mousey << ":" << mousez << " causes movement to " << *gridy << ":" << *gridz << std::endl;
 }
 
 _UIElement::_UIElement(int left, int top, int _ySize, int _zSize, int offset, int _maxItems, bool direction):
@@ -38,7 +36,7 @@ Default_ui::Default_ui(Abstract_io* IOLib): Abstract_ui(IOLib){
 	playerPerms[0] = new _UIElement(0, playerZ, boardY, permanentZSize, permanentZSize+permanentZMargin, 5, _UIElement::vertical);
 	playerPerms[1] = new _UIElement(0, playerZ + 10*permanentZSize - 15, boardY, permanentZSize, -permanentZSize-permanentZMargin, 5, _UIElement::vertical);
 	int posterY;
-	IOLib->getResolution(&posterY, &posterZ);
+	IOLib->getResolution(posterY, posterZ, mouseSupport);
 	IOLib->harmonize(boardY, 0, boardY+leftbarY, optionsZ); //posterY - posterZ - messageY - messageZ
 	optionZone = new _UIElement(boardY + leftbarY, 0, rightbarY, optionZSize, optionZSize+5, 10, _UIElement::vertical);
 	stackZone = new _UIElement(boardY, posterZ + optionZSize, rightbarY, optionZSize, optionZSize+2, 10, _UIElement::vertical); //there must be an upper-margin over the stack, for PreRes
@@ -111,22 +109,22 @@ void Default_ui::get_player_coords(char player_id, int* py, int* pz, int* wide, 
 	*exilz = *gravez;
 }
 
-bool Default_ui::chooseattackers(std::list<Creature>& cowards, std::list<Creature>& warriors, char player_id){
+bool Default_ui::chooseattackers(PContainer<Creature>& cowards, PContainer<Creature>& warriors, char player_id){
 	myIO->message("Choose Attackers");
 	bool ret = false;
 	int i = 0;
 	int y, z, yOff, zOff, ySize, zSize;
 	permanentZones[(player_id-1) * 5 + 3]->get_coordinates(&y, &z, &yOff, &zOff, &ySize, &zSize);
-	for(std::list<Creature>::iterator iter = cowards.begin(); iter != cowards.end(); i++){
+	for(auto iter = cowards.begin(); iter != cowards.end(); i++){
 		if((iter->get_flags()&3) == 3){ //untapped and no summoning sickness
 			int zPos = (player_id == 1) ? z + i*zOff + zSize : z + i*zOff; //getting either top or bottom Z
 			bool attacks = myIO->attack_switch(y + i*yOff, ySize, zPos, (player_id == 1) ? 20 : -20);
 			if(attacks){
-				std::list<Creature>::iterator newatt = iter;
+				auto newatt = iter;
 				newatt->disp(y+i*yOff, z+i*zOff, ySize, zSize, false); //disp creature normally
 				newatt->reset_flags(1); //tap creature
 				iter++;
-				warriors.splice(warriors.begin(), cowards, newatt); //move creature to list "warriors"
+				newatt.get_pointed()->unstate(); //move creature to list "warriors"
 				ret = true;
 			}
 			else{
@@ -139,9 +137,9 @@ bool Default_ui::chooseattackers(std::list<Creature>& cowards, std::list<Creatur
 	return ret;
 }
 
-void Default_ui::chooseblockers(std::list<Creature>& defenders, std::list<Creature>& attackers, UIElement* defenderDisplay, UIElement* attackerDisplay){
+void Default_ui::chooseblockers(PContainer<Creature>& defenders, PContainer<Creature>& attackers, UIElement* defenderDisplay, UIElement* attackerDisplay){
 	int pos = 0;
-	for(std::list<Creature>::iterator blocker = defenders.begin(); blocker != defenders.end(); blocker++){
+	for(auto blocker = defenders.begin(); blocker != defenders.end(); blocker++){
 		if(blocker->get_flags()&1){ //untapped
 			int y, z;
 			defenderDisplay->get_coordinates(pos, &y, &z);

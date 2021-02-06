@@ -2,6 +2,8 @@
 #include "../HFiles/head3_readfiles.h"
 #include "../HFiles/8options.h"
 #include "../HFiles/10triggers.h"
+#include "../include/2cards.h"
+
 
 void set_canary(char canary, std::ofstream& bFile){
 	bFile.write(&canary, sizeof(char));
@@ -92,7 +94,7 @@ void CardZone::init(std::ifstream& bFile){
 		char nb_cards;
 		bFile.read(&nb_cards, sizeof(char));
 		if(nb_cards == 0) break; //0 cards means end of file
-		std::shared_ptr<CardOracle> cardrules = std::make_unique<CardOracle>(bFile);
+		std::shared_ptr<CardOracle> cardrules = std::make_shared<CardOracle>(bFile);
 		for(char i=0; i<nb_cards; i++){
 			Card* first = new Card(cardrules);
 			cards.push_front(first);
@@ -139,7 +141,6 @@ void CardOracle::write_binary(std::ofstream& bFile) const {
 	}
 	set_canary('z', bFile);
 }
-
 
 CardOracle::CardOracle(std::ifstream& bFile){
 	check_canary('a', bFile);

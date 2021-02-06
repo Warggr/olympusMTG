@@ -4,9 +4,9 @@
 
 Abstract_io* new_IOLib(){return new Allegro_io; }
 
-void Allegro_io::draw_permanent(int left, int top, int width, int height, char color, bool tapped, bool highlight, bool basicImg){
-	if(basicImg) al_draw_scaled_bitmap(basiclands, 384*(color-1), (500-384)/2, 384, 384, left, top, width, height, 0);
-	else al_draw_filled_rectangle(left, top, left+width, top+height, registeredColors[(int) color + 3]);
+void Allegro_io::draw_permanent(int left, int top, int width, int height, char color, bool tapped, bool highlight, bool basicImg) const {
+	if(basicImg) al_draw_scaled_bitmap(basiclands, 384*(main_color(color)-1), (500-384)/2, 384, 384, left, top, width, height, 0);
+	else al_draw_filled_rectangle(left, top, left+width, top+height, registeredColors[main_color(color) + 3]);
 
 	if(tapped) al_draw_bitmap(tapsymbol, left, top, 0);
 	const int lw = 10;
@@ -25,32 +25,32 @@ int Allegro_io::getInt(int lowerBound, int upperBound){
 		switch(event.type){
 			case ALLEGRO_EVENT_KEY_CHAR:
 				switch(event.keyboard.keycode){
-					case ALLEGRO_KEY_DOWN: ret--;
-					case ALLEGRO_KEY_UP: ret++;
+				    case ALLEGRO_KEY_DOWN: ret--; break;
+					case ALLEGRO_KEY_UP: ret++; break;
 					case ALLEGRO_KEY_ENTER: return ret;
-					case ALLEGRO_KEY_RIGHT: ret += 5;
-					case ALLEGRO_KEY_LEFT: ret -= 5;
+					case ALLEGRO_KEY_RIGHT: ret += 5; break;
+					case ALLEGRO_KEY_LEFT: ret -= 5; break;
 					default: return 0;
 				} break;
 			case ALLEGRO_EVENT_DISPLAY_CLOSE:
-				god.minimalKill();
-				exit(1);
+				god.call_ragnarok();
 		}
 		if(ret < lowerBound) ret = lowerBound;
 		if(ret > upperBound) ret = upperBound;
 	}
 }
 
-void Allegro_io::getResolution(int* y, int* z){
-	*y = fullcardY;
-	*z = fullcardZ;
+void Allegro_io::getResolution(int& y, int& z, bool& hasMouseSupport) const {
+	y = fullcardY;
+	z = fullcardZ;
+	hasMouseSupport = true;
 }
 
-void Allegro_io::erase_surface(int left, int top, int width, int height){
+void Allegro_io::erase_surface(int left, int top, int width, int height) const {
 	al_draw_scaled_bitmap(wallpaper, left, top, width, height, left, top, width, height, 0);
 }
 
-void Allegro_io::disp_header(int y, int z, int width, int height, const char* name, int life, char state, bool highlight, Mana pool){
+void Allegro_io::disp_header(int y, int z, int width, int height, const char* name, int life, char state, bool highlight, Mana pool) const {
 	if(life >= 1000) raise_error("Life total too high to be shown, most likely a bug");
 	int x = highlight ? HIGH2 : WHITE;
 	al_draw_text(fonts[0], registeredColors[x], y + width/2 - 20, z + 3, 0, name);
@@ -59,7 +59,7 @@ void Allegro_io::disp_header(int y, int z, int width, int height, const char* na
 	disp_mana(pool, y+width, height);
 }
 
-void Allegro_io::disp_mana(Mana mana, int endy, int topz){
+void Allegro_io::disp_mana(Mana mana, int endy, int topz) const {
 	int m = mana.m2i();
 	char generic = (char) (m&0xf);
 	for(int i=0; i<6; i++){
@@ -76,7 +76,7 @@ void Allegro_io::disp_mana(Mana mana, int endy, int topz){
 }
 
 void Allegro_io::poster(const std::string name, Mana manacost, char color, const char* types,
-	const std::vector<std::string> lines, int power, int toughness, char frametype, bool watermark){
+	const std::vector<std::string> lines, int power, int toughness, char frametype, bool watermark) const {
 	al_draw_bitmap(card_template[(int) color], posterY, posterZ, 0);
 	al_draw_text(fonts[0], al_map_rgb(0,0,0), posterY+29, posterZ+28, 0, &(name[0]));
 	disp_mana(manacost, posterY + fullcardY - 28, posterZ + 30);
@@ -102,41 +102,42 @@ void Allegro_io::poster(const std::string name, Mana manacost, char color, const
 	}
 }
 
-void Allegro_io::message(const char* text){
+void Allegro_io::message(const char* text) const {
 	al_draw_filled_rectangle(messageY, messageZ, messageY+500, messageZ+25, registeredColors[0]);
 	al_draw_text(fonts[0], registeredColors[1], messageY, messageZ, 0, text);
 	al_flip_display();
 }
 
-void Allegro_io::message(const std::string text){
+void Allegro_io::message(const std::string text) const {
 	message(&(text[0]));
 }
 
-char Allegro_io::get_direction_key(){
+DirectioL Allegro_io::get_direction_key(){
 	while(1){
 		refresh_display();
 		ALLEGRO_EVENT event;
 		al_wait_for_event(queue, &event);
 		switch(event.type){
 			case ALLEGRO_EVENT_KEY_CHAR:
+				mouseActive = false;
 				switch(event.keyboard.keycode){
-					case ALLEGRO_KEY_DOWN: return olympus::directions::DOWN;
-					case ALLEGRO_KEY_UP: return olympus::directions::UP;
-					case ALLEGRO_KEY_ENTER: return olympus::directions::ENTER;
-					case ALLEGRO_KEY_SPACE: return olympus::directions::SPACE;
-					case ALLEGRO_KEY_RIGHT: return olympus::directions::RIGHT;
-					case ALLEGRO_KEY_LEFT: return olympus::directions::LEFT;
-					default: return 0;
+					case ALLEGRO_KEY_DOWN: return DOWN;
+					case ALLEGRO_KEY_UP: return UP;
+					case ALLEGRO_KEY_ENTER: return ENTER;
+					case ALLEGRO_KEY_SPACE: return BACK;
+					case ALLEGRO_KEY_RIGHT: return RIGHT;
+					case ALLEGRO_KEY_LEFT: return LEFT;
+					default: return NOT_RECOGNIZED;
 				} break;
 			case ALLEGRO_EVENT_DISPLAY_CLOSE:
-				god.minimalKill();
-				exit(1);
+				god.call_ragnarok();
 			case ALLEGRO_EVENT_MOUSE_AXES:
+				mouseActive = true;
 				mousey = event.mouse.x; mousez = event.mouse.y;
-				god.myUI->report_mouse_move(event.mouse.x, event.mouse.y);
-				return olympus::directions::MOUSE;
+				return MOUSE;
 			case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
-				return olympus::directions::ENTER;
+				mouseActive = true;
+				return ENTER;
 		}
 	}
 }
@@ -233,23 +234,23 @@ Allegro_io::~Allegro_io(){
 	al_destroy_bitmap(cursor);
 }
 
-void Allegro_io::disp_cardback(int y, int z){
+void Allegro_io::disp_cardback(int y, int z) const {
 	al_draw_scaled_bitmap(card_back, 0, 0, 101, 140, (float)y, (float)z, 101/2, 140/2, 0);
 }
 
-void Allegro_io::draw_full_rectangle(char color, int left, int top, int width, int height){
+void Allegro_io::draw_full_rectangle(char color, int left, int top, int width, int height) const {
 	al_draw_filled_rectangle(left, top, left+width, top+height, registeredColors[(int) color]);
 }
 
-void Allegro_io::draw_rectangle(char color, int left, int top, int width, int height, int linewidth){
+void Allegro_io::draw_rectangle(char color, int left, int top, int width, int height, int linewidth) const {
 	al_draw_rectangle(top, left, top+height, left+width, registeredColors[(int) color], linewidth);
 }
 
-void Allegro_io::print_text(std::string text, char color, int y, int z){
-	al_draw_text(fonts[0], registeredColors[(int) color], y, z, 0, &(text[0]));
+void Allegro_io::print_text(const char* text, char color, int y, int z) const {
+    al_draw_text(fonts[0], registeredColors[(int) color], y, z, 0, text);
 }
 
-void Allegro_io::refresh_display(){
+void Allegro_io::refresh_display() const {
 	al_set_target_bitmap(al_get_backbuffer(window));
 	al_draw_bitmap(screenFloor, 0, 0, 0);
 	al_draw_bitmap(cursor, mousey, mousez, 0);
@@ -257,7 +258,7 @@ void Allegro_io::refresh_display(){
 	al_set_target_bitmap(screenFloor);
 }
 
-void Allegro_io::fulldisp(){
+void Allegro_io::fulldisp() const {
 	al_draw_bitmap(wallpaper, 0, 0, 0);
 }
 

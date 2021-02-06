@@ -4,6 +4,8 @@
 #define MANUAL_INCLUDE_OF_OLYMPUS_HEADERS
 #include "../../include/.olympus_main.h"
 #include "../../include/6abstractIO.h"
+#include "../../include/head1_constants.h"
+#include "../../HFiles/head3_readfiles.h"
 
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_font.h>
@@ -11,11 +13,10 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_ttf.h>
 
-class Allegro_io: public Abstract_io {
+class Ncurses_io: public Abstract_io {
 private:
 	ALLEGRO_FONT* fonts[4]; //normal - small - enormous - matrixB
 	ALLEGRO_COLOR registeredColors[12];
-	//ALLEGRO_TIMER* timer;
 	ALLEGRO_EVENT_QUEUE* queue;
 	ALLEGRO_DISPLAY* window;
 	ALLEGRO_BITMAP* screenFloor;
@@ -27,17 +28,16 @@ private:
 
 	void refresh_display() const;
 public:
-	Allegro_io();
-	~Allegro_io();
+	Ncurses_io();
+	~Ncurses_io();
 
 	void fulldisp() const;
 	void draw_permanent(int left, int top, int width, int height, char color, bool tapped, bool highlight, bool basicImg) const;
-	void poster(std::string name, Mana manacost, char color, const char* types,
-		std::vector<std::string> lines, int power, int toughness, char frametype, bool watermark) const;
-	void print_text(const std::string& text, char color, int x, int y) const {print_text(&(text[0]), color, x, y); };
-    void print_text(const char* text, char color, int x, int y) const;
+	void poster(const std::string name, Mana manacost, char color, const char* types,
+		const std::vector<std::string> lines, int power, int toughness, char frametype, bool watermark) const;
+	void print_text(std::string const text, const char color, const int x, const int y) const;
 	void erase_surface(int left, int top, int width, int height) const;
-	void disp_mana(Mana mana, int topz, int endy) const;
+	void disp_mana(Mana mana, const int topz, const int endy) const;
 	void draw_rectangle(char color, int y, int z, int dy, int dz, int linewidth) const;
 	bool attack_switch(int leftY, int rightY, int topZ, int arrowlength) const;
 	Creature* blocker_switch(const Creature& blocker, int blockerY, int blockerZ,

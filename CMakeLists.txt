@@ -22,6 +22,7 @@ add_subdirectory(Dictionary)
 add_subdirectory(IOLib)
 add_subdirectory(UILib)
 add_subdirectory(Mana)
+add_subdirectory(Yggdrasil)
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR
     "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
@@ -47,6 +48,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ..)
 
 target_link_libraries(olympus PUBLIC OlympicDict)
 target_link_libraries(olympus PUBLIC Mana)
+target_link_libraries(olympus PUBLIC Yggdrasil)
 target_link_libraries(olympus PUBLIC ${UILIB})
 target_link_libraries(olympus PUBLIC ${IOLIB})
 

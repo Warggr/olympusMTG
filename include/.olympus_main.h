@@ -45,6 +45,22 @@ class Spell;
 class Trigger;
 class TriggerEvent;
 
+class StaticAb;
+struct ModifListNode;
+class BoardN;
+class AbstractN;
+template <typename T> class CollectionTN;
+template <typename T> class DefaultCollectionTN;
+template <typename T> class StatedCollectionTN;
+template <typename T> class PermanentTN;
+class AbstractPermanentN;
+
+template <typename T>
+using PContainer = CollectionTN<T>;
+
+template<typename T> class typediterator;
+template<typename T> class c_iterator;
+
 class Ability; //Represents a printed sentence such as "deal 3 damage", "Choose a creature and sacrifice it" or whatever. No targets chosen
 //PreResolvables will contain Abilities and their necessary target list
 class PreResolvable;
@@ -55,7 +71,7 @@ class _UIElement;
 
 typedef _UIElement UIElement;
 
-class Dictionary;
+enum DirectioL{ UP, DOWN, LEFT, RIGHT, BACK, ENTER, MOUSE, NOT_RECOGNIZED};
 
 struct externVarContainer{
 	Game* game;
@@ -66,26 +82,31 @@ struct externVarContainer{
 
 	externVarContainer();
 	std::ofstream& gdebug(char password);
-	void minimalKill();
+	void call_ragnarok();
+	void initialize(Game* gm, char debug_flags);
 };
 
 extern struct externVarContainer god;
 
+typedef int Identifier; //ttttt o ccccc ssss 0000 0000 0000 0000, in inverse order!
+//(permanent?) object type - owner - color - subtypes - is_an_artifact bit - is_an_enchantment bit - CMC - specific stuff
+
+inline bool fulfills(Identifier chars, Identifier requs, Identifier test){
+	return (((chars^test)&requs) == 0);
+}
+
+#ifndef IMPORT_ONLY_DECLARATIONS
 #include "1general.h"
 #ifndef MANUAL_IMPORT_OF_OLYMPUS_HEADERS
 #include "head1_constants.h"
 #include "2cards.h"
 #include "3player.h"
-#include "4board.h"
+#include "4permanents.h"
 #include "5resolvables.h"
 #include "6abstractIO.h"
-#include "7abilities.h" //contains PreResolvable which is kinda important and needed by Options
-#include "8game.h"
-// The following are considered unimportant and must be imported manually
-//#include "8options.h"
-//#include "9modifs.h"
-//#include "10triggers.h"
-//#include "13game.h" 
+#include "../HFiles/12abilities.h" //contains PreResolvable which is kinda important and needed by Options
+#include "7game.h"
+#endif
 #endif
 
 #define DBG_IMPORTANT 0x1
@@ -95,5 +116,7 @@ extern struct externVarContainer god;
 #define DBG_TARGETING 0x10
 #define DBG_RAGNAROK 0x20
 #define DBG_IOUI 0x40
+
+[[noreturn]] void raise_error(const std::string& message);
 
 #endif //OLYMPUS_CLASSES_H

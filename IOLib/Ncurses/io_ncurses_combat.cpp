@@ -1,6 +1,6 @@
 #include "11allegroIO.h"
 
-bool Allegro_io::attack_switch(int leftY, int Ywidth, int topZ, int arrowlength) const {
+bool Ncurses_io::attack_switch(int leftY, int Ywidth, int topZ, int arrowlength) const {
 	bool attacks = false;
 	while(1){
 		ALLEGRO_EVENT event;
@@ -28,7 +28,8 @@ bool Allegro_io::attack_switch(int leftY, int Ywidth, int topZ, int arrowlength)
 				}
 				break;
 			case ALLEGRO_EVENT_DISPLAY_CLOSE:
-				god.call_ragnarok();
+				god.minimalKill();
+				exit(1);
 		}
 	}
 }
@@ -36,7 +37,7 @@ bool Allegro_io::attack_switch(int leftY, int Ywidth, int topZ, int arrowlength)
 Creature* Allegro_io::blocker_switch(const Creature& blocker, int blockerY, int blockerZ, PContainer<Creature>& attackers, UIElement* attacker_io, int creatureWidth, int creatureDepth) const {
 	int pos_evilguy = 0;
 	blocker.disp(blockerY, blockerZ, creatureWidth, creatureDepth, true);
-	auto evilguy = attackers.end();
+	PContainer<Creature>::iterator evilguy = attackers.end();
 	while(1){ //getting creature to block
 		al_flip_display();
 		ALLEGRO_EVENT event;
@@ -78,7 +79,8 @@ Creature* Allegro_io::blocker_switch(const Creature& blocker, int blockerY, int 
 			}
 		}
 		else if(event.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
-			god.call_ragnarok();
+			god.minimalKill();
+			exit(1);
 		}
 	}
 }

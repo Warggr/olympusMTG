@@ -1,10 +1,11 @@
 #ifndef OLYMPUS_CLASSES_OPTIONS_7_H
 #define OLYMPUS_CLASSES_OPTIONS_7_H
 
+#include "../Mana/head2_mana.h"
+
 class Option{
 public:
-	Option* prev;
-	Option* next;
+	Option* prev, * next;
 	bool instantspeed;
 	Mana cost;
 

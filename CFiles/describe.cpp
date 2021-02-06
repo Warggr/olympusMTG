@@ -57,7 +57,7 @@ std::string Trigger::describe(int typeoftrig, std::string name) const {
 }
 
 std::string Ability::describe(std::string cardname) const {
-	std::string ds = olympus::abilities_descriptions[(int) type];
+	std::string ds = olympus::ability_descriptions[(int) type];
 	std::string ret;
 	for(unsigned int i=0; i<ds.length(); i++){
 		if(ds[i] == '~') ret += cardname;

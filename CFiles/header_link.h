@@ -1,1 +1,8 @@
 #include "@HEADER_DIR@/.olympus_main.h"
+#include "@HEADER_DIR@/1general.h"
+#include "@HEADER_DIR@/2cards.h"
+#include "@HEADER_DIR@/3player.h"
+#include "@HEADER_DIR@/4permanents.h"
+#include "@HEADER_DIR@/5resolvable.h"
+#include "@HEADER_DIR@/6abstractIO.h"
+#include "@HEADER_DIR@/7game.h"

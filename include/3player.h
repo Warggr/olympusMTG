@@ -3,9 +3,9 @@
 
 #include <forward_list>
 #include <memory>
-#include "../Mana/head2_mana.h"
-#include "1general.h"
+
 #include "2cards.h"
+#include "../Yggdrasil/head6_iterators.h"
 
 #define NBMYOPTS 5
 #define INSTANTOPTS 0
@@ -25,9 +25,28 @@ struct PlayerPreStackElement{
 	PlayerPreStackElement(PreResolvable* p, Target* org);
 };
 
-class Player: public Damageable{
+class CardZone{
 private:
-	char name[10];
+    char name[10];
+    int size;
+public:
+    CardZone(): name{0}, size(0) {};
+    std::forward_list<Card*> cards;
+
+    void init(std::ifstream& textfile, std::ofstream& binaryOut);
+    void init(std::ifstream& bFile);
+    void init_name(const char* n){ for(int i=0; i<10; i++) name[i] = n[i]; };
+    void shuffle();
+    int drawto(CardZone* target, int nb_cards);
+    void takeonecard(Card* c){++size; cards.push_front(c); };
+    void inc_size(int i){ size += i; };
+    void describe(char* tmp) const;
+    void disp(int x, int y) const;
+};
+
+class Player: public Target, public Damageable{
+private:
+	std::string name;
 	unsigned char state; //MSB t1-t2-t3-land-milled out- 0 life -?-? LSB; t3 = 32
 	//upkeep (000) main1(001) afterattack(010) afterblock(011) afterfirstdamage(100) main2(101) end(110) nonactive(111)
 	Option* myoptions[NBMYOPTS]{0}; //castable: all (mostly instants) - sorceries - lands
@@ -35,11 +54,7 @@ private:
 	CardZone myzones[3]; //library - graveyard - exile
 	std::forward_list<PlayerPreStackElement> prestack;
 	char player_id;
-	std::list<Land> mylands;
-	std::list<Creature> mycreas;
-	std::list<Creature> myattackers;
-	std::list<Artifact> myartos;
-	std::list<Planeswalker> mysuperfriends;
+	BoardN myboard;
 	UIElement* permUI[5];
 	UIElement* optZone;
 	char nb_mainphase;
@@ -65,10 +80,10 @@ public:
 	void disp() const;
 	void disp_header(bool highlight = false) const;
 	void disp_zone(int nbzone) const;
-	Player* iterate_self(char* direction);
+	Player* iterate_self(DirectioL& direction);
 	template <class PermType>
-		PermType* iterate_boardsubzone(float offset, char* direction, std::list<PermType>& perms, UIElement* ui, bool isactivation);
-	Permanent* iterate_boardsubzone(float offset, char* direction, int xzone, bool istapland);
+		PermType* iterate_boardsubzone(float offset, DirectioL& direction, PContainer<PermType>* perms, UIElement* ui, bool isactivation);
+	Permanent* iterate_boardsubzone(float offset, DirectioL& direction, int xzone, bool istapland);
 	bool disp_opt(bool sorceryspeed) const;
 	void dispOptsOfCertainType(int y, int z, int dy, int dz, int* pos, int type, bool castable) const;
 	void addtoPrestack(PreResolvable* triggered_ability, Target* origin){prestack.emplace_front(triggered_ability, origin); };
@@ -81,15 +96,13 @@ public:
 	
 	void insert_permanent(Card* source);
 	void remove_permanent(Permanent* perm, int nb_zone);
-	template <class PermType> void remove_permanent_inlist(std::list<PermType>& perms, PermType* asup);
+	template <class PermType> void remove_permanent_inlist(PContainer<PermType>* perms, PermType* asup);
 	void resolve_playland(Card* source);
 	bool chooseattackers();
-	void chooseblockers(std::list<Creature>& attackers, UIElement* attackerDisplay);
-	void for_each_perm(void (*fun)(Permanent& p));
+	void chooseblockers(StatedCollectionTN<Creature>& attackers, UIElement* attackerDisplay);
 
 	void draw(int nb_cards);
 	void gain_life(int nb_life) {life += nb_life; };
-	void set_life(int nb_life) {life = nb_life; };
 	void add_mana(char color);
 	void puttozone(Card* x, char n);
 	void check_too_expensive();
@@ -108,17 +121,8 @@ public:
 
 	bool statebasedactions();
 	bool turn();
-};
 
-/*void Game::remove_from_stack(Resolvable* rs){
-	if(stack.front() == rs) stack.pop_front();
-	else{
-		Resolvable* iter;
-		for(iter = stack; iter->next != rs; iter = iter->next)
-			if(iter == 0)
-				god.gdebug(DBG_TARGETING | DBG_IMPORTANT) << "Error: countered Resolvable not in stack\n";
-		iter->next = rs->next;
-	}
-}*/
+	Identifier reload_id() const;
+};
 
 #endif //OLYMPUS_CLASSES_GAME_1_H

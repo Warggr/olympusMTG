@@ -16,8 +16,7 @@ char Mana::m2color() const {
 	char color = 0;
 	for(int i=0; i<6; i++){
 		if(mana & (15 << 4*i)){
-			if(color == 0) color = i;
-			else color = 6;
+			color += 1 << i;
 		}
 	}
 	return color;

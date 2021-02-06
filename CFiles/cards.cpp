@@ -30,11 +30,6 @@ int CardZone::drawto(CardZone* target, int nb_cards){
 	return i;
 }
 
-void CardOracle::getpt(int* pow, int* tou) const{
-	*pow = (int) flavor_text[0];
-	*tou = (int) flavor_text[1];
-}
-
 void CardOracle::get_triggers(const char type, TriggerEvent& trigEv) const{
 	for(int i=0; i<nb_triggers; i++){
 		if(typeof_triggers[i] == type){

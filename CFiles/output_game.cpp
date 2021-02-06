@@ -60,7 +60,7 @@ void Game::addtolog(const char* new_entry){
 void Player::disp_header(bool highlight) const {
 	int y = 0, z = 0, width = 0, height=0, liby=0, libz=0, gravey=0, gravez=0, exily=0, exilz=0;
 	god.myUI->get_player_coords(player_id, &y, &z, &width, &height, &liby, &libz, &gravey, &gravez, &exily, &exilz);
-	god.myIO->disp_header(y, z, width, height, name, life, state >> 5, highlight, manapool);
+	god.myIO->disp_header(y, z, width, height, &(name[0]), life, state >> 5, highlight, manapool);
 	
 	myzones[0].disp(liby, libz);
 	myzones[1].disp(gravey, gravez);
@@ -77,19 +77,19 @@ void Player::disp() const {
 void Player::disp_zone(int nbzone) const {
 	switch(nbzone){
 		case 0:
-			if(!mylands.empty()) permUI[0]->disp_all<>(mylands);
+			permUI[0]->disp_all<>(&myboard.mylands);
 			break;
 		case 1:
-			if(!myartos.empty()) permUI[1]->disp_all<>(myartos);
+			permUI[1]->disp_all<>(&myboard.myartos);
 			break;
 		case 2:
-			if(!mysuperfriends.empty()) permUI[2]->disp_all<>(mysuperfriends);
+			permUI[2]->disp_all<>(&myboard.mysuperfriends);
 			break;
 		case 3:
-			if(!mycreas.empty()) permUI[3]->disp_all<>(mycreas);
+			permUI[3]->disp_all<>(&myboard.mycreas); //TODO display only non-attacking creas
 			break;
 		case 4:
-			if(!myattackers.empty()) permUI[4]->disp_all<>(myattackers);
+			if(myboard.myattackers) permUI[4]->disp_all<>(myboard.myattackers);
 			break;
 	}
 }

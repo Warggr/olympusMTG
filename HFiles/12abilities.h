@@ -1,5 +1,5 @@
-#ifndef OLYMPUS_CLASSES_ABILITIES_6_H
-#define OLYMPUS_CLASSES_ABILITIES_6_H
+#ifndef OLYMPUS_CLASSES_ABILITIES_12_H
+#define OLYMPUS_CLASSES_ABILITIES_12_H
 
 //each ability has zero to two targets. Multiple-target abilities such as (creature, +X/+Y) will be written as +X/+0 and +0/+Y separately
 
@@ -62,4 +62,4 @@ swap life (Player 1, Player 2)
 gain control of (Player target)
 */
 
-#endif //OLYMPUS_CLASSES_ABILITIES_6_H
+#endif //OLYMPUS_CLASSES_ABILITIES_12_H
