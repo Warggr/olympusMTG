@@ -1,8 +1,0 @@
-#include "/home/pierre/Documents/pdpha/olympus/include/.olympus_main.h"
-#include "/home/pierre/Documents/pdpha/olympus/include/1general.h"
-#include "/home/pierre/Documents/pdpha/olympus/include/2cards.h"
-#include "/home/pierre/Documents/pdpha/olympus/include/3player.h"
-#include "/home/pierre/Documents/pdpha/olympus/include/4permanents.h"
-#include "/home/pierre/Documents/pdpha/olympus/include/5resolvables.h"
-#include "/home/pierre/Documents/pdpha/olympus/include/6abstractIO.h"
-#include "/home/pierre/Documents/pdpha/olympus/include/7game.h"
