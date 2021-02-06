@@ -1,5 +1,5 @@
 #include ".header_link.h"
-#include "../HFiles/head7_identifiers.h"
+#include "../HFiles/head7_identifiers.h" //auto-include by 4permanents.h
 
 Identifier CardOracle::generate_casted_id() const {
     if(1 <= type && type <= 4){

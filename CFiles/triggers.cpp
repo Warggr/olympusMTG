@@ -14,6 +14,15 @@ PlayerPreStackElement::PlayerPreStackElement(PreResolvable *p, Target *org): pre
     origin = std::make_unique<Targeter>(org);
 }
 
+void CardOracle::get_triggers(const char ttype, TriggerEvent& trigEv) const{
+    for(int i=0; i<nb_triggers; i++){
+        if(typeof_triggers[i] == ttype){
+            trigEv.add_trigger(&(triggers[i]));
+            //std::cout << "Trigger of type " << type << "was found and added" << std::endl;
+        }
+    }
+}
+
 /* A BRIEF HISTORY OF TRIGGERS
 All triggers: (found after ~30 minutes on the Gatherer, there might be more)
 A may be more than one object! (like 'four creatures')

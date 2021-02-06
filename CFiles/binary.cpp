@@ -2,8 +2,7 @@
 #include "../HFiles/head3_readfiles.h"
 #include "../HFiles/8options.h"
 #include "../HFiles/10triggers.h"
-#include "../include/2cards.h"
-
+#include "head1_utilities.h"
 
 void set_canary(char canary, std::ofstream& bFile){
 	bFile.write(&canary, sizeof(char));
@@ -55,24 +54,6 @@ Ability::Ability(std::ifstream& bFile){
 	char x; bFile.read(&x, sizeof(char));
 	if(x != 0) next = std::make_unique<Ability>(bFile);
 	check_canary('d', bFile);
-}
-
-void PermOption::write_binary(std::ofstream& bFile) const {
-	set_canary('e', bFile);
-	effects->write_binary(bFile);
-	char twobools = (tapsymbol ? 0x10 : 0x00) + (ismanaability ? 0x01 : 0x00);
-	bFile.write(&twobools, sizeof(char));
-	set_canary('f', bFile);
-}
-
-void PermOption::read_binary(std::ifstream& bFile){
-	check_canary('e', bFile);
-	effects = new PreResolvable(bFile);
-	char twobools;
-	bFile.read(&twobools, sizeof(char));
-	tapsymbol = (bool) (twobools / 0x10);
-	ismanaability = (bool) (twobools % 0x10);
-	check_canary('f', bFile);
 }
 
 void Trigger::write_binary(std::ofstream& bFile) const {
@@ -131,8 +112,8 @@ void CardOracle::write_binary(std::ofstream& bFile) const {
 		triggers[i].write_binary(bFile);
 	}
 	if(flavor_text == nullptr){
-		int x = 0;
-		bFile.write((char*) &x, sizeof(int));
+		int y = 0;
+		bFile.write((char*) &y, sizeof(int));
 	} else {
 		int i;
 		for(i = 0; flavor_text[i] != '\0'; i++);

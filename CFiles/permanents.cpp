@@ -86,7 +86,7 @@ void Player::remove_permanent(Permanent* perm, int nb_zone){
 #ifdef NDEBUG
 		default:
 		god.gdebug(DBG_IMPORTANT) << "Error: Removed non-permanent" << std::endl;
-		god.minimalKill();
+		god.call_ragnarok();
 		std::cout << "Error: Removed non-permanent" << std::endl;
 		exit(1);
 #endif

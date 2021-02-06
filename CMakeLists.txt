@@ -43,7 +43,7 @@ endif()
 
 configure_file(${HEADER_DIR}/olympus_main.h ${HEADER_DIR}/.olympus_main.h)
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+add_executable(${PROJECT_NAME} ${SOURCES} CFiles/options_utils.cpp CFiles/head1_utilities.h)
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ..)
 
 target_link_libraries(olympus PUBLIC OlympicDict)

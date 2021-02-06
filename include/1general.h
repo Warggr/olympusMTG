@@ -3,6 +3,7 @@
 
 #include <forward_list>
 #include <utility>
+#include ".olympus_main.h"
 
 class TriggerEvent{ //contains all X-action triggers of a certain object, i.e. all Death triggers of one permanent.
 	//a Trigger contains 3 constraints about the actions that might trigger him: whenever <a Beeble> deals <combat damage> to <a Brushwagg>, ...

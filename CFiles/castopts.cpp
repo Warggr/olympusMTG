@@ -33,9 +33,7 @@ Resolvable* SpellOption::cast_opt(Player* pl){ //spell removed from everything b
 	return typecasted;
 }
 
-Spell::Spell(Card* src, Player* ct):
-Resolvable(ct, src->get_preRes()), source(src) {
-}
+Spell::Spell(Card* src, Player* ct): Resolvable(ct, src->get_preRes()), source(src) {}
 
 Resolvable::Resolvable(Player* ct, const PreResolvable* tocast, Target* org): Target(&description), ctrl(ct){
 	//Technically, Resolvables are put on the stack, then targets are chosen. Olympus decided that objects with no targets chosen were PreRes

@@ -1,4 +1,5 @@
 #include "12defaultUI.h"
+#include "../Yggdrasil/head5_board.h"
 
 Abstract_ui* new_UILib(Abstract_io* IOLib){return new Default_ui(IOLib); }
 
@@ -143,13 +144,58 @@ void Default_ui::chooseblockers(PContainer<Creature>& defenders, PContainer<Crea
 		if(blocker->get_flags()&1){ //untapped
 			int y, z;
 			defenderDisplay->get_coordinates(pos, &y, &z);
-			Creature* evilguy = myIO->blocker_switch(*blocker, y, z, attackers, attackerDisplay, permanentYSize, permanentZSize);
+			Creature* evilguy = myIO->blocker_switch(*blocker, y, z, attackers, attackerDisplay);
 			if(evilguy){
 				blocker->set_blocking();
 				evilguy->add_blocker(&(*blocker));
 			}
 		}
 		pos++;
+	}
+}
+
+Creature* Default_ui::blocker_switch(const Creature& blocker, int blockerY, int blockerZ, PContainer<Creature>& attackers, UIElement* attacker_io) const {
+	int pos_evilguy = 0;
+	blocker.disp(blockerY, blockerZ, permanentYSize, permanentZSize, true);
+	auto evilguy = attackers.end();
+	while(1){ //getting creature to block
+		DirectioL dir = myIO->get_direction_key();
+		if(event.keyboard.keycode == ALLEGRO_KEY_SPACE || event.keyboard.keycode == ALLEGRO_KEY_ENTER){
+			if(evilguy != attackers.end()) return &(*evilguy);
+			else return 0;
+		}
+		else if(evilguy != attackers.end()){
+			int y, z;
+			attacker_io->get_coordinates(pos_evilguy, &y, &z);
+			evilguy->disp(y, z, permanentYSize, permanentZSize, false); //displaying villain normally
+			switch(dir){
+				case DOWN: evilguy = attackers.end(); break;
+				case LEFT:
+					if(evilguy != attackers.begin()){
+						--pos_evilguy;
+						--evilguy;
+					} break;
+				case RIGHT:
+					++evilguy;
+					if(evilguy == attackers.end()) --evilguy;
+					else pos_evilguy++;
+					break;
+				default: break;
+			}
+		}
+		else if(dir == UP){
+			evilguy = attackers.begin();
+			pos_evilguy = 0;
+			blocker.disp(blockerY, blockerZ, permanentYSize, permanentZSize, false); //displaying blocker normally
+		}
+		if(evilguy != attackers.end()){
+			int y, z;
+			attacker_io->get_coordinates(pos_evilguy, &y, &z);
+			evilguy->disp(y, z, permanentYSize, permanentZSize, true); //displaying villain
+		}
+		else{
+			blocker.disp(blockerY, blockerZ, permanentYSize, permanentZSize, true);
+		}
 	}
 }
 

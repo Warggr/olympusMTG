@@ -24,7 +24,7 @@ void Creature::resolve_attack(Player* nextopponent){
 	}
 	else{
 		//int i = 0;
-		for(std::list<Creature*>::iterator itb = assigned_bl.begin(); itb != assigned_bl.end(); itb++){
+		for(auto itb = assigned_bl.begin(); itb != assigned_bl.end(); itb++){
 			//god.myIO->message(&("How many damage to: " + (*itb)->describe())[0]);
 			//int a = 5; //mvwscanw(winzones[6],1,0, "%d", &a); //the = 5 is there as long as IO does not give us a "getInt" function
 			//if(a + i > iter->get_power()) a = iter->get_power();

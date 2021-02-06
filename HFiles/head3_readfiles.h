@@ -16,9 +16,6 @@ bool read_section_statics(std::ifstream& myfile, int& nb_statics, StaticAb*& sta
 void check_safepoint(std::ifstream& myfile, char c, const char* message);
 void check_safepoint(std::ifstream& myfile, char c, const char* message);
 
-void set_canary(char canary, std::ofstream& bFile);
-void check_canary(char canary, std::ifstream& bFile);
-
 int nb_phrases(std::ifstream& myfile, char& v);
 
 char read_typeof_target(const char* txt);

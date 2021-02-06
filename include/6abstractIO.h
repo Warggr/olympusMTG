@@ -29,9 +29,6 @@ public:
 	virtual DirectioL get_direction_key() = 0;
 	virtual int getInt(int lowerBound, int upperBound) = 0;
 
-	virtual Creature* blocker_switch(const Creature& blocker, int blockerY, int blockerZ,
-		PContainer<Creature>& attackers, UIElement* attacker_io,
-		int creatureWidth, int creatureDepth) const = 0;
 	virtual void poster(std::string name, Mana manacost, char color, const char* types,
 		std::vector<std::string> lines, int power, int toughness, char frametype, bool watermark) const = 0;
 	virtual void disp_cardback(int y, int z) const = 0;

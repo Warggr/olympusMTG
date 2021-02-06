@@ -24,6 +24,8 @@ public:
 	void get_player_coords(char player_id, int* py, int* pz, int* wide, int* high, int* liby, int* libz, int* gravey, int* gravez, int* exily, int* exilz);
 	bool chooseattackers(PContainer<Creature>& cowards, PContainer<Creature>& warriors, char player_id);
 	void chooseblockers(PContainer<Creature>& defenders, PContainer<Creature>& attackers, UIElement* defenderDisplay, UIElement* attackerDisplay);
+	Creature* blocker_switch(const Creature& blocker, int blockerY, int blockerZ,
+		PContainer<Creature>& attackers, UIElement* attacker_io) const ;
 	void clear_opts();
 	UIElement* get_optionzone();
 	Target* iterate(bool needstarget, Player** pl, char returntypeflags);

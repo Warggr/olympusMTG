@@ -95,20 +95,6 @@ inline bool fulfills(Identifier chars, Identifier requs, Identifier test){
 	return (((chars^test)&requs) == 0);
 }
 
-#ifndef IMPORT_ONLY_DECLARATIONS
-#include "1general.h"
-#ifndef MANUAL_IMPORT_OF_OLYMPUS_HEADERS
-#include "head1_constants.h"
-#include "2cards.h"
-#include "3player.h"
-#include "4permanents.h"
-#include "5resolvables.h"
-#include "6abstractIO.h"
-#include "../HFiles/12abilities.h" //contains PreResolvable which is kinda important and needed by Options
-#include "7game.h"
-#endif
-#endif
-
 #define DBG_IMPORTANT 0x1
 #define DBG_READFILE 0x2
 #define DBG_X_READFILE 0x4

@@ -1,4 +1,4 @@
-#include ".header_link.h"
+#include "../include/head1_constants.h"
 
 const char olympus::trigger_types::PermETB = 0;
 const char olympus::trigger_types::PermLTB = 1;
@@ -6,8 +6,6 @@ const char olympus::trigger_types::PermStateChange = 2;
 const char olympus::trigger_types::PermBecomes = 3;
 const char olympus::trigger_types::CreaAttacks = 4;
 const char olympus::trigger_types::DamageableIsDamaged = 5;
-
-const std::string Resolvable::description = "this spell or ability";
 
 const std::string olympus::trigger_descriptions[] = {"~ enters the battlefield",
 "~ leaves the battlefield",

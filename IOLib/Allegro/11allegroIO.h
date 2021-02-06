@@ -1,7 +1,6 @@
 #ifndef OLYMPUS_11_ALLEGRO_IO
 #define OLYMPUS_11_ALLEGRO_IO
 
-#define MANUAL_INCLUDE_OF_OLYMPUS_HEADERS
 #include "../../include/.olympus_main.h"
 #include "../../include/6abstractIO.h"
 
@@ -40,9 +39,6 @@ public:
 	void disp_mana(Mana mana, int topz, int endy) const;
 	void draw_rectangle(char color, int y, int z, int dy, int dz, int linewidth) const;
 	bool attack_switch(int leftY, int rightY, int topZ, int arrowlength) const;
-	Creature* blocker_switch(const Creature& blocker, int blockerY, int blockerZ,
-		PContainer<Creature>& attackers, UIElement* attacker_io,
-		int creatureWidth, int creatureDepth) const;
 	void getResolution(int& posterYSize, int& posterZSize, bool& hasMouseSupport) const;
 	void disp_header(int y, int z, int width, int height, const char* name, int life, char phase, bool highlight, Mana pool) const;
 	void draw_full_rectangle(char color, int left, int top, int width, int height) const;

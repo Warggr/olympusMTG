@@ -1,6 +1,7 @@
 #ifndef OLYMPUS_CLASSES_PERMANENTS_4_H
 #define OLYMPUS_CLASSES_PERMANENTS_4_H
 
+#include "1general.h"
 #include "../HFiles/head7_identifiers.h"
 
 class Permanent: public Target{

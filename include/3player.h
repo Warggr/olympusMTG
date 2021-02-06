@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "2cards.h"
-#include "../Yggdrasil/head6_iterators.h"
+//#include "../Yggdrasil/head6_iterators.h"
 
 #define NBMYOPTS 5
 #define INSTANTOPTS 0
@@ -123,6 +123,24 @@ public:
 	bool turn();
 
 	Identifier reload_id() const;
+};
+
+class BoardN: public AbstractN {
+public:
+    DefaultCollectionTN<Land> mylands;
+    DefaultCollectionTN<Artifact> myartos;
+    DefaultCollectionTN<Planeswalker> mysuperfriends;
+    DefaultCollectionTN<Creature> mycreas;
+    StatedCollectionTN<Creature>* myattackers {0};
+
+    BoardN(): mylands(this), myartos(this), mysuperfriends(this), mycreas(this), myattackers(0){};
+    ~BoardN();
+
+    void insert(Card* to_add, Player* pl);
+    typediterator<Permanent> pbegin();
+    typediterator<Permanent> pend() const;
+    c_iterator<Permanent> cpbegin() const;
+    c_iterator<Permanent> cpend() const;
 };
 
 #endif //OLYMPUS_CLASSES_GAME_1_H
