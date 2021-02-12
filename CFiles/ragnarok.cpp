@@ -1,6 +1,9 @@
 #include ".header_link.h"
+#include "../include/2cards.h"
 #include "../HFiles/8options.h"
 #include "../HFiles/9modifs.h"
+#include "../HFiles/12abilities.h"
+#include "../Yggdrasil/headB_board.h"
 
 /* Ragnarok is called when the game ends. The goal is to simply free all objects.
  * Ragnarok should not be called during initialization, when not everything's been allocated (or should it?)
@@ -26,7 +29,7 @@ void CollectionTN<T>::full_ragnarok_boardzone(){
     auto iter = pure_children_first;
     do {
         auto i2 = iter;
-        iter = iter->get_next();
+        iter = iter->next;
         delete i2;
     } while(iter != pure_children_last);
     ragnarok_collectiontn();
@@ -65,4 +68,11 @@ void Permanent::ragnarok_perm(){
         iter = iter->next;
         delete i2;
     }
-};
+}
+
+void SpellOption::ragnarok() {
+    delete source;
+    if(next) next->ragnarok();
+    delete this;
+}
+PermOption::~PermOption(){ delete effects; }

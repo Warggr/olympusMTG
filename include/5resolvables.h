@@ -1,6 +1,8 @@
 #ifndef OLYMPUS_CLASSES_RESOLVABLE_5_H
 #define OLYMPUS_CLASSES_RESOLVABLE_5_H
 
+#include "1general.h"
+
 //okay lets forget about on_cast for the moment because it requires triggered abilities to be implemented.
 /* A Resolvable is any object that can be put on the stack and resolve. It can be:
 a StackAbility (e.g. an activated ability of a permanent). Will have effects upon resolve and disappear.

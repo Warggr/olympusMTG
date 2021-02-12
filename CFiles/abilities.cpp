@@ -1,5 +1,6 @@
 #include ".header_link.h"
 #include "../HFiles/9modifs.h"
+#include "../HFiles/12abilities.h"
 
 void Player::add_mana(char c){
 	manapool += c;

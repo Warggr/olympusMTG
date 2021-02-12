@@ -1,10 +1,12 @@
 #include <utility>
 
 #include ".header_link.h"
-#include "../HFiles/head3_readfiles.h"
+#include "../HFiles/headC_constants.h"
+#include "../HFiles/headR_readfiles.h"
 #include "../HFiles/8options.h"
 #include "../HFiles/10triggers.h"
 #include "../HFiles/11statics.h"
+#include "../HFiles/12abilities.h"
 
 CardOracle::CardOracle(std::ifstream& myfile, std::string n, Mana c, char t):
     name(std::move(n)),

@@ -1,8 +1,15 @@
-#include ".header_link.h"
-#include "../HFiles/head3_readfiles.h"
+//#include ".header_link.h"
+#include "../include/.olympus_main.h"
+#include "../include/2cards.h"
+#include "../include/3player.h"
+#include "../include/4permanents.h"
+#include "../HFiles/headR_readfiles.h"
 #include "../HFiles/8options.h"
 #include "../HFiles/10triggers.h"
-#include "head1_utilities.h"
+#include "../HFiles/12abilities.h"
+#include "headU_utilities.h"
+
+#include <memory>
 
 void set_canary(char canary, std::ofstream& bFile){
 	bFile.write(&canary, sizeof(char));

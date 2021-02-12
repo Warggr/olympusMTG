@@ -1,4 +1,6 @@
 #include ".header_link.h"
+#include "../Yggdrasil/headB_board.h"
+#include <iostream>
 
 Permanent* Player::iterate_boardsubzone(float yOffset, DirectioL& direction, int zzone, bool isactivation){
 	switch(zzone){
@@ -28,7 +30,7 @@ PermType* Player::iterate_boardsubzone(float offset, DirectioL& direction, PCont
 		if(direction == MOUSE) god.myUI->deadzone();
 		return 0;
 	}
-	typediterator<PermType> iter = perms->begin();
+	iterator<PermType, false> iter = perms->begin();
 	int y, z, yOff, zOff, yWidth, zHeight;
 	ui->get_coordinates(&y, &z, &yOff, &zOff, &yWidth, &zHeight);
 	while(y < offset - yOff){

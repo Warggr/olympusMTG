@@ -1,6 +1,12 @@
-#include ".header_link.h"
-#include "../HFiles/9modifs.h"
+#include "../include/.olympus_main.h"
+#include "../include/2cards.h"
+#include "../include/4permanents.h"
+#include "../include/5resolvables.h"
+#include "../include/6abstractIO.h"
+#include "../include/7game.h"
 #include "../HFiles/8options.h"
+#include "../HFiles/9modifs.h"
+#include "../HFiles/12abilities.h"
 
 Resolvable* Game::popfromstack(){
 	if(stack.empty()) return 0;

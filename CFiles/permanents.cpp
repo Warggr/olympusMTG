@@ -1,7 +1,9 @@
 #include ".header_link.h"
 #include "../HFiles/8options.h"
 #include "../HFiles/9modifs.h"
-#include "../Yggdrasil/head6_iterators.h"
+#include "../Yggdrasil/headB_board.h"
+#include "../HFiles/headC_constants.h"
+#include "../HFiles/12abilities.h"
 
 //Resolvables are deleted externally by takeopts after having been resolved.
 //As a general rule, the one to take the Resolvable out of the stack is the one to destroy it
@@ -163,32 +165,32 @@ void Planeswalker::activate() {
     god.game->addtostack(new Resolvable(ctrl, loyalty_abs + x, (Target*) this));
 }
 
-typediterator<Permanent> BoardN::pbegin() {return !(mylands.empty()) ? mylands.pbegin() :
+iterator<Permanent, false> BoardN::pbegin() {return !(mylands.empty()) ? mylands.pbegin() :
     !(myartos.empty()) ? myartos.pbegin() :
     !(mysuperfriends.empty()) ? mysuperfriends.pbegin() :
     !(mycreas.empty()) ? mycreas.pbegin() :
-    typediterator<Permanent>();
+    iterator<Permanent, false>();
 }
 
-typediterator<Permanent> BoardN::pend() const {return !(mycreas.empty()) ? mycreas.pend() :
+iterator<Permanent, false> BoardN::pend() const {return !(mycreas.empty()) ? mycreas.pend() :
     !(mysuperfriends.empty()) ? mysuperfriends.pend() :
     !(myartos.empty()) ? myartos.pend() :
     !(mylands.empty()) ? mylands.pend() :
-    typediterator<Permanent>();
+    iterator<Permanent, false>();
 }
 
-c_iterator<Permanent> BoardN::cpbegin() const {return !(mylands.empty()) ? mylands.cpbegin() :
+iterator<Permanent, true> BoardN::cpbegin() const {return !(mylands.empty()) ? mylands.cpbegin() :
     !(myartos.empty()) ? myartos.cpbegin() :
     !(mysuperfriends.empty()) ? mysuperfriends.cpbegin() :
     !(mycreas.empty()) ? mycreas.cpbegin() :
-    c_iterator<Permanent>();
+    iterator<Permanent, true>();
 }
 
-c_iterator<Permanent> BoardN::cpend() const {return !(mycreas.empty()) ? mycreas.cpend() :
+iterator<Permanent, true> BoardN::cpend() const {return !(mycreas.empty()) ? mycreas.cpend() :
     !(mysuperfriends.empty()) ? mysuperfriends.cpend() :
     !(myartos.empty()) ? myartos.cpend() :
     !(mylands.empty()) ? mylands.cpend() :
-    c_iterator<Permanent>();
+    iterator<Permanent, true>();
 }
 
 void BoardN::insert(Card *to_add, Player *pl) {

@@ -1,7 +1,8 @@
 #ifndef OLYMPUS_CLASSES_CARDS_2_H
 #define OLYMPUS_CLASSES_CARDS_2_H
 
-#include "../Mana/head2_mana.h"
+#include "1general.h"
+#include "../Mana/lib_mana.h"
 #include <memory>
 #include <forward_list>
 

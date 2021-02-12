@@ -3,6 +3,24 @@
 
 //each ability has zero to two targets. Multiple-target abilities such as (creature, +X/+Y) will be written as +X/+0 and +0/+Y separately
 
+#include <memory>
+
+class Ability{
+protected:
+	char type;
+	char param1; //0 is 'you'. x+1 is 'the target number x in the parameter list of the Resolvable'
+	char param2; //or literal x; depending on the exact ability
+	std::unique_ptr<Ability> next;
+public:
+	Ability(std::unique_ptr<Ability>& a, char p1, char t, char p2): type(t), param1(p1), param2(p2), next(std::move(a)){};
+	Ability(std::ifstream& bFile);
+	std::string describe(std::string cardname) const;
+	void activate(Targeter* list_of_targets, Player* ctrl, Target* origin) const;
+	void set_param(char a, char b){if(a==0) param1 = b; else param2 = b; };
+	void set_type(char t){type = t; };
+	void write_binary(std::ofstream& bFile) const;
+};
+
 class PreResolvable{ //a Resolvable is a stack object with a list of targets and abilities.
 	//a Pre-resolvable would be a printed instruction such as "X fights Y, and you gain 3 life", for which targets haven't been chosen.
 	//Cards and Triggers contain Pre-resolvables, which can then be cast into Resolvables by choosing targets.
@@ -19,22 +37,6 @@ public:
 	Ability* getFab() const {return &(*fab); }; //i know, it's dangerous and it destroys the sense of having smart pointers. But hey, it makes more sense than a shared ptr
 	char getNbParams() const {return nb_parameters; };
 	const char* getParams() const {return parameters; };
-};
-
-class Ability{
-protected:
-	char type;
-	char param1; //0 is 'you'. x+1 is 'the target number x in the parameter list of the Resolvable'
-	char param2; //or literal x; depending on the exact ability
-	std::unique_ptr<Ability> next;
-public:
-	Ability(std::unique_ptr<Ability>& a, char p1, char t, char p2): type(t), param1(p1), param2(p2), next(std::move(a)){};
-	Ability(std::ifstream& bFile);
-	std::string describe(std::string cardname) const;
-	void activate(Targeter* list_of_targets, Player* ctrl, Target* origin) const;
-	void set_param(char a, char b){if(a==0) param1 = b; else param2 = b; };
-	void set_type(char t){type = t; };
-	void write_binary(std::ofstream& bFile) const;
 };
 
 /*ALL POSSIBLE ABILITIES

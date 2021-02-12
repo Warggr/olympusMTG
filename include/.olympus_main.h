@@ -47,31 +47,22 @@ class TriggerEvent;
 
 class StaticAb;
 struct ModifListNode;
+
 class BoardN;
 class AbstractN;
 template <typename T> class CollectionTN;
-template <typename T> class DefaultCollectionTN;
-template <typename T> class StatedCollectionTN;
 template <typename T> class PermanentTN;
-class AbstractPermanentN;
+class APPermanentN;
 
-template <typename T>
-using PContainer = CollectionTN<T>;
-
-template<typename T> class typediterator;
-template<typename T> class c_iterator;
+template <typename T> using PContainer = CollectionTN<T>;
 
 class Ability; //Represents a printed sentence such as "deal 3 damage", "Choose a creature and sacrifice it" or whatever. No targets chosen
-//PreResolvables will contain Abilities and their necessary target list
-class PreResolvable;
+class PreResolvable; //PreResolvables will contain Abilities and their necessary target list
 
 class Abstract_ui;
 class Abstract_io;
 class _UIElement;
-
 typedef _UIElement UIElement;
-
-enum DirectioL{ UP, DOWN, LEFT, RIGHT, BACK, ENTER, MOUSE, NOT_RECOGNIZED};
 
 struct externVarContainer{
 	Game* game;
@@ -102,6 +93,8 @@ inline bool fulfills(Identifier chars, Identifier requs, Identifier test){
 #define DBG_TARGETING 0x10
 #define DBG_RAGNAROK 0x20
 #define DBG_IOUI 0x40
+
+enum DirectioL{ UP, DOWN, LEFT, RIGHT, BACK, ENTER, MOUSE, NOT_RECOGNIZED};
 
 [[noreturn]] void raise_error(const std::string& message);
 

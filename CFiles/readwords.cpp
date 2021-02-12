@@ -1,6 +1,6 @@
-#include "../Dictionary/head4_dictionary.h"
-#include "../HFiles/head3_readfiles.h"
-#include "../include/head1_constants.h"
+#include "../Dictionary/lib1_dictionary.h"
+#include "../HFiles/headR_readfiles.h"
+#include "../HFiles/headC_constants.h"
 #include <fstream>
 #include <cstring>
 #include <iostream>

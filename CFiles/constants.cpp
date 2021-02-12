@@ -1,4 +1,4 @@
-#include "../include/head1_constants.h"
+#include "../HFiles/headC_constants.h"
 
 const char olympus::trigger_types::PermETB = 0;
 const char olympus::trigger_types::PermLTB = 1;

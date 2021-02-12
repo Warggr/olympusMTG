@@ -1,7 +1,7 @@
 #ifndef OLYMPUS_CLASSES_OPTIONS_7_H
 #define OLYMPUS_CLASSES_OPTIONS_7_H
 
-#include "../Mana/head2_mana.h"
+#include "../Mana/lib_mana.h"
 
 class Option{
 public:
@@ -27,7 +27,7 @@ public:
 	SpellOption(Card* src, Player* pl, int opttype);
 	SpellOption(Card* src, Option* next);
 	~SpellOption() {};
-	void ragnarok() {delete source; if(next) next->ragnarok(); delete this; };
+	void ragnarok();
 	
 	void disp(int y, int z, bool highlight, bool castable) const;
 	virtual Resolvable* cast_opt(Player* pl);
@@ -55,7 +55,7 @@ private:
 	bool ismanaability;
 public:
 	PermOption(): Option(0, 0, (int) 0), effects(0), tapsymbol(false), ismanaability(false) {}; //make clear it wasn't initialized
-	~PermOption() {delete effects; };
+	~PermOption();
 	void fillout(Mana cost, PreResolvable* preRes, bool tapsymbol, bool ismanaability);
 	void read_binary(std::ifstream& bFile);
 	void write_binary(std::ofstream& bFile) const;

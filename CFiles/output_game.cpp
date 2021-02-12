@@ -1,4 +1,6 @@
 #include ".header_link.h"
+#include "../Yggdrasil/headB_board.h"
+#include "../HFiles/12abilities.h"
 
 void Game::disp_log() const {
 	int y, z, yOffset, zOffset;

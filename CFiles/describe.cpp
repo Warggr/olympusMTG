@@ -1,5 +1,7 @@
 #include ".header_link.h"
+#include "../HFiles/headC_constants.h"
 #include "../HFiles/10triggers.h"
+#include "../HFiles/12abilities.h"
 
 const std::string Resolvable::description = "this spell or ability";
 

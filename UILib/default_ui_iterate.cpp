@@ -1,4 +1,7 @@
 #include "12defaultUI.h"
+#include "../include/3player.h" //for iterating player's elements
+#include "../include/4permanents.h"
+#include "../include/7game.h"
 #include "../HFiles/8options.h"
 #include <iostream>
 

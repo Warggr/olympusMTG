@@ -1,6 +1,7 @@
 #include <utility>
 
 #include ".header_link.h"
+#include "../HFiles/12abilities.h"
 #include "../HFiles/8options.h"
 #include "../HFiles/10triggers.h"
 

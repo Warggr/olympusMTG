@@ -1,5 +1,6 @@
+#include "../include/.olympus_main.h"
 #include "../HFiles/8options.h"
-#include "head1_utilities.h"
+#include "headU_utilities.h"
 #include "../HFiles/12abilities.h"
 
 void PermOption::write_binary(std::ofstream& bFile) const {

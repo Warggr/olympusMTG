@@ -1,8 +1,8 @@
 #ifndef OLYMPUS_YGGDRASIL_PART_3
 #define OLYMPUS_YGGDRASIL_PART_3
 
-#include "head5_board.h"
-#include "head6_iterators.h"
+#include "headY_yggdrasil.h"
+#include "headB_board.h"
 
 template <typename T>
 void PermanentTN<T>::single_out(){ //removes it from its siblings
@@ -79,5 +79,35 @@ void CollectionTN<T>::add_child(PermanentTN<T>* new_child){
         pure_children_first = new_child;
     }
 }
+
+template<typename T>
+template<typename X> iterator<X, false> CollectionTN<T>::xbegin(){
+    if(!children.empty()) return children.front()->template xbegin<X>();
+    else if(pure_children_first) return pure_children_first->template begin<X>();
+    else return iterator<X, false>();
+}
+
+template<typename T>
+template<typename X> iterator<X, true> CollectionTN<T>::cxbegin() const {
+    if(!children.empty()) return children.front()->template cxbegin<X>();
+    else if(pure_children_first) return pure_children_first->template cbegin<X>();
+    else return iterator<X, true>();
+}
+
+template<typename T>
+template<typename X, bool iconst> iterator<X, iconst> CollectionTN<T>::xend() const {
+    if(pure_children_last) return pure_children_last->template end<X, iconst>();
+    else if(!children.empty()) return children.back()->template xend<X, iconst>();
+    else return iterator<X, iconst>();
+}
+
+template<typename T> iterator<T, false> CollectionTN<T>::begin() {return xbegin<T>(); }
+template<typename T> iterator<T, true> CollectionTN<T>::cbegin() const {return cxbegin<T>(); }
+template<typename T> iterator<Permanent, false> CollectionTN<T>::pbegin() {return xbegin<Permanent>(); }
+template<typename T> iterator<Permanent, true> CollectionTN<T>::cpbegin() const {return cxbegin<Permanent>(); }
+template<typename T> iterator<T, false> CollectionTN<T>::end() const {return xend<T, false>(); }
+template<typename T> iterator<T, true> CollectionTN<T>::cend() const {return xend<T, true>(); }
+template<typename T> iterator<Permanent, false> CollectionTN<T>::pend() const {return xend<Permanent, false>(); }
+template<typename T> iterator<Permanent, true> CollectionTN<T>::cpend() const {return xend<Permanent, true>(); }
 
 #endif //OLYMPUS_YGGDRASIL_PART_3

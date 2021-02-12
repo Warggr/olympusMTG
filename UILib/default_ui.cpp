@@ -1,5 +1,6 @@
 #include "12defaultUI.h"
-#include "../Yggdrasil/head5_board.h"
+#include "../Yggdrasil/headB_board.h"
+#include "../include/4permanents.h"
 
 Abstract_ui* new_UILib(Abstract_io* IOLib){return new Default_ui(IOLib); }
 
@@ -144,7 +145,7 @@ void Default_ui::chooseblockers(PContainer<Creature>& defenders, PContainer<Crea
 		if(blocker->get_flags()&1){ //untapped
 			int y, z;
 			defenderDisplay->get_coordinates(pos, &y, &z);
-			Creature* evilguy = myIO->blocker_switch(*blocker, y, z, attackers, attackerDisplay);
+			Creature* evilguy = blocker_switch(*blocker, y, z, attackers, attackerDisplay);
 			if(evilguy){
 				blocker->set_blocking();
 				evilguy->add_blocker(&(*blocker));
@@ -160,7 +161,7 @@ Creature* Default_ui::blocker_switch(const Creature& blocker, int blockerY, int 
 	auto evilguy = attackers.end();
 	while(1){ //getting creature to block
 		DirectioL dir = myIO->get_direction_key();
-		if(event.keyboard.keycode == ALLEGRO_KEY_SPACE || event.keyboard.keycode == ALLEGRO_KEY_ENTER){
+		if(dir == BACK || dir == ENTER){
 			if(evilguy != attackers.end()) return &(*evilguy);
 			else return 0;
 		}

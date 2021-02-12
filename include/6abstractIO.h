@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <string>
-#include "../Mana/head2_mana.h"
+#include "../Mana/lib_mana.h"
 
 class Abstract_io{
 protected:
