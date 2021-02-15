@@ -1,7 +1,7 @@
 #ifndef OLYMPUS_CLASSES_OPTIONS_7_H
 #define OLYMPUS_CLASSES_OPTIONS_7_H
 
-#include "../Mana/lib_mana.h"
+#include "../Mana/lib2_mana.h"
 
 class Option{
 public:
@@ -17,7 +17,7 @@ public:
 	void pop(int, Player*) const;
 	virtual Resolvable* cast_opt(Player* pl) = 0;
 	virtual bool iscastable(const Player* pl) const;
-	virtual void disp(int y, int z, bool highlight, bool castable) const = 0;
+	virtual void disp(int y, int z, int width, bool highlight, bool castable) const = 0;
 };
 
 class SpellOption: public Option{
@@ -29,7 +29,7 @@ public:
 	~SpellOption() {};
 	void ragnarok();
 	
-	void disp(int y, int z, bool highlight, bool castable) const;
+	void disp(int y, int z, int width, bool highlight, bool castable) const;
 	virtual Resolvable* cast_opt(Player* pl);
 	virtual bool iscastable(const Player* pl) const;
 };
@@ -67,7 +67,7 @@ public:
 	bool get_tapsymbol() const {return tapsymbol; };
 	bool get_ismana() const {return ismanaability; };
 	std::string describe(std::string name) const;
-	void disp(int y, int z, bool highlight, bool castable) const {};
+	void disp(int y, int z, int width, bool highlight, bool castable) const {};
 };
 
 Option* mergeSortCosts(Option* start, int nb);

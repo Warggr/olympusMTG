@@ -5,41 +5,36 @@
 #include "../HFiles/8options.h"
 #include "../HFiles/10triggers.h"
 
-void Resolvable::disp(int y, int z, int width, int height, bool highlight) const {
-	god.myIO->draw_full_rectangle(highlight ? Abstract_io::HIGH2 : Abstract_io::WHITE, y, z, width, height);
-	god.myIO->print_text(describe(), Abstract_io::BLACK, y, z);
+void Resolvable::disp(const Rect& zone, bool highlight) const {
+	god.myIO->draw_boxed_text(describe(), Abstract_io::BLACK, highlight ? Abstract_io::HIGH2 : Abstract_io::WHITE, zone.y, zone.z, zone.width);
 }
 
-void PreResolvable::disp(int y, int z, int width, int height, std::string origin_name) const { //mimicks a highlighted Resolvable which's on top of the stack
-	god.myIO->draw_full_rectangle(Abstract_io::HIGH1, y, z, width, height);
-	god.myIO->print_text(describe(std::move(origin_name)), Abstract_io::BLACK, y, z);
+void PreResolvable::disp(const Rect& zone, const std::string origin_name) const { //mimicks a highlighted Resolvable which's on top of the stack
+	god.myIO->draw_boxed_text(origin_name, Abstract_io::BLACK, Abstract_io::HIGH1, zone.y, zone.z, zone.width);
 }
 
-void SpellOption::disp(int y, int z, bool highlight, bool castable) const {
-	//if(castable) wattron(win, A_BOLD);
+void SpellOption::disp(int y, int z, int width, bool highlight, bool castable) const {
 	std::string tmp = source->describe();
-	char clr = highlight ? Abstract_io::HIGH2 : Abstract_io::WHITE; //red or white
-	god.myIO->draw_full_rectangle(Abstract_io::BLACK, y, z, 400, 25);
-	god.myIO->print_text(tmp, clr, y, z);
+	god.myIO->draw_boxed_text(tmp, highlight ? Abstract_io::HIGH2 : Abstract_io::WHITE, Abstract_io::BLACK, y, z, width);
 	if(highlight) source->poster();
 }
 
-void Permanent::disp(int left, int top, int width, int height, bool highlight) const {
-	god.myIO->draw_permanent(left, top, width, height, main_color(color), !((bool)(flags&1)), highlight, false);
+void Permanent::disp(const Rect& zone, bool highlight) const {
+	god.myIO->draw_permanent(zone, main_color(color), !((bool)(flags&1)), highlight, false);
 	if(highlight) source->poster();
-	god.myIO->print_text(*name, 0, left, top);
+	god.myIO->print_text(*name, 0, zone.y, zone.z);
 }
 
-void Land::disp(int left, int top, int width, int height, bool highlight) const {
-	god.myIO->draw_permanent(left, top, width, height, main_color(color), !((bool)(flags&1)), highlight, true);
+void Land::disp(const Rect& zone, bool highlight) const {
+	god.myIO->draw_permanent(zone, main_color(color), !((bool)(flags&1)), highlight, true);
 	if(highlight) source->poster();
-	god.myIO->print_text(*name, 0, left, top);
+	god.myIO->print_text(*name, 0, zone.y, zone.z);
 }
 
-void Creature::disp(int left, int top, int width, int height, bool highlight) const {
-	Permanent::disp(left, top, width, height, highlight);
+void Creature::disp(const Rect& zone, bool highlight) const {
+	Permanent::disp(zone, highlight);
 	char pt[6]; sprintf(pt, "%d/%d", get_power(), get_toughness());
-	god.myIO->print_text(pt, Abstract_io::BLACK, left + width/2, top + height - 20);
+	god.myIO->print_text(pt, Abstract_io::BLACK, zone.y + zone.width/2, zone.z + zone.height - 20);
 }
 
 void CardOracle::poster() const {

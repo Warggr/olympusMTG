@@ -22,19 +22,19 @@ void Game::disp() const {
 }
 
 void Game::disp_preRes(const PreResolvable* preRes, const std::string& origin_name) const {
-	int y, z, yOffset, zOffset, ySize, zSize;
-	stack_ui->get_coordinates(&y, &z, &yOffset, &zOffset, &ySize, &zSize);
-	preRes->disp(y-yOffset, z-zOffset, ySize, zSize, origin_name);
+	int yOffset, zOffset;
+	Rect stack = stack_ui->get_coordinates(&yOffset, &zOffset);
+	stack.shift(-yOffset, -zOffset);
+	preRes->disp(stack, origin_name);
 }
 
 void Game::disp_stack() const {
-	int y, z, yOffset, zOffset, ySize, zSize;
-	stack_ui->get_coordinates(&y, &z, &yOffset, &zOffset, &ySize, &zSize);
+	int yOffset, zOffset;
+	Rect rect = stack_ui->get_coordinates(&yOffset, &zOffset);
 	stack_ui->erase_background(god.myIO);
-	int pos = 0;
-	for(std::forward_list<Resolvable*>::const_iterator iter = stack.cbegin(); iter!=stack.cend(); iter++){
-		(*iter)->disp(y+pos*yOffset, z+pos*zOffset, ySize, zSize);
-		pos++;
+	for(auto iter = stack.cbegin(); iter!=stack.cend(); iter++){
+		(*iter)->disp(rect);
+		rect.shift(yOffset, zOffset);
 	}
 }
 
@@ -60,13 +60,14 @@ void Game::addtolog(const char* new_entry){
 #undef LEFTBAR_Y
 
 void Player::disp_header(bool highlight) const {
-	int y = 0, z = 0, width = 0, height=0, liby=0, libz=0, gravey=0, gravez=0, exily=0, exilz=0;
-	god.myUI->get_player_coords(player_id, &y, &z, &width, &height, &liby, &libz, &gravey, &gravez, &exily, &exilz);
-	god.myIO->disp_header(y, z, width, height, &(name[0]), life, state >> 5, highlight, manapool);
+	int liby=0, libz=0, gravey=0, gravez=0, exily=0, exilz=0, cardzonewidth=0, cardzoneheight = 0;
+	Rect zone;
+	god.myUI->get_player_coords(player_id, &zone, &liby, &libz, &gravey, &gravez, &exily, &exilz, &cardzonewidth, &cardzoneheight);
 	
-	myzones[0].disp(liby, libz);
-	myzones[1].disp(gravey, gravez);
-	myzones[2].disp(exily, exilz);
+	myzones[0].disp(Rect(liby, libz, cardzonewidth, cardzoneheight));
+	myzones[1].disp(Rect(gravey, gravez, cardzonewidth, cardzoneheight));
+	myzones[2].disp(Rect(exily, exilz, cardzonewidth, cardzoneheight));
+	god.myIO->disp_header(zone, &(name[0]), life, state >> 5, highlight, manapool); //done last so NCurses knows to refresh the zone only then
 }
 
 void Player::disp() const {
@@ -96,7 +97,6 @@ void Player::disp_zone(int nbzone) const {
 	}
 }
 
-void CardZone::disp(int y, int z) const {
-	god.myIO->disp_cardback(y, z);
-	god.myIO->print_text(std::to_string(size), 0, y+20, z+20);
+void CardZone::disp(const Rect& zone) const {
+	god.myIO->disp_cardback(zone, size);
 }

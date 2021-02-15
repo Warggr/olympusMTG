@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "1general.h"
-#include "../Mana/lib_mana.h"
+#include "../Mana/lib2_mana.h"
 #include "../Yggdrasil/headY_yggdrasil.h" //needs to know what a zone is
 
 #define NBMYOPTS 5
@@ -42,7 +42,7 @@ public:
     void takeonecard(Card* c){++size; cards.push_front(c); };
     void inc_size(int i){ size += i; };
     void describe(char* tmp) const;
-    void disp(int x, int y) const;
+    void disp(const Rect& zone) const;
 };
 
 class BoardN: public AbstractN {
@@ -104,7 +104,7 @@ public:
 		PermType* iterate_boardsubzone(float offset, DirectioL& direction, PContainer<PermType>* perms, UIElement* ui, bool isactivation);
 	Permanent* iterate_boardsubzone(float offset, DirectioL& direction, int xzone, bool istapland);
 	bool disp_opt(bool sorceryspeed) const;
-	void dispOptsOfCertainType(int y, int z, int dy, int dz, int* pos, int type, bool castable) const;
+	void dispOptsOfCertainType(Rect& zone, int dy, int dz, bool& not_moved, int type, bool castable) const;
 	void addtoPrestack(PreResolvable* triggered_ability, Target* origin){prestack.emplace_front(triggered_ability, origin); };
 	bool add_triggers_to_stack();
 

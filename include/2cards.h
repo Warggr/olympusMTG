@@ -2,7 +2,7 @@
 #define OLYMPUS_CLASSES_CARDS_2_H
 
 #include "1general.h"
-#include "../Mana/lib_mana.h"
+#include "../Mana/lib2_mana.h"
 #include <memory>
 #include <forward_list>
 

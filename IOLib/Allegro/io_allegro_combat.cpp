@@ -1,4 +1,4 @@
-#include "11allegroIO.h"
+#include "lib3_allegroIO.h"
 
 bool Allegro_io::attack_switch(int leftY, int Ywidth, int topZ, int arrowlength) const {
 	bool attacks = false;
@@ -17,7 +17,7 @@ bool Allegro_io::attack_switch(int leftY, int Ywidth, int topZ, int arrowlength)
 						break;
 					case ALLEGRO_KEY_DOWN:
 						attacks = false;
-						erase_surface(leftY, topZ, Ywidth, arrowlength);
+						erase_surface(Rect(leftY, topZ, Ywidth, arrowlength));
 						message("[STAYS]");
 						//al_flip_display(); //already done by messaging
 						break;

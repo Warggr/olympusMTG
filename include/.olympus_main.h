@@ -77,6 +77,20 @@ struct externVarContainer{
 	void initialize(Game* gm, char debug_flags);
 };
 
+struct Rect{
+	uint16_t y, z;
+	uint16_t width, height;
+
+	int zone() const {return y >> 11; }
+	int yy() const {return y & 0x07ff; }
+	int right() const {return y + width; }
+	int bottom() const {return z+height; }
+
+	Rect() = default;
+	Rect(int _y, int _z, int _width, int _height): y((int) _y), z((int) _z), width((int) _width), height((int) _height){};
+	void shift(int dy, int dz){y += dy; z += dz; }
+};
+
 extern struct externVarContainer god;
 
 typedef int Identifier; //ttttt o ccccc ssss 0000 0000 0000 0000, in inverse order!

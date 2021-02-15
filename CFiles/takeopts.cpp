@@ -116,23 +116,24 @@ bool Player::get_up(Option*& iter, int& pos, int& metapos) const {
 
 bool Player::disp_opt(bool sorceryspeed) const {
 	bool ret = false;
-	int y, z, dy, dz, pos = 0;
-	optZone->get_coordinates(&y, &z, &dy, &dz);
-	dispOptsOfCertainType(y, z, dy, dz, &pos, INSTANTOPTS, true);
-		if(pos!=0) ret = true; 
-	dispOptsOfCertainType(y, z, dy, dz, &pos, SORCERYOPTS, sorceryspeed);
-		if(sorceryspeed && pos!=0) ret = true;
-	dispOptsOfCertainType(y, z, dy, dz, &pos, LANDOPTS, sorceryspeed && !(state & 16));
+	int dy, dz;
+	Rect rect = optZone->get_coordinates(&dy, &dz);
+	bool not_moved = true;
+	dispOptsOfCertainType(rect, dy, dz, not_moved, INSTANTOPTS, true);
+		if(!not_moved) ret = true;
+	dispOptsOfCertainType(rect, dy, dz, not_moved, SORCERYOPTS, sorceryspeed);
+		if(sorceryspeed && !not_moved) ret = true;
+	dispOptsOfCertainType(rect, dy, dz, not_moved, LANDOPTS, sorceryspeed && !(state & 16));
 		if(sorceryspeed && !(state & 16) && myoptions[LANDOPTS]) ret = true;
-	dispOptsOfCertainType(y, z, dy, dz, &pos, TOOEXPENSIVE, false);
+	dispOptsOfCertainType(rect, dy, dz, not_moved, TOOEXPENSIVE, false);
 
-	//god.myIO->refresh_display();
 	return ret;
 }
 
-void Player::dispOptsOfCertainType(int y, int z, int dy, int dz, int* pos, int type, bool castable) const {
+void Player::dispOptsOfCertainType(Rect& zone, int dy, int dz, bool& not_moved, int type, bool castable) const {
 	for(Option* iter = myoptions[type]; iter!=0; iter = iter->next){
-		iter->disp(y + (*pos)*dy, z + (*pos)*dz, (*pos == 0), castable && iter->iscastable(this));
-		(*pos)++;
+		iter->disp(zone.y, zone.z, zone.width, not_moved, castable && iter->iscastable(this));
+		zone.shift(dy, dz);
+		not_moved = false;
 	}
 }

@@ -26,7 +26,7 @@ public:
 	virtual ~Resolvable();
 	virtual void resolve(); //this is what a resolvable is about
 	virtual std::string describe() const {return description; };
-	virtual void disp(int y, int z, int width, int height, bool highlight = false) const;
+	virtual void disp(const Rect& zone, bool highlight = false) const;
 	virtual void counter(Game* metagame);
 	virtual const std::string& get_name() const {return description; };
 	virtual Identifier reload_id() const;
