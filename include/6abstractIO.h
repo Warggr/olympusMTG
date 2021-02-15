@@ -7,7 +7,7 @@
 
 class Abstract_io{
 public:
-	static constexpr uint8_t HIGH1=0x80, HIGH2=0x40, BLACK = 0x30, COLORLESS = 0x20, WHITE = 0x10;
+	static constexpr uint8_t WHITE = 0, BLACK = 1, GREY = 2, HIGH1=10, HIGH2=11;
 	virtual ~Abstract_io(){};
 	virtual void getResolution(int& YSize, int& ZSize, bool& hasMouseSupport, int& linesize) const = 0;
 	virtual void harmonize(const Rect& poster, const Rect& message, int nb_winzones) = 0;

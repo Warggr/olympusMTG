@@ -70,11 +70,11 @@ const char* const selector_chars_subtype[] = {
 }; const Dictionary olympus::dict_selector_subtypes(8, selector_chars_subtype);
 
 const char* const selector_chars_tribe[] = {
-	"Human",
-	"Merfolk",
-	"Zombie",
-	"Goblin",
-	"Elf"
+	"human",
+	"merfolk",
+	"zombie",
+	"goblin",
+	"elf"
 }; const Dictionary olympus::dict_selector_tribes(5, selector_chars_tribe);
 
 const char* const selector_chars_players[] = {

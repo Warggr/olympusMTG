@@ -132,7 +132,7 @@ bool Player::disp_opt(bool sorceryspeed) const {
 
 void Player::dispOptsOfCertainType(Rect& zone, int dy, int dz, bool& not_moved, int type, bool castable) const {
 	for(Option* iter = myoptions[type]; iter!=0; iter = iter->next){
-		iter->disp(zone.y, zone.z, zone.width, not_moved, castable && iter->iscastable(this));
+		iter->disp(zone.yy(), zone.z, zone.width, not_moved, castable && iter->iscastable(this));
 		zone.shift(dy, dz);
 		not_moved = false;
 	}

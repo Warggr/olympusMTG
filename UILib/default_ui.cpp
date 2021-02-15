@@ -85,7 +85,7 @@ Default_ui::Default_ui(Abstract_io* IOLib): Abstract_ui(IOLib){
 	int screenW, screenH;
 	IOLib->getResolution(screenW, screenH, mouseSupport, linesize);
 	god.gdebug(DBG_IOUI) << "Received resolution" << screenW << "x" << screenH << ", linesize " << linesize << "\n";
-	leftbarW = screenW * 0.2; rightbarW = screenW * 0.2; boardW = screenW - leftbarW - rightbarW;
+	leftbarW = screenW * 0.25; rightbarW = screenW * 0.2; boardW = screenW - leftbarW - rightbarW;
 	
 	playerH = screenH / 15; if(playerH < 2*linesize) playerH = 2*linesize;
 	

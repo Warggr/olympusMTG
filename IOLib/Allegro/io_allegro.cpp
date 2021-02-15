@@ -131,6 +131,7 @@ DirectioL Allegro_io::get_direction_key(){
 				} break;
 			case ALLEGRO_EVENT_DISPLAY_CLOSE:
 				god.call_ragnarok();
+				exit(1);
 			case ALLEGRO_EVENT_MOUSE_AXES:
 				mouseActive = true;
 				mousey = event.mouse.x; mousez = event.mouse.y;
@@ -249,7 +250,7 @@ void Allegro_io::disp_cardback(const Rect& zone, int oncard_number) const {
 }
 
 void Allegro_io::draw_boxed_text(const char* text, char color, char backgrd_color, int y, int z, int width) const {
-	al_draw_filled_rectangle(y, z, y+width, z+20, registeredColors[(int) backgrd_color]);
+	al_draw_filled_rectangle(y, z, y+width, z+40, registeredColors[(int) backgrd_color]);
 	al_draw_text(fonts[0], registeredColors[(int) color], y, z, 0, text);
 }
 

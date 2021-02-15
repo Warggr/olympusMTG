@@ -26,7 +26,6 @@ private:
 	bool mouseActive{false};
 	static const int screenY = 1500, screenZ = 900;
 	static const int fullcardY = 375, fullcardZ = 523;
-	static const int BLACK = 1, WHITE = 0, GREY = 2, HIGH1 = 10, HIGH2 = 11;
 
 	void refresh_display() const;
 	void disp_mana(Mana mana, int endy, int topz) const;

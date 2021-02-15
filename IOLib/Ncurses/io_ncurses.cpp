@@ -45,7 +45,7 @@ void Ncurses_io::print_text(const char* text, char color, int y, int z) const {
     mvwprintw(win, z, y, "%s", text);
 }
 
-void Ncurses_io::draw_boxed_text(const char* text, char color, int y, int z, int width) const {
+void Ncurses_io::draw_boxed_text(const char* text, char color, char backgr_color, int y, int z, int width) const {
 	WINDOW* win = winzones[y >> 11]; y = y & 0x7ff;
 	if(color & Abstract_io::HIGH2) wattron(win, A_BOLD);
 	if(color & Abstract_io::HIGH1) wattron(win, A_STANDOUT);
