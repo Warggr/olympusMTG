@@ -13,6 +13,7 @@ public:
 	std::string m2t() const;
 	bool operator>=(Mana pool) const;
 	bool operator>(Mana pool) const;
+	bool operator<(Mana pool) const;
 	void operator-=(Mana cost);
 	void operator+=(char color);
 	void operator+=(Mana m);

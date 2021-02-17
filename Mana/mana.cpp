@@ -1,4 +1,4 @@
-#include "lib_mana.h"
+#include "lib2_mana.h"
 
 bool Mana::operator>=(Mana cost) const {
 	for(int i=0; i<7; i++){ //checking total and all five colors
@@ -9,6 +9,11 @@ bool Mana::operator>=(Mana cost) const {
 
 bool Mana::operator>(Mana cost) const{
 	if((mana & 0xf) > (cost.mana & 0xf)) return true;
+	return false;
+}
+
+bool Mana::operator<(Mana cost) const{
+	if((mana & 0xf) < (cost.mana & 0xf)) return true;
 	return false;
 }
 

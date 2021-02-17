@@ -1,3 +1,4 @@
+#include <iostream>
 #include "../include/.olympus_main.h"
 #include "../include/2cards.h"
 #include "../include/4permanents.h"
@@ -80,15 +81,17 @@ void Option::check_and_pop(int n_of_zone, Player* pl){ //Default behavior. remov
 }
 
 bool SpellOption::iscastable(const Player* pl) const{
-	if(pl->manapool >= source->get_cost()) return true;
-	return false;
+    std::cout << "Called SpellOption::iscastable\n";
+	return pl->manapool >= cost;
 }
 
 bool PlayLand::iscastable(const Player* pl) const{
+    std::cout << "Called PlayLand::iscastable\n";
 	return !(pl->hasplayedland());
 }
 
 bool Option::iscastable(const Player* pl) const{
+    std::cout << "Called Option::iscastable\n";
 	return pl->manapool >= cost;
 }
 

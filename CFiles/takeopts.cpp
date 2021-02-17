@@ -42,15 +42,14 @@ void Player::choicephase(bool sorceryspeed){
 bool Player::choose_and_use_opt(bool sorceryspeed){ //AKA "giving priority". Returns false if a pass option was chosen
 	if(!disp_opt(sorceryspeed)){
 		god.myUI->clear_opts();
-		return NULL;
+		return false;
 	}
 	Option* iter = 0;
 	int metapos;
-	for(metapos = 0; !iter && metapos<3; metapos++){
+	for(metapos = 0; !iter && metapos<5; metapos += 2){ //there exists a castable opt; it must be at 0(instant), 2 (sorcery), or 4 (land)
 		iter = myoptions[metapos];
 	}
 	Option* choice = god.myUI->choose_opt(sorceryspeed, iter, this, metapos); //chooses opt, returns 0 if passing was chosen
-	//TODO: replace above 0 by a real value corresponding to the mouse position
 	if(!choice) return false;
 	Resolvable* cast = choice->cast_opt(this); //casts the spell
 	if(cast){
@@ -75,63 +74,23 @@ bool Player::add_triggers_to_stack(){
 	return true;
 }
 
-bool Player::get_down(Option*& iter, int& pos, int& metapos) const {
-	if(iter->next){
-		pos++;
-		iter = iter->next;
-		return true;
-	}
-	else{
-		int i = metapos+1;
-		while(i < NBMYOPTS-1 && myoptions[i] == 0) i++;
-		if(myoptions[i]){
-			metapos = i;
-			pos++;
-			iter = myoptions[metapos];
-			return true;
-		}
-		else return false;
-	}
-}
-
-bool Player::get_up(Option*& iter, int& pos, int& metapos) const {
-	if(iter->prev){
-		pos--;
-		iter = iter->prev;
-		return true;
-	}
-	else{
-		int i = metapos-1;
-		while(i>=0 && myoptions[i] == 0) i--;
-		if(i>=0 && myoptions[i]){
-			metapos = i;
-			pos--;
-			iter = myoptions[metapos];
-			while(iter->next) iter = iter->next;
-			return true;
-		}
-		else return false;
-	}
-}
-
 bool Player::disp_opt(bool sorceryspeed) const {
 	bool ret = false;
 	int dy, dz;
 	Rect rect = optZone->get_coordinates(&dy, &dz);
 	bool not_moved = true;
-	dispOptsOfCertainType(rect, dy, dz, not_moved, INSTANTOPTS, true);
+	dispOptsOfCertainType(rect, dy, dz, not_moved, 0, true);
 		if(!not_moved) ret = true;
-	dispOptsOfCertainType(rect, dy, dz, not_moved, SORCERYOPTS, sorceryspeed);
+	dispOptsOfCertainType(rect, dy, dz, not_moved, 2, sorceryspeed);
 		if(sorceryspeed && !not_moved) ret = true;
-	dispOptsOfCertainType(rect, dy, dz, not_moved, LANDOPTS, sorceryspeed && !(state & 16));
+	dispOptsOfCertainType(rect, dy, dz, not_moved, 4, sorceryspeed && !(state & 16));
 		if(sorceryspeed && !(state & 16) && myoptions[LANDOPTS]) ret = true;
-	dispOptsOfCertainType(rect, dy, dz, not_moved, TOOEXPENSIVE, false);
 
 	return ret;
 }
 
 void Player::dispOptsOfCertainType(Rect& zone, int dy, int dz, bool& not_moved, int type, bool castable) const {
-	for(Option* iter = myoptions[type]; iter!=0; iter = iter->next){
+	for(Option* iter = myoptions[type]; iter != 0 && iter!=myoptions[type+2]; iter = iter->next){
 		iter->disp(zone.yy(), zone.z, zone.width, not_moved, castable && iter->iscastable(this));
 		zone.shift(dy, dz);
 		not_moved = false;
