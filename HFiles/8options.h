@@ -24,7 +24,7 @@ class SpellOption: public Option{
 protected:
 	Card* source;
 public:
-	SpellOption(Card* src, Player* pl, int opttype);
+	SpellOption(Card* src);
 	SpellOption(Card* src, Option* next);
 	~SpellOption() {};
 	void ragnarok();
@@ -36,7 +36,7 @@ public:
 
 class PlayLand: public SpellOption{
 public:
-	PlayLand(Card* src, Player* pl);
+	PlayLand(Card* src, Option* next);
 	Resolvable* cast_opt(Player* pl);
 	bool iscastable(const Player* pl) const;
 };
@@ -70,7 +70,7 @@ public:
 	void disp(int y, int z, int width, bool highlight, bool castable) const {};
 };
 
-Option* mergeSortCosts(Option* start, int nb);
-Option* merge(Option* start1, Option* start2);
+Option* mergeSortCosts(Option* start, Option* end, int nb);
+Option* merge(Option* start1, Option* start2, Option* end);
 
 #endif //OLYMPUS_CLASSES_OPTIONS_2_H

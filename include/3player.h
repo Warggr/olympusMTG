@@ -8,16 +8,7 @@
 #include "../Mana/lib2_mana.h"
 #include "../Yggdrasil/headY_yggdrasil.h" //needs to know what a zone is
 
-#define NBMYOPTS 5
-#define INSTANTOPTS 0
-#define SORCERYOPTS 1
-#define LANDOPTS 2
-#define TOOEXPENSIVE 3
-#define NEXTTURNONLY 4
-
 #define SET_TIME_FLAGS(x) state = (state & 31) | (x);
-
-//possible options will be sorted by (&INSTANT) instants - (&LANDS) lands - (&SORCERY) sorceries
 
 struct PlayerPreStackElement{
 	PreResolvable* preRes;
@@ -68,8 +59,12 @@ private:
 	std::string name;
 	unsigned char state; //MSB t1-t2-t3-land-milled out- 0 life -?-? LSB; t3 = 32
 	//upkeep (000) main1(001) afterattack(010) afterblock(011) afterfirstdamage(100) main2(101) end(110) nonactive(111)
-	Option* myoptions[NBMYOPTS]{0}; //castable: all (mostly instants) - sorceries - lands
-	//not castable: too expensive instants - too expensive for the turn - sorcery-speed- castable only next turn (lands, tap)
+#define NBMYOPTS 6
+#define LANDOPTS 4
+	Option* myoptions[NBMYOPTS+1]{0};
+	//Options are sorted in a double-linked list. For convenience, we have pointers to the middle of that list, e.g. to the first land option.
+	//castable instant-speed - non-castable instant-speed - castable sorcery - expensive sorcery - land - other - NULL pointer
+	//Pointers to categories that don't exist are NULL.
 	CardZone myzones[3]; //library - graveyard - exile
 	std::forward_list<PlayerPreStackElement> prestack;
 	char player_id;
@@ -110,8 +105,6 @@ public:
 
 	bool choose_and_use_opt(bool sorceryspeed);
 	void choicephase(bool sorceryspeed);
-	bool get_up(Option*& iter, int& pos, int& metapos) const;
-	bool get_down(Option*& iter, int& pos, int& metapos) const;
 	
 	void insert_permanent(Card* source);
 	void remove_permanent(Permanent* perm, int nb_zone);

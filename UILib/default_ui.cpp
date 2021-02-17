@@ -107,7 +107,6 @@ Default_ui::Default_ui(Abstract_io* IOLib): Abstract_ui(IOLib){
 	
 	playerY[0] = 0; playerY[1] = 0; 
 	playerZ[0] = 0; playerZ[1] = playerH + 10*permanentZSize + 8*permanentZMargin - permanentZOverlap;
-	god.gdebug(DBG_IOUI) << playerZ[2] << "\n";
 	playerPerms[0] = new _UIElement(playerY[0], playerZ[0]+playerH, boardW, permanentZSize, permanentZSize+permanentZMargin, 5, _UIElement::vertical);
 	playerPerms[1] = new _UIElement(playerY[1], playerZ[1], boardW, permanentZSize, -permanentZSize-permanentZMargin, 5, _UIElement::vertical);
 	for(int i=0; i<2; i++) IOLib->declare_window(playerY[i], playerZ[i], boardW, playerH);

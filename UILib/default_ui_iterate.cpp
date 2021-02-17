@@ -3,7 +3,6 @@
 #include "../include/4permanents.h"
 #include "../include/7game.h"
 #include "../HFiles/8options.h"
-#include <iostream>
 
 void Default_ui::deadzone(){
 	direction = myIO->get_direction_key();
@@ -71,22 +70,20 @@ Option* Default_ui::choose_opt(bool sorceryspeed, Option* iter, Player* asker, i
 		//std::cout << "Mouse is active:";
 		while(rect.z + (pos+1)*dz < myIO->gmouseZ()){
 			//std::cout << "Going down - ";
-			if(!asker->get_down(iter, pos, metapos)){
-				//std::cout << "Can't go down";
-				break;
-			}
+			if(iter->next == 0) break;
+			++pos; iter = iter->next;
 		}
-		std::cout << std::endl;
 		while(rect.z + pos*dz > myIO->gmouseZ()){
-			if(!asker->get_up(iter, pos, metapos)) break;
+			if(iter->prev == 0) break;
+			--pos; iter = iter->prev;
 		}
 	}
 	while(1){
 		direction = myIO->get_direction_key();
 		iter->disp(rect.y + pos*dy, rect.z + pos*dz, rect.width, false, iter->iscastable(asker));
 		switch(direction){
-			case DOWN: asker->get_down(iter, pos, metapos); break;
-			case UP: asker->get_up(iter, pos, metapos); break;
+			case DOWN: if(iter->next){iter = iter->next; pos++; } break;
+			case UP: if(iter->prev){iter = iter->prev; pos--; } break;
 			case BACK:
 				clear_opts();
 				return NULL;
@@ -102,10 +99,12 @@ Option* Default_ui::choose_opt(bool sorceryspeed, Option* iter, Player* asker, i
 				if(myIO->gmouseY() > boardW + leftbarW){
 					bool gotthere = true;
 					while(rect.z + (pos+1)*dz < myIO->gmouseZ()){
-						if(!asker->get_down(iter, pos, metapos)){ gotthere = false; break; }
+						if(iter->next == 0){ gotthere = false; break; }
+						iter = iter->next; pos++;
 					}
 					while(rect.z + pos*dz > myIO->gmouseZ()){
-						if(!asker->get_up(iter, pos, metapos)){ gotthere = false; break; }
+						if(iter->prev == 0){ gotthere = false; break; }
+						iter = iter->prev; pos--;
 					}
 					if(gotthere) break; //don't iterate
 					else deadzone(); //wait for a suitable position, then iterate
@@ -121,7 +120,7 @@ Option* Default_ui::choose_opt(bool sorceryspeed, Option* iter, Player* asker, i
 					else myIO->message("Can't activate your opponent's abilities");
 				}
 			} break;
-			default: {};
+			default: break;
 		}
 		iter->disp(rect.y + pos*dy, rect.z+pos*dz, rect.width, true, iter->iscastable(asker));
 	}
