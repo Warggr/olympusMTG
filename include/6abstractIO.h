@@ -21,7 +21,7 @@ public:
 	virtual void message(const char* message) const = 0;
 	virtual void message(const std::string message) const = 0;
 	virtual void fulldisp() const = 0;
-	virtual void draw_permanent(const Rect& zone, char color, bool tapped, bool highlight, bool basicImg) const = 0;
+	virtual void draw_permanent(const Rect& zone, const std::string name, char color, bool tapped, bool highlight, bool basicImg) const = 0;
 	virtual void disp_header(const Rect& zone, const char* name, int life, char phase, bool highlight, Mana pool) const = 0;
 	virtual void poster(const std::string name, Mana manacost, char color, const char* types,
 		const std::vector<std::string> lines, int power, int toughness, char frametype, bool watermark) const = 0;

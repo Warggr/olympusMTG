@@ -29,7 +29,7 @@ public:
 	void harmonize(const Rect& poster, const Rect& message, int nb_winzones);
 	void declare_window(int& leftY, int& topz, int width, int height);
 	void fulldisp() const {};
-	void draw_permanent(const Rect& zone, char color, bool tapped, bool highlight, bool basicImg) const;
+	void draw_permanent(const Rect& zone, const std::string name, char color, bool tapped, bool highlight, bool basicImg) const;
 	void poster(const std::string name, Mana manacost, char color, const char* types,
 		const std::vector<std::string> lines, int power, int toughness, char frametype, bool watermark) const;
 	void print_text(const char* text, char color, int x, int y) const;

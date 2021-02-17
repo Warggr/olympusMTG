@@ -62,13 +62,14 @@ void Ncurses_io::message(const char* text) const {
 	mvwprintw(message_zone, 0, 0, "%s", text);
 }
 
-void Ncurses_io::draw_permanent(const Rect& zone, char color, bool tapped, bool highlight, bool basicImg) const {
+void Ncurses_io::draw_permanent(const Rect& zone, const std::string name, char color, bool tapped, bool highlight, bool basicImg) const {
 	WINDOW* win = winzones[zone.zone()];
 	wattron(win, COLOR_PAIR(color+1));
 	char sep = tapped ? '/' : '|';
 	if(highlight) wattron(win, A_STANDOUT);
 
-	mvwprintw(win, zone.z, zone.yy(), "%c", sep); mvwprintw(win, zone.z, zone.yy()+zone.width, "%c", sep);
+	mvwprintw(win, zone.z, zone.yy(), "%c", sep); wprintw(win, "%s", name.c_str());
+	mvwprintw(win, zone.z, zone.yy()+zone.width, "%c", sep);
 	mvwprintw(win, zone.z+1, zone.yy(), "%c", sep); for(int i=0; i<zone.width-2; i++) wprintw(win, " "); wprintw(win, "%c", sep);
 	wmove(win, zone.z+2, zone.yy()); for(int i=0; i<zone.width; i++) wprintw(win, "-");
 

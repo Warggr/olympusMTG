@@ -20,15 +20,13 @@ void SpellOption::disp(int y, int z, int width, bool highlight, bool castable) c
 }
 
 void Permanent::disp(const Rect& zone, bool highlight) const {
-	god.myIO->draw_permanent(zone, main_color(color), !((bool)(flags&1)), highlight, false);
+	god.myIO->draw_permanent(zone, *name, main_color(color), !((bool)(flags&1)), highlight, false);
 	if(highlight) source->poster();
-	god.myIO->print_text(*name, 0, zone.y, zone.z);
 }
 
 void Land::disp(const Rect& zone, bool highlight) const {
-	god.myIO->draw_permanent(zone, main_color(color), !((bool)(flags&1)), highlight, true);
+	god.myIO->draw_permanent(zone, *name, main_color(color), !((bool)(flags&1)), highlight, true);
 	if(highlight) source->poster();
-	god.myIO->print_text(*name, 0, zone.y, zone.z);
 }
 
 void Creature::disp(const Rect& zone, bool highlight) const {
