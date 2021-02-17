@@ -16,7 +16,7 @@ include_directories($HEADER_DIR)
 file(GLOB SOURCES "${SOURCE_DIR}/*.cpp")
 
 set(IOLib "Allegro" CACHE STRING "Use Allegro as I/O library")
-set_property(CACHE IOLib PROPERTY STRINGS "Allegro" "Ncurses")
+set_property(CACHE IOLib PROPERTY STRINGS "Allegro" "Ncurses" "Nano")
 
 add_subdirectory(Dictionary)
 add_subdirectory(IOLib)

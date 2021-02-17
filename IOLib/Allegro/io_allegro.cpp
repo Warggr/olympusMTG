@@ -53,10 +53,10 @@ void Allegro_io::erase_surface(int left, int top, int width, int height){
 void Allegro_io::disp_header(int y, int z, int width, int height, const char* name, int life, char state, bool highlight, Mana pool){
 	if(life >= 1000) raise_error("Life total too high to be shown, most likely a bug");
 	int x = highlight ? HIGH2 : WHITE;
-	al_draw_text(fonts[0], registeredColors[x], y + width/2 - 20, z + 3, 0, name);
-	char lifec[4]; std::sprintf(lifec, "%d", life);
-	al_draw_text(fonts[1], registeredColors[x], y + width/2 - 15, z + 23, 0, lifec);
-	disp_mana(pool, y+width, height);
+	al_draw_text(fonts[0], registeredColors[x], zone.yy() + zone.width/2 - 20, zone.z + 3, 0, name);
+	char lifec[4]; std::sprintf(lifec, "%4d", life);
+	al_draw_text(fonts[1], registeredColors[x], zone.yy() + zone.width/2 - 15, zone.z + 23, 0, lifec);
+	disp_mana(pool, zone.y+zone.width, zone.height);
 }
 
 void Allegro_io::disp_mana(Mana mana, int endy, int topz){
