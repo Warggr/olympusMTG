@@ -45,17 +45,24 @@ class Spell;
 class Trigger;
 class TriggerEvent;
 
+class StaticAb;
+struct ModifListNode;
+
+class BoardN;
+class AbstractN;
+template <typename T> class CollectionTN;
+template <typename T> class PermanentTN;
+class APPermanentN;
+
+template <typename T> using PContainer = CollectionTN<T>;
+
 class Ability; //Represents a printed sentence such as "deal 3 damage", "Choose a creature and sacrifice it" or whatever. No targets chosen
-//PreResolvables will contain Abilities and their necessary target list
-class PreResolvable;
+class PreResolvable; //PreResolvables will contain Abilities and their necessary target list
 
 class Abstract_ui;
 class Abstract_io;
 class _UIElement;
-
 typedef _UIElement UIElement;
-
-class Dictionary;
 
 struct externVarContainer{
 	Game* game;
@@ -66,27 +73,32 @@ struct externVarContainer{
 
 	externVarContainer();
 	std::ofstream& gdebug(char password);
-	void minimalKill();
+	void call_ragnarok();
+	void initialize(Game* gm, char debug_flags);
+};
+
+struct Rect{
+	uint16_t y, z;
+	uint16_t width, height;
+
+	int zone() const {return y >> 11; }
+	int yy() const {return y & 0x07ff; }
+	int right() const {return y + width; }
+	int bottom() const {return z+height; }
+
+	Rect() = default;
+	Rect(int _y, int _z, int _width, int _height): y((int) _y), z((int) _z), width((int) _width), height((int) _height){};
+	void shift(int dy, int dz){y += dy; z += dz; }
 };
 
 extern struct externVarContainer god;
 
-#include "1general.h"
-#ifndef MANUAL_IMPORT_OF_OLYMPUS_HEADERS
-#include "head1_constants.h"
-#include "2cards.h"
-#include "3player.h"
-#include "4board.h"
-#include "5resolvables.h"
-#include "6abstractIO.h"
-#include "7abilities.h" //contains PreResolvable which is kinda important and needed by Options
-#include "8game.h"
-// The following are considered unimportant and must be imported manually
-//#include "8options.h"
-//#include "9modifs.h"
-//#include "10triggers.h"
-//#include "13game.h" 
-#endif
+typedef int Identifier; //ttttt o ccccc ssss 0000 0000 0000 0000, in inverse order!
+//(permanent?) object type - owner - color - subtypes - is_an_artifact bit - is_an_enchantment bit - CMC - specific stuff
+
+inline bool fulfills(Identifier chars, Identifier requs, Identifier test){
+	return (((chars^test)&requs) == 0);
+}
 
 #define DBG_IMPORTANT 0x1
 #define DBG_READFILE 0x2
@@ -95,5 +107,9 @@ extern struct externVarContainer god;
 #define DBG_TARGETING 0x10
 #define DBG_RAGNAROK 0x20
 #define DBG_IOUI 0x40
+
+enum DirectioL{ UP, DOWN, LEFT, RIGHT, BACK, ENTER, MOUSE, NOT_RECOGNIZED};
+
+[[noreturn]] void raise_error(const std::string& message);
 
 #endif //OLYMPUS_CLASSES_H

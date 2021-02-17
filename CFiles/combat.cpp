@@ -1,15 +1,17 @@
 #include ".header_link.h"
+#include "../Yggdrasil/headB_board.h"
 
 bool Player::chooseattackers(){
-	if(mycreas.empty()) return false;
-	bool ret = god.myUI->chooseattackers(mycreas, myattackers, player_id);
+	if(myboard.mycreas.empty()) return false;
+	myboard.myattackers = myboard.mycreas.def_new_state();
+	bool ret = god.myUI->chooseattackers(myboard.mycreas, *(myboard.myattackers), player_id);
 	disp_zone(3);
 	disp_zone(4);
 	return ret;
 }
 
-void Player::chooseblockers(std::list<Creature>& attackers, UIElement* attackerDisplay){
-	god.myUI->chooseblockers(mycreas, attackers, permUI[3], attackerDisplay);
+void Player::chooseblockers(StatedCollectionTN<Creature>& attackers, UIElement* attackerDisplay){
+	god.myUI->chooseblockers(myboard.mycreas, attackers, permUI[3], attackerDisplay);
 }
 
 void Creature::resolve_attack(Player* nextopponent){
@@ -23,7 +25,7 @@ void Creature::resolve_attack(Player* nextopponent){
 	}
 	else{
 		//int i = 0;
-		for(std::list<Creature*>::iterator itb = assigned_bl.begin(); itb != assigned_bl.end(); itb++){
+		for(auto itb = assigned_bl.begin(); itb != assigned_bl.end(); itb++){
 			//god.myIO->message(&("How many damage to: " + (*itb)->describe())[0]);
 			//int a = 5; //mvwscanw(winzones[6],1,0, "%d", &a); //the = 5 is there as long as IO does not give us a "getInt" function
 			//if(a + i > iter->get_power()) a = iter->get_power();
@@ -37,11 +39,12 @@ void Creature::resolve_attack(Player* nextopponent){
 
 void Player::damagestep(){
 	SET_TIME_FLAGS(0x80);
-	if(myattackers.empty()) return;
-	for(auto iter = myattackers.begin(); iter != myattackers.end(); iter++){
-		iter->resolve_attack(nextopponent);
+	if(myboard.myattackers == 0) return;
+	for(auto & myattacker : *myboard.myattackers){
+		myattacker.resolve_attack(nextopponent);
 	}
-	mycreas.splice(mycreas.begin(), myattackers); //taking back fighters
+	myboard.myattackers = nullptr;
+	myboard.mycreas.restate(); //destroying attackers list
 	god.game->statebasedactions();
 }
 

@@ -1,4 +1,4 @@
-#include "head4_dictionary.h"
+#include "lib1_dictionary.h"
 
 SearchTreeNode::~SearchTreeNode(){
 	delete[] nodename;

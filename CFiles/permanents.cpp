@@ -1,6 +1,9 @@
 #include ".header_link.h"
 #include "../HFiles/8options.h"
 #include "../HFiles/9modifs.h"
+#include "../Yggdrasil/headB_board.h"
+#include "../HFiles/headC_constants.h"
+#include "../HFiles/12abilities.h"
 
 //Resolvables are deleted externally by takeopts after having been resolved.
 //As a general rule, the one to take the Resolvable out of the stack is the one to destroy it
@@ -36,13 +39,7 @@ void Player::resolve_playland(Card* source){
 }
 
 void Player::insert_permanent(Card* source){
-	char t = source->get_type();
-	switch(t){
-		case 1: mylands.emplace_front(source, this); break;
-		case 2: myartos.emplace_front(source, this); break;
-		case 3: mysuperfriends.emplace_front(source, this); break;
-		case 4: mycreas.emplace_front(source, this); break;
-	}
+	myboard.insert(source, this);
 }
 
 Land::Land(Card* src, Player* pl): Permanent(src, pl, 0){
@@ -51,9 +48,11 @@ Land::Land(Card* src, Player* pl): Permanent(src, pl, 0){
 	pl->check_too_expensive();
 }
 
-Permanent::Permanent(Card* src, Player* pl, int nb_zone): flags(1), keywords(0), source(src), ctrl(pl), color(source->get_color()), nb_actabs(0), first_actab(0) {
-	target_flags = 0x40;
-	name = source->get_name();
+Permanent::Permanent(Card* src, Player* pl, int nb_zone): Target(src->get_name_ref()),
+	source(src), ctrl(pl), first_actab(0), existing_statics(0),
+	nb_actabs(0), flags(1), keywords(0), color(source->get_color())
+{
+	t_type = 0x40;
 	src->get_permabs(&first_actab, &nb_actabs);
 	src->get_triggers(olympus::trigger_types::PermETB, triggers_permanent[0]);
 	src->get_triggers(olympus::trigger_types::PermLTB, triggers_permanent[1]);
@@ -64,7 +63,7 @@ Permanent::Permanent(Card* src, Player* pl, int nb_zone): flags(1), keywords(0),
 }
 
 Creature::Creature(Card* src, Player* pl): Permanent(src, pl, 3), Damageable(0, src){
-	target_flags = 0x50; //Permanent(0x40) and Creature (0x10)
+	t_type = 0x50; //Permanent(0x40) and Creature (0x10)
 
 	const char* tmp = src->get_flavor_text();
 	self_power = tmp[0];
@@ -74,28 +73,33 @@ Creature::Creature(Card* src, Player* pl): Permanent(src, pl, 3), Damageable(0, 
 	src->get_triggers(olympus::trigger_types::CreaAttacks, triggers_creature[0]);
 }
 
+Planeswalker::Planeswalker(Card* src, Player* pl): Permanent(src, pl, 2), Damageable((int) src->get_flavor_text()[0], src){};
+
 Damageable::Damageable(int lif, Card* source): life(lif){
 	source->get_triggers(olympus::trigger_types::DamageableIsDamaged, is_damaged);
 }
 
 void Player::remove_permanent(Permanent* perm, int nb_zone){
 	switch(nb_zone){
-	    case 1: remove_permanent_inlist<Land>(mylands, dynamic_cast<Land*>(perm)); break;
-		case 2: remove_permanent_inlist<Artifact>(myartos, dynamic_cast<Artifact*>(perm)); break;
-		case 3: remove_permanent_inlist<Planeswalker>(mysuperfriends, dynamic_cast<Planeswalker*>(perm)); break;
-		case 4: remove_permanent_inlist<Creature>(mycreas, dynamic_cast<Creature*>(perm)); break;
-		case 5: remove_permanent_inlist<Creature>(myattackers, dynamic_cast<Creature*>(perm)); break;
+	    case 1: remove_permanent_inlist<Land>(&myboard.mylands, dynamic_cast<Land*>(perm)); break;
+		case 2: remove_permanent_inlist<Artifact>(&myboard.myartos, dynamic_cast<Artifact*>(perm)); break;
+		case 3: remove_permanent_inlist<Planeswalker>(&myboard.mysuperfriends, dynamic_cast<Planeswalker*>(perm)); break;
+		case 4: remove_permanent_inlist<Creature>(&myboard.mycreas, dynamic_cast<Creature*>(perm)); break;
 #ifdef NDEBUG
-		default: raise_error("Permanent of no type?");
+		default:
+		god.gdebug(DBG_IMPORTANT) << "Error: Removed non-permanent" << std::endl;
+		god.call_ragnarok();
+		std::cout << "Error: Removed non-permanent" << std::endl;
+		exit(1);
 #endif
 	}
 }
 
 template <class PermType>
-void Player::remove_permanent_inlist(std::list<PermType>& perms, PermType* asup){
-	for(auto iter = perms.begin(); iter!=perms.end(); iter++){
+void Player::remove_permanent_inlist(PContainer<PermType>* perms, PermType* asup){ //The source has already been sent to graveyard. This function only utterly deletes the Permanent.
+	for(auto iter = perms->begin(); iter!=perms->end(); iter++){
 		if(&(*iter) == asup){
-			perms.erase(iter);
+			iter.get_pointed()->obliterate();
 			return;
 		}
 	}
@@ -103,24 +107,12 @@ void Player::remove_permanent_inlist(std::list<PermType>& perms, PermType* asup)
 
 void Permanent::exile(){
 	ctrl->puttozone(source, 2); //putting source in exile
-	if(source->get_type() == 4) god.gdebug(DBG_TARGETING) << "A Creature was exiled using Permanent's destroy method. Please make sure that creature was definitely not attacking.";
 	ctrl->remove_permanent(this, source->get_type());
 }
 
 void Permanent::destroy(){
 	ctrl->puttozone(source, 1); //putting source in graveyard
-	if(source->get_type() == 4) god.gdebug(DBG_TARGETING) << "A Creature was destroyed using Permanent's destroy method. Please make sure that creature was definitely not attacking.";
 	ctrl->remove_permanent(this, source->get_type());
-}
-
-void Creature::destroy(bool wasattacking){
-	ctrl->puttozone(source, 1); //putting source in graveyard
-	ctrl->remove_permanent(this, wasattacking ? 5 : 4);
-}
-
-void Creature::exile(bool wasattacking){
-	ctrl->puttozone(source, 2); //putting source in exile
-	ctrl->remove_permanent(this, wasattacking ? 5 : 4);
 }
 
 bool Permanent::directactivate(){
@@ -155,7 +147,7 @@ void Land::untap(){
 }
 
 void Creature::hit(Damageable* tgt) const{
-	tgt->damage(get_power());
+	tgt->damage(get_power(), (Target*) this);
 }
 
 void Planeswalker::activate() {
@@ -164,11 +156,49 @@ void Planeswalker::activate() {
     char getkey = god.myIO->get_direction_key();
     char x;
     switch (getkey) {
-        case olympus::directions::SPACE: x = 2; break;
-        case olympus::directions::DOWN: x = 1; break;
-        case olympus::directions::UP:
+        case BACK: x = 2; break;
+        case DOWN: x = 1; break;
+        case UP:
         default: x = 0; break;
     }
     loyalty -= loyalty_costs[(int) x];
     god.game->addtostack(new Resolvable(ctrl, loyalty_abs + x, (Target*) this));
+}
+
+iterator<Permanent, false> BoardN::pbegin() {return !(mylands.empty()) ? mylands.pbegin() :
+    !(myartos.empty()) ? myartos.pbegin() :
+    !(mysuperfriends.empty()) ? mysuperfriends.pbegin() :
+    !(mycreas.empty()) ? mycreas.pbegin() :
+    iterator<Permanent, false>();
+}
+
+iterator<Permanent, false> BoardN::pend() const {return !(mycreas.empty()) ? mycreas.pend() :
+    !(mysuperfriends.empty()) ? mysuperfriends.pend() :
+    !(myartos.empty()) ? myartos.pend() :
+    !(mylands.empty()) ? mylands.pend() :
+    iterator<Permanent, false>();
+}
+
+iterator<Permanent, true> BoardN::cpbegin() const {return !(mylands.empty()) ? mylands.cpbegin() :
+    !(myartos.empty()) ? myartos.cpbegin() :
+    !(mysuperfriends.empty()) ? mysuperfriends.cpbegin() :
+    !(mycreas.empty()) ? mycreas.cpbegin() :
+    iterator<Permanent, true>();
+}
+
+iterator<Permanent, true> BoardN::cpend() const {return !(mycreas.empty()) ? mycreas.cpend() :
+    !(mysuperfriends.empty()) ? mysuperfriends.cpend() :
+    !(myartos.empty()) ? myartos.cpend() :
+    !(mylands.empty()) ? mylands.cpend() :
+    iterator<Permanent, true>();
+}
+
+void BoardN::insert(Card *to_add, Player *pl) {
+    switch(to_add->get_type()){
+        case 1: mylands.construct_pure_child(to_add, pl); break;
+        case 2: myartos.construct_pure_child(to_add, pl); break;
+        case 3: mysuperfriends.construct_pure_child(to_add, pl); break;
+        case 4: mycreas.construct_pure_child(to_add, pl); break;
+        default: std::cout << "Internal error: trying to add non-permanent to battlefield." << std::endl; exit(1);
+    }
 }

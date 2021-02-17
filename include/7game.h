@@ -1,13 +1,15 @@
-#ifndef OLYMPUS_CLASSES_GAME_8_H
-#define OLYMPUS_CLASSES_GAME_8_H
-#include "3player.h"
+#ifndef OLYMPUS_CLASSES_GAME_7_H
+#define OLYMPUS_CLASSES_GAME_7_H
+
+#include "../include/3player.h"
+#include "../include/4permanents.h"
 
 class Game{
 private:
 	std::forward_list<Resolvable*> stack; //Guideline: the stack has full ownership of Resolvables. Any function calling popfromstack is responsible for deleting the resolvable
-	Player* players[2];
+	Player* players[2]{0}; //TODO make it a non-pointer?
 	Player* active_player;
-	char* logbook[LOGLEN];
+	char* logbook[LOGLEN]{0};
 	UIElement* stack_ui;
 	UIElement* logbook_ui;
 public:
@@ -33,7 +35,7 @@ public:
 	void remove_from_stack(Resolvable* rs);
 	void statebasedactions();
 
-	Resolvable* iterate_stack(float zImposed, char* direction);
+	Resolvable* iterate_stack(float zImposed, DirectioL& direction);
 };
 
-#endif //OLYMPUS_CLASSES_GAME_13_H
+#endif //OLYMPUS_CLASSES_GAME_7_H

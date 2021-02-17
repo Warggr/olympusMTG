@@ -1,4 +1,4 @@
-#include "head2_mana.h"
+#include "lib_mana.h"
 
 bool Mana::operator>=(Mana cost) const {
 	for(int i=0; i<7; i++){ //checking total and all five colors
@@ -16,8 +16,7 @@ char Mana::m2color() const {
 	char color = 0;
 	for(int i=0; i<6; i++){
 		if(mana & (15 << 4*i)){
-			if(color == 0) color = i;
-			else color = 6;
+			color += 1 << i;
 		}
 	}
 	return color;

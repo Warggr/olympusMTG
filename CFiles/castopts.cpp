@@ -1,6 +1,12 @@
-#include ".header_link.h"
-#include "../HFiles/9modifs.h"
+#include "../include/.olympus_main.h"
+#include "../include/2cards.h"
+#include "../include/4permanents.h"
+#include "../include/5resolvables.h"
+#include "../include/6abstractIO.h"
+#include "../include/7game.h"
 #include "../HFiles/8options.h"
+#include "../HFiles/9modifs.h"
+#include "../HFiles/12abilities.h"
 
 Resolvable* Game::popfromstack(){
 	if(stack.empty()) return 0;
@@ -33,11 +39,9 @@ Resolvable* SpellOption::cast_opt(Player* pl){ //spell removed from everything b
 	return typecasted;
 }
 
-Spell::Spell(Card* src, Player* ct):
-Resolvable(ct, src->get_preRes()), source(src) {
-}
+Spell::Spell(Card* src, Player* ct): Resolvable(ct, src->get_preRes()), source(src) {}
 
-Resolvable::Resolvable(Player* ct, const PreResolvable* tocast, Target* org): ctrl(ct){
+Resolvable::Resolvable(Player* ct, const PreResolvable* tocast, Target* org): Target(&description), ctrl(ct){
 	//Technically, Resolvables are put on the stack, then targets are chosen. Olympus decided that objects with no targets chosen were PreRes
 	//and thus not on the stack. However, it should be displayed somewhere.
 	origin = std::make_unique<Targeter>(org);

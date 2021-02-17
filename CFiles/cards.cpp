@@ -1,5 +1,4 @@
 #include ".header_link.h"
-#include "../HFiles/10triggers.h"
 #include <cstdlib>
 #include <ctime>
 
@@ -28,20 +27,6 @@ int CardZone::drawto(CardZone* target, int nb_cards){
 	target->inc_size(i);
 	cards.splice_after(target->cards.before_begin(), target->cards, cards.before_begin(), iter);
 	return i;
-}
-
-void CardOracle::getpt(int* pow, int* tou) const{
-	*pow = (int) flavor_text[0];
-	*tou = (int) flavor_text[1];
-}
-
-void CardOracle::get_triggers(const char type, TriggerEvent& trigEv) const{
-	for(int i=0; i<nb_triggers; i++){
-		if(typeof_triggers[i] == type){
-			trigEv.add_trigger(&(triggers[i]));
-			//std::cout << "Trigger of type " << type << "was found and added" << std::endl;
-		}
-	}
 }
 
 void Player::puttozone(Card* x, char nb_zone){

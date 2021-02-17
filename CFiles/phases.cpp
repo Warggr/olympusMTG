@@ -1,4 +1,5 @@
 #include ".header_link.h"
+#include "../Yggdrasil/headB_board.h"
 
 #include <algorithm>
 //GUIDELINE: anything that calls statebasedactions() should be able to return afterwards
@@ -29,18 +30,10 @@ bool Player::turn(){
 	return false;
 }
 
-void Player::for_each_perm(void (*fun)(Permanent& p)){
-	for_each(mycreas.begin(), mycreas.end(), *fun);
-	for_each(myartos.begin(), myartos.end(), *fun);
-	for_each(mysuperfriends.begin(), mysuperfriends.end(), *fun);
-	for_each(mylands.begin(), mylands.end(), *fun);
-	for_each(myattackers.begin(), myattackers.end(), *fun);
-}
-
 void Player::untapstep(){
 	state = state & 15; //resetting time and land flags
 	nb_mainphase = 0;
-	for_each_perm([](Permanent& p){p.declare_beginturn(); });
+	std::for_each(myboard.pbegin(), myboard.pend(), [](Permanent& p){p.declare_beginturn(); });
 	god.game->disp();
 }
 
@@ -61,13 +54,13 @@ void Player::declareattackersstep(){
 }
 void Player::declareblockersstep(){
 	SET_TIME_FLAGS(0x60);
-	if(!(myattackers.empty())) nextopponent->chooseblockers(myattackers, permUI[4]);
+	if(myboard.myattackers) nextopponent->chooseblockers(*myboard.myattackers, permUI[4]);
 }
 void Player::endstep(){
 	SET_TIME_FLAGS(0xc0);
 }
 void Player::cleanupstep(){
-	for_each(mycreas.begin(), mycreas.end(), [](Creature& c){c.set_life(0); });
+	std::for_each(myboard.mycreas.begin(), myboard.mycreas.end(), [](Creature& c){c.set_life(0); });
 	SET_TIME_FLAGS(0xe0);
 }
 void Player::empty_pool(){
@@ -83,19 +76,11 @@ void Game::statebasedactions(){
 
 bool Player::statebasedactions(){
 	if(life <= 0) return true;
-	for(auto iter = mycreas.begin(); iter != mycreas.end(); iter = iter){
+	for(auto iter = myboard.mycreas.begin(); iter != myboard.mycreas.end(); iter = iter){
 		if(iter->get_toughness() + iter->get_life() <= 0){
 			auto i2 = iter;
 			iter++;
-			i2->destroy(3); //we must get the iterator out before destroying a list element
-		}
-		else iter++;
-	}
-	for(auto iter = myattackers.begin(); iter != myattackers.end(); iter = iter){
-		if(iter->get_toughness() + iter->get_life() <= 0){
-			auto i2 = iter;
-			iter++;
-			i2->destroy(4); //we must get the iterator out before destroying a list element
+			i2->destroy();
 		}
 		else iter++;
 	}

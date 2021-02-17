@@ -1,6 +1,6 @@
-#include "../Dictionary/head4_dictionary.h"
-#include "../HFiles/head3_readfiles.h"
-#include "../include/head1_constants.h"
+#include "../Dictionary/lib1_dictionary.h"
+#include "../HFiles/headR_readfiles.h"
+#include "../HFiles/headC_constants.h"
 #include <fstream>
 #include <cstring>
 #include <iostream>
@@ -25,11 +25,10 @@ char read_typeof_target(const char* txt){ //player 80 - permanent 40 - spell (we
 }
 
 int read_ability_type(std::ifstream& myfile){ //gets action and the following space
-	static const Dictionary dict_abiltypes(olympus::nb_abilities, olympus::all_abilities);
 	char ability[100];
 	myfile >> ability;
 	myfile.get();
-	int ret = dict_abiltypes.find(ability);
+	int ret = olympus::dict_abiltypes.find(ability);
 	if(ret == -1){
 		raise_error(std::string("Invalid ability type '") + ability + "'"); return 0;
 	}
@@ -39,10 +38,12 @@ int read_ability_type(std::ifstream& myfile){ //gets action and the following sp
 char read_ability_parameter(std::ifstream& myfile, char* allassignedvariables, int* nbassignedparams){ //reads only the parameter itself.
 	char a = myfile.peek();
 	god.gdebug(DBG_READFILE) << "Read parameter starting with " << a << std::endl;
-	if(a == ' ' || a == '.'){
+	switch(a){
+	case ' ':
+		myfile.get();
+	case '.': case ',':
 		return 0;
-	}
-	else if(a == 'y'){
+	case 'y':{
 		char you[4];
 		myfile.get(you, 4);
 		if(strcmp("you", you) == 0){
@@ -52,7 +53,7 @@ char read_ability_parameter(std::ifstream& myfile, char* allassignedvariables, i
 			raise_error("The only valid parameter starting with 'y' is 'you'"); return 0;
 		}
 	}
-	else if(a == '%'){ //possible options: player, planeswalker, permanent, card, spell, creature
+	case '%':{ //possible options: player, planeswalker, permanent, card, spell, creature
 		char types = 0;
 		//(additional constraints, such as 'target Minotaur', or even 'target artifact', will be saved somewhere else, I don't really care)
 		myfile.get(); //getting %
@@ -80,13 +81,15 @@ char read_ability_parameter(std::ifstream& myfile, char* allassignedvariables, i
 			return allassignedvariables[index] & 0x0f;
 		}
 	}
-	else if(('0' <= a && a <= '9') || a == '-'){
-		int b;
-		myfile >> b;
-		god.gdebug(DBG_READFILE) << "Read number literal " << b << std::endl;
-		return b;
-	}
-	else{
-		raise_error("Invalid ability parameter."); return 0;
+	default:
+		if(('0' <= a && a <= '9') || a == '-'){
+			int b;
+			myfile >> b;
+			god.gdebug(DBG_READFILE) << "Read number literal " << b << std::endl;
+			return b;
+		}
+		else{
+			raise_error("Invalid ability parameter."); return 0;
+		}
 	}
 }

@@ -7,7 +7,7 @@
 //We will use two types of lists of Modifs; output lists (all targets of a Spell or all creatures affected by an ability; length mostly constant);
 //and input lists (all Modifs affecting a certain Targetable, which will all become invalid if the creature disappears or gains protection)
 //In short: Resolvables contains (an array of) Targeters, and Targets contain (a list of) Targeter pointers
-//Additionally, Triggers contain an Origin targeter, which is little more than a pointer. such targeters are called 'interenal targeters' and have actually no game relevance
+//Additionally, Triggers contain an Origin targeter, which is little more than a pointer. such targeters are called 'internal targeters' and have actually no game relevance
 
 class Targeter{
 private:

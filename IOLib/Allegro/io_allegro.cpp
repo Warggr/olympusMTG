@@ -1,16 +1,36 @@
-#include "11allegroIO.h"
+#include "lib3_allegroIO.h"
 #include <list>
 #include <iostream>
 
 Abstract_io* new_IOLib(){return new Allegro_io; }
 
-void Allegro_io::draw_permanent(int left, int top, int width, int height, char color, bool tapped, bool highlight, bool basicImg){
-	if(basicImg) al_draw_scaled_bitmap(basiclands, 384*(color-1), (500-384)/2, 384, 384, left, top, width, height, 0);
-	else al_draw_filled_rectangle(left, top, left+width, top+height, registeredColors[(int) color + 3]);
+void al_draw_scaled_bitmap(ALLEGRO_BITMAP* bitmap, int picY, int picZ, int picW, int picH, const Rect& zone, char flags){
+	al_draw_scaled_bitmap(bitmap, picY, picZ, picW, picH, zone.yy(), zone.z, zone.width, zone.height, flags);
+}
 
-	if(tapped) al_draw_bitmap(tapsymbol, left, top, 0);
+void Allegro_io::disp_mana(Mana mana, int endy, int topz) const {
+	int m = mana.m2i();
+	char generic = (char) (m&0xf);
+	for(int i=0; i<6; i++){
+		m = m >> 4;
+		for(int j=0; j < (m&0xf); j++){
+			endy -= 24;
+			generic--;
+			al_draw_scaled_bitmap(ManaColorSym[i], 0, 0, 160, 160, endy, topz, 24, 24, 0);
+		}
+	}
+	if(generic!=0){
+		al_draw_scaled_bitmap(ManaNumSym[(int) generic], 0, 0, 160, 160, endy-24, topz, 24, 24, 0);
+	}
+}
+
+void Allegro_io::draw_permanent(const Rect& zone, char color, bool tapped, bool highlight, bool basicImg) const {
+	if(basicImg) al_draw_scaled_bitmap(basiclands, 384*(main_color(color)-1), (500-384)/2, 384, 384, zone, 0);
+	else draw_full_rectangle(main_color(color) + 3, zone);
+
+	if(tapped) al_draw_bitmap(tapsymbol, zone.yy(), zone.z, 0);
 	const int lw = 10;
-	if(highlight) al_draw_rectangle(left+lw/2, top+lw/2, left+width-lw/2, top+height-lw/2, registeredColors[Abstract_io::HIGH2], lw);
+	if(highlight) al_draw_rectangle(zone.yy()+lw/2, zone.z+lw/2, zone.yy()+zone.width-lw/2, zone.z+zone.height-lw/2, registeredColors[Abstract_io::HIGH2], lw);
 }
 
 int Allegro_io::getInt(int lowerBound, int upperBound){
@@ -25,32 +45,33 @@ int Allegro_io::getInt(int lowerBound, int upperBound){
 		switch(event.type){
 			case ALLEGRO_EVENT_KEY_CHAR:
 				switch(event.keyboard.keycode){
-					case ALLEGRO_KEY_DOWN: ret--;
-					case ALLEGRO_KEY_UP: ret++;
+				    case ALLEGRO_KEY_DOWN: ret--; break;
+					case ALLEGRO_KEY_UP: ret++; break;
 					case ALLEGRO_KEY_ENTER: return ret;
-					case ALLEGRO_KEY_RIGHT: ret += 5;
-					case ALLEGRO_KEY_LEFT: ret -= 5;
+					case ALLEGRO_KEY_RIGHT: ret += 5; break;
+					case ALLEGRO_KEY_LEFT: ret -= 5; break;
 					default: return 0;
 				} break;
 			case ALLEGRO_EVENT_DISPLAY_CLOSE:
-				god.minimalKill();
-				exit(1);
+				god.call_ragnarok();
 		}
 		if(ret < lowerBound) ret = lowerBound;
 		if(ret > upperBound) ret = upperBound;
 	}
 }
 
-void Allegro_io::getResolution(int* y, int* z){
-	*y = fullcardY;
-	*z = fullcardZ;
+void Allegro_io::getResolution(int& y, int& z, bool& hasMouseSupport, int& linesize) const {
+	y = screenY;
+	z = screenZ;
+	hasMouseSupport = true;
+	linesize = 20;
 }
 
-void Allegro_io::erase_surface(int left, int top, int width, int height){
-	al_draw_scaled_bitmap(wallpaper, left, top, width, height, left, top, width, height, 0);
+void Allegro_io::erase_surface(const Rect& zone) const {
+	al_draw_scaled_bitmap(wallpaper, zone.yy(), zone.z, zone.width, zone.height, zone.yy(), zone.z, zone.width, zone.height, 0);
 }
 
-void Allegro_io::disp_header(int y, int z, int width, int height, const char* name, int life, char state, bool highlight, Mana pool){
+void Allegro_io::disp_header(const Rect& zone, const char* name, int life, char state, bool highlight, Mana pool) const {
 	if(life >= 1000) raise_error("Life total too high to be shown, most likely a bug");
 	int x = highlight ? HIGH2 : WHITE;
 	al_draw_text(fonts[0], registeredColors[x], zone.yy() + zone.width/2 - 20, zone.z + 3, 0, name);
@@ -76,7 +97,7 @@ void Allegro_io::disp_mana(Mana mana, int endy, int topz){
 }
 
 void Allegro_io::poster(const std::string name, Mana manacost, char color, const char* types,
-	const std::vector<std::string> lines, int power, int toughness, char frametype, bool watermark){
+	const std::vector<std::string> lines, int power, int toughness, char frametype, bool watermark) const {
 	al_draw_bitmap(card_template[(int) color], posterY, posterZ, 0);
 	al_draw_text(fonts[0], al_map_rgb(0,0,0), posterY+29, posterZ+28, 0, &(name[0]));
 	disp_mana(manacost, posterY + fullcardY - 28, posterZ + 30);
@@ -102,41 +123,38 @@ void Allegro_io::poster(const std::string name, Mana manacost, char color, const
 	}
 }
 
-void Allegro_io::message(const char* text){
+void Allegro_io::message(const char* text) const {
 	al_draw_filled_rectangle(messageY, messageZ, messageY+500, messageZ+25, registeredColors[0]);
 	al_draw_text(fonts[0], registeredColors[1], messageY, messageZ, 0, text);
-	al_flip_display();
 }
 
-void Allegro_io::message(const std::string text){
-	message(&(text[0]));
-}
-
-char Allegro_io::get_direction_key(){
+DirectioL Allegro_io::get_direction_key(){
 	while(1){
 		refresh_display();
 		ALLEGRO_EVENT event;
 		al_wait_for_event(queue, &event);
 		switch(event.type){
 			case ALLEGRO_EVENT_KEY_CHAR:
+				mouseActive = false;
 				switch(event.keyboard.keycode){
-					case ALLEGRO_KEY_DOWN: return olympus::directions::DOWN;
-					case ALLEGRO_KEY_UP: return olympus::directions::UP;
-					case ALLEGRO_KEY_ENTER: return olympus::directions::ENTER;
-					case ALLEGRO_KEY_SPACE: return olympus::directions::SPACE;
-					case ALLEGRO_KEY_RIGHT: return olympus::directions::RIGHT;
-					case ALLEGRO_KEY_LEFT: return olympus::directions::LEFT;
-					default: return 0;
+					case ALLEGRO_KEY_DOWN: return DOWN;
+					case ALLEGRO_KEY_UP: return UP;
+					case ALLEGRO_KEY_ENTER: return ENTER;
+					case ALLEGRO_KEY_SPACE: return BACK;
+					case ALLEGRO_KEY_RIGHT: return RIGHT;
+					case ALLEGRO_KEY_LEFT: return LEFT;
+					default: return NOT_RECOGNIZED;
 				} break;
 			case ALLEGRO_EVENT_DISPLAY_CLOSE:
-				god.minimalKill();
+				god.call_ragnarok();
 				exit(1);
 			case ALLEGRO_EVENT_MOUSE_AXES:
+				mouseActive = true;
 				mousey = event.mouse.x; mousez = event.mouse.y;
-				god.myUI->report_mouse_move(event.mouse.x, event.mouse.y);
-				return olympus::directions::MOUSE;
+				return MOUSE;
 			case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
-				return olympus::directions::ENTER;
+				mouseActive = true;
+				return ENTER;
 		}
 	}
 }
@@ -146,6 +164,11 @@ void must_init(bool test, const char *description){
 
     std::cout << "couldn't initialize " << description << std::endl;
     exit(1);
+}
+
+void Allegro_io::harmonize(const Rect& poster, const Rect& message, int nb_winzones){
+	posterY = poster.yy(); posterZ = poster.z;
+	messageY = message.yy(); messageZ = message.z;
 }
 
 Allegro_io::Allegro_io(){
@@ -160,7 +183,7 @@ Allegro_io::Allegro_io(){
 	al_set_new_display_option(ALLEGRO_SINGLE_BUFFER, 1, ALLEGRO_SUGGEST);
 	al_set_new_bitmap_flags(ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR);
 
-	window = al_create_display(1500, 900);
+	window = al_create_display(screenY, screenZ);
 	must_init(window, "display");
 	al_set_window_title(window, "MTG Olympus");
 
@@ -233,23 +256,33 @@ Allegro_io::~Allegro_io(){
 	al_destroy_bitmap(cursor);
 }
 
-void Allegro_io::disp_cardback(int y, int z){
-	al_draw_scaled_bitmap(card_back, 0, 0, 101, 140, (float)y, (float)z, 101/2, 140/2, 0);
+void Allegro_io::disp_cardback(const Rect& zone, int oncard_number) const {
+	int zfactor = 140/zone.height; int yfactor = 101/zone.width;
+	int factor = (zfactor > yfactor) ? yfactor : zfactor;
+	if(factor == 0) factor = 1;
+	al_draw_scaled_bitmap(card_back, 0, 0, 101, 140, (float)zone.yy(), (float)zone.z, 101/factor, 140/factor, 0);
+	std::string text = std::to_string(oncard_number);
+	al_draw_text(fonts[0], registeredColors[Allegro_io::BLACK], zone.yy()+20, zone.z+20, 0, &(text[0]));
 }
 
-void Allegro_io::draw_full_rectangle(char color, int left, int top, int width, int height){
-	al_draw_filled_rectangle(left, top, left+width, top+height, registeredColors[(int) color]);
+void Allegro_io::draw_boxed_text(const char* text, char color, char backgrd_color, int y, int z, int width) const {
+	al_draw_filled_rectangle(y, z, y+width, z+40, registeredColors[(int) backgrd_color]);
+	al_draw_text(fonts[0], registeredColors[(int) color], y, z, 0, text);
 }
 
-void Allegro_io::draw_rectangle(char color, int left, int top, int width, int height, int linewidth){
-	al_draw_rectangle(top, left, top+height, left+width, registeredColors[(int) color], linewidth);
+void Allegro_io::draw_full_rectangle(char color, const Rect& zone) const {
+	al_draw_filled_rectangle(zone.yy(), zone.z, zone.yy()+zone.width, zone.z+zone.height, registeredColors[(int) color]);
 }
 
-void Allegro_io::print_text(std::string text, char color, int y, int z){
-	al_draw_text(fonts[0], registeredColors[(int) color], y, z, 0, &(text[0]));
+void Allegro_io::draw_rectangle(char color, const Rect& zone, int linewidth) const {
+	al_draw_rectangle(zone.z, zone.yy(), zone.bottom(), zone.right(), registeredColors[(int) color], linewidth);
 }
 
-void Allegro_io::refresh_display(){
+void Allegro_io::print_text(const char* text, char color, int y, int z) const {
+    al_draw_text(fonts[0], registeredColors[(int) color], y, z, 0, text);
+}
+
+void Allegro_io::refresh_display() const {
 	al_set_target_bitmap(al_get_backbuffer(window));
 	al_draw_bitmap(screenFloor, 0, 0, 0);
 	al_draw_bitmap(cursor, mousey, mousez, 0);
@@ -257,12 +290,6 @@ void Allegro_io::refresh_display(){
 	al_set_target_bitmap(screenFloor);
 }
 
-void Allegro_io::fulldisp(){
+void Allegro_io::fulldisp() const {
 	al_draw_bitmap(wallpaper, 0, 0, 0);
 }
-
-const int Abstract_io::BLACK = 1;
-const int Abstract_io::WHITE = 0;
-const int Abstract_io::GREY = 2;
-const int Abstract_io::HIGH1 = 10;
-const int Abstract_io::HIGH2 = 11;

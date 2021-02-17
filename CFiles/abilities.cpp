@@ -1,5 +1,6 @@
 #include ".header_link.h"
 #include "../HFiles/9modifs.h"
+#include "../HFiles/12abilities.h"
 
 void Player::add_mana(char c){
 	manapool += c;
@@ -30,7 +31,7 @@ void Ability::activate(Targeter* list_of_targets, Player* ctrl, Target* origin) 
 	}
 	switch(type){
 		case 0:
-			(dynamic_cast<Damageable*> (target1))->damage(param2); break; //TODO: trigger the origin's damaging triggers, if that origin still exists
+			(dynamic_cast<Damageable*> (target1))->damage(param2, origin); break; //TODO: trigger the origin's damaging triggers, if that origin still exists
 		case 1:
 			(dynamic_cast<Player*> (target1))->draw(param2); break;
 		case 2:

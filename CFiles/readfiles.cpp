@@ -1,5 +1,6 @@
 #include ".header_link.h"
-#include "../HFiles/head3_readfiles.h"
+#include "../HFiles/headR_readfiles.h"
+#include "headU_utilities.h"
 #include "../HFiles/9modifs.h" //there seems to be an implicit deletion of Card which implies deleting a Targeter or something?
 
 #define OLYMPUS_BINARYCOMPAT_VERSION 1
@@ -11,47 +12,7 @@ void check_safepoint(std::ifstream& myfile, char c, const char* message){
 	}
 }
 
-void raise_error(std::string message){
-	god.gdebug(DBG_READFILE | DBG_X_READFILE | DBG_IMPORTANT) << "Error: " << message << std::endl;
-	god.minimalKill();
-	std::cout << "Error: " << message << std::endl;
-	exit(1);
-}
-
-std::ofstream& externVarContainer::gdebug(char password){
-	if((password & wanted_debug) != 0) return debug_log;
-	else return verbose_debug;
-}
-
-externVarContainer::externVarContainer(): game(0), wanted_debug(0), myUI(0), myIO(0){
-	debug_log.open("debug_info.txt", std::ifstream::trunc);
-	verbose_debug.open("debug_verbose.txt", std::ifstream::trunc);
-}
-
-struct externVarContainer god;
-
-Game::Game(const char* deck_1, const char* deck_2, char debug_flags): stack(0), haswon(false){
-	god.game = this;
-	god.myIO = new_IOLib();
-	god.myUI = new_UILib(god.myIO);
-	god.wanted_debug = debug_flags;
-	stack_ui = god.myUI->declare_element(Abstract_ui::ELTYPE_STACK, 0);
-	logbook_ui = god.myUI->declare_element(Abstract_ui::ELTYPE_LOGBOOK, 0);
-
-	players[0] = new Player(deck_1, 1);
-	players[1] = new Player(deck_2, 2);
-	Player* oppptr = players[1];
-	for(int i=0; i<2; i++){
-		players[i]->set_opp(oppptr);
-		oppptr = players[i];
-	}
-	active_player = players[0];
-	for(int i=0; i<LOGLEN; i++){
-		logbook[i] = 0;
-	}
-}
-
-Player::Player(const char* deck_name, char id): Damageable(20), name{0}, state(0xe0), player_id(id), permUI{0}, optZone(0){
+Player::Player(const char* deck_name, char id): Target(&name), Damageable(20), name{0}, state(0xe0), player_id(id), permUI{0}, optZone(0){
 	target_flags = 0x80;
 
 	std::string cacheName = std::string("Materials/decks/.binary/deck") + (char)(id + '0');
@@ -63,7 +24,9 @@ Player::Player(const char* deck_name, char id): Damageable(20), name{0}, state(0
 		char x;
 		check_canary('<', inputCache);
 		inputCache.read(&x, sizeof(char));
-		inputCache.read(name, x * sizeof(char));
+		char name_tmp[(int) x];
+		inputCache.read(name_tmp, x * sizeof(char));
+		name = std::string(name_tmp);
 		check_canary('-', inputCache);
 
 		myzones[0].init(inputCache);
@@ -81,10 +44,12 @@ Player::Player(const char* deck_name, char id): Damageable(20), name{0}, state(0
 
 		std::cout << "Interpreting plain text deck..." << std::endl;
 		myfile.get(); //<
-		myfile.get(name, 10, '>'); //get max. 10 characters, without ending '>'
-		char x; for(x = 0; name[(int) x] != '\0'; x++);
+		char tmp[11];
+		myfile.get(tmp, 10, '>'); //get max. 10 characters, without ending '>'
+		name = std::string(tmp);
+		char x; for(x = 0; tmp[(int) x] != '\0'; x++);
 		outputCache.write(&x, sizeof(char));
-		outputCache.write(name, x * sizeof(char));
+		outputCache.write(tmp, x * sizeof(char));
 		set_canary('-', outputCache);
 
 		myfile.get(); // newline
@@ -99,7 +64,7 @@ Player::Player(const char* deck_name, char id): Damageable(20), name{0}, state(0
 	myzones[2].init_name("Exile");
 
 	myzones[0].shuffle();
-	myoptions[0] = NULL;
+	myoptions[0] = nullptr;
 	for(int i=1; i<NBMYOPTS; i++) myoptions[i] = 0;
 	possiblepool = 0;
 	manapool = 0;

@@ -1,7 +1,7 @@
 #ifndef OLYMPUS_CLASSES_RESOLVABLE_5_H
 #define OLYMPUS_CLASSES_RESOLVABLE_5_H
 
-#include "1general.h" //needed for Target
+#include "1general.h"
 
 //okay lets forget about on_cast for the moment because it requires triggered abilities to be implemented.
 /* A Resolvable is any object that can be put on the stack and resolve. It can be:
@@ -13,7 +13,7 @@ There is technically nothing that prevents StackAbilities to have on_cast trigge
 We could imagine sth like "do blah. If you have this and that, copy this ability when you activate it"
 */
 
-class Resolvable: virtual public Target{
+class Resolvable: public Target{
 protected:
 	Player* ctrl;
 	std::unique_ptr<Targeter> origin; //the one every 'this' refers to, such as 'when this exploits a creature', 'this deals damage', ...
@@ -26,9 +26,10 @@ public:
 	virtual ~Resolvable();
 	virtual void resolve(); //this is what a resolvable is about
 	virtual std::string describe() const {return description; };
-	virtual void disp(int y, int z, int width, int height, bool highlight = false) const;
+	virtual void disp(const Rect& zone, bool highlight = false) const;
 	virtual void counter(Game* metagame);
 	virtual const std::string& get_name() const {return description; };
+	virtual Identifier reload_id() const;
 };
 
 class Spell: public Resolvable{
@@ -40,6 +41,7 @@ public:
 	void counter(Game* metagame);
 	std::string describe() const {return source->describe(); };
 	const std::string& get_name() const {return source->get_name(); };
+	virtual Identifier reload_id() const;
 };
 
 #endif //OLYMPUS_CLASSES_RESOLVABLE_5_H

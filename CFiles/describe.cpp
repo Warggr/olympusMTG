@@ -1,6 +1,9 @@
 #include ".header_link.h"
-#include "../HFiles/8options.h"
+#include "../HFiles/headC_constants.h"
 #include "../HFiles/10triggers.h"
+#include "../HFiles/12abilities.h"
+
+const std::string Resolvable::description = "this spell or ability";
 
 std::string PreResolvable::describe(std::string name) const {
 	return fab->describe(name);
@@ -15,16 +18,6 @@ std::string CardOracle::describe() const {
 	if(type != 1){
 		ret += "  [" + cost.m2t() + "]";
 	}
-	return ret;
-}
-
-std::string PermOption::describe(std::string cardname) const {
-	std::string ret = "[" + cost.m2t() + "]";
-	if(tapsymbol){
-		ret += ", [T]";
-	}
-	ret += ": ";
-	ret += effects->describe(cardname);
 	return ret;
 }
 
@@ -57,7 +50,7 @@ std::string Trigger::describe(int typeoftrig, std::string name) const {
 }
 
 std::string Ability::describe(std::string cardname) const {
-	std::string ds = olympus::abilities_descriptions[(int) type];
+	std::string ds = olympus::ability_descriptions[(int) type];
 	std::string ret;
 	for(unsigned int i=0; i<ds.length(); i++){
 		if(ds[i] == '~') ret += cardname;

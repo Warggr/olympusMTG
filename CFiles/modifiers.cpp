@@ -1,5 +1,4 @@
-#define MANUAL_IMPORT_OF_OLYMPUS_HEADERS
-#include ".header_link.h"
+#include "../include/.olympus_main.h"
 #include "../include/1general.h"
 #include "../HFiles/9modifs.h"
 

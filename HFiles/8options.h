@@ -1,10 +1,11 @@
 #ifndef OLYMPUS_CLASSES_OPTIONS_7_H
 #define OLYMPUS_CLASSES_OPTIONS_7_H
 
+#include "../Mana/lib2_mana.h"
+
 class Option{
 public:
-	Option* prev;
-	Option* next;
+	Option* prev, * next;
 	bool instantspeed;
 	Mana cost;
 
@@ -16,7 +17,7 @@ public:
 	void pop(int, Player*) const;
 	virtual Resolvable* cast_opt(Player* pl) = 0;
 	virtual bool iscastable(const Player* pl) const;
-	virtual void disp(int y, int z, bool highlight, bool castable) const = 0;
+	virtual void disp(int y, int z, int width, bool highlight, bool castable) const = 0;
 };
 
 class SpellOption: public Option{
@@ -26,9 +27,9 @@ public:
 	SpellOption(Card* src, Player* pl, int opttype);
 	SpellOption(Card* src, Option* next);
 	~SpellOption() {};
-	void ragnarok() {delete source; if(next) next->ragnarok(); delete this; };
+	void ragnarok();
 	
-	void disp(int y, int z, bool highlight, bool castable) const;
+	void disp(int y, int z, int width, bool highlight, bool castable) const;
 	virtual Resolvable* cast_opt(Player* pl);
 	virtual bool iscastable(const Player* pl) const;
 };
@@ -54,7 +55,7 @@ private:
 	bool ismanaability;
 public:
 	PermOption(): Option(0, 0, (int) 0), effects(0), tapsymbol(false), ismanaability(false) {}; //make clear it wasn't initialized
-	~PermOption() {delete effects; };
+	~PermOption();
 	void fillout(Mana cost, PreResolvable* preRes, bool tapsymbol, bool ismanaability);
 	void read_binary(std::ifstream& bFile);
 	void write_binary(std::ofstream& bFile) const;
@@ -66,7 +67,7 @@ public:
 	bool get_tapsymbol() const {return tapsymbol; };
 	bool get_ismana() const {return ismanaability; };
 	std::string describe(std::string name) const;
-	void disp(int y, int z, bool highlight, bool castable) const {};
+	void disp(int y, int z, int width, bool highlight, bool castable) const {};
 };
 
 Option* mergeSortCosts(Option* start, int nb);
