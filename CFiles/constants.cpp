@@ -1,4 +1,4 @@
-#include "../include/head1_constants.h"
+#include "../HFiles/headC_constants.h"
 
 const char olympus::trigger_types::PermETB = 0;
 const char olympus::trigger_types::PermLTB = 1;
@@ -70,11 +70,11 @@ const char* const selector_chars_subtype[] = {
 }; const Dictionary olympus::dict_selector_subtypes(8, selector_chars_subtype);
 
 const char* const selector_chars_tribe[] = {
-	"Human",
-	"Merfolk",
-	"Zombie",
-	"Goblin",
-	"Elf"
+	"human",
+	"merfolk",
+	"zombie",
+	"goblin",
+	"elf"
 }; const Dictionary olympus::dict_selector_tribes(5, selector_chars_tribe);
 
 const char* const selector_chars_players[] = {

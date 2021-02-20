@@ -1,4 +1,5 @@
 #include ".header_link.h"
+#include "../Yggdrasil/headB_board.h"
 
 #include <algorithm>
 //GUIDELINE: anything that calls statebasedactions() should be able to return afterwards

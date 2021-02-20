@@ -1,4 +1,6 @@
 #include ".header_link.h"
+#include "../Yggdrasil/headB_board.h"
+#include <iostream>
 
 Permanent* Player::iterate_boardsubzone(float yOffset, DirectioL& direction, int zzone, bool isactivation){
 	switch(zzone){
@@ -28,22 +30,22 @@ PermType* Player::iterate_boardsubzone(float offset, DirectioL& direction, PCont
 		if(direction == MOUSE) god.myUI->deadzone();
 		return 0;
 	}
-	typediterator<PermType> iter = perms->begin();
-	int y, z, yOff, zOff, yWidth, zHeight;
-	ui->get_coordinates(&y, &z, &yOff, &zOff, &yWidth, &zHeight);
-	while(y < offset - yOff){
-		y += yOff;
+	iterator<PermType, false> iter = perms->begin();
+	int yOff, zOff;
+	Rect zone = ui->get_coordinates(&yOff, &zOff);
+	while(zone.y < offset - yOff){
+		zone.y += yOff;
 		iter++;
 		if(iter == perms->end()){
 			god.myUI->deadzone();
 			return 0;
 		}
 	}
-	iter->disp(y, z, yWidth, zHeight, true);
+	iter->disp(zone, true);
 	while(1){
 		//god.myIO->refresh_display();
 		DirectioL getkey = god.myIO->get_direction_key();
-		iter->disp(y, z, yWidth, zHeight, false);
+		iter->disp(zone, false);
 		switch(getkey){
 			case NOT_RECOGNIZED:
 				god.myIO->message("Please press a direction key, SPACE or ENTER");
@@ -56,7 +58,7 @@ PermType* Player::iterate_boardsubzone(float offset, DirectioL& direction, PCont
 				return 0;
 			case LEFT:
 				direction = LEFT;
-				y -= yOff;
+				zone.y -= yOff;
 				if(iter == perms->begin()) return 0;
 				else iter--;
 				break;
@@ -64,24 +66,23 @@ PermType* Player::iterate_boardsubzone(float offset, DirectioL& direction, PCont
 				direction = RIGHT;
 				iter++;
 				if(iter == perms->end()) return 0;
-				y += yOff;
+				zone.y += yOff;
 				break;
 			case ENTER:
 				direction = ENTER;
 				if(isactivation){
 					if(!iter->directactivate()){
-						iter->disp(y, z, yWidth, zHeight, true);
+						iter->disp(zone, true);
 					}
 					else return &(*iter);
 				}
 				else return &(*iter);
 		}
-		iter->disp(y, z, yWidth, zHeight, true);
+		iter->disp(zone, true);
 	}
 }
 
 Player* Player::iterate_self(DirectioL& direction){
-	std::cout << "Started iterating player" << std::endl;
 	god.myIO->message("Iterating player");
 	while(1){
 		disp_header(true);
@@ -113,10 +114,10 @@ Resolvable* Game::iterate_stack(float zImposed, DirectioL& direction){
 	}
 	std::forward_list<Resolvable*>::iterator ret = stack.begin();
 	std::forward_list<std::forward_list<Resolvable*>::iterator> counterstack;
-	int y, z, yOffset, zOffset, ySize, zSize;
-	stack_ui->get_coordinates(&y, &z, &yOffset, &zOffset, &ySize, &zSize);
-	while(z + zOffset < zImposed){
-		z += zOffset;
+	int yOffset, zOffset;
+	Rect rect = stack_ui->get_coordinates(&yOffset, &zOffset);
+	while(rect.z + zOffset < zImposed){
+		rect.z += zOffset;
 		counterstack.push_front(ret);
 		ret++;
 		if(ret == stack.end()){
@@ -124,10 +125,10 @@ Resolvable* Game::iterate_stack(float zImposed, DirectioL& direction){
 			return 0;
 		}
 	}
-	(*ret)->disp(y, z, ySize, zSize, true);
+	(*ret)->disp(rect, true);
 	while(1){
 		direction = god.myIO->get_direction_key();
-		(*ret)->disp(y, z, ySize, zSize, false);
+		(*ret)->disp(rect, false);
 		switch(direction){
 			case NOT_RECOGNIZED:
 				god.myIO->message("Please press a direction key, SPACE or ENTER");
@@ -143,7 +144,7 @@ Resolvable* Game::iterate_stack(float zImposed, DirectioL& direction){
 				auto nxt = ret; nxt++;
 				if(nxt != stack.end()){
 					counterstack.push_front(ret);
-					y += yOffset; z += zOffset;
+					rect.shift(yOffset, zOffset);
 					ret++;
 				}
 				break;
@@ -154,11 +155,11 @@ Resolvable* Game::iterate_stack(float zImposed, DirectioL& direction){
 				else{
 					ret = counterstack.front();
 					counterstack.pop_front();
-					y -= yOffset; z -= zOffset;
+					rect.y -= yOffset; rect.z -= zOffset;
 				}
 			}
 		}
-		(*ret)->disp(y, z, ySize, zSize, true);
+		(*ret)->disp(rect, true);
 	}
 	return 0;
 }

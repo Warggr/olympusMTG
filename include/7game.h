@@ -1,13 +1,13 @@
 #ifndef OLYMPUS_CLASSES_GAME_7_H
 #define OLYMPUS_CLASSES_GAME_7_H
 
-#include "../include/1general.h" //only needed before importing 3player
 #include "../include/3player.h"
+#include "../include/4permanents.h"
 
 class Game{
 private:
 	std::forward_list<Resolvable*> stack; //Guideline: the stack has full ownership of Resolvables. Any function calling popfromstack is responsible for deleting the resolvable
-	Player* players[2]{0};
+	Player* players[2]{0}; //TODO make it a non-pointer?
 	Player* active_player;
 	char* logbook[LOGLEN]{0};
 	UIElement* stack_ui;

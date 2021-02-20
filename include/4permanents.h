@@ -2,7 +2,7 @@
 #define OLYMPUS_CLASSES_PERMANENTS_4_H
 
 #include "1general.h"
-#include "../HFiles/head7_identifiers.h"
+#include "../HFiles/headI_identifiers.h"
 
 class Permanent: public Target{
 protected:
@@ -20,7 +20,7 @@ public:
 	virtual ~Permanent() = default;
 	void ragnarok_perm();
 	virtual std::string describe() const;
-	virtual void disp(int left, int top, int width, int height, bool highlight = false) const;
+	virtual void disp(const Rect& zone, bool highlight = false) const;
 
 	char get_flags() const {return flags; };
 	void reset_flags(char flg){flags = flags & ~flg; };
@@ -60,7 +60,7 @@ public:
 	Creature(Card* src, Player* pl);
 	std::string describe() const;
 
-	void disp(int left, int top, int width, int height, bool highlight) const;
+	void disp(const Rect& zone, bool highlight) const;
 
 	void damage(int nb_damage, Target* origin = 0);
 	void hit(Damageable* tgt) const;
@@ -98,7 +98,7 @@ public:
 
 	Land(Card* src, Player* pl);
 
-	void disp(int left, int top, int width, int height, bool highlight) const;
+	void disp(const Rect& zone, bool highlight) const;
 	void untap();
 
 	Identifier reload_id() const override;

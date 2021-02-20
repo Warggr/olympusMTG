@@ -2,7 +2,7 @@
 #define OLYMPUS_HEADER_1_CONSTANTS_H
 
 #include <string>
-#include "../Dictionary/head4_dictionary.h"
+#include "../Dictionary/lib1_dictionary.h"
 
 namespace olympus{
 	extern const std::string trigger_descriptions[6];

@@ -12,6 +12,11 @@ bool Mana::operator>(Mana cost) const{
 	return false;
 }
 
+bool Mana::operator<(Mana cost) const{
+	if((mana & 0xf) < (cost.mana & 0xf)) return true;
+	return false;
+}
+
 char Mana::m2color() const {
 	char color = 0;
 	for(int i=0; i<6; i++){

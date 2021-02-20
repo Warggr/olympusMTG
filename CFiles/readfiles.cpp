@@ -1,5 +1,6 @@
 #include ".header_link.h"
-#include "../HFiles/head3_readfiles.h"
+#include "../HFiles/headR_readfiles.h"
+#include "headU_utilities.h"
 #include "../HFiles/9modifs.h" //there seems to be an implicit deletion of Card which implies deleting a Targeter or something?
 
 #define OLYMPUS_BINARYCOMPAT_VERSION 1

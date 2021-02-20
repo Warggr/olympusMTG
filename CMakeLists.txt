@@ -112,7 +112,7 @@ include_directories($HEADER_DIR)
 file(GLOB SOURCES "${SOURCE_DIR}/*.cpp")
 
 set(IOLibType "Allegro" CACHE STRING "Use Allegro as I/O library")
-set_property(CACHE IOLibType PROPERTY STRINGS "Allegro" "Ncurses")
+set_property(CACHE IOLibType PROPERTY STRINGS "Allegro" "Ncurses" "Nano")
 
 add_subdirectory(Dictionary)
 add_subdirectory(IOLib)
@@ -133,7 +133,7 @@ endif()
 
 configure_file(${HEADER_DIR}/olympus_main.h ${HEADER_DIR}/.olympus_main.h)
 
-add_executable(${PROJECT_NAME} ${SOURCES} CFiles/options_utils.cpp CFiles/head1_utilities.h)
+add_executable(${PROJECT_NAME} ${SOURCES} CFiles/options_utils.cpp CFiles/headU_utilities.h)
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ..)
 
 target_link_libraries(olympus PUBLIC OlympicDict)

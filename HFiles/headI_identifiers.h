@@ -1,5 +1,5 @@
-#ifndef OLYMPUS_CLASSES_IDENTIFIERS_12_H
-#define OLYMPUS_CLASSES_IDENTIFIERS_12_H
+#ifndef OLYMPUS_HEAD_I_IDENTIFIERS
+#define OLYMPUS_HEAD_I_IDENTIFIERS
 
 enum object_type {player, permanent, resolvable, card };
 enum permanent_type {land, artifact, planeswalker, creature };
@@ -45,4 +45,4 @@ player(00) - permanent(01) - resolvable(10) - card(11)
 Some special Identifiers might include 'this' and 'you' (aka 'this object's controller') (TODO)
 Controllers: you (0), an opponent (1)*/
 
-#endif //OLYMPUS_CLASSES_IDENTIFIERS_12_H
+#endif //OLYMPUS_HEAD_I_IDENTIFIERS

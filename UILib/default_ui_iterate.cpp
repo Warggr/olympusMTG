@@ -1,6 +1,8 @@
 #include "12defaultUI.h"
+#include "../include/3player.h" //for iterating player's elements
+#include "../include/4permanents.h"
+#include "../include/7game.h"
 #include "../HFiles/8options.h"
-#include <iostream>
 
 void Default_ui::deadzone(){
 	direction = myIO->get_direction_key();
@@ -60,30 +62,28 @@ Target* Default_ui::iterate(bool needstarget, Player** pl, char returntypeflags)
 }
 
 Option* Default_ui::choose_opt(bool sorceryspeed, Option* iter, Player* asker, int metapos){ //asks user to choose option and pops that option
-	std::cout << "Started global ChooseOpt" << std::endl;
-	int y, z, dy, dz;
-	optionZone->get_coordinates(&y, &z, &dy, &dz);
+	//std::cout << "Started global ChooseOpt" << std::endl;
+	int dy, dz;
+	Rect rect = optionZone->get_coordinates(&dy, &dz);
 	int pos = 0;
 	if(myIO->gmouseActive()){
-		std::cout << "Mouse is active:";
-		while(z + (pos+1)*dz < myIO->gmouseZ()){
-			std::cout << "Going down - ";
-			if(!asker->get_down(iter, pos, metapos)){
-				std::cout << "Can't go down";
-				break;
-			}
+		//std::cout << "Mouse is active:";
+		while(rect.z + (pos+1)*dz < myIO->gmouseZ()){
+			//std::cout << "Going down - ";
+			if(iter->next == 0) break;
+			++pos; iter = iter->next;
 		}
-		std::cout << std::endl;
-		while(z + pos*dz > myIO->gmouseZ()){
-			if(!asker->get_up(iter, pos, metapos)) break;
+		while(rect.z + pos*dz > myIO->gmouseZ()){
+			if(iter->prev == 0) break;
+			--pos; iter = iter->prev;
 		}
 	}
 	while(1){
 		direction = myIO->get_direction_key();
-		iter->disp(y + pos*dy, z + pos*dz, false, iter->iscastable(asker));
+		iter->disp(rect.y + pos*dy, rect.z + pos*dz, rect.width, false, iter->iscastable(asker));
 		switch(direction){
-			case DOWN: asker->get_down(iter, pos, metapos); break;
-			case UP: asker->get_up(iter, pos, metapos); break;
+			case DOWN: if(iter->next){iter = iter->next; pos++; } break;
+			case UP: if(iter->prev){iter = iter->prev; pos--; } break;
 			case BACK:
 				clear_opts();
 				return NULL;
@@ -96,13 +96,15 @@ Option* Default_ui::choose_opt(bool sorceryspeed, Option* iter, Player* asker, i
 				else myIO->message("This opportunity can't be cast");
 				break;
 			case MOUSE:
-				if(myIO->gmouseY() > boardY + leftbarY){
+				if(myIO->gmouseY() > boardW + leftbarW){
 					bool gotthere = true;
-					while(z + (pos+1)*dz < myIO->gmouseZ()){
-						if(!asker->get_down(iter, pos, metapos)){ gotthere = false; break; }
+					while(rect.z + (pos+1)*dz < myIO->gmouseZ()){
+						if(iter->next == 0){ gotthere = false; break; }
+						iter = iter->next; pos++;
 					}
-					while(z + pos*dz > myIO->gmouseZ()){
-						if(!asker->get_up(iter, pos, metapos)){ gotthere = false; break; }
+					while(rect.z + pos*dz > myIO->gmouseZ()){
+						if(iter->prev == 0){ gotthere = false; break; }
+						iter = iter->prev; pos--;
 					}
 					if(gotthere) break; //don't iterate
 					else deadzone(); //wait for a suitable position, then iterate
@@ -118,9 +120,9 @@ Option* Default_ui::choose_opt(bool sorceryspeed, Option* iter, Player* asker, i
 					else myIO->message("Can't activate your opponent's abilities");
 				}
 			} break;
-			default: {};
+			default: break;
 		}
-		iter->disp(y + pos*dy, z+pos*dz, true, iter->iscastable(asker));
+		iter->disp(rect.y + pos*dy, rect.z+pos*dz, rect.width, true, iter->iscastable(asker));
 	}
 	return 0;
 }

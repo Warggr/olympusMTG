@@ -1,7 +1,8 @@
 #ifndef OLYMPUS_CLASSES_CARDS_2_H
 #define OLYMPUS_CLASSES_CARDS_2_H
 
-#include "../Mana/head2_mana.h"
+#include "1general.h"
+#include "../Mana/lib2_mana.h"
 #include <memory>
 #include <forward_list>
 
@@ -45,6 +46,7 @@ public:
 	void poster() const {oracle->poster(); };
 
 	char get_type() const {return oracle->type; };
+	bool has_flash() const {return oracle->type == 0; } //TODO implement flash
 	Mana get_cost() const {return oracle->cost; };
 	const PreResolvable* get_preRes() const {return oracle->on_cast; };
 	char get_color() const {return oracle->color; };
