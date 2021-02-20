@@ -8,9 +8,14 @@ public:
 	Option* prev, * next;
 	bool instantspeed;
 	Mana cost;
-
+#ifdef F_TESTS
+	bool exists;
+	Option(Option* pre, Option* nxt, Mana c): prev(pre), next(nxt), instantspeed(0), cost(c){exists = true; };
+	virtual ~Option() {exists = false; };
+#else
 	Option(Option* pre, Option* nxt, Mana c): prev(pre), next(nxt), instantspeed(0), cost(c){};
 	virtual ~Option() {};
+#endif
 	virtual void ragnarok(){ if(next) next->ragnarok(); delete this; }; //called to destroy a full option zone
 
 	virtual void check_and_pop(int n_of_zone, Player* pl); //default behavior: removes spell from list
