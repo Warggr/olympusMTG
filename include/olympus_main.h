@@ -1,9 +1,12 @@
 #ifndef OLYMPUS_CLASSES_H
 #define OLYMPUS_CLASSES_H
 
-#define Olympus_VERSION_MAJOR @Olympus_VERSION_MAJOR@
-#define Olympus_VERSION_MINOR @Olympus_VERSION_MINOR@
-#cmakedefine IO_ALLEGRO
+#define Olympus_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
+#define Olympus_VERSION_MINOR @PROJECT_VERSION_MINOR@
+#define Olympus_VERSION_PATCH @PROJECT_VERSION_PATCH@
+#cmakedefine IOLibType
+#cmakedefine F_TESTS
+#cmakedefine F_LOGGING
 
 #define LOGLEN 7
 

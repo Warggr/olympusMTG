@@ -31,7 +31,7 @@ public:
 
 class Target: public GameObject{ //Permanents, Players, Cards (not Oracles!), and Resolvables
 protected:
-	std::list<Targeter*> to_target {nullptr};
+	std::list<Targeter*> to_target;
 	char t_type{0};
 	char target_flags; //hexproof
 	const std::string* name;

@@ -6,14 +6,18 @@
 class Option{
 public:
 	Option* prev, * next;
-	bool instantspeed;
 	Mana cost;
+	bool instantspeed;
+	
 #ifdef F_TESTS
 	bool exists;
-	Option(Option* pre, Option* nxt, Mana c): prev(pre), next(nxt), instantspeed(0), cost(c){exists = true; };
+	static char next_tag;
+	char tag;
+
+	Option(Option* pre, Option* nxt, Mana c): prev(pre), next(nxt), cost(c), instantspeed(0){exists = true; tag = next_tag; next_tag++;};
 	virtual ~Option() {exists = false; };
 #else
-	Option(Option* pre, Option* nxt, Mana c): prev(pre), next(nxt), instantspeed(0), cost(c){};
+	Option(Option* pre, Option* nxt, Mana c): prev(pre), next(nxt), cost(c), instantspeed(0){};
 	virtual ~Option() {};
 #endif
 	virtual void ragnarok(){ if(next) next->ragnarok(); delete this; }; //called to destroy a full option zone
@@ -77,5 +81,9 @@ public:
 
 Option* mergeSortCosts(Option* start, Option* end, int nb);
 Option* merge(Option* start1, Option* start2, Option* end);
+
+Option* next_in_chain(Option** myoptions, int nb_zone);
+void verify_chain_integrity(Option** myoptions);
+void disp(const Option* start, const Option* end);
 
 #endif //OLYMPUS_CLASSES_OPTIONS_2_H

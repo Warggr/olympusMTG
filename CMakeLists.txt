@@ -139,8 +139,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ..)
 target_link_libraries(olympus PUBLIC OlympicDict)
 target_link_libraries(olympus PUBLIC Mana)
 target_link_libraries(olympus PUBLIC Yggdrasil)
-target_link_libraries(olympus PUBLIC ${UILIB})
-target_link_libraries(olympus PUBLIC ${IOLIB})
+target_link_libraries(olympus PUBLIC ${UILibDir})
+target_link_libraries(olympus PUBLIC ${IOLibDir})
 
 target_include_directories(olympus PUBLIC
 	"${PROJECT_BINARY_DIR}"

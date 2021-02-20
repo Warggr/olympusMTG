@@ -64,8 +64,6 @@ Player::Player(const char* deck_name, char id): Target(&name), Damageable(20), n
 	myzones[2].init_name("Exile");
 
 	myzones[0].shuffle();
-	myoptions[0] = nullptr;
-	for(int i=1; i<NBMYOPTS; i++) myoptions[i] = 0;
 	possiblepool = 0;
 	manapool = 0;
 	draw(7);

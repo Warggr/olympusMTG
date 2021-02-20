@@ -55,7 +55,7 @@ public:
 	virtual void clear_opts() = 0;
 	virtual UIElement* get_optionzone() = 0;
 	virtual Target* iterate(bool needstarget, Player** pl, char returntypeflags) = 0;
-	virtual Option* choose_opt(bool sorceryspeed, Option* firstopt, Player* asker, int metapos) = 0;
+	virtual Option* choose_opt(bool sorceryspeed, Player* asker) = 0;
 	virtual void deadzone() = 0;
 };
 

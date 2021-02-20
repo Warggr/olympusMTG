@@ -1,9 +1,12 @@
 #ifndef OLYMPUS_CLASSES_H
 #define OLYMPUS_CLASSES_H
 
-#define Olympus_VERSION_MAJOR 
-#define Olympus_VERSION_MINOR 
-/* #undef IO_ALLEGRO */
+#define Olympus_VERSION_MAJOR 1
+#define Olympus_VERSION_MINOR 0
+#define Olympus_VERSION_PATCH 
+#define IOLibType
+/* #undef F_TESTS */
+/* #undef F_LOGGING */
 
 #define LOGLEN 7
 

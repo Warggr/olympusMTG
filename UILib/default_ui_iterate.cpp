@@ -61,36 +61,63 @@ Target* Default_ui::iterate(bool needstarget, Player** pl, char returntypeflags)
 	}
 }
 
-Option* Default_ui::choose_opt(bool sorceryspeed, Option* iter, Player* asker, int metapos){ //asks user to choose option and pops that option
-	//std::cout << "Started global ChooseOpt" << std::endl;
+bool go_up(Option*& iter, int& pos, int& metapos, Option** all_options, Option*& lower_border){
+	if(iter->prev == 0) return false;
+	--pos;
+	if(iter == all_options[metapos]){
+		lower_border = iter;
+		--metapos;
+		if(metapos == 2 && all_options[metapos] == iter) --metapos; //2 and 3 could show to the same element. This can't happen with 2 and 1 because else we couldn't go up at all
+		for(metapos = metapos; all_options[metapos] == 0; --metapos);
+	}
+	iter = iter->prev;
+	return true;
+}
+
+bool go_down(Option*& iter, int& pos, int& metapos, Option** all_options, Option*& lower_border){
+	if(iter->next == 0) return false;
+	++pos;
+	iter = iter->next;
+	if(iter == lower_border){
+		for(metapos = metapos+1; all_options[metapos] != iter; ++metapos);
+		lower_border = next_in_chain(all_options, metapos);
+	}
+	return true;
+}
+
+Option* Default_ui::choose_opt(bool sorceryspeed, Player* asker){ //asks user to choose option and pops that option
+	int metapos = 0;
+	Option* iter = 0;
+	for(int i=0; i<5; i += 2){
+		if(asker->myoptions[i] != 0){
+			iter = asker->myoptions[i]; metapos = i; break;
+		}
+	}
 	int dy, dz;
 	Rect rect = optionZone->get_coordinates(&dy, &dz);
 	int pos = 0;
+	Option* lower_border = next_in_chain(asker->myoptions, metapos+1);
 	if(myIO->gmouseActive()){
-		//std::cout << "Mouse is active:";
 		while(rect.z + (pos+1)*dz < myIO->gmouseZ()){
-			//std::cout << "Going down - ";
-			if(iter->next == 0) break;
-			++pos; iter = iter->next;
+			if(go_down(iter, pos, metapos, asker->myoptions, lower_border) == false) break;
 		}
 		while(rect.z + pos*dz > myIO->gmouseZ()){
-			if(iter->prev == 0) break;
-			--pos; iter = iter->prev;
+			if(go_up(iter, pos, metapos, asker->myoptions, lower_border) == false) break;
 		}
 	}
 	while(1){
 		direction = myIO->get_direction_key();
 		iter->disp(rect.y + pos*dy, rect.z + pos*dz, rect.width, false, iter->iscastable(asker));
 		switch(direction){
-			case DOWN: if(iter->next){iter = iter->next; pos++; } break;
-			case UP: if(iter->prev){iter = iter->prev; pos--; } break;
+			case DOWN: go_down(iter, pos, metapos, asker->myoptions, lower_border); break;
+			case UP: go_up(iter, pos, metapos, asker->myoptions, lower_border); break;
 			case BACK:
 				clear_opts();
 				return NULL;
 			case ENTER:
 				if(iter->iscastable(asker)){ //ENTER
-					iter->check_and_pop(metapos, asker);
 					clear_opts();
+					iter->check_and_pop(metapos, asker);
 					return iter;
 				}
 				else myIO->message("This opportunity can't be cast");
