@@ -56,10 +56,12 @@ void Player::draw(int nb_cards){
 	for(int i=0; i<2; i++){
 		if(last[i] != 0){ //if options were added at all to this subchain
 			myoptions[i*2+1] = myoptions[i*2]; //reset the "expensive" pointer to "cheap"
-			mergeSortCosts(myoptions[i*2], last[i]->next, nb_spells[i]); //sorting recently added opts by mana cost
-			Option* returned = merge(myoptions[i*2], last[i]->next, myoptions[i*2 + 2]); //remerging these options with the old ones
-			std::cout << "Tag returned: " << returned->tag << "\n";
-			myoptions[i*2] = returned;
+			std::cout << "\n---RECENTLY ADDED----\n";
+			Option* end_of_chain = last[i]->next;
+			myoptions[i*2] = mergeSortCosts(myoptions[i*2], end_of_chain, nb_spells[i]); //sorting recently added opts by mana cost
+			std::cout << "---REMERGING----\n";
+			myoptions[i*2] = merge(myoptions[i*2], end_of_chain, myoptions[i*2 + 2]); //remerging these options with the old ones
+			//we could've used mergeSort really, but we know the lower half is already sorted
 			std::cout << "Setting myopts[" << i*2 << "] to " << myoptions[i*2]->tag << "\n";
 		}
 	}
@@ -71,6 +73,7 @@ void Player::draw(int nb_cards){
 
 void Player::check_too_expensive(){
 	for(int i=0; i<2; i++){
+		myoptions[i*2 + 1] = myoptions[i*2]; //setting all to 'too expensive'
 		for(Option* iter = myoptions[i*2]; iter != 0 && iter != myoptions[i*2 + 2]; iter = iter->next){
 			if(iter->cost > possiblepool) break; //options from here on can't possibly be cheap enough
 			else if(possiblepool >= iter->cost){ //this one's castable
@@ -78,12 +81,18 @@ void Player::check_too_expensive(){
 					myoptions[i*2 + 1] = iter;
 				} else { //in the middle of too expensive ones -> harder
 					Option* i2 = iter->prev;
-					if(iter->prev) iter->prev->next = iter->next;
+					//disconnecting
+					iter->prev->next = iter->next; //iter is 'in the middle' of sth, so it must have a prev
 					if(iter->next) iter->next->prev = iter->prev;
+					else myoptions[NBMYOPTS] = iter->prev;
+
 					iter->prev = myoptions[i*2 + 1]->prev; //inserting right before the 'too expensive'
 					iter->next = myoptions[i*2 + 1];
 					if(iter->prev) iter->prev->next = iter;
-					else myoptions[i*2] = iter;
+					iter->next->prev = iter;
+
+					if(myoptions[i*2 + 1] == myoptions[i*2]) myoptions[i*2] = iter;
+					
 					iter = i2;
 				}
 			}
@@ -91,19 +100,9 @@ void Player::check_too_expensive(){
 	}
 }
 
-Option* mergeSortCosts(Option* start, Option* end, int nb){
-	if(nb==0 || nb == 1) return start;
-	Option* part2 = start;
-	for(int i=0; i<nb/2; i++) part2 = part2->next;
-	start = mergeSortCosts(start, part2, nb/2);
-	part2 = mergeSortCosts(part2, end, nb-nb/2);
-	Option* ret = merge(start, part2, end);
-	return ret;
-}
-
 char Option::next_tag = 'a';
 
-void disp(const Option* const start, const Option* const end){
+void disp(const Option* start, const Option* end){
 	const Option* iter;
 	for(iter = start; iter != 0 && iter != end; iter = iter->next){
 		if(iter->prev) std::cout << "<" << iter->prev->tag << "("; else std::cout << "<0(";
@@ -120,15 +119,29 @@ void disp(const Option* const start, const Option* const end){
 	}
 }
 
+Option* mergeSortCosts(Option* start, Option* end, int nb){
+	std::cout << "----MERGESORT CALL----\n";
+	disp(start, end);
+	std::cout << "\n";
+	if(nb==0 || nb == 1) return start;
+	Option* part2 = start;
+	for(int i=0; i<nb/2; i++) part2 = part2->next;
+	start = mergeSortCosts(start, part2, nb/2);
+	part2 = mergeSortCosts(part2, end, nb-nb/2);
+	Option* ret = merge(start, part2, end);
+	std::cout << "mergeSortCosts: returning " << ret->tag << "\n";
+	return ret;
+}
+
 /*start2 is supposed to have a tail (end), while start1 will be absorbed up to 0 or start2*/
 Option* merge(Option* start1, Option* start2, Option* end){ //first = cheapest
-	if(!start1 || start1 == start2) return start2;
-	if(!start2 || start2 == end) return start1;
 	std::cout << "Merging ";
 	disp(start1, start2);
 	std::cout << " with ";
 	disp(start2, end);
 	std::cout << "\n";
+	if(!start1 || start1 == start2) return start2;
+	if(!start2 || start2 == end) return start1;
 	Option* ret = start1;
 	//disconnect both chains; s1-x-x-x s2-x-x-...
 	if(start2->prev){
@@ -145,7 +158,9 @@ Option* merge(Option* start1, Option* start2, Option* end){ //first = cheapest
 		start1 = start2;
 		start2 = tmp;
 	} //start1 is always the chain we choose from. Start2 is the chain trying to catch up
+	int nbloops = 0;
 	while(1){
+		nbloops++;
 		if(start1->next == end){
 			std::cout << "     After " << start1->tag << " comes the end\n";
 			Option* last; for(last = start2; last->next != 0; last = last->next);
@@ -159,7 +174,6 @@ Option* merge(Option* start1, Option* start2, Option* end){ //first = cheapest
 			std::cout << "  Joining " << start1->tag << " and " << start2->tag << " and returning " << ret->tag << "\n";
 			disp(ret, end);
 			std::cout << "\n";
-			std::cout << "I repeat: returning " << ret->tag << "\n";
 			return ret;
 		}
 
@@ -188,6 +202,10 @@ Option* merge(Option* start1, Option* start2, Option* end){ //first = cheapest
 		std::cout << "   Concurrent chain is ";
 		for(Option* iter = start2; iter != 0 && iter != end; iter = iter->next) std::cout << iter->tag << "-";
 		std::cout << "\n";
+		if(nbloops > 100){
+			std::cout << "Error!\n";
+			exit(1);
+		}
 	}
 }
 

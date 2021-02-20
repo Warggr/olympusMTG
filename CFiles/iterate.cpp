@@ -106,7 +106,7 @@ Player* Player::iterate_self(DirectioL& direction){
 }
 
 Resolvable* Game::iterate_stack(float zImposed, DirectioL& direction){
-	std::cout << "Started iterating stack" << std::endl;
+	//std::cout << "Started iterating stack" << std::endl;
 	if(stack.empty()){
 		if(direction == MOUSE) god.myUI->deadzone();
 		//direction = LEFT;

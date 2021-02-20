@@ -66,7 +66,9 @@ bool go_up(Option*& iter, int& pos, int& metapos, Option** all_options, Option*&
 	--pos;
 	if(iter == all_options[metapos]){
 		lower_border = iter;
-		for(metapos = metapos-1; all_options[metapos] == 0; --metapos);
+		--metapos;
+		if(metapos == 2 && all_options[metapos] == iter) --metapos; //2 and 3 could show to the same element. This can't happen with 2 and 1 because else we couldn't go up at all
+		for(metapos = metapos; all_options[metapos] == 0; --metapos);
 	}
 	iter = iter->prev;
 	return true;
@@ -83,13 +85,19 @@ bool go_down(Option*& iter, int& pos, int& metapos, Option** all_options, Option
 	return true;
 }
 
-Option* Default_ui::choose_opt(bool sorceryspeed, Option* iter, Player* asker, int metapos){ //asks user to choose option and pops that option
+Option* Default_ui::choose_opt(bool sorceryspeed, Player* asker){ //asks user to choose option and pops that option
+	int metapos = 0;
+	Option* iter = 0;
+	for(int i=0; i<5; i += 2){
+		if(asker->myoptions[i] != 0){
+			iter = asker->myoptions[i]; metapos = i; break;
+		}
+	}
 	int dy, dz;
 	Rect rect = optionZone->get_coordinates(&dy, &dz);
 	int pos = 0;
-	Option* lower_border = next_in_chain(asker->myoptions, metapos);
+	Option* lower_border = next_in_chain(asker->myoptions, metapos+1);
 	if(myIO->gmouseActive()){
-		//std::cout << "Mouse is active:";
 		while(rect.z + (pos+1)*dz < myIO->gmouseZ()){
 			if(go_down(iter, pos, metapos, asker->myoptions, lower_border) == false) break;
 		}
@@ -108,8 +116,8 @@ Option* Default_ui::choose_opt(bool sorceryspeed, Option* iter, Player* asker, i
 				return NULL;
 			case ENTER:
 				if(iter->iscastable(asker)){ //ENTER
-					iter->check_and_pop(metapos, asker);
 					clear_opts();
+					iter->check_and_pop(metapos, asker);
 					return iter;
 				}
 				else myIO->message("This opportunity can't be cast");

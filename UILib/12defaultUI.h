@@ -31,7 +31,7 @@ public:
 	void clear_opts();
 	UIElement* get_optionzone();
 	Target* iterate(bool needstarget, Player** pl, char returntypeflags);
-	Option* choose_opt(bool sorceryspeed, Option* firstopt, Player* asker, int metapos);
+	Option* choose_opt(bool sorceryspeed, Player* asker);
 	void normalize_gridy_gridz();
 	void deadzone();
 };

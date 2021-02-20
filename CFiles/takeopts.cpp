@@ -7,9 +7,12 @@ void verify_chain_integrity(Option** myoptions){
 	int i; Option* iter = 0;
 	for(i = 0; i < NBMYOPTS && myoptions[i] == 0; i++);
 	if(i == NBMYOPTS) return;
+	std::cout << "Checking chain:";
+	disp(myoptions[i], 0);
+	std::cout << "\n";
 	if(myoptions[i]->prev != 0){
 		god.call_ragnarok();
-		std::cout << "Error: first element of chain has prev pointer\n";
+		std::cout << "Error: first element of chain ( <" << myoptions[i]->prev->tag << "(" << myoptions[i]->tag << ")...) has prev pointer\n";
 		exit(1);
 	}
 	for(iter = myoptions[i]; iter->next != 0; iter = iter->next){
@@ -40,7 +43,7 @@ void verify_chain_integrity(Option** myoptions){
 	for(int i = 0; i<=NBMYOPTS; i++){
 		if(myoptions[i] != 0 && myoptions[i]->exists == false){
 			god.call_ragnarok();
-			std::cout << "Error: deleted element still pointed by parent\n";
+			std::cout << "Error: deleted element (in " << i << ") still pointed by parent\n";
 			exit(1);
 		}
 	}
@@ -90,14 +93,9 @@ bool Player::choose_and_use_opt(bool sorceryspeed){ //AKA "giving priority". Ret
 		god.myUI->clear_opts();
 		return false;
 	}
-	Option* iter = 0;
-	int metapos;
-	for(metapos = 0; iter == 0 && metapos<5; metapos += 2){ //there exists a castable opt; it must be at 0(instant), 2 (sorcery), or 4 (land)
-		iter = myoptions[metapos];
-	}
-	Option* choice = god.myUI->choose_opt(sorceryspeed, iter, this, metapos); //chooses opt and pops it, returns 0 if passing was chosen
-	verify_chain_integrity(myoptions);
+	Option* choice = god.myUI->choose_opt(sorceryspeed, this); //chooses opt, pops it and returns it, returns 0 if passing was chosen
 	if(!choice) return false;
+	verify_chain_integrity(myoptions);
 	Resolvable* cast = choice->cast_opt(this); //casts the spell and deletes the option
 	if(cast){
 		god.game->addtostack(cast);
