@@ -20,7 +20,7 @@ void Nano_io::message(const char* text) const {
 	std::cout << "[Computer]: " << text << "\n";
 }
 
-void Nano_io::draw_permanent(const Rect& zone, const std::string name, char color, bool tapped, bool highlight, bool basicImg) const {
+void Nano_io::draw_permanent(const Rect& zone, const std::string& name, char color, bool tapped, bool highlight, bool basicImg) const {
 	//if(highlight) is_iterating = true;
 	std::cout << "\t<" << name << "> ";
 	if(tapped) std::cout << "[TAPPED]";
@@ -40,7 +40,7 @@ void Nano_io::disp_cardback(const Rect& zone, int oncard_number) const {
 	std::cout << "\t" << oncard_number << " cards\n";
 }
 
-void Nano_io::poster(const std::string name, Mana manacost, char color, const char* types,
+void Nano_io::poster(const std::string& name, Mana manacost, char color, const char* types,
 	const std::vector<std::string> lines, int power, int toughness, char frametype, bool watermark) const {
 	std::cout << "[Describing]: " << name << "\t" << manacost.m2t() << "\n";
 

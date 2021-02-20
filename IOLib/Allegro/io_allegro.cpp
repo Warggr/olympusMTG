@@ -24,9 +24,11 @@ void Allegro_io::disp_mana(Mana mana, int endy, int topz) const {
 	}
 }
 
-void Allegro_io::draw_permanent(const Rect& zone, char color, bool tapped, bool highlight, bool basicImg) const {
+void Allegro_io::draw_permanent(const Rect& zone, const std::string& name, char color, bool tapped, bool highlight, bool basicImg) const {
 	if(basicImg) al_draw_scaled_bitmap(basiclands, 384*(main_color(color)-1), (500-384)/2, 384, 384, zone, 0);
 	else draw_full_rectangle(main_color(color) + 3, zone);
+
+	al_draw_text(fonts[0], registeredColors[Abstract_io::BLACK], zone.yy()+4, zone.z+4, 0, name.c_str());
 
 	if(tapped) al_draw_bitmap(tapsymbol, zone.yy(), zone.z, 0);
 	const int lw = 10;
@@ -75,28 +77,12 @@ void Allegro_io::disp_header(const Rect& zone, const char* name, int life, char 
 	if(life >= 1000) raise_error("Life total too high to be shown, most likely a bug");
 	int x = highlight ? HIGH2 : WHITE;
 	al_draw_text(fonts[0], registeredColors[x], zone.yy() + zone.width/2 - 20, zone.z + 3, 0, name);
-	char lifec[4]; std::sprintf(lifec, "%4d", life);
+	char lifec[4]; std::sprintf(lifec, "%3d", life);
 	al_draw_text(fonts[1], registeredColors[x], zone.yy() + zone.width/2 - 15, zone.z + 23, 0, lifec);
 	disp_mana(pool, zone.y+zone.width, zone.height);
 }
 
-void Allegro_io::disp_mana(Mana mana, int endy, int topz){
-	int m = mana.m2i();
-	char generic = (char) (m&0xf);
-	for(int i=0; i<6; i++){
-		m = m >> 4;
-		for(int j=0; j < (m&0xf); j++){
-			endy -= 24;
-			generic--;
-			al_draw_scaled_bitmap(ManaColorSym[i], 0, 0, 160, 160, endy, topz, 24, 24, 0);
-		}
-	}
-	if(generic!=0){
-		al_draw_scaled_bitmap(ManaNumSym[(int) generic], 0, 0, 160, 160, endy-24, topz, 24, 24, 0);
-	}
-}
-
-void Allegro_io::poster(const std::string name, Mana manacost, char color, const char* types,
+void Allegro_io::poster(const std::string& name, Mana manacost, char color, const char* types,
 	const std::vector<std::string> lines, int power, int toughness, char frametype, bool watermark) const {
 	al_draw_bitmap(card_template[(int) color], posterY, posterZ, 0);
 	al_draw_text(fonts[0], al_map_rgb(0,0,0), posterY+29, posterZ+28, 0, &(name[0]));

@@ -62,7 +62,7 @@ void Ncurses_io::message(const char* text) const {
 	mvwprintw(message_zone, 0, 0, "%s", text);
 }
 
-void Ncurses_io::draw_permanent(const Rect& zone, const std::string name, char color, bool tapped, bool highlight, bool basicImg) const {
+void Ncurses_io::draw_permanent(const Rect& zone, const std::string& name, char color, bool tapped, bool highlight, bool basicImg) const {
 	WINDOW* win = winzones[zone.zone()];
 	wattron(win, COLOR_PAIR(color+1));
 	char sep = tapped ? '/' : '|';
@@ -112,7 +112,7 @@ void Ncurses_io::disp_cardback(const Rect& zone, int oncard_number) const {
 	}
 }
 
-void Ncurses_io::poster(const std::string name, Mana manacost, char color, const char* types,
+void Ncurses_io::poster(const std::string& name, Mana manacost, char color, const char* types,
 	const std::vector<std::string> lines, int power, int toughness, char frametype, bool watermark) const {
 	WINDOW* win = winzones[POSTER];
 	wclear(win);
