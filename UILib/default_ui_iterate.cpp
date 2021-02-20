@@ -61,29 +61,48 @@ Target* Default_ui::iterate(bool needstarget, Player** pl, char returntypeflags)
 	}
 }
 
+bool go_up(Option*& iter, int& pos, int& metapos, Option** all_options, Option*& lower_border){
+	if(iter->prev == 0) return false;
+	--pos;
+	if(iter == all_options[metapos]){
+		lower_border = iter;
+		for(metapos = metapos-1; all_options[metapos] == 0; --metapos);
+	}
+	iter = iter->prev;
+	return true;
+}
+
+bool go_down(Option*& iter, int& pos, int& metapos, Option** all_options, Option*& lower_border){
+	if(iter->next == 0) return false;
+	++pos;
+	iter = iter->next;
+	if(iter == lower_border){
+		for(metapos = metapos+1; all_options[metapos] != iter; ++metapos);
+		lower_border = next_in_chain(all_options, metapos);
+	}
+	return true;
+}
+
 Option* Default_ui::choose_opt(bool sorceryspeed, Option* iter, Player* asker, int metapos){ //asks user to choose option and pops that option
-	//std::cout << "Started global ChooseOpt" << std::endl;
 	int dy, dz;
 	Rect rect = optionZone->get_coordinates(&dy, &dz);
 	int pos = 0;
+	Option* lower_border = next_in_chain(asker->myoptions, metapos);
 	if(myIO->gmouseActive()){
 		//std::cout << "Mouse is active:";
 		while(rect.z + (pos+1)*dz < myIO->gmouseZ()){
-			//std::cout << "Going down - ";
-			if(iter->next == 0) break;
-			++pos; iter = iter->next;
+			if(go_down(iter, pos, metapos, asker->myoptions, lower_border) == false) break;
 		}
 		while(rect.z + pos*dz > myIO->gmouseZ()){
-			if(iter->prev == 0) break;
-			--pos; iter = iter->prev;
+			if(go_up(iter, pos, metapos, asker->myoptions, lower_border) == false) break;
 		}
 	}
 	while(1){
 		direction = myIO->get_direction_key();
 		iter->disp(rect.y + pos*dy, rect.z + pos*dz, rect.width, false, iter->iscastable(asker));
 		switch(direction){
-			case DOWN: if(iter->next){iter = iter->next; pos++; } break;
-			case UP: if(iter->prev){iter = iter->prev; pos--; } break;
+			case DOWN: go_down(iter, pos, metapos, asker->myoptions, lower_border); break;
+			case UP: go_up(iter, pos, metapos, asker->myoptions, lower_border); break;
 			case BACK:
 				clear_opts();
 				return NULL;

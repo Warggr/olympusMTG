@@ -6,11 +6,14 @@
 class Option{
 public:
 	Option* prev, * next;
-	bool instantspeed;
 	Mana cost;
+	bool instantspeed;
+	bool exists;
+	static char next_tag;
+	char tag;
 
-	Option(Option* pre, Option* nxt, Mana c): prev(pre), next(nxt), instantspeed(0), cost(c){};
-	virtual ~Option() {};
+	Option(Option* pre, Option* nxt, Mana c): prev(pre), next(nxt), cost(c), instantspeed(0){exists = true; tag = next_tag; next_tag++;};
+	virtual ~Option() {exists = false; };
 	virtual void ragnarok(){ if(next) next->ragnarok(); delete this; }; //called to destroy a full option zone
 
 	virtual void check_and_pop(int n_of_zone, Player* pl); //default behavior: removes spell from list
@@ -72,5 +75,8 @@ public:
 
 Option* mergeSortCosts(Option* start, Option* end, int nb);
 Option* merge(Option* start1, Option* start2, Option* end);
+
+Option* next_in_chain(Option** myoptions, int nb_zone);
+void verify_chain_integrity(Option** myoptions);
 
 #endif //OLYMPUS_CLASSES_OPTIONS_2_H

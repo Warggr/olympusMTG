@@ -1,6 +1,51 @@
 #include ".header_link.h"
 #include "../HFiles/8options.h"
 #include "../HFiles/9modifs.h"
+#include <iostream>
+
+void verify_chain_integrity(Option** myoptions){
+	int i; Option* iter = 0;
+	for(i = 0; i < NBMYOPTS && myoptions[i] == 0; i++);
+	if(i == NBMYOPTS) return;
+	if(myoptions[i]->prev != 0){
+		god.call_ragnarok();
+		std::cout << "Error: first element of chain has prev pointer\n";
+		exit(1);
+	}
+	for(iter = myoptions[i]; iter->next != 0; iter = iter->next){
+		if(iter->next->prev != iter){
+			god.call_ragnarok();
+			std::cout << "Error: inconsistency in the chain at ";
+			if(iter->prev) std::cout << "<" << iter->prev->tag << "("; else std::cout << "<0(";
+			std::cout << iter->tag << ")";
+			if(iter->next) std::cout << iter->next->tag << ">"; else std::cout << "0>";
+			exit(1);
+		}
+		if(iter->exists == false){
+			god.call_ragnarok();
+			std::cout << "Error: deleted element still in the chain\n";
+			exit(1);
+		}
+		if(iter == iter->next){
+			god.call_ragnarok();
+			std::cout << "Error: circular reference\n";
+			exit(1);
+		}
+	}
+	if(iter != myoptions[NBMYOPTS]){
+		god.call_ragnarok();
+		std::cout << "Error: last element does not point to last element\n";
+		exit(1);
+	}
+	for(int i = 0; i<=NBMYOPTS; i++){
+		if(myoptions[i] != 0 && myoptions[i]->exists == false){
+			god.call_ragnarok();
+			std::cout << "Error: deleted element still pointed by parent\n";
+			exit(1);
+		}
+	}
+	std::cout << "Chain integrity OK\n";
+}
 
 //Player calls choicephase.
 //Player::choicephase calls choose_and_use_opt. Calls check_and_pop. Popped option is returned and cast (aka added to stack, or land put in play)
@@ -40,18 +85,20 @@ void Player::choicephase(bool sorceryspeed){
 }
 
 bool Player::choose_and_use_opt(bool sorceryspeed){ //AKA "giving priority". Returns false if a pass option was chosen
+	verify_chain_integrity(myoptions);
 	if(!disp_opt(sorceryspeed)){
 		god.myUI->clear_opts();
 		return false;
 	}
 	Option* iter = 0;
 	int metapos;
-	for(metapos = 0; !iter && metapos<5; metapos += 2){ //there exists a castable opt; it must be at 0(instant), 2 (sorcery), or 4 (land)
+	for(metapos = 0; iter == 0 && metapos<5; metapos += 2){ //there exists a castable opt; it must be at 0(instant), 2 (sorcery), or 4 (land)
 		iter = myoptions[metapos];
 	}
-	Option* choice = god.myUI->choose_opt(sorceryspeed, iter, this, metapos); //chooses opt, returns 0 if passing was chosen
+	Option* choice = god.myUI->choose_opt(sorceryspeed, iter, this, metapos); //chooses opt and pops it, returns 0 if passing was chosen
+	verify_chain_integrity(myoptions);
 	if(!choice) return false;
-	Resolvable* cast = choice->cast_opt(this); //casts the spell
+	Resolvable* cast = choice->cast_opt(this); //casts the spell and deletes the option
 	if(cast){
 		god.game->addtostack(cast);
 		god.game->disp_stack();
@@ -59,7 +106,6 @@ bool Player::choose_and_use_opt(bool sorceryspeed){ //AKA "giving priority". Ret
 	else{
 		disp_zone(0); //the stack might have changed, or the lands
 	}
-	//god.myIO->refresh_display();
 	return true;
 }
 

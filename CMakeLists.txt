@@ -15,8 +15,8 @@ configure_file(${SOURCE_DIR}/header_link.h ${SOURCE_DIR}/.header_link.h)
 include_directories($HEADER_DIR)
 file(GLOB SOURCES "${SOURCE_DIR}/*.cpp")
 
-set(IOLib "Allegro" CACHE STRING "Use Allegro as I/O library")
-set_property(CACHE IOLib PROPERTY STRINGS "Allegro" "Ncurses" "Nano")
+set(IOLibType "Allegro" CACHE STRING "Use Allegro as I/O library")
+set_property(CACHE IOLibType PROPERTY STRINGS "Allegro" "Ncurses" "Nano")
 
 add_subdirectory(Dictionary)
 add_subdirectory(IOLib)
@@ -49,8 +49,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ..)
 target_link_libraries(olympus PUBLIC OlympicDict)
 target_link_libraries(olympus PUBLIC Mana)
 target_link_libraries(olympus PUBLIC Yggdrasil)
-target_link_libraries(olympus PUBLIC ${UILIB})
-target_link_libraries(olympus PUBLIC ${IOLIB})
+target_link_libraries(olympus PUBLIC ${UILibDir})
+target_link_libraries(olympus PUBLIC ${IOLibDir})
 
 target_include_directories(olympus PUBLIC
 	"${PROJECT_BINARY_DIR}"

@@ -1,2 +1,2 @@
-add_subdirectory(${IOLib})
-set(IOLIB "IO${IOLib}" PARENT_SCOPE)
+add_subdirectory(${IOLibType})
+set(IOLibDir "IO${IOLibType}" PARENT_SCOPE)
