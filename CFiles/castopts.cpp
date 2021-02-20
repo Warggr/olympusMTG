@@ -79,7 +79,7 @@ void Option::pop(int n_of_zone, Player* pl) const{
 	for(int i=0; i<NBMYOPTS; i++){ //TODO ensure metapos is correct and do it only for metapos
 		if(pl->myoptions[i] == this) pl->myoptions[i] = next;
 		if(pl->myoptions[i-1] == this) pl->myoptions[i-1] = next;
-		std::cout << "Popping option " << tag << " with metapos " << i << "\n";
+		//std::cout << "Popping option " << tag << " with metapos " << i << "\n";
 	}
 }
 
