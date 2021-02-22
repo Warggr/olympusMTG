@@ -35,7 +35,6 @@ protected:
 public:
 	SpellOption(Card* src);
 	SpellOption(Card* src, Option* next);
-	~SpellOption() {};
 	void ragnarok();
 	
 	void disp(int y, int z, int width, bool highlight, bool castable) const;
@@ -81,7 +80,5 @@ public:
 
 Option* mergeSortCosts(Option* start, Option* end, int nb);
 Option* merge(Option* start1, Option* start2, Option* end);
-
-Option* next_in_chain(Option** myoptions, int nb_zone);
 
 #endif //OLYMPUS_CLASSES_OPTIONS_2_H

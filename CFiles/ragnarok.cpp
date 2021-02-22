@@ -12,14 +12,14 @@
 Player::~Player(){
 	god.gdebug(DBG_RAGNAROK) << "This is the end... Hold your breath and count, to ten...\n";
 	//deleting permanents is done automatically when their lists are deleted
-	for(int i=0; i<3; i++){
-		if(myoptions[i]) myoptions[i]->ragnarok();
-	}
+    Option* first = first_option(0);
+    if(first) first->ragnarok();
 }
 
 template <typename T>
-void CollectionTN<T>::ragnarok_collectiontn() {
+void CollectionTN<T>::ragnarok_collectiontn() { //delete its node children (not the leaves)
     for(auto iter = children.begin(); iter != children.end(); iter++){
+        (*iter)->ragnarok_collectiontn();
         delete *iter;
     }
 }
@@ -27,13 +27,12 @@ void CollectionTN<T>::ragnarok_collectiontn() {
 template <typename T>
 void CollectionTN<T>::full_ragnarok_boardzone(){
     auto iter = pure_children_first;
-    do {
+    while(iter != pure_children_last){
         auto i2 = iter;
         iter = iter->next;
         delete i2;
-    } while(iter != pure_children_last);
+    }
     ragnarok_collectiontn();
-    delete this;
 }
 
 BoardN::~BoardN(){
@@ -41,6 +40,10 @@ BoardN::~BoardN(){
     myartos.full_ragnarok_boardzone();
     mycreas.full_ragnarok_boardzone();
     mysuperfriends.full_ragnarok_boardzone();
+}
+
+CardZone::~CardZone(){
+    for(auto card : cards) delete card;
 }
 
 Target::~Target(){

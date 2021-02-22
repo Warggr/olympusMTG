@@ -170,6 +170,8 @@ DirectioL Ncurses_io::get_direction_key(){
 		int ch;
 		ch = getch();
 		mouseActive = false;
+		message("Received key " + std::to_string(ch));
+		god.gdebug(DBG_IOUI) << "Received key " << ch << "\n";
 		switch(ch){
 			case KEY_DOWN: return DOWN;
 			case KEY_UP: return UP;

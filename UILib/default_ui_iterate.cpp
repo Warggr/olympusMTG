@@ -61,56 +61,52 @@ Target* Default_ui::iterate(bool needstarget, Player** pl, char returntypeflags)
 	}
 }
 
-bool go_up(Option*& iter, int& pos, int& metapos, Option** all_options, Option*& lower_border){
+bool go_up(Option*& iter, int& pos, int& metapos, Player* asker, Option*& lower_border){
 	if(iter->prev == 0) return false;
 	--pos;
-	if(iter == all_options[metapos]){
+	if(iter == asker->myoptions[metapos]){
 		lower_border = iter;
 		--metapos;
-		if(metapos == 2 && all_options[metapos] == iter) --metapos; //2 and 3 could show to the same element. This can't happen with 2 and 1 because else we couldn't go up at all
-		for(metapos = metapos; all_options[metapos] == 0; --metapos);
+		if(metapos == 2 && asker->myoptions[metapos] == iter) --metapos; //2 and 3 could show to the same element. This can't happen with 0 and 1 because else we couldn't go up at all
+		for(metapos = metapos; asker->myoptions[metapos] == 0; --metapos);
 	}
 	iter = iter->prev;
 	return true;
 }
 
-bool go_down(Option*& iter, int& pos, int& metapos, Option** all_options, Option*& lower_border){
+bool go_down(Option*& iter, int& pos, int& metapos, Player* asker, Option*& lower_border){
 	if(iter->next == 0) return false;
 	++pos;
 	iter = iter->next;
 	if(iter == lower_border){
-		for(metapos = metapos+1; all_options[metapos] != iter; ++metapos);
-		lower_border = next_in_chain(all_options, metapos);
+		metapos++;
+		asker->first_option(metapos);
+		lower_border = asker->first_option(metapos+1);
 	}
 	return true;
 }
 
 Option* Default_ui::choose_opt(bool sorceryspeed, Player* asker){ //asks user to choose option and pops that option
 	int metapos = 0;
-	Option* iter = 0;
-	for(int i=0; i<5; i += 2){
-		if(asker->myoptions[i] != 0){
-			iter = asker->myoptions[i]; metapos = i; break;
-		}
-	}
+	Option* iter = asker->first_option(metapos);
 	int dy, dz;
 	Rect rect = optionZone->get_coordinates(&dy, &dz);
 	int pos = 0;
-	Option* lower_border = next_in_chain(asker->myoptions, metapos+1);
+	Option* lower_border = asker->first_option(metapos+1);
 	if(myIO->gmouseActive()){
 		while(rect.z + (pos+1)*dz < myIO->gmouseZ()){
-			if(go_down(iter, pos, metapos, asker->myoptions, lower_border) == false) break;
+			if(go_down(iter, pos, metapos, asker, lower_border) == false) break;
 		}
 		while(rect.z + pos*dz > myIO->gmouseZ()){
-			if(go_up(iter, pos, metapos, asker->myoptions, lower_border) == false) break;
+			if(go_up(iter, pos, metapos, asker, lower_border) == false) break;
 		}
 	}
 	while(1){
 		direction = myIO->get_direction_key();
 		iter->disp(rect.y + pos*dy, rect.z + pos*dz, rect.width, false, iter->iscastable(asker));
 		switch(direction){
-			case DOWN: go_down(iter, pos, metapos, asker->myoptions, lower_border); break;
-			case UP: go_up(iter, pos, metapos, asker->myoptions, lower_border); break;
+			case DOWN: go_down(iter, pos, metapos, asker, lower_border); break;
+			case UP: go_up(iter, pos, metapos, asker, lower_border); break;
 			case BACK:
 				clear_opts();
 				return NULL;

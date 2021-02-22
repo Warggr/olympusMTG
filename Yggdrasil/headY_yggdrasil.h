@@ -16,6 +16,7 @@ protected:
         ListNode* next;
         ListNode(StaticAb* st, ListNode* nxt): modif(st), prev(0), next(nxt) {};
     } *all_modifs {0};
+    AbstractN* primary_parent;
     std::list<AbstractN*> parents;
 public:
     virtual ~AbstractN() = default;
@@ -28,19 +29,17 @@ class CollectionTN: public AbstractN{
 protected:
 	Identifier min_chars;
     Identifier min_requ;
-    AbstractN* primary_parent;
-    std::list<AbstractN*> parents;
     std::list<CollectionTN<T>*> children;
     bool is_primary; //true when all of its children are adjacent in memory
 public:
     PermanentTN<T>* pure_children_first;
     PermanentTN<T>* pure_children_last;
 
-    CollectionTN(AbstractN* parent): primary_parent(parent), pure_children_first(0), pure_children_last(0) {};
-    CollectionTN(Identifier chars, Identifier requs, AbstractN* parent): min_chars(chars), min_requ(requs), primary_parent(parent), pure_children_first(0), pure_children_last(0) {};
+    CollectionTN(AbstractN* parent): pure_children_first(0), pure_children_last(0) { primary_parent = parent; };
+    CollectionTN(Identifier chars, Identifier requs, AbstractN* parent): min_chars(chars), min_requ(requs), pure_children_first(0), pure_children_last(0) {primary_parent = parent; };
     virtual ~CollectionTN() = default;
-    void ragnarok_collectiontn();
-    void full_ragnarok_boardzone();
+    void ragnarok_collectiontn(); //deletes its node children (not the leaves)
+    void full_ragnarok_boardzone(); //delete all of its children
     template<typename X> iterator<X, false> xbegin();
     template<typename X> iterator<X, true> cxbegin() const;
     template<typename X, bool iconst> iterator<X, iconst> xend() const;
@@ -64,13 +63,13 @@ template <typename T> class StatedCollectionTN;
 
 template <typename T>
 class DefaultCollectionTN: public CollectionTN<T>{
-    StatedCollectionTN<T>* states;
+    StatedCollectionTN<T>* states {0};
 public:
     DefaultCollectionTN(BoardN* parent): CollectionTN<T>(T::def_identifier, rid_perm_type, parent){};
     DefaultCollectionTN(Card* crd, Player* pl, AbstractN* parent, bool primary): CollectionTN<T>(parent)
         {this->construct_pure_child(crd, pl); this->is_primary = true; };
     DefaultCollectionTN(Identifier chars, Identifier requs, AbstractN* par): CollectionTN<T>(par, chars, requs) {};
-    ~DefaultCollectionTN(){if(states) delete states; };
+    ~DefaultCollectionTN(){if(states != 0) delete states; } //TODO uncomment
     StatedCollectionTN<T>* def_new_state();
     void restate(); //TODO merge only certain states, or even check for each permanent whether it wants to be merged
     void state_out(PermanentTN<T>* child); //TODO make it depend on the actual state we put this in

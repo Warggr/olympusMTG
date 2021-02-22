@@ -19,21 +19,24 @@ struct PlayerPreStackElement{
 
 class CardZone{
 private:
-    char name[10];
     int size;
-public:
-    CardZone(): name{0}, size(0) {};
+    char name[10];
     std::forward_list<Card*> cards;
+public:
+    CardZone(): size(0), name{0} {};
+    ~CardZone();
 
     void init(std::ifstream& textfile, std::ofstream& binaryOut);
     void init(std::ifstream& bFile);
-    void init_name(const char* n){ for(int i=0; i<10; i++) name[i] = n[i]; };
+    inline void init_name(const char* n){ for(int i=0; i<10; i++) name[i] = n[i]; };
     void shuffle();
     int drawto(CardZone* target, int nb_cards);
-    void takeonecard(Card* c){++size; cards.push_front(c); };
-    void inc_size(int i){ size += i; };
+    inline void takeonecard(Card* c){++size; cards.push_front(c); };
+    inline void inc_size(int i){ size += i; };
     void describe(char* tmp) const;
     void disp(const Rect& zone) const;
+    inline Card* pop_front() {Card* f = cards.front(); cards.pop_front(); return f; };
+    inline bool empty(){return cards.empty(); }
 };
 
 class BoardN: public AbstractN {
@@ -55,7 +58,7 @@ public:
 };
 
 class Player: public Target, public Damageable{
-private:
+private: //TODO optimize by taking alignment into account (i.e. put chars after each other)
 	std::string name;
 	unsigned char state; //MSB t1-t2-t3-land-milled out- 0 life -?-? LSB; t3 = 32
 	//upkeep (000) main1(001) afterattack(010) afterblock(011) afterfirstdamage(100) main2(101) end(110) nonactive(111)
@@ -85,9 +88,9 @@ public:
 	~Player();
 
 	const std::string& get_name() const {static const std::string descr(name); return descr; };
-	void set_flags(char a){state = state | a;};
-	void set_opp(Player* opp){nextopponent = opp; };
-	bool hasplayedland() const {return state & 16; };
+	inline void set_flags(char a){state = state | a;};
+	inline void set_opp(Player* opp){nextopponent = opp; };
+	inline bool hasplayedland() const {return state & 16; };
 	void damage(int nb_damage, Target* origin);
 
 	void disp() const;
@@ -97,9 +100,11 @@ public:
 	template <class PermType>
 		PermType* iterate_boardsubzone(float offset, DirectioL& direction, PContainer<PermType>* perms, UIElement* ui, bool isactivation);
 	Permanent* iterate_boardsubzone(float offset, DirectioL& direction, int xzone, bool istapland);
-	bool disp_opt(bool sorceryspeed) const;
-	void dispOptsOfCertainType(Rect& zone, int dy, int dz, bool& not_moved, int type, bool castable) const;
-	void addtoPrestack(PreResolvable* triggered_ability, Target* origin){prestack.emplace_front(triggered_ability, origin); };
+	Option* first_option(int index) const;
+	Option* first_option(int* index) const;
+	inline bool has_options(bool sorceryspeed) const;
+	void disp_opt(bool sorceryspeed) const;
+	inline void addtoPrestack(PreResolvable* triggered_ability, Target* origin){prestack.emplace_front(triggered_ability, origin); };
 	bool add_triggers_to_stack();
 
 	bool choose_and_use_opt(bool sorceryspeed);
@@ -113,14 +118,17 @@ public:
 	void chooseblockers(StatedCollectionTN<Creature>& attackers, UIElement* attackerDisplay);
 
 	void draw(int nb_cards);
-	void gain_life(int nb_life) {life += nb_life; };
+	inline void gain_life(int nb_life) {life += nb_life; };
 	void add_mana(char color);
 	void puttozone(Card* x, char n);
 
 	void check_too_expensive();
 	void empty_pool();
 
-	void untapstep();
+	bool statebasedactions();
+	bool turn();
+
+	  void untapstep();
 	void upkeepstep();
 	void drawstep();
 	  void mainphasemainstep();
@@ -129,9 +137,6 @@ public:
 	void damagestep();
 	  void endstep();
 	  void cleanupstep();
-
-	bool statebasedactions();
-	bool turn();
 
 	Identifier reload_id() const;
 };

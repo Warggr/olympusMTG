@@ -22,18 +22,17 @@ void Player::draw(int nb_cards){
 	int nb_spells[2]{0};
 	Option* last[2]{0};
 	for(int i=0; i<nb_cards; i++){
-		if(myzones[0].cards.empty()){ //milled out
+		if(myzones[0].empty()){ //milled out
 			set_flags(4);
 			god.game->haswon = true;
 			return;
 		} else { //in a first step, we add options to the "cheap" subchain
 			myzones[0].inc_size(-1);
-			Card* crd = myzones[0].cards.front();
-			myzones[0].cards.pop_front();
+			Card* crd = myzones[0].pop_front();
 			int zone = (crd->get_type() == 1) ? LANDOPTS : (crd->has_flash()) ? 0 : 2;
-			Option* next = next_in_chain(myoptions, zone);
+			Option* next = first_option(zone);
 			Option* insert;
-			if(crd->get_type() == 1){
+			if(zone == LANDOPTS){
 				insert = new PlayLand(crd, next);
 			}
 			else {
@@ -190,9 +189,16 @@ Option* merge(Option* start1, Option* start2, Option* end){ //first = cheapest
 	}
 }
 
-Option* next_in_chain(Option** myoptions, int nb_zone){
-	for(nb_zone = nb_zone; nb_zone != NBMYOPTS; nb_zone++){
-		if(myoptions[nb_zone] != 0) return myoptions[nb_zone];
+Option* Player::first_option(int* index) const {
+	for(; *index != NBMYOPTS; (*index)++){
+		if(myoptions[(*index)] != 0) return myoptions[(*index)];
+	}
+	return 0;
+}
+
+Option* Player::first_option(int index) const {
+	for(; index != NBMYOPTS; index++){
+		if(myoptions[index] != 0) return myoptions[index];
 	}
 	return 0;
 }

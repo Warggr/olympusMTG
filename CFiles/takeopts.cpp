@@ -42,10 +42,11 @@ void Player::choicephase(bool sorceryspeed){
 
 bool Player::choose_and_use_opt(bool sorceryspeed){ //AKA "giving priority". Returns false if a pass option was chosen
 	//verify_chain_integrity(myoptions);
-	if(!disp_opt(sorceryspeed)){
+	if(has_options(sorceryspeed)){
 		god.myUI->clear_opts();
 		return false;
 	}
+	disp_opt(sorceryspeed);
 	Option* choice = god.myUI->choose_opt(sorceryspeed, this); //chooses opt, pops it and returns it, returns 0 if passing was chosen
 	if(!choice) return false;
 	//verify_chain_integrity(myoptions);
@@ -71,25 +72,30 @@ bool Player::add_triggers_to_stack(){
 	return true;
 }
 
-bool Player::disp_opt(bool sorceryspeed) const {
-	bool ret = false;
-	int dy, dz;
-	Rect rect = optZone->get_coordinates(&dy, &dz);
-	bool not_moved = true;
-	dispOptsOfCertainType(rect, dy, dz, not_moved, 0, true);
-		if(!not_moved) ret = true;
-	dispOptsOfCertainType(rect, dy, dz, not_moved, 2, sorceryspeed);
-		if(sorceryspeed && !not_moved) ret = true;
-	dispOptsOfCertainType(rect, dy, dz, not_moved, 4, sorceryspeed && !(state & 16));
-		if(sorceryspeed && !(state & 16) && myoptions[LANDOPTS]) ret = true;
-
-	return ret;
+bool Player::has_options(bool sorceryspeed) const {
+	if(!sorceryspeed and myoptions[0] == 0) return false;
+	else if(myoptions[2] != 0) return true;
+	else if(!hasplayedland() and myoptions[LANDOPTS]) return true;
+	return false;
 }
 
-void Player::dispOptsOfCertainType(Rect& zone, int dy, int dz, bool& not_moved, int type, bool castable) const {
-	for(Option* iter = myoptions[type]; iter != 0 && iter!=myoptions[type+2]; iter = iter->next){
-		iter->disp(zone.yy(), zone.z, zone.width, not_moved, castable && iter->iscastable(this));
-		zone.shift(dy, dz);
+void Player::disp_opt(bool sorceryspeed) const {
+	int dy, dz;
+	Rect rect = optZone->get_coordinates(&dy, &dz);
+	int zone = 0;
+	bool castable = true, not_moved = true;
+	Option* iter = first_option(&zone);
+	Option* next = first_option(zone);
+	for(; iter != 0; iter = iter->next){
+		iter->disp(rect.y, rect.z, rect.width, not_moved, castable);
 		not_moved = false;
+		rect.shift(dy, dz);
+		if(iter == next){
+			zone++;
+			if(zone == 1 || zone == 3) castable = false;
+			else if(zone == 4) castable = sorceryspeed and !hasplayedland();
+			else if(zone == 2) castable = sorceryspeed;
+			next = first_option(zone);
+		}
 	}
 }
