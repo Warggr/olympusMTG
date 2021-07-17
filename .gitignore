@@ -1,0 +1,11 @@
+build/
+target/
+
+material/*
+!material/decks
+!material/content.txt
+
+material/decks/*
+!material/decks/syntax_guide.txt
+
+src/include/.olympus_main.h
