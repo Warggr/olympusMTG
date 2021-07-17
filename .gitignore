@@ -1,5 +1,6 @@
 build/
-target/
+outputs/
+olympus
 
 material/*
 !material/decks
