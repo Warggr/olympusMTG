@@ -1,11 +1,7 @@
-#ifndef OLYMPUS_HEAD_3_READFILES
-#define OLYMPUS_HEAD_3_READFILES
+#ifndef OLYMPUS_HEAD_R_READFILES
+#define OLYMPUS_HEAD_R_READFILES
 
 #include <iostream>
-
-#define MANUAL_IMPORT_OF_OLYMPUS_HEADERS
-#include "../include/.olympus_main.h"
-#undef MANUAL_IMPORT_OF_OLYMPUS_HEADERS
 
 bool read_section_flavor(std::ifstream& myfile, char*& flavor_text, char offset_text);
 bool read_section_abils(std::ifstream& myfile, int& nb_actabs, PermOption*& first_actab);
@@ -13,7 +9,6 @@ bool read_section_triggers(std::ifstream& myfile, int& nb_triggers, char*& typeo
 bool read_section_onresolve(std::ifstream& myfile, PreResolvable*& preRes);
 bool read_section_statics(std::ifstream& myfile, int& nb_statics, StaticAb*& statics);
 
-void check_safepoint(std::ifstream& myfile, char c, const char* message);
 void check_safepoint(std::ifstream& myfile, char c, const char* message);
 
 int nb_phrases(std::ifstream& myfile, char& v);
@@ -27,4 +22,4 @@ void read_staticeffect(std::ifstream& myfile, char& first_effect, char*& other_e
 void read_selector(std::ifstream& myfile, Identifier& chars, Identifier& requs);
 bool read_one_criterion(std::ifstream& myfile, Identifier& chars, Identifier& requs);
 
-#endif //OLYMPUS_HEADER_9_READFILES
+#endif //OLYMPUS_HEAD_R_READFILES

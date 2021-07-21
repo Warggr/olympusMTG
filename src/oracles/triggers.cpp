@@ -1,6 +1,5 @@
-#include ".header_link.h"
-#include "../HFiles/10triggers.h"
-#include "../HFiles/9modifs.h"
+#include "10triggers.h"
+#include "9modifs.h"
 
 void TriggerEvent::trigger(Player* pl, Target* origin) const {
 	for(auto iter = all_triggers.begin(); iter != all_triggers.end(); iter++) (*iter)->trigger(pl, origin);

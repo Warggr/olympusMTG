@@ -1,95 +1,130 @@
-#include "../Dictionary/lib1_dictionary.h"
-#include "../HFiles/headR_readfiles.h"
-#include "../HFiles/headC_constants.h"
-#include <fstream>
+#include "Dictionary/lib1_dictionary.h"
+#include "headR_readfiles.h"
+#include "../0/headC_constants.h"
 #include <cstring>
 #include <iostream>
 
-char read_typeof_target(const char* txt){ //player 80 - permanent 40 - spell (well, resolvable) 20 - creature 10
-//planeswalker 08 - ? - card 02 - ?
+template<>
+Dictionary_tpl<int>::iterator Dictionary_tpl<int>::not_found(0);
+
+flag_t readTypeofTarget(const char* txt){
 	if(txt[0] == 'p'){
 		if(txt[1] == 'l'){
-			if(txt[3] == 'y') return 0x80; //player
-			else return 0x08; //PW
+			if(txt[3] == 'y') return target_type::player;
+			else return target_type::planeswalker;
 		}
-		else if(txt[2] == 'r') return 0x40; //confirmation of 'permanent'; the e was read earlier
+		else if(txt[2] == 'r') return target_type::permanent; //the e was read earlier
 	}
 	else{
 		if(txt[2] == 'e'){
-			if(txt[3] == 'l') return 0x20; //spell
-			else return 0x10; //creature
+			if(txt[3] == 'l') return target_type::spell;
+			else return target_type::creature;
 		}
-		else return 0x02; //card
+		else return target_type::card;
 	}
-	return 0x00;
+	return target_type::none;
 }
 
-int read_ability_type(std::ifstream& myfile){ //gets action and the following space
-	char ability[100];
-	myfile >> ability;
-	myfile.get();
-	int ret = olympus::dict_abiltypes.find(ability);
-	if(ret == -1){
-		raise_error(std::string("Invalid ability type '") + ability + "'"); return 0;
+effect_type PlainFileReader::readAbilityType(){ //gets only the action
+	char ability[30];
+	ifile >> ability;
+	auto ret = dicts->dict_abiltypes.find(ability);
+	if(ret == Dictionary::not_found){
+		throw DeckbuildingError(std::string("Invalid ability type '") + ability + "'");
 	}
-	else return ret;
+	else return static_cast<effect_type>(*ret);
 }
 
-char read_ability_parameter(std::ifstream& myfile, char* allassignedvariables, int* nbassignedparams){ //reads only the parameter itself.
-	char a = myfile.peek();
-	god.gdebug(DBG_READFILE) << "Read parameter starting with " << a << std::endl;
+short int PlainFileReader::readNumber(char a, bool can_be_zero, bool can_be_negative){
+	if(('0' <= a && a <= '9') || a == '-'){
+		short int b;
+		ifile >> b;
+		gdebug(DBG_READFILE, "Read number literal " << b << "-");
+		if(!can_be_zero && b == 0) throw DeckbuildingError("Invalid ability parameter: expected non-0 number");
+		if(!can_be_negative && b < 0) throw DeckbuildingError("Invalid ability parameter: expected positive number");
+		return b;
+	}
+	else{ throw DeckbuildingError("Invalid ability parameter: expected a number"); return 0; }
+}
+
+punctuation PlainFileReader::getPunctuation() {
+	switch(ifile.get()){ 
+		case ',': return CONTINUE;
+		case '.': return ENDPOINT;
+		case ';': return BREAKOUT;
+		default: throw DeckbuildingError("Punctuation missing");
+	}
+}
+
+enum mtgmanatype { white, blue, black, red, green, colorless };
+
+inline mtgmanatype read_mana_to_add(char a){
 	switch(a){
-	case ' ':
-		myfile.get();
-	case '.': case ',':
-		return 0;
-	case 'y':{
-		char you[4];
-		myfile.get(you, 4);
-		if(strcmp("you", you) == 0){
-			return 0;
-		}
-		else {
-			raise_error("The only valid parameter starting with 'y' is 'you'"); return 0;
-		}
+		case 'C': return colorless;
+		case 'W': return white;
+		case 'U': return blue;
+		case 'B': return black;
+		case 'R': return red;
+		case 'G': return green;
+		default: return colorless;
 	}
-	case '%':{ //possible options: player, planeswalker, permanent, card, spell, creature
-		char types = 0;
-		//(additional constraints, such as 'target Minotaur', or even 'target artifact', will be saved somewhere else, I don't really care)
-		myfile.get(); //getting %
-		while(1){
-			char txt[20];
-			int i=0;
-			while(myfile.peek() >= 'a' && myfile.peek() <= 'z'){
-				txt[i++] = myfile.get();
+}
+
+int8_t PlainFileReader::readAbilityParameter(char* allassignedvariables, uint8_t* nbassignedparams, flag_t type){ //reads only the parameter itself.
+	check_safepoint(' ', "before a parameter");
+	char a = ifile.peek();
+	gdebug(DBG_READFILE, "Read parameter starting with " << a << "\n");
+	if(type == target_type::added_mana){ ifile.get(); return read_mana_to_add(a); }
+	if(type & target_type::number)
+		return readNumber(a, (type & target_type::nonzero) != target_type::nonzero, (type & target_type::nonnegative) != target_type::nonnegative);
+	switch(a){
+		case 'y':{
+			char you[4];
+			ifile.get(you, 4);
+			if(strcmp("you", you) == 0) return -1; //-1 is 'you'
+			else { throw DeckbuildingError("The only valid parameter starting with 'y' is 'you'"); }
+		}
+		case 't':{
+			char you[5];
+			ifile.get(you, 5);
+			if(strcmp("this", you) == 0) return -2; //-1 is 'this'
+			else {throw DeckbuildingError("The only valid parameter starting with 't' is 'this'"); }
+		}
+		case 'e':{
+			char you[10];
+			ifile.get(you, 10);
+			if(strcmp("enchanted", you) == 0) return -3; //-1 is 'enchanted or equipped permanent'
+			else {throw DeckbuildingError("The only valid parameter starting with 'e' is 'enchanted'"); }
+		}
+		case '%':{ //possible options: player, planeswalker, permanent, out_of_hand_card, spell, creature
+			char types = 0;
+			//(additional constraints, such as 'target Minotaur', or even 'target artifact', will be saved somewhere else, I don't really care)
+			ifile.get(); //getting %
+			while(1){
+				char txt[20];
+				int i=0;
+				while(ifile.peek() >= 'a' && ifile.peek() <= 'z'){
+					txt[i++] = ifile.get();
+				}
+				types = types | read_typeof_target(txt);
+				if(ifile.peek() != '|') break;
+				else ifile.get(); //getting '|'
 			}
-			types = types | read_typeof_target(txt);
-			if(myfile.peek() != '|') break;
-			else myfile.get(); //getting '|'
-		}
-		int b;
-		if(myfile.peek() > '9' || myfile.peek() < '1') raise_error("you forgot to give the target a number >= 1");
-		myfile >> b;
-		int index = (types&0xf0) + b;
-		if(allassignedvariables[index] == 0){
-			(*nbassignedparams)++;
-			allassignedvariables[index] = *nbassignedparams + 16*types; //rest of the type flags and var number;
-			//the rest of the infos are in the index
-			return (char) *nbassignedparams;
-		}
-		else{
-			return allassignedvariables[index] & 0x0f;
-		}
-	}
-	default:
-		if(('0' <= a && a <= '9') || a == '-'){
 			int b;
-			myfile >> b;
-			god.gdebug(DBG_READFILE) << "Read number literal " << b << std::endl;
-			return b;
+			if(ifile.peek() > '9' || ifile.peek() < '1') { throw DeckbuildingError("you forgot to give the target a number >= 1"); return 0; }
+			ifile >> b;
+			int index = (types&0xf0) + b;
+			if(allassignedvariables[index] == 0){
+				(*nbassignedparams)++;
+				allassignedvariables[index] = *nbassignedparams + 16*types; //rest of the type flags and var number;
+				//the rest of the infos are in the index
+				return *nbassignedparams;
+			}
+			else{
+				return allassignedvariables[index] & 0x0f;
+			}
 		}
-		else{
-			raise_error("Invalid ability parameter."); return 0;
-		}
-	}
+		default:
+			throw DeckbuildingError(std::string("Invalid ability parameter starting with ") + a + " for type " + std::to_string(static_cast<int>(type)
+    }
 }

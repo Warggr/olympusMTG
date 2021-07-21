@@ -1,6 +1,6 @@
-#include "../HFiles/headR_readfiles.h"
-#include "headU_utilities.h"
-#include "9modifs.h" //there seems to be an implicit deletion of Card which implies deleting a Targeter or something?
+#include ".header_link.h"
+#include "../HFiles/head3_readfiles.h"
+#include "../HFiles/9modifs.h" //there seems to be an implicit deletion of Card which implies deleting a Targeter or something?
 
 #define OLYMPUS_BINARYCOMPAT_VERSION 1
 
@@ -8,6 +8,41 @@ void check_safepoint(std::ifstream& myfile, char c, const char* message){
 	char x = myfile.get();
 	if(x != c){
 		raise_error(std::string(message) + ": expected '" + c + "', got '" + x + "' instead");
+	}
+}
+
+[[noreturn]] void raise_error(const std::string& message){
+	god.gdebug(DBG_READFILE | DBG_X_READFILE | DBG_IMPORTANT) << "Error: " << message << std::endl;
+	std::cout << "Error: " << message << std::endl;
+	god.call_ragnarok();
+}
+
+std::ofstream& externVarContainer::gdebug(char password){
+	if((password & wanted_debug) != 0) return debug_log;
+	else return verbose_debug;
+}
+
+externVarContainer::externVarContainer(): game(0), wanted_debug(0), myUI(0), myIO(0){
+	debug_log.open("debug_info.txt", std::ifstream::trunc);
+	verbose_debug.open("debug_verbose.txt", std::ifstream::trunc);
+}
+
+struct externVarContainer god;
+
+Game::Game(const char* deck_1, const char* deck_2, char debug_flags): stack(0), haswon(false){
+	god.game = this;
+	god.wanted_debug = debug_flags;
+
+	players[0] = new Player(deck_1, 1);
+	players[1] = new Player(deck_2, 2);
+	Player* oppptr = players[1];
+	for(int i=0; i<2; i++){
+		players[i]->set_opp(oppptr);
+		oppptr = players[i];
+	}
+	active_player = players[0];
+	for(int i=0; i<LOGLEN; i++){
+		logbook[i] = 0;
 	}
 }
 
@@ -63,6 +98,8 @@ Player::Player(const char* deck_name, char id): Target(&name), Damageable(20), n
 	myzones[2].init_name("Exile");
 
 	myzones[0].shuffle();
+	myoptions[0] = nullptr;
+	for(int i=1; i<NBMYOPTS; i++) myoptions[i] = 0;
 	possiblepool = 0;
 	manapool = 0;
 	draw(7);
