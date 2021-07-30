@@ -1,4 +1,4 @@
-#include "server.h"
+#include "networkagent.h"
 #include <iostream>
 
 [[ noreturn ]] void printUsageAndExit() {
@@ -17,7 +17,7 @@ std::list<playerType> parseArgs(int nbargs, char** args) {
             printUsageAndExit();
         switch(args[i][1]) {
             case 'n': type = NETWORK; break;
-            //case 'l': type = LOCAL; break;
+            case 'l': type = LOCAL; break;
             //case 'b': type = BOT; break;
             default: printUsageAndExit();
         }

@@ -1,77 +1,12 @@
-#include "gameplay/2cards.h"
 #include "server/gameplay/3player.h"
 #include "server/gameplay/4permanents.h"
 #include "../HFiles/headR_readfiles.h"
-#include "HFiles/8options.h"
-#include "10triggers.h"
+#include "options/8options.h"
+#include "oracles/classes/2triggers.h"
 #include "../HFiles/12abilities.h"
 #include "headU_utilities.h"
 
 #include <memory>
-
-void set_canary(char canary, std::ofstream& bFile){
-	bFile.write(&canary, sizeof(char));
-}
-
-void check_canary(char canary, std::ifstream& bFile){
-	char test;
-	bFile.read(&test, sizeof(char));
-	if(test != canary) raise_error("Canary error while reading binary file");
-	//else std::cout << "Canary test for canary " << canary << "passed!" << std::endl;
-}
-
-void PreResolvable::write_binary(std::ofstream& bFile) const {
-	set_canary('b', bFile);
-	fab->write_binary(bFile);
-	bFile.write(&nb_parameters, sizeof(char));
-	bFile.write(parameters, nb_parameters*sizeof(char));
-	set_canary('y', bFile);
-}
-
-PreResolvable::PreResolvable(std::ifstream& bFile){
-	check_canary('b', bFile);
-	fab = std::make_unique<Ability>(bFile);
-	bFile.read(&nb_parameters, sizeof(char));
-	if(nb_parameters < 0) raise_error("Found negative number of parameters in PreRes binary");
-	parameters = new char[nb_parameters];
-	bFile.read(parameters, nb_parameters*sizeof(char));
-	check_canary('y', bFile);
-}
-
-void Ability::write_binary(std::ofstream& bFile) const {
-	set_canary('c', bFile);
-	bFile.write(&type, 3*sizeof(char)); //copying everything except the unique_ptr
-	if(next != nullptr){
-		char x = 1;
-		bFile.write(&x, sizeof(char));
-		next->write_binary(bFile);
-	}
-	else{
-		char x = 0;
-		bFile.write(&x, sizeof(char));
-	}
-	set_canary('d', bFile);
-}
-
-Ability::Ability(std::ifstream& bFile){
-	check_canary('c', bFile);
-	bFile.read(&type, 3*sizeof(char));
-	char x; bFile.read(&x, sizeof(char));
-	if(x != 0) next = std::make_unique<Ability>(bFile);
-	check_canary('d', bFile);
-}
-
-void Trigger::write_binary(std::ofstream& bFile) const {
-	set_canary('g', bFile);
-	effects->write_binary(bFile);
-	set_canary('h', bFile);
-}
-
-void Trigger::read_binary(std::ifstream& bFile){
-	check_canary('g', bFile);
-	effects = new PreResolvable(bFile);
-	check_canary('h', bFile);
-}
 
 void CardZone::init(std::ifstream& bFile){
 	check_canary('o', bFile);
@@ -129,18 +64,6 @@ void CardOracle::write_binary(std::ofstream& bFile) const {
 }
 
 CardOracle::CardOracle(std::ifstream& bFile){
-	check_canary('a', bFile);
-	char namesize;
-	bFile.read(&namesize, sizeof(char));
-	if(namesize >= 100) raise_error("Read a name 100 chars long, this must be an error.");
-	char name_tmp[100];
-	bFile.read(name_tmp, namesize * sizeof(char));
-	name_tmp[(int) namesize] = 0;
-	name = std::string(name_tmp);
-
-	bFile.read((char*) &cost, sizeof(Mana));
-	bFile.read((char*) &type, 2*sizeof(char)); //writing type and color
-	char x;
 	bFile.read(&x, sizeof(char));
 	if(x == 1){
 		on_cast = new PreResolvable(bFile);

@@ -1,4 +1,4 @@
-#include "../HFiles/headC_constants.h"
+#include "headC_constants.h"
 
 const char olympus::trigger_types::PermETB = 0;
 const char olympus::trigger_types::PermLTB = 1;
@@ -15,8 +15,8 @@ const std::string olympus::trigger_descriptions[] = {"~ enters the battlefield",
 "~ is dealt damage" };
 
 const std::string olympus::ability_descriptions[] = {"~ deals ? damage to target opponent",
-"Target player draws ? cards",
-"Target player gains ? life",
+"Target local draws ? cards",
+"Target local gains ? life",
 "Your life total becomes ?",
 "Add one mana of color ?",
 "Destroy something",
@@ -52,7 +52,7 @@ const char* const selector_descriptions[] = {
 }; const Dictionary olympus::dict_selectors(4, selector_descriptions);
 
 const char* const selector_chars_type[] = {
-	"player",
+	"local",
 	"permanent",
 	"resolvable",
 	"card"

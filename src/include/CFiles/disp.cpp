@@ -2,8 +2,8 @@
 
 #include ".header_link.h"
 #include "../HFiles/12abilities.h"
-#include "../HFiles/8options.h"
-#include "oracles/10triggers.h"
+#include "options/8options.h"
+#include "oracles/classes/2triggers.h"
 
 void Resolvable::disp(const Rect& zone, bool highlight) const {
 	god.myIO->draw_boxed_text(describe(), Abstract_io::BLACK, highlight ? Abstract_io::HIGH2 : Abstract_io::WHITE, zone.y, zone.z, zone.width);

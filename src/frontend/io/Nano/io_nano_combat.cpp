@@ -1,10 +1,12 @@
 #include "lib3_nanoIO.h"
 
-bool Nano_io::attack_switch(int leftY, int Ywidth, int topZ, int arrowlength) const {
-	std::cout << "[Input]: Do you want to attack with this creature? (Y/n): ";
+using namespace std;
+
+bool NanoIO::attack_switch(int leftY, int Ywidth, int topZ, int arrowlength) const {
+	cout << "[Input]: Do you want to attack with this creature? (Y/n): ";
 	char rep;
-	while(1){
-		std::cin >> rep;
+	while(true){
+		cin >> rep;
 		switch(rep){
 			case 'Y':
 			case 'y':
@@ -12,7 +14,7 @@ bool Nano_io::attack_switch(int leftY, int Ywidth, int topZ, int arrowlength) co
 			case 'N':
 			case 'n':
 				return false;
-			default: std::cout << "\tPlease enter Y or N.\n";
+			default: cout << "\tPlease enter Y or N.\n";
 		}
 	}
 }

@@ -1,20 +1,32 @@
 #include "12defaultUI.h"
-#include "../include/3player.h" //for iterating player's elements
-#include "../include/4permanents.h"
-#include "../include/7game.h"
-#include "../HFiles/8options.h"
+#include "lib3_IO.h"
 
-void Default_ui::deadzone(){
+void DefaultUI::deadzone(){
 	direction = myIO->get_direction_key();
 	if(direction == MOUSE) normalize_gridy_gridz();
 	else{ gridy = 0; gridz = 0; direction = NOT_RECOGNIZED; }
 }
 
-Target* Default_ui::iterate(bool needstarget, Player** pl, char returntypeflags){
+void DefaultUI::normalize_gridy_gridz(){
+    if(myIO->gmouseY() < boardW){
+        gridy = 0;
+        if(myIO->gmouseZ() < playerH) gridz = 0;
+        else if(myIO->gmouseZ() > playerH + 10*permanentZSize - 15) gridz = 11;
+        else gridz = (myIO->gmouseZ() - playerH) / (permanentZSize+permanentZMargin) - 1;
+    }
+    else if(myIO->gmouseY() < boardW + leftbarW){
+        gridy = 1;
+    }
+    else{
+        gridy = 2;
+    }
+}
+
+Target* DefaultUI::iterate(bool needstarget, Player** pl, char returntypeflags){
 	//std::cout << "Started global Iterate" << std::endl;
 	bool hasroot = true;
 	Target* ret;
-	while(1){
+	while(true){
 		//1. getting to fitting screen position
 		if(direction == MOUSE){
 			normalize_gridy_gridz();
@@ -86,7 +98,7 @@ bool go_down(Option*& iter, int& pos, int& metapos, Player* asker, Option*& lowe
 	return true;
 }
 
-Option* Default_ui::choose_opt(bool sorceryspeed, Player* asker){ //asks user to choose option and pops that option
+Option* DefaultUI::choose_opt(bool sorceryspeed, Player* asker){ //asks user to choose option and pops that option
 	int metapos = 0;
 	Option* iter = asker->first_option(metapos);
 	int dy, dz;

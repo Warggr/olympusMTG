@@ -107,10 +107,9 @@ if(ENABLE_TESTING)
     add_subdirectory(test)
 endif()
 
-set(INCLUDES ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/src)
+set(INCLUDES ${PROJECT_SOURCE_DIR}/src ${PROJECT_BINARY_DIR}/include)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-configure_file(src/build_types.h src/.build_types.h)
+set(RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/outputs)
 add_subdirectory(src)
 
 set(CONFIGURED_ONCE TRUE CACHE INTERNAL

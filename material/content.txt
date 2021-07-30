@@ -18,3 +18,5 @@ Materials/
    |- loyalty.png
    |- card_back.jpeg
    |- cardtmp_@.jpg
+|- interface/
+   |- Cursor_Fang.png

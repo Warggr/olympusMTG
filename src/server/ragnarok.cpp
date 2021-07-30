@@ -9,13 +9,6 @@
  * Ragnarok should not be called during initialization, when not everything's been allocated (or should it?)
  * As a general rule/ good practice, objects do not delete their siblings. Parents are expected to handle iterating and deleting themselves*/
 
-Player::~Player(){
-	god.gdebug(DBG_RAGNAROK) << "This is the end... Hold your breath and count, to ten...\n";
-	//deleting permanents is done automatically when their lists are deleted
-    Option* first = first_option(0);
-    if(first) first->ragnarok();
-}
-
 template <typename T>
 void CollectionTN<T>::ragnarok_collectiontn() { //delete its node children (not the leaves)
     for(auto iter = children.begin(); iter != children.end(); iter++){
@@ -127,4 +120,3 @@ Targeter::~Targeter(){
 	fprintf(god->gdebug(DBG_RAGNAROK | DBG_TARGETING), " Deleting Targeter %p. Removing any Targeters from its targets.\n", this);
 	if(valid) content->remove_persecutor(this); //telling its own death to the permanent it targeted
 }
-

@@ -1,4 +1,3 @@
-#include ".header_link.h"
 #include "../Yggdrasil/headB_board.h"
 
 bool Player::chooseattackers(){

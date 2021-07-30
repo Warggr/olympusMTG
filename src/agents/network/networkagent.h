@@ -4,28 +4,27 @@
 #include "../agent.h"
 #include "network.h"
 
-class NetworkAgent: public Agent {
+class NetworkAgent: public Agent, public Networker {
     bool idle; //whether he has been assigned a connection/IP adress yet
-    bool connected; //whether he is currently connected to that IP adress
     bool unread; //whether any unread messages are in the buffer
-    int sockfd;
-    char buffer[1024];
+    long message_length;
     std::string name;
+
+    const char* net_receive() override;
 public:
 	NetworkAgent();
-	~NetworkAgent() override;
 
-	void setup() override;
-	int getSock() const { return sockfd; }
-	void setSock(int sock);
+	void specificSetup() override;
     void receiveMessage();
-    bool isConnected() const { return connected; }
+
     void setName(const char* name);
 	std::string getName() override { return name; }
     //virtual Option* chooseOpt() override { return nullptr; }
-    //virtual std::ifstream getDeck() { return };
-    void net_send(const std::string& message) const;
-    const char* net_receive();
+    void setSock(int sock);
+    std::vector<OracleDescr> getDeck() override;
+	Target* chooseTarget(char type) override;
+
+    long receive() override;
 };
 
 #endif //OLYMPUS_AGENT_NETWORK_H

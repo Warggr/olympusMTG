@@ -1,8 +1,8 @@
 #include "lib3_allegroIO.h"
 
-bool Allegro_io::attack_switch(int leftY, int Ywidth, int topZ, int arrowlength) const {
+bool AllegroIO::attack_switch(int leftY, int Ywidth, int topZ, int arrowlength) const {
 	bool attacks = false;
-	while(1){
+	while(true){
 		ALLEGRO_EVENT event;
 		al_flip_display();
 		al_wait_for_event(queue, &event);
@@ -28,7 +28,7 @@ bool Allegro_io::attack_switch(int leftY, int Ywidth, int topZ, int arrowlength)
 				}
 				break;
 			case ALLEGRO_EVENT_DISPLAY_CLOSE:
-				god.call_ragnarok();
+				throw UIClosedException();
 		}
 	}
 }

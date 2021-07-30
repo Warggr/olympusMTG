@@ -83,7 +83,7 @@ PermType* Player::iterate_boardsubzone(float offset, DirectioL& direction, PCont
 }
 
 Player* Player::iterate_self(DirectioL& direction){
-	god.myIO->message("Iterating player");
+	god.myIO->message("Iterating local");
 	while(1){
 		disp_header(true);
 		direction = god.myIO->get_direction_key();

@@ -1,11 +1,25 @@
 #ifndef OLYMPUS_11_IMPLEMEMT_UI
 #define OLYMPUS_11_IMPLEMENT_UI
 
-#include ".build_types.h"
+#include "build_types.h"
 #include "../io/6abstractIO.h"
+class Permanent; class Creature; class Player; class Target; class Option; template<typename T> class PContainer;
 
-class Default_ui: public Abstract_ui {
+struct UIElement {
+    int topZ, leftY, yOffset, zOffset, ySize, zSize, maxItems;
+    static constexpr bool vertical = true, horizontal = false;
+
+    UIElement(int left, int top, int _ySize, int _zSize, int offset, int _maxItems, bool direction);
+
+    Rect get_coordinates(int *yOff, int *zOff) const;
+    void get_coordinates(int *y, int *z, int *yOff, int *zOff) const;
+    void get_coordinates(int itemNb, int *y, int *z) const;
+    void erase_background(AbstractIO *io) const;
+};
+
+class DefaultUI {
 private:
+    ImplementIO* myIO;
 	int leftbarW, boardW, rightbarW;
 	int stackH, optionsH, playerH, iozH, posterH;
 	int permanentZSize, permanentYSize, permanentZMargin;
@@ -13,15 +27,16 @@ private:
 	int playerY[2], playerZ[2];
 	int gridy{0}, gridz{0};
 	int linesize;
+    bool mouseSupport;
 
 	DirectioL direction;
-	_UIElement* playerPerms[2], *permanentZones[10];
-	_UIElement* stackZone, * optionZone, * logbookZone;
+	UIElement* playerPerms[2], *permanentZones[10];
+	UIElement* stackZone, * optionZone, * logbookZone;
 
-	_UIElement* new_final_element(int y, int z, int width, int height, int offset, int maxItems, bool direction);
+	UIElement* new_final_element(int y, int z, int width, int height, int offset, int maxItems, bool direction);
 public:
-	Default_ui(Abstract_io* IOLib);
-	~Default_ui(){delete playerPerms[0]; delete playerPerms[1]; delete optionZone; };
+	explicit DefaultUI(ImplementIO* IOLib);
+	~DefaultUI(){ delete playerPerms[0]; delete playerPerms[1]; delete optionZone; };
 	UIElement* declare_element(int typeofelement, char owner_id);
 	void get_player_coords(char player_id, Rect* zone, int* liby, int* libz, int* gravey, int* gravez, int* exily, int* exilz, int* cardzoneY, int* cardzoneZ);
 	bool chooseattackers(PContainer<Creature>& cowards, PContainer<Creature>& warriors, char player_id);
@@ -35,5 +50,9 @@ public:
 	void normalize_gridy_gridz();
 	void deadzone();
 };
+
+namespace AbstractUI {
+    constexpr int ELTYPE_STACK = 0, ELTYPE_LOGBOOK = 1, ELTYPE_PERMANENTS = 2;
+}
 
 #endif //OLYMPUS_11_IMPLEMEMT_UI

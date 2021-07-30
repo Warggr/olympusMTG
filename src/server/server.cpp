@@ -1,7 +1,7 @@
-#include "server.h"
+#include "networkagent.h"
 #include "agents/agent.h"
 #include "agents/network/networkmanager.h"
-//#include "gameplay/7game.h"
+#include "control/7game.h"
 #include <thread>
 
 Server* Server::god = nullptr;
@@ -12,8 +12,8 @@ Server::Server() {
 }
 
 void Server::launchGame() {
-    //if(currentGame != nullptr) return;
-    //currentGame = std::make_unique<Game>(players);
+    if(currentGame != nullptr) return;
+    currentGame = std::make_unique<Game>(players);
     std::cout << "Your game was launched!\n";
 }
 
@@ -36,4 +36,17 @@ void Server::addPlayerX(const std::list<playerType>& types) {
 
 Server::~Server() {
     NetworkManager::closeInstances();
+}
+
+namespace target_type {
+    const flag_t tars1[] = { damageable, nonnegative };
+    const flag_t tars2[] = { player, nonnegative };
+    const flag_t tars3[] = { player, number };
+    const flag_t tars4[] = { player, added_mana };
+    const flag_t tars5[] = { permanent };
+    const flag_t tars6[] = { resolvable };
+    const flag_t tars7[] = { permanent, strictpositive };
+    const flag_t tars8[] = { permanent };
+    const flag_t* target_types[] = { tars1, tars2, tars3, tars3, tars4, tars5, tars5, tars6, tars7, tars8 };
+    const int target_numbers[] = { 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1 };
 }

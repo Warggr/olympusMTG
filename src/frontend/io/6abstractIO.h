@@ -4,9 +4,9 @@
 #include <vector>
 #include <string>
 #include <exception>
-#include ".build_types.h"
-#include "../defs/Mana/lib2_mana.h"
-#include "../yggdrasil/headQ_rect.h"
+#include <headQ_rect.h>
+#include "build_types.h"
+#include "Mana/lib2_mana.h"
 
 enum DirectioL{ UP, DOWN, LEFT, RIGHT, BACK, ENTER, MOUSE, NOT_RECOGNIZED};
 enum framecolor { colorlessfr, whitefr, bluefr, blackfr, redfr, greenfr, multicolorfr };
@@ -28,11 +28,18 @@ inline enum framecolor main_color(char color){
 
 class UIClosedException: public std::exception{};
 
-class Abstract_io{
+class ImplementIO;
+
+class AbstractIO{
 public:
     static constexpr uint8_t WHITE = 0, BLACK = 1, GREY = 2, HIGH1=10, HIGH2=11;
-    static Implement_io* god;
-    Abstract_io(Implement_io* io){ god = io; }
+    static ImplementIO* god;
+
+#define maybe_virtual virtual
+#define maybe_undef = 0
+#include "iomethods.cpp"
+#undef maybe_virtual
+#undef maybe_undef
 };
 
 #endif //OLYMPUS_6_ABSTRACT_IO_H

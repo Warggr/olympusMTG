@@ -131,7 +131,7 @@ PermType* Player::iterate_boardsubzone(float offset, char* direction, std::list<
 }
 
 Player* Player::iterate_self(char* direction){
-	god.myIO->message("Iterating player");
+	god.myIO->message("Iterating local");
 	while(1){
 		disp_header(true);
 		god.myIO->refresh_display();

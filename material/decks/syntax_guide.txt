@@ -1,0 +1,3 @@
+4 !"Faerie Artisan" AC 2U {<k>Flying <x>I made a Jailor copy with my faerie artisans...} 2/2
+3 !"Tragic Slip" I B { }
+10 Plains (DOM/1)
