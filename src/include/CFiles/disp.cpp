@@ -2,7 +2,7 @@
 
 #include ".header_link.h"
 #include "../HFiles/12abilities.h"
-#include "options/8options.h"
+#include "oracles/classes/8options.h"
 #include "oracles/classes/2triggers.h"
 
 void Resolvable::disp(const Rect& zone, bool highlight) const {

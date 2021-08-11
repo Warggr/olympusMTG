@@ -16,6 +16,7 @@ template<typename T>
 class SearchTreeNode{
 private:
 	T identifier;
+	bool valid;
 	uint nnamelen; //length of the (partial) name, without ending NULL
 	char* nodename;
 	struct SearchTreeNode* children[28];
@@ -24,7 +25,8 @@ private:
 		children[pos] = child;
 	};
 	SearchTreeNode* existing_append(const char* name, int namelen, T id);
-	SearchTreeNode(const char* name, int namelen, T id);
+	SearchTreeNode(const char* name, int namelen, T id): identifier(id) { SearchTreeNode<T>(name, namelen, true); }
+	SearchTreeNode(const char* name, int namelen, bool valid);
 public:
 	~SearchTreeNode();
 
@@ -41,7 +43,7 @@ protected:
 	bool is_a_copy;
 public:
     typedef dict_iterator_tpl<T> iterator;
-    static constexpr iterator not_found = iterator(nullptr);
+    static constexpr iterator not_found {nullptr};
 
 	Dictionary_tpl(): root(nullptr), is_a_copy(false){};
 	Dictionary_tpl(int nbinserts, const char* const * inserts);
@@ -53,7 +55,7 @@ public:
 		else return root->find(key);
 	};
 
-	void insert(const char* key, int namelen, int id){
+	void insert(const char* key, int namelen, T id){
 		SearchTreeNode<T>::append(&root, key, namelen, id);
 	};
 
@@ -61,6 +63,9 @@ public:
 };
 
 using Dictionary = Dictionary_tpl<int>;
+
+template<typename T>
+constexpr dict_iterator_tpl<T> Dictionary_tpl<T>::not_found;
 
 #include "regularExp.cpp"
 

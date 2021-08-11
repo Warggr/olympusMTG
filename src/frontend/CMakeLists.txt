@@ -1,3 +1,5 @@
+set(INCLUDES ${INCLUDES} ${PROJECT_BINARY_DIR}/src/frontend/include ${CMAKE_CURRENT_SOURCE_DIR})
+
 add_subdirectory(io)
 add_subdirectory(ui)
 

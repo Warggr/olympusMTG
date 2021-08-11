@@ -1,16 +1,15 @@
-#include ".header_link.h"
+#include "resolvables/5resolvables.h"
+#include "permanents/4permanents.h"
 #include "headC_constants.h"
 #include "oracles/classes/2triggers.h"
-#include "../HFiles/12abilities.h"
+#include "3player_cards.h"
 
 const std::string Resolvable::description = "this spell or ability";
 
-std::string PreResolvable::describe(std::string name) const {
-	return fab->describe(name);
-}
-
-void CardZone::describe(char* tmp) const {
-	//mvwprintw(w, 1, y, "%s (%d)", name, size);
+std::string Effect_H::describe(const std::string& name) const {
+    std::string ret;
+	for(const auto& atom : effects) ret += atom.describe(name);
+	return ret;
 }
 
 std::string Permanent::describe() const {
@@ -21,37 +20,14 @@ std::string Creature::describe() const {
 	return source->describe();
 }
 
-std::string TriggerEvent::describe(int typeoftrig, std::string cardname) const {
+std::string TriggerEvent::describe(int typeoftrig, const std::string& cardname) const {
 	std::string ds;
-	for(auto iter = all_triggers.begin(); iter != all_triggers.end(); iter++){
-		ds += (*iter)->describe(typeoftrig, cardname);
+	for(auto all_trigger : all_triggers){
+		ds += all_trigger->describe(typeoftrig, cardname);
 	}
 	return ds;
 }
 
-std::string Trigger::describe(int typeoftrig, std::string name) const {
-	std::string ds = olympus::trigger_descriptions[typeoftrig];
-	std::string ret = "Whenever ";
-	for(unsigned int i=0; i<ds.length(); i++){
-		if(ds[i] == '~') ret += name;
-		else ret += ds[i];
-	}
-	ret += ". ";
-	ret += effects->describe(name);
-	return ret;
-}
-
-std::string Ability::describe(std::string cardname) const {
-	std::string ds = olympus::ability_descriptions[(int) type];
-	std::string ret;
-	for(unsigned int i=0; i<ds.length(); i++){
-		if(ds[i] == '~') ret += cardname;
-		else if(ds[i] == '?') ret += std::to_string(param2);
-		else ret += ds[i];
-	}
-	ret += ".";
-	if(next){
-		ret += " " + next->describe(cardname);
-	}
-	return ret;
+void Card::reveal() const {
+    //TODO
 }

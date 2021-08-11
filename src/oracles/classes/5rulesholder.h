@@ -1,13 +1,21 @@
 #ifndef OLYMPUS_RULESHOLDER_H
 #define OLYMPUS_RULESHOLDER_H
 
-class Effect_H; class ActAb_H; class Trigger_H; class StaticAb_H;
+class PermOption; class Trigger_H; class StaticAb_H;
 class ReaderVisitor; class TriggerHolder_H;
 
+#include "8options.h"
+
+struct CardOptionListNode {
+    CardOption option;
+    CardOptionListNode* next {nullptr};
+};
+
 struct RulesHolder {
-    Effect_H* on_cast;
+    SpellOption cast;
+    CardOptionListNode* otherCardOptions;
     uint nb_actabs;
-    ActAb_H* first_actab;
+    PermOption* first_actab;
     uint nb_triggers;
     TriggerHolder_H* triggers;
     uint nb_statics;
@@ -16,8 +24,6 @@ struct RulesHolder {
     //Static abilities go into that category until we implement them.
     //In the end, it will only be flavor text, once everything will have reAchEd BlEsSed PeRFEcTIoN...
     //BeHOLD OUR GREAT WORK... ALL WILL BE ALL WILL ALL WILL BE ONE LONG LIVE PHYREXIA WSHHSHHHYRXXXHHYWWWYXRIA
-
-    inline void get_read(ReaderVisitor& visitor, card_type type);
 };
 
 #endif //OLYMPUS_RULESHOLDER_H

@@ -5,10 +5,12 @@
 #include <memory>
 #include <utility>
 #include <vector>
+#include <list>
 
-class Option; class Target;
+class Target; class Creature; template<typename T> class SpecificTargeter; class Card; class OptionAction; class Player;
+template<typename T> class CollectionTN; template<typename T> class StateTN;
 
-enum playerType { LOCAL, /*BOT,*/ NETWORK  };
+enum playerType { LOCAL, /*BOT, NETWORK*/  };
 enum oracle_type { reference, customcard, compiled_customcard };
 
 struct OracleDescr {
@@ -38,8 +40,20 @@ public:
     }; //Makes sure every player is connected and has a deck. May take a long time.
     //Should also make sure that each deck is *valid*. TODO
     virtual std::string getName() = 0;
-	//virtual Option* chooseOpt() = 0;
-	virtual Target* chooseTarget(char type) = 0;
+
+    virtual OptionAction* chooseOpt(bool sorcerySpeed, Player* pl) = 0;
+
+    virtual Target* chooseTarget(char type) = 0;
+
+    virtual void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>) = 0;
+
+    virtual bool keepsHand() = 0;
+
+    virtual std::list<std::unique_ptr<Card>> chooseCardsToKeep(std::list<std::unique_ptr<Card>>& list) = 0;
+
+    virtual bool chooseAttackers(CollectionTN<Creature>& mycreas, StateTN<Creature>& myattackers) = 0;
+
+    virtual void chooseBlockers(CollectionTN<Creature>& mycreas, StateTN<Creature>& attackers) = 0;
 };
 
 std::unique_ptr<Agent> createAgent(playerType desc);

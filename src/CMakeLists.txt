@@ -10,5 +10,3 @@ add_subdirectory(include/Mana)
 add_subdirectory(oracles)
 add_subdirectory(server)
 add_subdirectory(yggdrasil)
-
-configure_file(../include/lib3_IO.h ../include/lib3_IO.h)

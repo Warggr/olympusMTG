@@ -1,4 +1,3 @@
-#include ".header_link.h"
 #include "headI_identifiers.h" //auto-general by 4permanents.h
 
 Identifier CardOracle::generate_casted_id() const {

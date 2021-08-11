@@ -11,7 +11,7 @@ class Player; class Game;
 /* A Resolvable is any object that can be put on the stack and resolve. It can be:
 a StackAbility (e.g. an activated ability of a permanent). Will have effects upon resolve and disappear.
 a Spell: has a source, which is a Card. Can have on_cast triggers (such as "When you cast this spell copy it for...")
-    in addition to its resolvable abilities (create 'Permanent' object, or do some stuff and put the card to the graveyard)
+    in addition to its resolvable abilities (create 'Permanent' object, or do some stuff and put the card to the myGraveyard)
     The on_cast will be a StackAbility, as it has no card source and can't have on_cast abilities itself (it is not 'cast').
 There is technically nothing that prevents StackAbilities to have on_cast triggers...
 We could imagine sth like "do blah. If you have this and that, copy this ability when you activate it"
@@ -27,26 +27,27 @@ protected:
 	static const std::string description;
 public:
     Resolvable(Player* ct, const Effect_H* preRes, Target* origin = nullptr);
-	virtual ~Resolvable();
+	virtual ~Resolvable() = default;
 	virtual void resolve(); //this is what a resolvable is about
 	virtual std::string describe() const { return description; };
 	virtual void counter();
 	const std::string& get_name() const override { return description; };
-	virtual Identifier reload_id() const;
+//	virtual Identifier reload_id() const;
 
-    virtual void disp(const Rect& zone, bool highlight = false) const;
+//  virtual void disp(const Rect& zone, bool highlight = false) const;
+    Player * getController() override { return ctrl; }
 };
 
 class Spell: public Resolvable{
 private:
-	std::unique_ptr<Card> source; //the source will be kept by the option, the spell and the permanent to finally go the graveyard
+	std::unique_ptr<Card> source; //the source will be kept by the option, the spell and the permanent to finally go the myGraveyard
 public:
 	Spell(std::unique_ptr<Card> src, Player* ct);
 	void resolve() override;
 	void counter() override;
-	std::string describe() const;
+	std::string describe() const override;
 	const std::string& get_name() const override;
-	virtual Identifier reload_id() const;
+//	virtual Identifier reload_id() const;
 };
 
 #endif //OLYMPUS_CLASSES_RESOLVABLE_5_H

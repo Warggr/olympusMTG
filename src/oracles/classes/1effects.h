@@ -6,7 +6,7 @@
 #include "headE_enums.h"
 #include <string>
 #include <forward_list>
-class Player; class Target; class Permanent; class ReaderVisitor; class Targeter; class Rect;
+class Player; class Target; class Permanent; class ReaderVisitor; template<typename T> class SpecificTargeter; class Rect;
 
 class AtomEffect_H { //TODO logical gate-like effects, such as "do this or do that". Or modal spells.
 public:
@@ -22,10 +22,8 @@ public:
 	void init(ReaderVisitor& reader, char* allassignedparams, unsigned char& nbassignedparams);
 	~AtomEffect_H() { delete[] params; }
 	std::string describe(const std::string& cardname) const;
-    void write_binary(std::ofstream& bFile) const;
 
-	void activate(Targeter* list_of_targets, Player* ctrl, Target* origin) const;
-	void mana_activate(Player* ctrl, Target* origin) const;
+	void activate(SpecificTargeter<Target>* list_of_targets, Player* ctrl, Target* origin) const;
 };
 
 class Effect_H { //an Effect_H is a printed instruction such as "X fights Y, and you gain 3 life",
@@ -36,17 +34,16 @@ class Effect_H { //an Effect_H is a printed instruction such as "X fights Y, and
 public:
 	Effect_H() = default;
 	Effect_H(ReaderVisitor& reader){ init(reader); }
-	Effect_H(Effect_H&& other): nb_parameters(other.nb_parameters), parameters(other.parameters) { effects = std::move(effects); }
+	Effect_H(Effect_H&& other) noexcept : nb_parameters(other.nb_parameters), parameters(other.parameters) { effects = std::move(effects); }
 	void init(ReaderVisitor& reader);
-	void write_binary(std::ofstream& bFile) const;
-	std::string describe(std::string known_sourcename) const;
+	std::string describe(const std::string& known_sourcename) const;
 	uint8_t getNbParams() const { return nb_parameters; }
 	const char* getParams() const { return parameters; }
 
-    void straight_cast(Player* pl, Permanent* origin);
-    void activate(Targeter* list_of_targets, Player* ctrl, Target* origin) const;
+//    void straight_cast(Player* pl, Permanent* origin);
+    void activate(SpecificTargeter<Target>* list_of_targets, Player* ctrl, Target* origin) const;
 
-    void disp(const Rect& zone, std::string origin_name) const; //mimicks a Resolvable on top of the stack
+//    void disp(const Rect& zone, std::string origin_name) const; //mimicks a Resolvable on top of the stack
 };
 
 /*ALL POSSIBLE ABILITIES
@@ -60,7 +57,7 @@ public:
 +X/+0 (Creature target, int x)
 +0/+X (Creature target, int x)
 destroy_all(characteristics)
-exile (Permanent target)
+myExile (Permanent target)
 copy (Resolvable target)
 deal damage to all (characterstics, int nb_damage)
 create token (Permanent to_copy)
@@ -68,7 +65,7 @@ create token (Permanent to_copy)
 make creature ?/X
 make creature X/?
 make local sacrifice
-search library for a (characteristics)
+search myLibrary for a (characteristics)
 make fight (Creature 1, Creature 2)
 swap life (Player 1, Player 2)
 gain control of (Player target) */

@@ -1,12 +1,12 @@
 #include "headI_identifiers.h"
 #include "headC_constants.h"
-#include "classes/5rulesholder.h"
+#include "oracles/classes/5rulesholder.h"
 #include "filereader.h"
 #include "build_types.h"
-#include "classes/1effects.h"
-#include "classes/2triggers.h"
-#include "classes/3statics.h"
-#include "classes/4actabs.h"
+#include "oracles/classes/1effects.h"
+#include "oracles/classes/2triggers.h"
+#include "oracles/classes/3statics.h"
+#include "oracles/classes/PermOption.h"
 
 void PlainFileReader::readAll(RulesHolder& rules, card_type type) {
 	check_safepoint(' ', "before the rules text");
@@ -16,16 +16,17 @@ void PlainFileReader::readAll(RulesHolder& rules, card_type type) {
 	    ifile.get();
 	}
 	else{
-		enum section_types{ onresolve, activated, triggered , flavor, astatic } section_name = activated;
+		enum section_types{ onresolve, altcosts, activated, triggered , flavor, astatic } section_name = activated;
 		if(type.underlying == card_type::sorcery || type.underlying == card_type::instant) section_name = onresolve;
 		while(true){ //loop to read all sections
 			gdebug(DBG_READFILE) << "Expecting section n°" << (int) section_name << "\n";
 			if(ifile.peek() != '<') switch(section_name){
-				case onresolve: read_section_onresolve(rules.on_cast); break;
-				case activated: readArray<ActAb_H>(rules.nb_actabs, rules.first_actab); break;
+				case onresolve: readMainSpell(rules.cast); break;
+				case activated: readArray<PermOption>(rules.nb_actabs, rules.first_actab); break;
 				case flavor: read_section_flavor(rules.flavor_text, offset_text); break;
 				case triggered: readArray<TriggerHolder_H>(rules.nb_triggers, rules.triggers); break;
 				case astatic: readArray<StaticAb_H>(rules.nb_statics, rules.statics); break;
+				case altcosts: read_section_othercasts(rules.otherCardOptions); break;
 			}
 			if(state == end_reached) break;
 			else{
@@ -36,6 +37,7 @@ void PlainFileReader::readAll(RulesHolder& rules, card_type type) {
                     case 'x': section_name = flavor; break;
                     case 't': section_name = triggered; break;
                     case 's': section_name = astatic; break;
+                    case 'z': section_name = altcosts; break;
                     default: raise_error("unrecognized section type (o, a, x, t, s)"); return;
                 }
                 check_safepoint('>', "after declaring another section");
@@ -85,14 +87,15 @@ void PlainFileReader::read_section_flavor(char*& flavor_text, uint8_t offset_tex
     gdebug(DBG_READFILE) << "Read full flavor: '" << flavor_text + offset_text << "'\n";
 }
 
-void PlainFileReader::readActAb(Mana &mana, Effect_H *&effects, bool &tapsymbol, bool &ismanaability) {
+void PlainFileReader::readActAb(Mana &mana, WeirdCost*& addcosts, Effect_H *&effects,
+                                bool &tapsymbol, bool &ismanaability, bool& instantspeed) {
     Mana cost = 0;
     WeirdCost* others = nullptr;
     readCosts(cost, tapsymbol, others);
 
     gdebug(DBG_READFILE) << "Tap symbol:" << tapsymbol <<", cost: " << cost.m2t() << "\n";
     ismanaability = (ifile.get() == ':'); //reading either : or ' '
-    read_section_onresolve(effects);
+    effects->init(*this);
 }
 
 void PlainFileReader::readTriggerType(trigtype& type){
@@ -130,7 +133,7 @@ void PlainFileReader::readEffectH(uint8_t &nb_params, char *&params, std::forwar
 void PlainFileReader::readModifier(char& nbEffects, Modifier& firstEffect, Modifier*& otherEffects) {
 	check_safepoint(' ', "just after : of selector");
 	char tmp[20]; int i = 0; nbEffects = 0;
-	Modifier tmp_effect[20];
+	Modifier::type tmp_effect[20];
 	bool end_of_effects = false;
 	while(!end_of_effects){
 	    nbEffects++;
@@ -138,21 +141,21 @@ void PlainFileReader::readModifier(char& nbEffects, Modifier& firstEffect, Modif
         while(true){
             tmp[i++] = ifile.get();
             if(tmp[i-1] == '.' || tmp[i-1] == ','){ if(tmp[i-1] == '.') end_of_effects = true; tmp[i] = '\0'; break;}
-            if(i >= 20) raise_error("wating for '.' just after static effect");
+            if(i >= 20) raise_error("waiting for '.' just after static effect");
         }
         check_safepoint(' ', "after . or , in statics");
         auto result = dicts->dict_static_types.find(tmp);
-        if(result == Dictionary_tpl<Modifier>::not_found)
+        if(result == Dictionary_tpl<Modifier::type>::not_found)
             raise_error(std::string("static ") + tmp + " does not exist");
         else
             tmp_effect[i] = *result;
 	}
-    firstEffect = tmp_effect[0];
+    firstEffect.myType = tmp_effect[0];
 	if(nbEffects == 1) otherEffects = nullptr;
 	else{
         otherEffects = new Modifier[nbEffects - 1];
         for(i=1; i<nbEffects; i++){
-            otherEffects[i] = tmp_effect[i];
+            otherEffects[i].myType = tmp_effect[i];
         }
 	}
 }
@@ -180,7 +183,7 @@ bool PlainFileReader::read_one_criterion(Identifier& chars, Identifier& requs){ 
             break;
         case subtypes:
             selcriteria = dicts->dict_selector_subtypes.find(tmp);
-            chars = chars | cid_perm_type(*selcriteria);
+            chars = chars | cid_perm_type((permanent_type) *selcriteria);
             requs = requs | rid_perm_type;
             break;
         case tribes:
@@ -239,4 +242,16 @@ void PlainFileReader::readAtomEffect(effect_type& type, flag_t*& params, uint8_t
     for(int i=0; i<nb_params; i++){
         params[i] = readAbilityParameter(param_hashtable, effect_params, target_type::target_types[type][i]);
     }
+}
+
+void PlainFileReader::readSelector(Identifier &chars, Identifier &requs) {
+    //TODO
+}
+
+void PlainFileReader::read_section_othercasts(CardOptionListNode *&node) {
+
+}
+
+void PlainFileReader::readMainSpell(SpellOption &cast) {
+
 }

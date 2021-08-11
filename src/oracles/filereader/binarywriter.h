@@ -2,30 +2,25 @@
 #define OLYMPUS_BINARYWRITER_H
 
 #include "visitor.h"
+#include <memory>
+class Networker;
 
 class BinaryWriter : public ReaderVisitor {
-    inline void canary(char canary){
-        ofile.put(canary);
-    }
-    std::ostream ofile;
+protected:
+    virtual void canary(char canary) = 0;
+    virtual void write(const char* chars, long size) = 0;
+    virtual void savepoint() {};
 public:
     void readName(std::string& name) override;
     void readManaCost(Mana& cost) override { directRead<>(cost); }
     void readCardType(card_type& type) override { directRead<>(type); }
     void read_section_flavor(char*& flavor_text, uint8_t offset_text) override;
-
+    void read_section_othercasts(CardOptionListNode*& node) override;
     void readAll(RulesHolder& rules, card_type type) override;
 
     template<typename T>
-    T directRead() {
-        T ret;
-        ofile.write(reinterpret_cast<char *>(&ret), sizeof ret);
-        return ret;
-    }
-
-    template<typename T>
     void directRead(T& value) {
-        ofile.write(reinterpret_cast<char *>(&value), sizeof value);
+        write(reinterpret_cast<char *>(&value), sizeof value);
     }
 
     void readNumberOfObjects(uint& nb) override { directRead<>(nb); }
@@ -34,10 +29,19 @@ public:
     void readEffectH(uint8_t &nb_params, char *&params, std::forward_list<AtomEffect_H> &atoms) override;
     void readTriggerType(trigtype& type) override;
     void readAtomEffect(effect_type& type, flag_t*& params, uint8_t& nbparams, char* param_hashtable) override;
-    void readActAb(Mana &mana, Effect_H *&effects, bool &tapsymbol, bool &ismanaability) override;
+    void readActAb(Mana &mana, WeirdCost*& add_costs, Effect_H *&effects, bool &tapsymbol, bool &ismanaability, bool& instantspeed) override;
 
-    void read_section_onresolve(Effect_H*& preRes) override;
+    void readMainSpell(SpellOption& cast) override;
 };
 
+class BinaryFileWriter: public BinaryWriter {
+    std::ofstream ofile;
+    void canary(char canary) override {
+        ofile.put(canary);
+    }
+    void write(const char* chars, long size) override {
+        ofile.write(chars, size);
+    }
+};
 
 #endif //OLYMPUS_BINARYWRITER_H

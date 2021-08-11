@@ -22,9 +22,9 @@ void Spell::resolve(){
     switch(source->get_type().underlying){
         case card_type::instant:
         case card_type::sorcery:
-            ctrl->puttozone(source, 1); break;
+            ctrl->puttozone(source, graveyard_zn); break;
         default:
-            ctrl->insert_permanent(source);
+            ctrl->insert_permanent(std::move(source));
     }
 }
 
@@ -34,18 +34,18 @@ void Resolvable::counter(){
 
 void Spell::counter(){
     gdebug(DBG_TARGETING) << "A Spell called "<< source->get_name()<<" is countered! Removing it from stack and deleting it...\n";
-    ctrl->puttozone(source, 0);
+    ctrl->puttozone(source, graveyard_zn);
     Stack::god->removeFromStack(this);
-    delete this;
 }
 
 Spell::Spell(std::unique_ptr<Card> src, Player* ct): Resolvable(ct, src->get_preRes()), source(std::move(src)) {}
 
 Resolvable::Resolvable(Player* ct, const Effect_H* tocast, Target* org): Target(description), ctrl(ct){
-	//Technically, Resolvables are put on the stack, then targets are chosen. Olympus decided that objects with no targets chosen were PreRes
+	//Technically, Resolvables are put on the stack, then targets are chosen.
+	// Olympus decided that objects with no targets chosen were PreRes
 	//and thus not on the stack. However, it should be displayed somewhere.
 	origin = std::make_unique<Targeter>(org);
-	target_flags = 0x20;
+	target_flags = target_type::resolvable;
 	if(tocast){
 		nb_targets = tocast->getNbParams();
 		list_of_targets = new Targeter[nb_targets]; //the last being for the origin
@@ -57,7 +57,7 @@ Resolvable::Resolvable(Player* ct, const Effect_H* tocast, Target* org): Target(
 		}
 		const char* params = tocast->getParams();
 		for(int i=0; i<nb_targets; i++){
-			list_of_targets[i].setTarget( ct->agent.chooseTarget(params[i]) );
+			list_of_targets[i].setTarget( ct->getAgent().chooseTarget(params[i]) );
 		}
 	}
 	else{ //the resolvable, e.g. a permanent spell, has no on_resolve abilities

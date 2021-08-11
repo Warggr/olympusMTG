@@ -9,27 +9,53 @@
 //In short: Resolvables contains (an array of) Targeters, and Targets contain (a list of) Targeter pointers
 //Additionally, Triggers contain an Origin targeter, which is little more than a pointer. such targeters are called 'internal targeters' and have actually no game relevance
 
+#include "build_types.h"
 #include <string>
 #include <iostream>
-#include "build_types.h"
+#include <cassert>
 
 class Target;
 
-class Targeter {
+class AbstractTargeter {
+protected:
+    bool valid;
+public:
+    explicit AbstractTargeter(bool valid): valid(valid) {};
+    void invalidate() { valid = false; }
+};
+
+template<typename T>
+class SpecificTargeter : public AbstractTargeter {
 private:
-	Target* content;
+	T* content;
 	std::string name; //will be remembered even after the target dies
 public:
-	bool valid;
 	char colorIdentity; //-1 means it's an "internal" targeter, such as the one linking an ability to its origin.
 	//you can't, of course, have protection from 'internal' targeters
 
-	Targeter(Target* tar);
-	Targeter(): valid(true) { gdebug(DBG_TARGETING) << " Creating a Targeter\n"; };
-	~Targeter(); //removes references to itself from its victim
-	void setTarget(Target* tgt);
-	Target* getTarget() const { if(valid) return content; else return nullptr; };
+	SpecificTargeter(T* tar): AbstractTargeter(true) {
+        content = tar;
+        gdebug(DBG_TARGETING) << "Target chosen. this Targeter "<< this <<" was set to target"<<tar<<"\n";
+        tar->add_persecutor(this);
+        name = tar->get_name();
+	}
+	SpecificTargeter(): AbstractTargeter(false), colorIdentity(-1) { gdebug(DBG_TARGETING) << " Creating a Targeter\n"; }
+	~SpecificTargeter(){
+	    content->remove_persecutor(this); //removes references to itself from its victim
+	};
+	void setTarget(T* tgt) {
+        assert(tgt != nullptr);
+	    valid = true; content = tgt;
+	}
+	T* getTarget() const { if(valid) return content; else return nullptr; };
 	const std::string& get_name() const { return name; };
+	T* operator*() { return content; }
+	T* operator->() { return content; }
+	explicit operator bool() {
+	    return valid;
+	}
 };
+
+using Targeter = SpecificTargeter<Target>;
 
 #endif //OLYMPUS_CLASSES_MODIFS_3_H

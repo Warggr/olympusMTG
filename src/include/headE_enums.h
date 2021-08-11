@@ -1,6 +1,8 @@
 #ifndef OLYMPUS_HEAD_E_ENUMS_H
 #define OLYMPUS_HEAD_E_ENUMS_H
 
+#include <cstdlib>
+
 using flag_t = unsigned char;
 
 namespace target_type {
@@ -14,11 +16,12 @@ namespace target_type {
             none = 0x0;
 }
 
-enum object_type { player, permanent, resolvable, card };
-enum permanent_type { land, artifact, planeswalker, creature };
-enum mtgcolor { white, blue, black, red, green };
-
-enum mtgmanatype { w_mana, u_mana, b_mana, r_mana, g_mana, c_mana };
+enum class object_type { player, permanent, resolvable, card };
+enum class permanent_type { land, artifact, planeswalker, creature };
+namespace mtg {
+    enum class color { white, blue, black, red, green };
+    enum class manatype { white, blue, black, red, green, colorless };
+}
 
 enum effect_type {
     deal_damage, draw, gain_life, set_life, add_mana, destroy, exile, counter, put_counter, untap, ueot
@@ -44,6 +47,18 @@ struct card_type {
     basic_type underlying : 3;
 
     constexpr card_type(): legendary(0), snow(0), land(0), artifact(0), enchantment(0), underlying(invalid) {};
+    permanent_type toPermType() const {
+        switch(underlying) {
+            case basic: return permanent_type::land;
+            case creature: return permanent_type::creature;
+            case planeswalker: return permanent_type::planeswalker;
+            case flagged:
+                if(land) return permanent_type::land;
+                else return permanent_type::artifact;
+            default:
+                exit(1);
+        }
+    };
 };
 
 enum trigtype {};

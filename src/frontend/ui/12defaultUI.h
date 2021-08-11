@@ -3,7 +3,7 @@
 
 #include "build_types.h"
 #include "../io/6abstractIO.h"
-class Permanent; class Creature; class Player; class Target; class Option; template<typename T> class PContainer;
+class Permanent; class Creature; class Player; class Target; class OptionAction; template<typename T> class PContainer;
 
 struct UIElement {
     int topZ, leftY, yOffset, zOffset, ySize, zSize, maxItems;
@@ -46,7 +46,7 @@ public:
 	void clear_opts();
 	UIElement* get_optionzone();
 	Target* iterate(bool needstarget, Player** pl, char returntypeflags);
-	Option* choose_opt(bool sorceryspeed, Player* asker);
+	OptionAction* choose_opt(bool sorceryspeed, Player* asker);
 	void normalize_gridy_gridz();
 	void deadzone();
 };

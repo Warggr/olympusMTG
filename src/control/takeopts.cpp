@@ -1,6 +1,7 @@
-#include ".header_link.h"
-#include "options/8options.h"
-#include "gameplay/classes/9modifs.h"
+#include "oracles/classes/8options.h"
+#include "3player.h"
+#include "7game.h"
+#include "gameplay/resolvables/stack.h"
 #include <iostream>
 
 //Player calls choicephase.
@@ -11,30 +12,27 @@
 //When both pass and the stack is empty, Player::choicephase returns.
 
 void Player::choicephase(bool sorceryspeed){
-	optZone->erase_background(god.myIO);
-	while(1){
+	//optZone->erase_background(god.myIO);
+	while(true){
 		int i = 0;
 		Player* currentprio = this;
-		god.game->statebasedactions(); //"before any local receives priority, state-based actions are done"
+		Game::god->stateBasedActions(); //"before any local receives priority, state-based actions are done"
 		add_triggers_to_stack(); nextopponent->add_triggers_to_stack();
-		while(god.game->stackisempty() && i==0){
+		while(Stack::god->stackIsEmpty() && i==0){
 			if(!choose_and_use_opt(sorceryspeed)) {i=1; currentprio = currentprio->nextopponent; }
 		}
 		while(i!=2){
-			//god.game->statebasedactions(); //Rigorously SBA are checked here, just before giving priority
-			//But c'mon, in what case will states have changed just by casting a spell?
+			Game::god->stateBasedActions();
 			if(currentprio->choose_and_use_opt(false)) i=0;
 			else{
 				i++;
 				currentprio = currentprio->nextopponent;
 			}
 		} //two passes in a row; resolving first spell
-		Resolvable* toresolve = god.game->popfromstack();
+		auto toresolve = Stack::god->popFromStack();
 		if(toresolve){
-			god.gdebug(DBG_TARGETING) << "RESOLVING A SPELL\n";
+			gdebug(DBG_TARGETING) << "RESOLVING A SPELL\n";
 			toresolve->resolve();
-			delete toresolve;
-			god.game->disp();
 		}
 		else return; //if there is no first spell, then the phase/step ends
 	}
@@ -42,44 +40,33 @@ void Player::choicephase(bool sorceryspeed){
 
 bool Player::choose_and_use_opt(bool sorceryspeed){ //AKA "giving priority". Returns false if a pass option was chosen
 	//verify_chain_integrity(myoptions);
-	if(has_options(sorceryspeed)){
-		god.myUI->clear_opts();
-		return false;
-	}
-	disp_opt(sorceryspeed);
-	Option* choice = god.myUI->choose_opt(sorceryspeed, this); //chooses opt, pops it and returns it, returns 0 if passing was chosen
+	if(! hasOptions(sorceryspeed)) return false;
+	OptionAction* choice = agent.chooseOpt(sorceryspeed, this); //chooses opt, pops it and returns it, returns 0 if passing was chosen
 	if(!choice) return false;
 	//verify_chain_integrity(myoptions);
-	Resolvable* cast = choice->cast_opt(this); //casts the spell and deletes the option
-	if(cast){
-		god.game->addtostack(cast);
-		god.game->disp_stack();
-	}
-	else{
-		disp_zone(0); //the stack might have changed, or the lands
-	}
+	choice->cast_opt(this); //casts the spell and deletes the option
 	return true;
 }
 
 bool Player::add_triggers_to_stack(){
 	if(prestack.empty()) return false;
-	//TODO: the local may order his triggers
+	//TODO: the player may order his triggers
 	while(!(prestack.empty())){
-		Resolvable* res = new Resolvable(this, prestack.front().preRes, prestack.front().origin->getTarget());
-		god.game->addtostack(res);
+		auto res = std::make_unique<Resolvable>(this, prestack.front().preRes, prestack.front().origin->getTarget());
+		Stack::god->addToStack(std::move(res));
 		prestack.pop_front();
 	}
 	return true;
 }
 
-bool Player::has_options(bool sorceryspeed) const {
-	if(!sorceryspeed and myoptions[0] == 0) return false;
+bool Player::hasOptions(bool sorceryspeed) const {
+	/*if(!sorceryspeed and myoptions[0] == 0) return false;
 	else if(myoptions[2] != 0) return true;
-	else if(!hasplayedland() and myoptions[LANDOPTS]) return true;
+	else if(!hasplayedland() and myoptions[LANDOPTS]) return true; */
 	return false;
 }
 
-void Player::disp_opt(bool sorceryspeed) const {
+/*void Player::disp_opt(bool sorceryspeed) const {
 	int dy, dz;
 	Rect rect = optZone->get_coordinates(&dy, &dz);
 	int zone = 0;
@@ -98,4 +85,4 @@ void Player::disp_opt(bool sorceryspeed) const {
 			next = first_option(zone);
 		}
 	}
-}
+}*/

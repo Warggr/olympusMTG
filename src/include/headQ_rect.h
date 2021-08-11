@@ -1,6 +1,8 @@
 #ifndef OLYMPUS_HEADQ_RECT_H
 #define OLYMPUS_HEADQ_RECT_H
 
+using uint16_t = unsigned short;
+
 struct Rect{
     uint16_t y, z;
     uint16_t width, height;

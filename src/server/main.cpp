@@ -16,7 +16,7 @@ std::list<playerType> parseArgs(int nbargs, char** args) {
         if(args[i][0] != '-' || i+1 == nbargs || args[i+1][0] > '9' || args[i+1][0] < '0' || args[i+1][1] != 0)
             printUsageAndExit();
         switch(args[i][1]) {
-            case 'n': type = NETWORK; break;
+            //case 'n': type = NETWORK; break;
             case 'l': type = LOCAL; break;
             //case 'b': type = BOT; break;
             default: printUsageAndExit();

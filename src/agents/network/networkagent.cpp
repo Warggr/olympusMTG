@@ -2,9 +2,10 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <fstream>
-#include <oracles/visitor.h>
+#include <oracles/filereader/visitor.h>
 #include "networkagent.h"
 #include "networkmanager.h"
+#include "gameplay/2cards.h"
 
 NetworkAgent::NetworkAgent(): idle(true) {
     NetworkManager::declareAgent(this);
@@ -87,4 +88,28 @@ void NetworkAgent::setSock(int sock) {
 
 Target *NetworkAgent::chooseTarget(char type) {
     return nullptr; //TODO
+}
+
+void NetworkAgent::splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>) {
+
+}
+
+std::list<std::unique_ptr<Card>> NetworkAgent::chooseCardsToKeep(std::list<std::unique_ptr<Card>> &list) {
+    return std::list<std::unique_ptr<Card>>();
+}
+
+bool NetworkAgent::keepsHand() {
+    return false;
+}
+
+OptionAction *NetworkAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
+    return nullptr;
+}
+
+bool NetworkAgent::chooseAttackers(CollectionTN<Creature> &mycreas, StateTN<Creature> &myattackers) {
+    return false;
+}
+
+void NetworkAgent::chooseBlockers(CollectionTN<Creature> &mycreas, StateTN<Creature> &attackers) {
+
 }

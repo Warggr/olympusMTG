@@ -10,10 +10,9 @@ extern const char* id_client, * id_server, * version_server, * version_client;
 
 class NetworkError: public std::exception {};
 
-constexpr int BUFFER_SIZE = 50;
-
 class Networker {
 protected:
+    static constexpr int BUFFER_SIZE = 50;
     char buffer[BUFFER_SIZE]{};
     int sockfd;
     bool connected; //whether he is currently connected to that IP adress
@@ -29,6 +28,8 @@ public:
 
     virtual const char* net_receive();
     virtual long receive();
+
+    friend class BinaryBufferWriter;
 };
 
 #endif //OLYMPUS_NETWORK_H

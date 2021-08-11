@@ -2,7 +2,7 @@
 #define OLYMPUS_CLASSES_11_STATICS_H
 
 struct Modifier {
-    enum modifType { plus_power, plus_toughness, plus_oneplusone, keyword } type;
+    enum type { plus_power, plus_toughness, plus_oneplusone, keyword } myType;
 };
 
 using Identifier = int;

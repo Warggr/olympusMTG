@@ -1,12 +1,8 @@
 #include "visitor.h"
-#include "classes/1effects.h"
-#include "classes/2triggers.h"
-#include "classes/3statics.h"
-#include "classes/4actabs.h"
-
-void RulesHolder::get_read(ReaderVisitor &visitor, card_type type) {
-    visitor.readAll(*this, type);
-}
+#include "oracles/classes/1effects.h"
+#include "oracles/classes/2triggers.h"
+#include "oracles/classes/3statics.h"
+#include "oracles/classes/PermOption.h"
 
 void StaticAb_H::init(ReaderVisitor& ifile){
     ifile.readSelector(chars, requs); //reads up to ':'
@@ -17,8 +13,8 @@ void Effect_H::init(ReaderVisitor& visitor) {
     visitor.readEffectH(nb_parameters, parameters, effects);
 }
 
-void ActAb_H::init(ReaderVisitor &visitor) {
-    visitor.readActAb(cost, effects, tapsymbol, ismanaability);
+void PermOption::init(ReaderVisitor &visitor) {
+    visitor.readActAb(cost, additional_costs, effects, tapsymbol, ismanaability, instantspeed);
 }
 
 void AtomEffect_H::init(ReaderVisitor &reader, char* allassignedparams, uint8_t& nbassignedparams) {
@@ -31,14 +27,15 @@ void TriggerHolder_H::init(ReaderVisitor &visitor) {
 }
 
 void Trigger_H::init(ReaderVisitor& visitor) {
-    visitor.read_section_onresolve(effects);
+    effects->init(visitor);
 }
 
 void CardOracle::get_read(ReaderVisitor &reader) {
     reader.readName(name);
-    reader.readManaCost(cost);
+    reader.readManaCost(rules.cast.cost);
     reader.readCardType(type);
-    color = cost.m2color(); if(type.land) color = 0; //lands are colorless
+    color = rules.cast.cost.m2color(); if(type.land) color = 0; //lands are colorless
 
     reader.readAll(rules, type);
+//    casted_id = generate_casted_id();
 }

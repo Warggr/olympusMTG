@@ -1,6 +1,8 @@
 #ifndef OLYMPUS_YGGDRASIL_1_H
 #define OLYMPUS_YGGDRASIL_1_H
 
+#include "headB_board.h"
+#include "headI_identifiers.h"
 #include <list>
 class StaticAb;
 
@@ -23,6 +25,8 @@ public:
         else all_modifs = ptr->next;
         if(ptr->next) ptr->next->prev = ptr->prev;
     }
+
+    virtual bool empty() const = 0;
 };
 
 #endif //OLYMPUS_YGGDRASIL_1_H

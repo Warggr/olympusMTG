@@ -1,16 +1,17 @@
 #ifndef OLYMPUS_6_ABSTRACT_IO_H
 #define OLYMPUS_6_ABSTRACT_IO_H
 
+#include "headQ_rect.h"
+#include "Mana/lib2_mana.h"
+#include "build_types.h"
+#include "implementIO.h"
 #include <vector>
 #include <string>
 #include <exception>
-#include <headQ_rect.h>
-#include "build_types.h"
-#include "Mana/lib2_mana.h"
 
-enum DirectioL{ UP, DOWN, LEFT, RIGHT, BACK, ENTER, MOUSE, NOT_RECOGNIZED};
+enum DirectioL { UP, DOWN, LEFT, RIGHT, BACK, ENTER, MOUSE, NOT_RECOGNIZED};
 enum framecolor { colorlessfr, whitefr, bluefr, blackfr, redfr, greenfr, multicolorfr };
-//Different types of colors: uint8_types are used for communicating color guidelines/flags with the IO library,
+//Different types of colors: uint8_types are used for communicating color guidelines/flags with the IO myLibrary,
 //enum framecolors are colored frames such as "multicolor creatures"
 //and chars are used as flags for a full color identity
 

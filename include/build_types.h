@@ -7,13 +7,11 @@ using flag_t = unsigned char;
 
 #define gdebug(x) if((x) & WANTED_DEBUG_FLAGS) std::cerr
 
-#define ImplementIO @IOLibType@IO
 #define ImplementUI DefaultUI
 
 #define Olympus_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
 #define Olympus_VERSION_MINOR @PROJECT_VERSION_MINOR@
 #define Olympus_VERSION_PATCH @PROJECT_VERSION_PATCH@
-#cmakedefine IOLibType
 #cmakedefine F_TESTS
 #cmakedefine F_LOGGING
 

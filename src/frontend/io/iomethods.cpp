@@ -1,6 +1,6 @@
 #ifndef maybe_virtual
 #define maybe_virtual
-#define maybe_undef
+#define maybe_undef override
 #endif
 
 maybe_virtual void getResolution(int& posterYSize, int& posterZSize, bool& hasMouseSupport, int& linesize) const maybe_undef;

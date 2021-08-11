@@ -1,62 +1,66 @@
+#include "control/3player.h"
+#include "control/OutputManager.h"
 #include "4permanents.h"
 #include "../1general.h"
+#include "../2cards.h"
 #include "oracles/classes/2cards.h"
+#include "oracles/classes/PermOption.h"
+#include "headC_constants.h"
 
-Resolvable* PlayLand::cast_opt(Player* pl){
-	pl->resolve_playland(source);
-	delete this;
-	return nullptr;
-}
-
-void Player::resolve_playland(Card* source){
-	god.game->addtolog("  Land played");
-	set_flags(16);
-	insert_permanent(source);
+void Player::resolve_playland(uptr<Card> source){
+	OutputManager::addToLog("  Land played");
+	nb_lands_remaining -= 1;
+	insert_permanent(std::move(source));
 }
 
 void Player::insert_permanent(uptr<Card> source){
-	myboard.insert(source, this);
+	myboard.insert(std::move(source), this);
 }
 
-Land::Land(Card* src, Player* pl): Permanent(src, pl, 0){
-	pl->possiblepool += src->get_cost();
+Land::Land(std::unique_ptr<Card> src, Player* pl): Permanent(std::move(src), pl){
+	/*pl->possiblepool += src->get_cost();
 	pl->highestpool += src->get_cost();
-	pl->check_too_expensive();
+	pl->check_too_expensive();*/
 }
 
-Permanent::Permanent(std::unique_ptr<Card> src, Player* pl, int nb_zone): Target(src->get_name_ref()),
-	source(std::move(src)), ctrl(pl), first_actab(0), existing_statics(0),
-	nb_actabs(0), keywords(0), color(source->get_color())
+Permanent::Permanent(std::unique_ptr<Card> src, Player* pl): Target(src->get_name()),
+	source(std::move(src)), ctrl(pl), first_actab(nullptr), existing_statics(nullptr),
+	nb_actabs(0), etbBeforeThisTurn(0), untapped(1), keywords(0), color(source->get_color())
 {
-	t_type = 0x40;
+	t_type = target_type::permanent;
 	src->get_permabs(&first_actab, &nb_actabs);
-	src->get_triggers(olympus::trigger_types::PermETB, triggers_permanent[0]);
-	src->get_triggers(olympus::trigger_types::PermLTB, triggers_permanent[1]);
-	src->get_triggers(olympus::trigger_types::PermStateChange, triggers_permanent[2]);
-	src->get_triggers(olympus::trigger_types::PermBecomes, triggers_permanent[3]);
-	pl->disp_zone(3);
+	src->get_triggers(trigger_types::PermETB, triggers_permanent[0]);
+	src->get_triggers(trigger_types::PermLTB, triggers_permanent[1]);
+	src->get_triggers(trigger_types::PermStateChange, triggers_permanent[2]);
+	src->get_triggers(trigger_types::PermBecomes, triggers_permanent[3]);
+
 	triggers_permanent[0].trigger(pl, this);
 }
 
-Creature::Creature(Card* src, Player* pl): Permanent(src, pl, 3), Damageable(0, src){
-	t_type = 0x50; //Permanent(0x40) and Creature (0x10)
+Creature::Creature(std::unique_ptr<Card> src, Player* pl):
+        Permanent(std::move(src), pl), Damageable(0, src.get()){
+	t_type = target_type::creature;
 
 	const char* tmp = src->get_flavor_text();
 	self_power = tmp[0];
 	self_toughness = tmp[1];
 	set_power = tmp[0];
 	set_toughness = tmp[1];
-	src->get_triggers(olympus::trigger_types::CreaAttacks, triggers_creature[0]);
+	src->get_triggers(trigger_types::CreaAttacks, triggers_creature[0]);
 }
 
 Planeswalker::Planeswalker(std::unique_ptr<Card> src, Player* pl):
-Permanent(std::move(src), pl, 2), Damageable((int) src->get_flavor_text()[0], src){};
+    Permanent(std::move(src), pl), Damageable((int) src->get_flavor_text()[0], src.get()) {
+    t_type = target_type::planeswalker;
+    thisturn = false;
 
-Damageable::Damageable(int lif, Card* source): life(lif){
-	source->get_triggers(olympus::trigger_types::DamageableIsDamaged, is_damaged);
 }
 
-void Player::remove_permanent(Permanent* perm, int nb_zone){
+Damageable::Damageable(int lif, Card* source): life(lif){
+	source->get_triggers(trigger_types::DamageableIsDamaged, is_damaged);
+}
+
+/*void Player::remove_permanent(Permanent* perm, int nb_zone){
 	switch(nb_zone){
 	    case 1: remove_permanent_inlist<Land>(&myboard.mylands, dynamic_cast<Land*>(perm)); break;
 		case 2: remove_permanent_inlist<Artifact>(&myboard.myartos, dynamic_cast<Artifact*>(perm)); break;
@@ -73,26 +77,26 @@ void Player::remove_permanent(Permanent* perm, int nb_zone){
 }
 
 template <class PermType>
-void Player::remove_permanent_inlist(PContainer<PermType>* perms, PermType* asup){ //The source has already been sent to graveyard. This function only utterly deletes the Permanent.
+void Player::remove_permanent_inlist(PContainer<PermType>* perms, PermType* asup){ //The source has already been sent to myGraveyard. This function only utterly deletes the Permanent.
 	for(auto iter = perms->begin(); iter!=perms->end(); iter++){
 		if(&(*iter) == asup){
 			iter.get_pointed()->obliterate();
 			return;
 		}
 	}
-}
+}*/
 
 void Permanent::exile(){
-	ctrl->puttozone(source, 2); //putting source in exile
-	ctrl->remove_permanent(this, source->get_type());
+	ctrl->puttozone(source, exile_zn); //putting source in myExile
+	ctrl->remove_permanent(this);
 }
 
 void Permanent::destroy(){
-	ctrl->puttozone(source, 1); //putting source in graveyard
-	ctrl->remove_permanent(this, source->get_type());
+	ctrl->puttozone(source, graveyard_zn); //putting source in myGraveyard
+	ctrl->remove_permanent(this);
 }
 
-bool Permanent::directactivate(){
+/*bool Permanent::directactivate(){
 	if(nb_actabs == 1 && first_actab[0].get_ismana()){ //is it a mana ability?
 		if(first_actab[0].iscastable(ctrl)){ //if it's castable
 			if(first_actab[0].get_tapsymbol()){ //tap it, if needed
@@ -108,27 +112,27 @@ bool Permanent::directactivate(){
 		else return false; //not castable? don't bother
 	}
 	else return true; //not a mana ability? Return the permanent, takeopts will know what to do
-}
+}*/
 
 void Permanent::activate(){
 	if(nb_actabs == 1){
-		if(first_actab[0].get_tapsymbol()) flags = flags & (~1);
+		if(first_actab[0].get_tapsymbol()) untapped = 0;
 		ctrl->manapool -= first_actab[0].cost;
-		first_actab[0].cast_opt(ctrl);
+		first_actab[0].cast_opt(ctrl, *this);
 	}
 }
 
-void Land::untap(){
-	flags = flags | 1;
-	ctrl->possiblepool += source->get_cost();
+Permanent::type Permanent::getType() const {
+    return source->get_type().toPermType();
 }
 
-void Creature::hit(Damageable* tgt) const{
-	tgt->damage(get_power(), (Target*) this);
+void Land::untap(){
+	Permanent::untap();
+	//ctrl->possiblepool += source->get_cost();
 }
 
 void Planeswalker::activate() {
-    thisturn = true;
+    /*thisturn = true;
     god.myIO->message("Press UP, SPACE or DOWN to select a loyalty ability");
     char getkey = god.myIO->get_direction_key();
     char x;
@@ -139,43 +143,5 @@ void Planeswalker::activate() {
         default: x = 0; break;
     }
     loyalty -= loyalty_costs[(int) x];
-    god.game->addtostack(new Resolvable(ctrl, loyalty_abs + x, (Target*) this));
-}
-
-iterator<Permanent, false> BoardN::pbegin() {return !(mylands.empty()) ? mylands.pbegin() :
-    !(myartos.empty()) ? myartos.pbegin() :
-    !(mysuperfriends.empty()) ? mysuperfriends.pbegin() :
-    !(mycreas.empty()) ? mycreas.pbegin() :
-    iterator<Permanent, false>();
-}
-
-iterator<Permanent, false> BoardN::pend() const {return !(mycreas.empty()) ? mycreas.pend() :
-    !(mysuperfriends.empty()) ? mysuperfriends.pend() :
-    !(myartos.empty()) ? myartos.pend() :
-    !(mylands.empty()) ? mylands.pend() :
-    iterator<Permanent, false>();
-}
-
-iterator<Permanent, true> BoardN::cpbegin() const {return !(mylands.empty()) ? mylands.cpbegin() :
-    !(myartos.empty()) ? myartos.cpbegin() :
-    !(mysuperfriends.empty()) ? mysuperfriends.cpbegin() :
-    !(mycreas.empty()) ? mycreas.cpbegin() :
-    iterator<Permanent, true>();
-}
-
-iterator<Permanent, true> BoardN::cpend() const {return !(mycreas.empty()) ? mycreas.cpend() :
-    !(mysuperfriends.empty()) ? mysuperfriends.cpend() :
-    !(myartos.empty()) ? myartos.cpend() :
-    !(mylands.empty()) ? mylands.cpend() :
-    iterator<Permanent, true>();
-}
-
-void BoardN::insert(Card *to_add, Player *pl) {
-    switch(to_add->get_type()){
-        case 1: mylands.construct_pure_child(to_add, pl); break;
-        case 2: myartos.construct_pure_child(to_add, pl); break;
-        case 3: mysuperfriends.construct_pure_child(to_add, pl); break;
-        case 4: mycreas.construct_pure_child(to_add, pl); break;
-        default: std::cout << "Internal error: trying to add non-permanent to battlefield." << std::endl; exit(1);
-    }
+    addtostack(new Resolvable(ctrl, loyalty_abs + x, (Target*) this));*/
 }

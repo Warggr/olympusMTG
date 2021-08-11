@@ -16,20 +16,19 @@ public:
     typedef card_type type_t;
 protected:
     std::string name;
-    Mana cost;
     type_t type; //0 Instant, 1 Land, 2 ArtiEnch, 3 PW, 4 Creature, 5 Sorcery
     char color; //5 bits for 5 colors
     RulesHolder rules;
 
-    Identifier casted_id;
+//    Identifier casted_id;
 public:
-    CardOracle(ReaderVisitor& reader) { get_read(reader); }
+    explicit CardOracle(ReaderVisitor& reader) { get_read(reader); }
     void get_read(ReaderVisitor& reader);
-    void get_written(WriterVisitor& writer) const;
 
     void get_triggers(char type, TriggerEvent& trigEv) const;
-    Identifier generate_casted_id() const;
+//    Identifier generate_casted_id() const;
     std::string describe() const;
+    inline Mana getCost() const { return rules.cast.cost; }
 
     friend class Card;
 };

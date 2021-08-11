@@ -1,0 +1,2 @@
+
+#define ImplementIO @IOLibType@IO

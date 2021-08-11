@@ -1,6 +1,4 @@
-#ifndef WARGGRS_OLYMPIC_DICTIONARY_H
 #include "lib1_dictionary.h"
-#endif
 
 template<typename T>
 SearchTreeNode<T>::~SearchTreeNode(){
@@ -15,17 +13,17 @@ Dictionary_tpl<T>::Dictionary_tpl(int nbinserts, const char* const* inserts): ro
 	for(int i=0; i<nbinserts; i++){
 		int j;
 		for(j=0; inserts[i][j] != 0; j++);
-		insert(inserts[i], j, i);
+		insert(inserts[i], j, static_cast<T>(i));
 	}
 }
 
 template<typename T>
-SearchTreeNode<T>::SearchTreeNode(const char* name, int namelength, T id): identifier(id){ //makes a deep copy of name
-	nnamelen = namelength;
-	nodename = new char[nnamelen+1];
-	for(int i=0; i<nnamelen; i++) nodename[i] = name[i];
-	nodename[nnamelen] = 0;
-	for(auto & i : children) i = 0;
+SearchTreeNode<T>::SearchTreeNode(const char *name, int namelen, bool valid): valid(valid) { //makes a deep copy of name
+    nnamelen = namelen;
+    nodename = new char[nnamelen+1];
+    for(int i=0; i<nnamelen; i++) nodename[i] = name[i];
+    nodename[nnamelen] = 0;
+    for(auto & i : children) i = nullptr;
 }
 
 template<typename T>
@@ -36,6 +34,7 @@ SearchTreeNode<T>* SearchTreeNode<T>::existing_append(const char* name, int name
 		//if((name[x] < '_' || name[x] > 'z') && name[x] != 0) throw std::invalid_argument(name[x] + " is invalid: Keys should consists of lowercase letters, ` or _");
 		//std::cout << "COMPARING " << name[x] << " with " << nodename[x] << std::endl;
 		if(name[x] == 0 && nodename[x] == 0){ //if we found the exact word in the tree
+		    valid = true;
 			identifier = id; //the placeholder node becomes an answer node
 			return this;
 		}
@@ -104,7 +103,8 @@ dict_iterator_tpl<T> SearchTreeNode<T>::find(const char* key) const {
 	int i = 0;
 	while(true){
 		if(nodename[i] == 0 && key[i] == 0){ //values equal; key found!
-			return dict_iterator_tpl<T>(identifier);
+			if(valid) return dict_iterator_tpl<T>(identifier);
+			else return Dictionary_tpl<T>::not_found;
 		}
 		else if(nodename[i] == 0){ //need to go deeper
 			int pos = key[i] - '_';

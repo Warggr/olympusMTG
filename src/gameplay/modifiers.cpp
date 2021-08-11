@@ -2,27 +2,12 @@
 #include "9modifs.h"
 #include <iostream>
 
-void Targeter::setTarget(Target* tar){
-	content = tar;
-	gdebug(DBG_TARGETING) << "Target chosen. this Targeter "<< this <<" was set to target"<<tar<<"\n";
-	tar->add_persecutor(this);
-	name = tar->get_name();
-}
-
-Targeter::Targeter(Target* tar): valid(true) {
-    if(tar == nullptr){
-        valid = false;
-        content = nullptr;
-    }
-    else setTarget(tar);
-}
-
-void Target::add_persecutor(Targeter* tar){
+void Target::add_persecutor(AbstractTargeter* tar){
 	//god.gdebug(DBG_TARGETING) << "This Target "<<this<<" is the target of a Targeter" <<tar<<std::endl;
 	to_target.push_front(tar);
 }
 
-void Target::remove_persecutor(Targeter* tar){
+void Target::remove_persecutor(AbstractTargeter* tar){
 #ifdef F_STRICT
 	gdebug(DBG_TARGETING) << "Removing: this Target "<<this<<" is not any longer harassed by"<<tar<<"\n";
 	std::list<Targeter*>::iterator iter;
@@ -37,4 +22,23 @@ void Target::remove_persecutor(Targeter* tar){
 #else
 	to_target.remove(tar);
 #endif
+}
+
+Target::~Target() {
+    for(auto* persec : to_target) {
+        persec->invalidate();
+    }
+}
+
+namespace target_type {
+    const flag_t tars1[] = { damageable, nonnegative };
+    const flag_t tars2[] = { player, nonnegative };
+    const flag_t tars3[] = { player, number };
+    const flag_t tars4[] = { player, added_mana };
+    const flag_t tars5[] = { permanent };
+    const flag_t tars6[] = { resolvable };
+    const flag_t tars7[] = { permanent, strictpositive };
+    const flag_t tars8[] = { permanent };
+    const flag_t* target_types[] = { tars1, tars2, tars3, tars3, tars4, tars5, tars5, tars6, tars7, tars8 };
+    const int target_numbers[] = { 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1 };
 }

@@ -1,7 +1,11 @@
 #ifndef OLYMPUS_HEADER_5_YGGDRASIL_H
 #define OLYMPUS_HEADER_5_YGGDRASIL_H
 
-#include "headY_yggdrasil.h"
+#include <condition_variable>
+
+template<typename T> class PermanentTN;
+class AbPermanentN;
+class Permanent;
 
 template<typename T, bool iconst>
 class iterator{
@@ -43,7 +47,7 @@ public:
 template<bool iconst>
 class iterator<Permanent, iconst>{
     using BasicObj = typename std::conditional<iconst, const Permanent, Permanent>::type;
-    using BasicCont = typename std::conditional<iconst, const APPermanentN, APPermanentN>::type;
+    using BasicCont = typename std::conditional<iconst, const AbPermanentN, AbPermanentN>::type;
 
     BasicCont* pointed;
     bool is_primary;
@@ -52,11 +56,11 @@ public:
     iterator(BasicCont* pted, bool primary): pointed(pted), is_primary(primary){};
     bool get_primary(){return is_primary; }
     //void set_primary(bool prim){is_primary = prim; };
-    iterator operator++(){
+    iterator operator++() {
         pointed = pointed->pnext;
         return *this;
     }
-    iterator operator--(){
+    iterator operator--() {
         pointed = pointed->pprev;
         return *this;
     }
@@ -76,7 +80,5 @@ public:
     }
     BasicCont* get_pointed() const {return pointed; };
 };
-
-#include "archetypes.cpp"
 
 #endif //OLYMPUS_HEADER_5_YGGDRASIL_H

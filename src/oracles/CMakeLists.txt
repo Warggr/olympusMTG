@@ -1,6 +1,6 @@
-add_library(Oracles
-        filereader.cpp rules_text.cpp readwords.cpp binaryreader.cpp reader.cpp binarywriter.cpp classes/describe.cpp)
-target_include_directories(Oracles PUBLIC ${INCLUDES})
+add_library(oracles STATIC describe.cpp filereader/createopts.cpp)
+target_include_directories(oracles PUBLIC ${INCLUDES})
 
-add_subdirectory(Dictionary)
-target_link_libraries(Oracles PUBLIC Dictionary)
+add_subdirectory(filereader)
+target_link_libraries(oracles PRIVATE filereader)
+target_link_libraries(oracles PUBLIC Mana)

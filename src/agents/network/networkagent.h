@@ -14,6 +14,7 @@ class NetworkAgent: public Agent, public Networker {
 public:
 	NetworkAgent();
 
+    long receive() override;
 	void specificSetup() override;
     void receiveMessage();
 
@@ -21,10 +22,22 @@ public:
 	std::string getName() override { return name; }
     //virtual Option* chooseOpt() override { return nullptr; }
     void setSock(int sock);
+
     std::vector<OracleDescr> getDeck() override;
+
 	Target* chooseTarget(char type) override;
 
-    long receive() override;
+    void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>) override;
+
+    std::list<std::unique_ptr<Card>> chooseCardsToKeep(std::list<std::unique_ptr<Card>>& list) override;
+
+    bool keepsHand() override;
+
+    OptionAction* chooseOpt(bool sorcerySpeed, Player* pl) override;
+
+    bool chooseAttackers(CollectionTN<Creature>& mycreas, StateTN<Creature>& myattackers) override;
+
+    void chooseBlockers(CollectionTN<Creature>& mycreas, StateTN<Creature>& attackers) override;
 };
 
 #endif //OLYMPUS_AGENT_NETWORK_H

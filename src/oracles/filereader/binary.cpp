@@ -1,7 +1,7 @@
 #include "server/gameplay/3player.h"
 #include "server/gameplay/4permanents.h"
 #include "../HFiles/headR_readfiles.h"
-#include "options/8options.h"
+#include "oracles/classes/8options.h"
 #include "oracles/classes/2triggers.h"
 #include "../HFiles/12abilities.h"
 #include "headU_utilities.h"

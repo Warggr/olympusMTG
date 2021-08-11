@@ -1,4 +1,5 @@
 #include "3player_cards.h"
+#include "control/3player.h"
 #include <random>
 
 void CardZone::shuffle(){
@@ -29,6 +30,30 @@ int CardZone::drawto(CardZone* target, int nb_cards){
 	return i;
 }
 
-void Player::puttozone(Card* x, char nb_zone){
-	myzones[(int) nb_zone].takeonecard(x);
+void CardZone::revealTopCards(int nb_cards) {
+    auto iter = cards.begin();
+    for(int i=0; i<nb_cards && iter != cards.end(); ++i, ++iter) {
+        (*iter)->reveal();
+    }
+}
+
+void CardZone::placeOnBottom(std::unique_ptr<Card> c) {
+    ++size;
+    auto iter = cards.before_begin();
+    for(; iter._M_next() != cards.end(); iter++);
+    cards.emplace_after(iter, std::move(c));
+}
+
+void Player::puttozone(std::unique_ptr<Card>& x, enum cardzone nb_zone){
+    switch(nb_zone){
+        case library_zn: myLibrary.takeonecard(std::move(x)); break;
+        case exile_zn: myExile.takeonecard(std::move(x)); break;
+        case graveyard_zn: myGraveyard.takeonecard(std::move(x));
+    }
+}
+
+void Player::draw(int nb_cards) {
+    for(int i=0; i<nb_cards; i++) {
+        myHand.push_front(std::move(myLibrary.pop_front()));
+    }
 }

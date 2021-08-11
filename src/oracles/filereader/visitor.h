@@ -3,8 +3,8 @@
 
 #include <forward_list>
 #include <oracles/classes/3statics.h>
-#include "classes/1effects.h"
-#include "classes/2cards.h"
+#include "oracles/classes/1effects.h"
+#include "oracles/classes/2cards.h"
 
 class WeirdCost;
 
@@ -19,7 +19,7 @@ protected:
         }
     }
 
-    virtual void raise_error(std::string message) = 0;
+    virtual void raise_error(const std::string& message) = 0;
     virtual void readNumberOfObjects(uint& nb) = 0;
     virtual void readNumberOfObjects(uint8_t& nb) = 0;
     static constexpr uint defaultOffsetFor(card_type type) {
@@ -27,6 +27,7 @@ protected:
         (type.underlying == card_type::planeswalker) ? 1 : 0; //2 for creatures, 1 for planeswalkers
     }
     virtual void read_section_flavor(char*& flavor_text, uint8_t offset_text) = 0;
+    virtual void read_section_othercasts(CardOptionListNode*& node) = 0;
 public:
     virtual void readName(std::string& name) = 0;
     virtual void readManaCost(Mana& cost) = 0;
@@ -37,12 +38,12 @@ public:
     virtual void readEffectH(uint8_t &nb_params, char *&params, std::forward_list<AtomEffect_H> &atoms) = 0;
     virtual void readTriggerType(trigtype& type) = 0;
     virtual void readAtomEffect(effect_type& type, flag_t*& params, uint8_t& nbparams, char* param_hashtable) = 0;
-    virtual void readActAb(Mana &mana, Effect_H *&effects, bool &tapsymbol, bool &ismanaability) = 0;
+    virtual void readActAb(Mana &mana, WeirdCost*& cost, Effect_H*& effects, bool &tapsymbol, bool &ismanaability, bool& instantspeed) = 0;
     virtual void readSelector(Identifier &chars, Identifier &requs) = 0;
-    virtual void readModifier(char &i, Modifier &first_effect, Modifier *&other_effects) = 0;
+    virtual void readModifier(char &i, Modifier& first_effect, Modifier*& other_effects) = 0;
     virtual void readCosts(Mana& mana, bool& tapsymbol, WeirdCost*& others) = 0;
 
-    virtual void read_section_onresolve(Effect_H*& preRes) = 0;
+    virtual void readMainSpell(SpellOption& cast) = 0;
 };
 
 class DeckbuildingError: public std::exception {

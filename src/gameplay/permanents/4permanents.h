@@ -5,44 +5,52 @@
 #include "gameplay/1general.h"
 #include "oracles/classes/1effects.h"
 #include "oracles/classes/3statics.h"
-#include "oracles/classes/4actabs.h"
 #include "headI_identifiers.h"
 #include <memory>
 #include <list>
+#include <agents/agent.h>
+
 class PermOption;
+
+#define uptr std::unique_ptr
 
 class Permanent: public Target, public OptionWrapper<PermOption> {
 protected:
 	TriggerEvent triggers_permanent[4]; //becomes (state) - becomes (special) - ETB - LTB
 	std::unique_ptr<Card> source;
 	Player* ctrl;
-	ActAb_H* first_actab;
+	PermOption* first_actab;
 	ModifListNode* existing_statics;
 	int nb_actabs;
 	char etbBeforeThisTurn : 1, untapped : 1;
 	char keywords; //indestructible -
 	char color;
 public:
-	Permanent(std::unique_ptr<Card> source, Player* pl, int nb_zone);
+    typedef permanent_type type;
+
+	Permanent(uptr<Card> source, Player* pl);
 	virtual ~Permanent() = default;
 	virtual std::string describe() const;
-	virtual void disp(const Rect& zone, bool highlight = false) const;
+//	virtual void disp(const Rect& zone, bool highlight = false) const;
 
-	virtual void untap(){ untapped = 1; }
+    virtual void tap() { untapped = 0; }
+	virtual void untap() { untapped = 1; }
 	virtual void declare_beginturn(){ untap(); etbBeforeThisTurn = 1; };
 	virtual void activate();
-	bool directactivate();
+//	bool directactivate();
 	virtual void destroy();
 	virtual void exile();
-	//void merge_source(Card* src_copy){delete source; source = src_copy; };
+    type getType() const;
+
+    Player* getController() override { return ctrl; }
 };
 
 class Artifact: public Permanent{
 public:
-	static constexpr Identifier def_identifier = construct_id_perm(artifact, 0, 0);
+	static constexpr Identifier def_identifier = construct_id_perm(permanent_type::artifact, 0, 0);
 
-	Artifact(std::unique_ptr<Card> src, Player* pl): Permanent(std::move(src), pl, 1){};
-	Identifier reload_id() const override;
+	Artifact(uptr<Card> src, Player* pl): Permanent(std::move(src), pl){};
+//	Identifier reload_id() const override;
 };
 
 class Creature: public Permanent, public Damageable{
@@ -55,18 +63,18 @@ private:
 	bool pt_switched{false}; //layer 7d
 
 	bool is_attacking{false}, is_block{false}; //used for both blocking and blocked
-	std::list<Targeter*> assigned_bl; //might become invalidated if the attacker dies midcombat
+	std::list<std::pair<uint8_t, SpecificTargeter<Creature>>> assigned_bl; //might become invalidated if the attacker dies midcombat
 
 public:
-	static constexpr Identifier def_identifier = construct_id_perm(creature, 0, 0);
+	static constexpr Identifier def_identifier = construct_id_perm(permanent_type::creature, 0, false);
 
 	Creature(std::unique_ptr<Card> src, Player* pl);
-	std::string describe() const;
+	std::string describe() const override;
 
-	void disp(const Rect& zone, bool highlight) const;
+//	void disp(const Rect& zone, bool highlight) const;
 
-	void damage(int nb_damage, Target* origin = 0) override;
-	void hit(Damageable* tgt) const;
+//	void damage(int nb_damage, Target* origin = 0) override;
+	void hit(Damageable* tgt);
 	void add_blocker(Creature* bl);
 	void set_blocking(){is_block = true; };
 	void resolve_attack(Player* nextopponent);
@@ -75,38 +83,39 @@ public:
 	void plus_power(char dpower){added_power += dpower; };
 	void plus_toughness(char dtoughness){added_toughness += dtoughness; };
 
-    Identifier reload_id() const override;
-    Player* getController() override { return ctrl; }
+//    Identifier reload_id() const override;
+    Player* getDmgController() override { return ctrl; }
+
+    void splitDamage(Agent &agent);
 };
 
 class Planeswalker: public Permanent, public Damageable{
-    Effect_H* loyalty_abs;
+    /*Effect_H* loyalty_abs;
     char* loyalty_costs;
-    int loyalty;
-    bool thisturn;
+    int loyalty; */
+    bool thisturn; //TODO planeswalker abilities
 public:
-	static constexpr Identifier def_identifier = construct_id_perm(planeswalker, 0, false);
+//	static constexpr Identifier def_identifier = construct_id_perm(planeswalker, 0, false);
 
-	Planeswalker(std::unique_ptr<Card> src, Player* pl);
-	char target_type() const{return 0x48; }; //Permanent and Planeswalker
-	void damage(int nb_damage, Target* origin) override;
+	Planeswalker(uptr<Card> src, Player* pl);
+//	void damage(int nb_damage, Target* origin) override;
 	void activate() override;
 	void declare_beginturn() override { Permanent::declare_beginturn(); thisturn = false; };
 
-	Identifier reload_id() const override;
-    Player* getController() override { return ctrl; }
+//	Identifier reload_id() const override;
+    Player* getDmgController() override { return ctrl; }
 };
 
 class Land: public Permanent{
 public:
-	static constexpr Identifier def_identifier = construct_id_perm(land, 0, 0);
+	static constexpr Identifier def_identifier = construct_id_perm(permanent_type::land, 0, 0);
 
-	Land(Card* src, Player* pl);
+	Land(uptr<Card> src, Player* pl);
 
-	void disp(const Rect& zone, bool highlight) const;
+//	void disp(const Rect& zone, bool highlight) const;
 	void untap() override;
 
-	Identifier reload_id() const override;
+//	Identifier reload_id() const override;
 };
 
 #endif //OLYMPUS_CLASSES_PERMANENTS_4_H

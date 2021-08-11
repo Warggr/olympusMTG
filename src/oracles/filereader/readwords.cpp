@@ -45,15 +45,15 @@ short int PlainFileReader::readNumber(char a, bool can_be_zero, bool can_be_nega
 	else{ throw DeckbuildingError("Invalid ability parameter: expected a number"); return 0; }
 }
 
-inline mtgmanatype read_mana_to_add(char a){
+inline mtg::manatype read_mana_to_add(char a){
 	switch(a){
-		case 'C': return c_mana;
-		case 'W': return w_mana;
-		case 'U': return u_mana;
-		case 'B': return b_mana;
-		case 'R': return r_mana;
-		case 'G': return g_mana;
-		default: return c_mana;
+	    case 'C': return mtg::manatype::colorless;
+		case 'W': return mtg::manatype::white;
+		case 'U': return mtg::manatype::blue;
+		case 'B': return mtg::manatype::black;
+		case 'R': return mtg::manatype::red;
+		case 'G': return mtg::manatype::green;
+		default: return mtg::manatype::colorless;
 	}
 }
 
@@ -61,7 +61,7 @@ flag_t PlainFileReader::readAbilityParameter(char* allassignedvariables, uint8_t
 	check_safepoint(' ', "before a parameter");
 	char a = ifile.peek();
 	gdebug(DBG_READFILE) << "Read parameter starting with " << a << "\n";
-	if(type == target_type::added_mana){ ifile.get(); return read_mana_to_add(a); }
+	if(type == target_type::added_mana){ ifile.get(); return (flag_t) read_mana_to_add(a); }
 	if(type & target_type::number)
 		return readNumber(a, (type & target_type::nonzero) != target_type::nonzero, (type & target_type::nonnegative) != target_type::nonnegative);
 	switch(a){
@@ -117,26 +117,24 @@ flag_t PlainFileReader::readAbilityParameter(char* allassignedvariables, uint8_t
 	}
 }
 
-card_type PlainFileReader::readCardType() {
-    card_type ret;
+void PlainFileReader::readCardType(card_type& type) {
     char a = ifile.get();
-    if(a == 'L') { ret.legendary = 1; a = ifile.get(); }
-    if(a == 'W') { ret.snow = 1; a = ifile.get(); }
-    if(a == 'B') { ret.underlying = card_type::basic; a = ifile.get(); }
-    if(a == 'E') { ret.enchantment = 1; a = ifile.get(); }
-    if(a == 'A') { ret.artifact = 1; a = ifile.get(); }
-    if(a == 'L') { ret.land = 1; a = ifile.get(); }
+    if(a == 'L') { type.legendary = 1; a = ifile.get(); }
+    if(a == 'W') { type.snow = 1; a = ifile.get(); }
+    if(a == 'B') { type.underlying = card_type::basic; a = ifile.get(); }
+    if(a == 'E') { type.enchantment = 1; a = ifile.get(); }
+    if(a == 'A') { type.artifact = 1; a = ifile.get(); }
+    if(a == 'L') { type.land = 1; a = ifile.get(); }
     switch (a) {
-        case ' ': ret.underlying = card_type::flagged; return ret;
-        case 'I': ret.underlying = card_type::instant; break;
-        case 'P': ret.underlying = card_type::planeswalker; break;
-        case 'C': ret.underlying = card_type::creature; break;
-        case 'S': ret.underlying = card_type::sorcery; break;
+        case ' ': type.underlying = card_type::flagged; return;
+        case 'I': type.underlying = card_type::instant; break;
+        case 'P': type.underlying = card_type::planeswalker; break;
+        case 'C': type.underlying = card_type::creature; break;
+        case 'S': type.underlying = card_type::sorcery; break;
         default:
             raise_error(std::string("while reading decks: ") + a + " is not a card type");
     }
     check_safepoint(' ', "after card types");
-    return ret;
 }
 
 void PlainFileReader::readCosts(Mana &mana, bool &tapsymbol, WeirdCost *&others) {
