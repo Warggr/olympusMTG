@@ -1,8 +1,8 @@
 #ifndef OLYMPUS_STATE_TN_H
 #define OLYMPUS_STATE_TN_H
 
-#include "abstract_n.h"
 #include "permanent_tn.h"
+#include "abstract_n.h"
 
 template<typename T> class CollectionTN;
 
@@ -29,6 +29,10 @@ public:
 
     bool empty() const override {
         return first == nullptr;
+    }
+
+    void state_out(PermanentTN<T>* child) {
+        parents.front()->state_out(child);
     }
 
     template<typename X> iterator<X, false> xbegin(){

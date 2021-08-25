@@ -4,7 +4,7 @@
 #include "1effects.h"
 #include "8options.h"
 
-class PermOption: public Option<Permanent> {
+class PermOption: public Option {
 private:
     bool tapsymbol, ismanaability;
 public:
@@ -12,7 +12,7 @@ public:
     ~PermOption();
     void init(ReaderVisitor& visitor);
 
-    void cast_opt(Player* pl, Permanent& origin) override;
+    void cast_opt(Player* pl, Permanent& origin);
     void straight_cast(Player* pl);
 
     bool get_tapsymbol() const { return tapsymbol; };
@@ -23,6 +23,16 @@ public:
     void fillout(Mana c, Effect_H *preRes, bool ts, bool ismana);
 
     bool iscastable(const Player *pl) const override;
+};
+
+class PermOptionAction: public OptionAction {
+    PermOption& option;
+    Permanent& perm;
+public:
+    PermOptionAction(PermOption& option, Permanent& origin): option(option), perm(origin) {}
+    void cast_opt(Player* pl) override {
+        option.cast_opt(pl, perm);
+    }
 };
 
 #endif //OLYMPUS_PERMOPTION_H

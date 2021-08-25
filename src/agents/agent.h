@@ -7,10 +7,15 @@
 #include <vector>
 #include <list>
 
-class Target; class Creature; template<typename T> class SpecificTargeter; class Card; class OptionAction; class Player;
+class Target; class Creature; template<typename T> class SpecificTargeter; class Card; class Player;
+class OptionAction; class Option; class SpellOption; class PermOption;
 template<typename T> class CollectionTN; template<typename T> class StateTN;
 
+#ifdef MOCK_AGENT_ONLY
+enum playerType { MOCK };
+#else
 enum playerType { LOCAL, /*BOT, NETWORK*/  };
+#endif
 enum oracle_type { reference, customcard, compiled_customcard };
 
 struct OracleDescr {
@@ -41,11 +46,14 @@ public:
     //Should also make sure that each deck is *valid*. TODO
     virtual std::string getName() = 0;
 
-    virtual OptionAction* chooseOpt(bool sorcerySpeed, Player* pl) = 0;
+    virtual uptr<OptionAction> chooseOpt(bool sorcerySpeed, Player* pl) = 0;
+
+    virtual uint chooseAmong(std::vector<PermOption*> opts) = 0;
+    virtual uint chooseAmong(std::vector<SpellOption*> opts) = 0;
 
     virtual Target* chooseTarget(char type) = 0;
 
-    virtual void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>) = 0;
+    virtual void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) = 0;
 
     virtual bool keepsHand() = 0;
 

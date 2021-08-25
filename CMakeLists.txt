@@ -54,10 +54,9 @@ if(ENABLE_PROFILING)
 endif()
 
 #Warnings
-target_compile_options(project_warnings INTERFACE -Wall -Wextra -Wshadow
-        -Wnon-virtual-dtor -Wold-style-cast -Wcast-align
-        -Wunused -Woverloaded-virtual -Wpedantic -Wconversion
-        -Wsign-conversion
+target_compile_options(project_warnings INTERFACE -Wall -Wextra
+        -Wnon-virtual-dtor -Wcast-align
+        -Wunused -Woverloaded-virtual -Wpedantic
         -Wnull-dereference -Wdouble-promotion
         -Wformat=2)
 
@@ -104,12 +103,16 @@ endif()
 
 if(ENABLE_TESTING)
     enable_testing()
+    find_package(Catch2 REQUIRED)
+    include(CTest)
+    include(Catch)
     add_subdirectory(test)
 endif()
 
 set(INCLUDES ${PROJECT_SOURCE_DIR}/src ${PROJECT_BINARY_DIR}/include)
 
 set(RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/outputs)
+
 add_subdirectory(src)
 
 set(CONFIGURED_ONCE TRUE CACHE INTERNAL

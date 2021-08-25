@@ -9,6 +9,8 @@
 class WeirdCost;
 
 class ReaderVisitor {
+public:
+    virtual ~ReaderVisitor() = default;
 protected:
     template<typename T>
     void readArray(uint& nb_objects, T*& objects) {

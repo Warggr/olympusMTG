@@ -36,7 +36,7 @@ std::string Trigger_H::describe(int typeoftrig, const std::string& name) const {
 }
 
 std::string AtomEffect_H::describe(const std::string& cardname) const {
-    std::string ds = ability_descriptions[(int) type];
+    std::string ds = ability_descriptions[static_cast<int>(type)];
     std::string ret;
     for(char d : ds){
         if(d == '~') ret += cardname;

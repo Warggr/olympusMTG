@@ -1,1 +1,1 @@
-add_library(OlympicDict regularExp.cpp)
+add_library(OlympicDict OBJECT regularExp.cpp)

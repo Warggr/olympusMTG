@@ -5,6 +5,7 @@
 #include "ui/12defaultUI.h"
 #include "oracles/classes/2cards.h"
 #include <string>
+#include <list>
 
 /* FrontEnd recreates part of the game state on its own.
  * What it has:
@@ -13,21 +14,23 @@
  * most hidden information
  */
 
-class FrontEnd {
+struct FrontEnd {
     ImplementIO io;
     ImplementUI ui;
     CardOracle* mycards;
-public:
+
     FrontEnd(): io(), ui(&io) { io.setMenuScene(); }
     std::string getName();
     std::string getLogin();
     std::ifstream getDeck();
 
-    void create(const char* descr);
-    void update(const char* descr);
-    void del(const char* descr);
-    void bulkOp(const char* descr);
+//    void create(const char* descr);
+//    void update(const char* descr);
+//    void del(const char* descr);
+//    void bulkOp(const char* descr);
     bool askMulligan();
+
+    void splitDamage(int power, std::__cxx11::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers);
 };
 
 #endif //OLYMPUS_FRONTEND_H

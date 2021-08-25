@@ -1,8 +1,8 @@
 #ifndef OLYMPUS_YGGDRASIL_2_H
 #define OLYMPUS_YGGDRASIL_2_H
 
-#include "abstract_n.h"
 #include "state_tn.h"
+#include "abstract_n.h"
 
 class BoardN;
 
@@ -23,6 +23,11 @@ public:
     StateTN<T>* defNewState() {
         return new StateTN<T>(this);
     }
+
+    void state_out(PermanentTN<T>* perm) {
+        //TODO
+    }
+
 //Merges every stateTN into one.
     void restate() {
         for(auto& child = children.begin().operator++(); child != children.end(); child++) {
@@ -30,7 +35,9 @@ public:
         }
     }
 
-    void remove(T* object);
+    void remove(T* object) {
+
+    };
 
     iterator<T, false> begin() { return children.front().begin(); }
     iterator<T, false> end() const { return children.back().end(); }
@@ -41,10 +48,5 @@ public:
     iterator<Permanent, true> cpbegin() const { return children.front().cpbegin(); }
     iterator<Permanent, true> cpend() const { return children.back().cpend(); }
 };
-
-template<typename T>
-void CollectionTN<T>::remove(T *object) {
-
-}
 
 #endif //OLYMPUS_YGGDRASIL_2_H

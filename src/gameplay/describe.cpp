@@ -31,3 +31,26 @@ std::string TriggerEvent::describe(int typeoftrig, const std::string& cardname) 
 void Card::reveal() const {
     //TODO
 }
+
+std::string card_type::toString() const {
+    std::string ret;
+    if(legendary) ret += "Legendary";
+    if(underlying == basic) ret += "Basic";
+    if(snow) ret += "Snow";
+    if(artifact) ret += "Artifact";
+    if(enchantment) ret += "Enchantment";
+    if(land) ret += "Land";
+    switch(underlying) {
+        case flagged:
+        case basic:
+            return ret;
+        case creature:
+            return ret + "Creature";
+        case planeswalker:
+            return ret + "Planeswalker";
+        case instant:
+            return ret + "Instant";
+        case sorcery:
+            return ret + "Sorcery";
+    }
+}

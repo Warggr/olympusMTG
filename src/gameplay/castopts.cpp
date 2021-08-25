@@ -23,8 +23,7 @@ bool PermOption::iscastable(const Player* pl) const {
     return pl->manapool >= cost;
 }
 
-template<typename T>
-void Option<T>::payCosts(Player *pl) {
+void Option::payCosts(Player *pl) const {
     pl->manapool -= cost;
 }
 

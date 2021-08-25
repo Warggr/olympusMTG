@@ -50,10 +50,9 @@ Creature::Creature(std::unique_ptr<Card> src, Player* pl):
 }
 
 Planeswalker::Planeswalker(std::unique_ptr<Card> src, Player* pl):
-    Permanent(std::move(src), pl), Damageable((int) src->get_flavor_text()[0], src.get()) {
+    Permanent(std::move(src), pl), Damageable(static_cast<int>(src->get_flavor_text()[0]), src.get()) {
     t_type = target_type::planeswalker;
     thisturn = false;
-
 }
 
 Damageable::Damageable(int lif, Card* source): life(lif){
@@ -145,3 +144,5 @@ void Planeswalker::activate() {
     loyalty -= loyalty_costs[(int) x];
     addtostack(new Resolvable(ctrl, loyalty_abs + x, (Target*) this));*/
 }
+
+Artifact::Artifact(uptr<Card> src, Player* pl): Permanent(std::move(src), pl){}

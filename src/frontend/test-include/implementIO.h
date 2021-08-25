@@ -1,0 +1,6 @@
+#ifndef OLYMPUS_IMPLEMENTIO_H
+#define OLYMPUS_IMPLEMENTIO_H
+
+#define ImplementIO MockIO
+
+#endif //OLYMPUS_IMPLEMENTIO_H

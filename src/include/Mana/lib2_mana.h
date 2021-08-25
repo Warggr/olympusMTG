@@ -3,6 +3,7 @@
 
 #include <string>
 #include <array>
+#include "../headE_enums.h"
 
 using ExplicitMana = std::array<uint, 7>;
 
@@ -10,6 +11,10 @@ class Mana{
 private:
     int mana; //0xXcgrbuw1, in inverse order of priority
 public:
+    struct positions {
+        static constexpr int GENERIC = 0, FIRST_COLOR = 1, WHITE = 1, BLUE = 2, BLACK = 3, LAST_COLOR = 5, COLORLESS = 6;
+    };
+
 	Mana(): mana(0){};
     Mana(int i): mana(i){};
 	explicit Mana(const char* x);
@@ -20,7 +25,7 @@ public:
 	void operator-=(Mana cost);
 	void operator+=(char color);
 	void operator+=(Mana m);
-	char m2color() const;
+	colorId::type m2color() const;
 	void disp(int x, int y) const;
 	inline int m2i() const {return mana; };
 	inline uint cmc() const { return mana & 0xf; }

@@ -15,7 +15,7 @@ flag_t readTypeofTarget(const char* txt){
 	}
 	else{
 		if(txt[2] == 'e'){
-			if(txt[3] == 'l') return target_type::spell;
+			if(txt[3] == 'l') return target_type::resolvable;
 			else return target_type::creature;
 		}
 		else return target_type::card;

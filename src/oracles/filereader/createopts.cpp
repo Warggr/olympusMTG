@@ -13,6 +13,4 @@ void CardOption::init(ReaderVisitor &visitor) {
 //TODO
 }
 
-template<typename T> Option<T>::~Option<T>() = default;
-SpellOption::~SpellOption() = default;
 PermOption::~PermOption() = default;

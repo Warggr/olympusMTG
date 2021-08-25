@@ -41,7 +41,7 @@ public:
     inline bool operator!=(const iterator& other) const {
         return !(other == *this);
     }
-    BasicCont* get_pointed() const {return pointed; };
+    BasicCont* get_pointed() const { return pointed; };
 };
 
 template<bool iconst>
@@ -70,7 +70,7 @@ public:
         return &(this->operator*());  
     }
     BasicObj& operator*(){
-        return pointed->get_describedObject((BasicObj*) nullptr);
+        return pointed->get_describedObject(static_cast<BasicObj*>(nullptr));
     }
     bool operator==(const iterator& other) const {
         return (other.pointed == pointed);

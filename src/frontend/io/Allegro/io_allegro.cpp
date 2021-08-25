@@ -6,7 +6,7 @@
 AbstractIO* newIOLib(){return new AllegroIO; }
 
 void al_draw_scaled_bitmap(ALLEGRO_BITMAP* bitmap, int picY, int picZ, int picW, int picH, const Rect& zone, char flags){
-	al_draw_scaled_bitmap(bitmap, picY, picZ, picW, picH, zone.yy(), zone.z, zone.width, zone.height, flags);
+	al_draw_scaled_bitmap(bitmap, picY, picZ, picW, picH, zone.y, zone.z, zone.width, zone.height, flags);
 }
 
 void AllegroIO::disp_mana(Mana mana, int endy, int topz) const {
@@ -27,11 +27,11 @@ void AllegroIO::draw_permanent(const Rect& zone, const std::string& name, char c
 	if(basicImg) al_draw_scaled_bitmap(basiclands, 384*(main_color(color)-1), (500-384)/2, 384, 384, zone, 0);
 	else draw_full_rectangle(main_color(color) + 3, zone);
 
-	al_draw_text(fonts[0], registeredColors[AbstractIO::BLACK], zone.yy()+4, zone.z+4, 0, name.c_str());
+	al_draw_text(fonts[0], registeredColors[AbstractIO::BLACK], zone.y+4, zone.z+4, 0, name.c_str());
 
-	if(tapped) al_draw_bitmap(tapsymbol, zone.yy(), zone.z, 0);
+	if(tapped) al_draw_bitmap(tapsymbol, zone.y, zone.z, 0);
 	const int lw = 10;
-	if(highlight) al_draw_rectangle(zone.yy()+lw/2, zone.z+lw/2, zone.yy()+zone.width-lw/2, zone.z+zone.height-lw/2, registeredColors[AbstractIO::HIGH2], lw);
+	if(highlight) al_draw_rectangle(zone.y+lw/2, zone.z+lw/2, zone.y+zone.width-lw/2, zone.z+zone.height-lw/2, registeredColors[AbstractIO::HIGH2], lw);
 }
 
 int AllegroIO::getInt(int lowerBound, int upperBound){
@@ -69,7 +69,7 @@ void AllegroIO::getResolution(int& y, int& z, bool& hasMouseSupport, int& linesi
 }
 
 void AllegroIO::erase_surface(const Rect& zone) const {
-	al_draw_scaled_bitmap(wallpaper, zone.yy(), zone.z, zone.width, zone.height, zone.yy(), zone.z, zone.width, zone.height, 0);
+	al_draw_scaled_bitmap(wallpaper, zone.y, zone.z, zone.width, zone.height, zone.y, zone.z, zone.width, zone.height, 0);
 }
 
 void AllegroIO::disp_header(const Rect& zone, const char* name, int life, char state, bool highlight, Mana pool) const {
@@ -78,9 +78,9 @@ void AllegroIO::disp_header(const Rect& zone, const char* name, int life, char s
         exit(1);
 	}
 	int x = highlight ? HIGH2 : WHITE;
-	al_draw_text(fonts[0], registeredColors[x], zone.yy() + zone.width/2 - 20, zone.z + 3, 0, name);
+	al_draw_text(fonts[0], registeredColors[x], zone.y + zone.width/2 - 20, zone.z + 3, 0, name);
 	char lifec[4]; std::sprintf(lifec, "%3d", life);
-	al_draw_text(fonts[1], registeredColors[x], zone.yy() + zone.width/2 - 15, zone.z + 23, 0, lifec);
+	al_draw_text(fonts[1], registeredColors[x], zone.y + zone.width/2 - 15, zone.z + 23, 0, lifec);
 	disp_mana(pool, zone.y+zone.width, zone.height);
 }
 
@@ -116,36 +116,6 @@ void AllegroIO::message(const char* text) const {
 	al_draw_text(fonts[0], registeredColors[1], messageY, messageZ, 0, text);
 }
 
-DirectioL AllegroIO::get_direction_key(){
-	while(1){
-		refresh_display();
-		ALLEGRO_EVENT event;
-		al_wait_for_event(queue, &event);
-		switch(event.type){
-			case ALLEGRO_EVENT_KEY_CHAR:
-				mouseActive = false;
-				switch(event.keyboard.keycode){
-					case ALLEGRO_KEY_DOWN: return DOWN;
-					case ALLEGRO_KEY_UP: return UP;
-					case ALLEGRO_KEY_ENTER: return ENTER;
-					case ALLEGRO_KEY_SPACE: return BACK;
-					case ALLEGRO_KEY_RIGHT: return RIGHT;
-					case ALLEGRO_KEY_LEFT: return LEFT;
-					default: return NOT_RECOGNIZED;
-				} break;
-			case ALLEGRO_EVENT_DISPLAY_CLOSE:
-				throw UIClosedException();
-			case ALLEGRO_EVENT_MOUSE_AXES:
-				mouseActive = true;
-				mousey = event.mouse.x; mousez = event.mouse.y;
-				return MOUSE;
-			case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
-				mouseActive = true;
-				return ENTER;
-		}
-	}
-}
-
 void must_init(bool test, const char *description){
     if(test) return;
 
@@ -154,8 +124,8 @@ void must_init(bool test, const char *description){
 }
 
 void AllegroIO::harmonize(const Rect& poster, const Rect& message, int nb_winzones){
-	posterY = poster.yy(); posterZ = poster.z;
-	messageY = message.yy(); messageZ = message.z;
+	posterY = poster.y; posterZ = poster.z;
+	messageY = message.y; messageZ = message.z;
 }
 
 AllegroIO::AllegroIO(){
@@ -253,9 +223,9 @@ void AllegroIO::disp_cardback(const Rect& zone, int oncard_number) const {
 	int zfactor = 140/zone.height; int yfactor = 101/zone.width;
 	int factor = (zfactor > yfactor) ? yfactor : zfactor;
 	if(factor == 0) factor = 1;
-	al_draw_scaled_bitmap(card_back, 0, 0, 101, 140, (float)zone.yy(), (float)zone.z, 101/factor, 140/factor, 0);
+	al_draw_scaled_bitmap(card_back, 0, 0, 101, 140, (float)zone.y, (float)zone.z, 101/factor, 140/factor, 0);
 	std::string text = std::to_string(oncard_number);
-	al_draw_text(fonts[0], registeredColors[AllegroIO::BLACK], zone.yy()+20, zone.z+20, 0, &(text[0]));
+	al_draw_text(fonts[0], registeredColors[AllegroIO::BLACK], zone.y+20, zone.z+20, 0, &(text[0]));
 }
 
 void AllegroIO::draw_boxed_text(const char* text, char color, char backgrd_color, int y, int z, int width) const {
@@ -264,11 +234,11 @@ void AllegroIO::draw_boxed_text(const char* text, char color, char backgrd_color
 }
 
 void AllegroIO::draw_full_rectangle(char color, const Rect& zone) const {
-	al_draw_filled_rectangle(zone.yy(), zone.z, zone.yy()+zone.width, zone.z+zone.height, registeredColors[(int) color]);
+	al_draw_filled_rectangle(zone.y, zone.z, zone.y+zone.width, zone.z+zone.height, registeredColors[(int) color]);
 }
 
 void AllegroIO::draw_rectangle(char color, const Rect& zone, int linewidth) const {
-	al_draw_rectangle(zone.z, zone.yy(), zone.bottom(), zone.right(), registeredColors[(int) color], linewidth);
+	al_draw_rectangle(zone.z, zone.y, zone.bottom(), zone.right(), registeredColors[(int) color], linewidth);
 }
 
 void AllegroIO::print_text(const char* text, char color, int y, int z) const {
@@ -294,39 +264,4 @@ void AllegroIO::setMenuScene() {
 
 void AllegroIO::setGameScene() {
 
-}
-
-//Adapted from https://www.allegro.cc/forums/thread/617234
-// and https://github.com/leorising14/New/blob/master/main.c
-std::string AllegroIO::getTextInput(const char* question) {
-    ALLEGRO_USTR* str = al_ustr_new("Type something...");
-    message(question);
-    int pos = strlen("Type something...");
-    while(true) {
-    	al_draw_filled_rectangle(messageY, messageZ+25, messageY + 500, messageZ + 50, registeredColors[1]);
-    	al_draw_ustr(fonts[0], al_map_rgb_f(1, 1, 1), messageY, messageZ+25, 0, str);
-    	al_flip_display();
-        ALLEGRO_EVENT ev;
-        al_wait_for_event(queue, &ev);
-        if(ev.type == ALLEGRO_EVENT_KEY_CHAR) {
-        	if(ev.keyboard.unichar >= 32) {
-        		pos += al_ustr_append_chr(str, ev.keyboard.unichar);
-        	} else {
-        		switch(ev.keyboard.keycode) {
-	                case ALLEGRO_KEY_ENTER:
-	                    goto end_function;
-	                case ALLEGRO_KEY_BACKSPACE:
-	                    if(al_ustr_prev(str, &pos))
-	                    	al_ustr_truncate(str, pos);
-	                    break;
-	            }
-        	}
-        } else if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-            throw UIClosedException();
-        }
-    };
-end_function:
-	std::string ret(al_cstr(str));
-	al_ustr_free(str);
-	return ret;
 }

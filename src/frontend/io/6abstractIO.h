@@ -7,22 +7,23 @@
 #include "implementIO.h"
 #include <vector>
 #include <string>
+#include <list>
 #include <exception>
+#include <memory>
 
-enum DirectioL { UP, DOWN, LEFT, RIGHT, BACK, ENTER, MOUSE, NOT_RECOGNIZED};
 enum framecolor { colorlessfr, whitefr, bluefr, blackfr, redfr, greenfr, multicolorfr };
 //Different types of colors: uint8_types are used for communicating color guidelines/flags with the IO myLibrary,
 //enum framecolors are colored frames such as "multicolor creatures"
 //and chars are used as flags for a full color identity
 
-inline enum framecolor main_color(char color){
-    switch(color){
+inline enum framecolor main_color(colorId::type color){
+    switch(color.fields){
         case 0: return colorlessfr;
-        case 1: return whitefr;
-        case 2: return bluefr;
-        case 4: return blackfr;
-        case 8: return redfr;
-        case 16: return greenfr;
+        case colorId::white.fields: return whitefr;
+        case colorId::blue.fields: return bluefr;
+        case colorId::black.fields: return blackfr;
+        case colorId::red.fields: return redfr;
+        case colorId::green.fields: return greenfr;
         default: return multicolorfr;
     }
 }
@@ -30,6 +31,8 @@ inline enum framecolor main_color(char color){
 class UIClosedException: public std::exception{};
 
 class ImplementIO;
+
+class Permanent; class Card; class Creature; class CardOracle; class Option;
 
 class AbstractIO{
 public:
@@ -41,6 +44,81 @@ public:
 #include "iomethods.cpp"
 #undef maybe_virtual
 #undef maybe_undef
+
+    template<typename O> std::list<O> checklist(std::list<O>& all);
+    void disp(const Permanent& perm, const Rect& pos, bool highlight);
+    void disp(const Creature& crea, const Rect& pos, bool highlight);
+    void disp(const std::unique_ptr<Card>& card, const Rect& pos, bool highlight);
+    void disp(const CardOracle& card, const Rect& pos, bool highlight);
+    void disp(const Option* opt, const Rect& pos, bool highlight);
+    void poster(const CardOracle& card) { disp(card, Rect(), false); }
+
+    template<typename T>
+    uint chooseAmong(std::vector<T> objects);
 };
+
+template<typename T>
+std::list<T> AbstractIO::checklist(std::list<T>& all) {
+    Rect rect(0, 0, 0, 0);
+    for (auto &obj : all) {
+        disp(obj, rect, true);
+        rect.shift(rect.width, 0);
+    }
+    std::vector<bool> check(all.size(), true);
+    uint i = 0;
+    while (true) {
+        switch(get_direction_key()) {
+            case LEFT:
+                if(i != 0) --i; break;
+            case RIGHT:
+                if(i != all.size()) ++i; break;
+            case UP:
+                check[i] = true; break;
+            case DOWN:
+                check[i] = false; break;
+            case ENTER: {
+                std::list<T> ret;
+                auto iter = all.begin();
+                for(int i = 0; i != all.size(); i++) {
+                    if(check[i]) {
+                        auto i2 = iter;
+                        iter++;
+                        ret.splice(ret.end(), all, i2);
+                    } else {
+                        iter++;
+                    }
+                }
+                return ret;
+            }
+            default:
+                break;
+        }
+    }
+}
+
+template<typename T>
+uint AbstractIO::chooseAmong(std::vector<T> all) {
+    Rect rect(0, 0, 0, 0);
+    for (auto &obj : all) {
+        disp(obj, rect, true);
+        rect.shift(rect.width, 0);
+    }
+    std::vector<bool> check(all.size(), true);
+    uint i = 0;
+    while (true) {
+        switch(get_direction_key()) {
+            case LEFT:
+                if(i != 0) --i;
+                break;
+            case RIGHT:
+                if(i != all.size()) ++i;
+                break;
+            case ENTER:
+                return i;
+            default:
+                break;
+        }
+    }
+}
 
 #endif //OLYMPUS_6_ABSTRACT_IO_H

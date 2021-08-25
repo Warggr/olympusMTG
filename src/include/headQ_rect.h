@@ -4,17 +4,19 @@
 using uint16_t = unsigned short;
 
 struct Rect{
-    uint16_t y, z;
+    uint16_t zone : 5;
+    uint16_t y : 11, z;
     uint16_t width, height;
 
-    int zone() const {return y >> 11; }
-    int yy() const {return y & 0x07ff; }
     int right() const {return y + width; }
-    int bottom() const {return z+height; }
+    int bottom() const {return z + height; }
 
     Rect() = default;
-    Rect(int _y, int _z, int _width, int _height): y((int) _y), z((int) _z), width((int) _width), height((int) _height){};
+    Rect(int y, int z, int width, int height): Rect(y, z, 0, width, height) {};
+    Rect(int y, int z, int zone, int width, int height): zone(zone), y(y), z(z), width(width), height(height){};
     void shift(int dy, int dz){y += dy; z += dz; }
 };
+
+enum DirectioL { UP, DOWN, LEFT, RIGHT, BACK, ENTER, MOUSE, NOT_RECOGNIZED };
 
 #endif //OLYMPUS_HEADQ_RECT_H

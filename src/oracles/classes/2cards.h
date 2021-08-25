@@ -16,8 +16,8 @@ public:
     typedef card_type type_t;
 protected:
     std::string name;
-    type_t type; //0 Instant, 1 Land, 2 ArtiEnch, 3 PW, 4 Creature, 5 Sorcery
-    char color; //5 bits for 5 colors
+    type_t type;
+    colorId::type color;
     RulesHolder rules;
 
 //    Identifier casted_id;
@@ -31,6 +31,7 @@ public:
     inline Mana getCost() const { return rules.cast.cost; }
 
     friend class Card;
+    friend class AbstractIO;
 };
 
 #endif //OLYMPUS_2_CARDS_H

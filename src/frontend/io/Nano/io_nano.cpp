@@ -147,3 +147,18 @@ float NanoIO::gmouseZ() { return 0; }
 
 bool NanoIO::gmouseActive() { return false; }
 
+bool NanoIO::simpleChoice(const char *optTrue, const char *optFalse) {
+    std::cout << "(1/Y) " << optTrue << "\n";
+    std::cout << "(2/n) " << optFalse << "\n";
+    while(true) {
+        char a; std::cin >> a;
+        switch(a) {
+            case '1': case 'Y': case 'y':
+                return true;
+            case '2': case 'N': case 'n':
+                return false;
+            default:
+                std::cout << "Please enter Y or N (or 1/2)\n";
+        }
+    }
+}

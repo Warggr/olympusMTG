@@ -7,6 +7,7 @@ template<typename T> class StateTN; class Player;
 class AbPermanentN {
 public:
     AbPermanentN* pprev, * pnext;
+    virtual ~AbPermanentN() = default;
     virtual const Permanent& get_describedObject(const Permanent* signature_compl) const = 0;
     virtual Permanent& get_describedObject(Permanent* signature_compl) = 0;
 };
@@ -27,14 +28,13 @@ public:
         next = nxt;
         nxt->prev = this;
     }
-    void unlink() {
+    void unlink() { //removes object from its siblings
         if(prev) prev->next = next;
         if(next) next->prev = prev;
     }
 
-    //void unstate(){ single_out(); this->primary_parent->state_out(this); }; //changes state
+    void unstate(){ unlink(); parents.front()->state_out(this); } //changes state
     //void add(T* per);
-    //void single_out(); //removes object from its siblings
     //void obliterate(){single_out(); delete this; }; //unconnects from siblings & parents, signal its death to its parents (TODO) and deletes itself
 
     bool empty() const override { return false; }

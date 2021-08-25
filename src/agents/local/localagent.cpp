@@ -1,5 +1,6 @@
 #include "localagent.h"
 #include "gameplay/2cards.h"
+#include "oracles/classes/PermOption.h"
 #include <fstream>
 
 std::vector<OracleDescr> LocalAgent::getDeck() {
@@ -14,30 +15,38 @@ std::vector<OracleDescr> LocalAgent::getDeck() {
     return ret;
 }
 
-Target *LocalAgent::chooseTarget(char type) {
-    return nullptr; //TODO
+Target* LocalAgent::chooseTarget(char type) {
+    return frontEnd.ui.iterate(true, type);
 }
 
-OptionAction *LocalAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
-    return nullptr;
+uptr<OptionAction> LocalAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
+    return frontEnd.ui.chooseOpt(sorcerySpeed, pl);
 }
 
-void LocalAgent::splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>) {
-
+void LocalAgent::splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) {
+    frontEnd.splitDamage(power, blockers);
 }
 
-std::list<std::unique_ptr<Card>> LocalAgent::chooseCardsToKeep(std::list<std::unique_ptr<Card>> &list) {
-    return std::list<std::unique_ptr<Card>>();
+std::list<std::unique_ptr<Card>> LocalAgent::chooseCardsToKeep(std::list<std::unique_ptr<Card>>& list) {
+    return frontEnd.io.checklist(list);
 }
 
 bool LocalAgent::keepsHand() {
-    return false;
+    return frontEnd.io.simpleChoice("Keep Hand", "Mulligan");
 }
 
-bool LocalAgent::chooseAttackers(CollectionTN<Creature> &mycreas, StateTN<Creature> &myattackers) {
-    return false;
+bool LocalAgent::chooseAttackers(CollectionTN<Creature>& mycreas, StateTN<Creature>& myattackers) {
+    return frontEnd.ui.chooseattackers(mycreas, myattackers);
 }
 
-void LocalAgent::chooseBlockers(CollectionTN<Creature> &mycreas, StateTN<Creature> &attackers) {
+void LocalAgent::chooseBlockers(CollectionTN<Creature>& mycreas, StateTN<Creature>& attackers) {
+    return frontEnd.ui.chooseblockers(mycreas, attackers);
+}
 
+uint LocalAgent::chooseAmong(std::vector<PermOption*> opts) {
+    return frontEnd.io.chooseAmong(opts);
+}
+
+uint LocalAgent::chooseAmong(std::vector<SpellOption *> opts) {
+    return frontEnd.io.chooseAmong(opts);
 }

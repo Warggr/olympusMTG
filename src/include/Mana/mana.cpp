@@ -1,27 +1,31 @@
 #include "lib2_mana.h"
+#include <ostream>
+
+#define MY_COLOR(mana, i) (((mana) >> 4*i)&0xf)
+#define COLOR_MASK(i) (15 << 4*i)
 
 bool Mana::operator>=(Mana cost) const {
 	for(int i=0; i<7; i++){ //checking total and all five colors
-		if(((cost.mana >> 4*i)&0xf) > ((mana >> 4*i)&0xf)) return false;
+		if(MY_COLOR(cost.mana, i) > MY_COLOR(mana, i)) return false;
 	}
 	return true;
 }
 
 bool Mana::operator>(Mana cost) const{
-	if((mana & 0xf) > (cost.mana & 0xf)) return true;
+	if(MY_COLOR(mana, positions::GENERIC) > MY_COLOR(cost.mana, positions::GENERIC)) return true;
 	return false;
 }
 
 bool Mana::operator<(Mana cost) const{
-	if((mana & 0xf) < (cost.mana & 0xf)) return true;
+	if(MY_COLOR(mana, positions::GENERIC) < MY_COLOR(cost.mana, positions::GENERIC)) return true;
 	return false;
 }
 
-char Mana::m2color() const {
+colorId::type Mana::m2color() const {
 	char color = 0;
-	for(int i=0; i<6; i++){
-		if(mana & (15 << 4*i)){
-			color += 1 << i;
+	for(int i=positions::FIRST_COLOR; i<=positions::LAST_COLOR; i++){
+		if(mana & COLOR_MASK(i)){
+			color += 1 << (i - 1);
 		}
 	}
 	return color;
@@ -30,14 +34,9 @@ char Mana::m2color() const {
 void Mana::operator-=(Mana cost){
 	mana -= (cost.mana & 0xfffffff); //removing total and all six types of mana
 	//doing a checksum and removing the necessary colored mana
-	int generic = cmc();
-	unsigned int offset = 0;
-	while(true){
-		offset++;
-		if(offset == 7){
-			return;
-		}
-		int color = (mana >> 4*offset)&0xf;
+	uint generic = cmc(); //The correct total mana that should be left
+	for(uint offset = positions::FIRST_COLOR; offset <= positions::COLORLESS; offset++){
+		int color = MY_COLOR(mana, offset);
 		if(color < generic) generic -= color;
 		else{
 			mana = mana - ((color - generic) << 4*offset);
@@ -54,7 +53,7 @@ Mana::Mana(const char* x){ //non-mana symbols are considered terminator symbols
 	while(x[pos] >= '0' && x[pos] <= '9'){
 		mana = 10*mana + x[pos++]-'0';
 	}
-	while(1){
+	while(true){
 		switch(x[pos++]){
 			case 'W': mana += 1 + (1 << (4*1)); break;
 			case 'U': mana += 1 + (1 << (4*2)); break;
@@ -71,7 +70,7 @@ std::string Mana::m2t() const {
 	std::string ret;
 	int mcopy = mana;
 	const char* colors = "WUBRGC";
-	int generic = cmc();
+	uint generic = cmc();
 	for(int i=0; i<6; i++){
 		mcopy = mcopy >> 4;
 		for(int j=0; j < (mcopy&0xf); j++) ret += colors[i];

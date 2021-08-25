@@ -1,5 +1,8 @@
 #include "12defaultUI.h"
 #include "lib3_IO.h"
+#include "oracles/classes/8options.h"
+#include "gameplay/1general.h"
+#include "gameplay/optionwrappers.h"
 
 void DefaultUI::deadzone(){
 	direction = myIO->get_direction_key();
@@ -22,9 +25,10 @@ void DefaultUI::normalize_gridy_gridz(){
     }
 }
 
-Target* DefaultUI::iterate(bool needstarget, Player** pl, char returntypeflags){
+Target* DefaultUI::iterate(bool needstarget, char returntypeflags){
+    return screen.iterate(returntypeflags, needstarget);
+    /*
 	//std::cout << "Started global Iterate" << std::endl;
-	bool hasroot = true;
 	Target* ret;
 	while(true){
 		//1. getting to fitting screen position
@@ -32,7 +36,7 @@ Target* DefaultUI::iterate(bool needstarget, Player** pl, char returntypeflags){
 			normalize_gridy_gridz();
 		}
 		if(gridy == 2){
-			if(!needstarget) return 0;
+			if(!needstarget) return nullptr;
 			else if(myIO->gmouseActive()) deadzone();
 			else gridy = 1;
 		}
@@ -70,10 +74,10 @@ Target* DefaultUI::iterate(bool needstarget, Player** pl, char returntypeflags){
 				default: if(!needstarget) return 0; //SPACE or NOT_RECOG
 			}
 		}
-	}
+	}*/
 }
 
-bool go_up(Option*& iter, int& pos, int& metapos, Player* asker, Option*& lower_border){
+/*bool go_up(Option*& iter, int& pos, int& metapos, Player* asker, Option*& lower_border){
 	if(iter->prev == 0) return false;
 	--pos;
 	if(iter == asker->myoptions[metapos]){
@@ -96,11 +100,13 @@ bool go_down(Option*& iter, int& pos, int& metapos, Player* asker, Option*& lowe
 		lower_border = asker->first_option(metapos+1);
 	}
 	return true;
-}
+}*/
 
-Option* DefaultUI::choose_opt(bool sorceryspeed, Player* asker){ //asks user to choose option and pops that option
-	int metapos = 0;
-	Option* iter = asker->first_option(metapos);
+uptr<OptionAction> DefaultUI::chooseOpt(bool sorceryspeed, Player* asker){ //asks user to choose option and pops that option
+	return dynamic_cast<OptionWrapper*>(screen.iterate(target_type::optionable, sorceryspeed))
+	->chooseOptionAction();
+    /*int metapos = 0;
+	OptionAction* iter = asker->first_option(metapos);
 	int dy, dz;
 	Rect rect = optionZone->get_coordinates(&dy, &dz);
 	int pos = 0;
@@ -159,5 +165,5 @@ Option* DefaultUI::choose_opt(bool sorceryspeed, Player* asker){ //asks user to 
 		}
 		iter->disp(rect.y + pos*dy, rect.z+pos*dz, rect.width, true, iter->iscastable(asker));
 	}
-	return 0;
+	return 0;*/
 }

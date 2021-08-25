@@ -1,25 +1,15 @@
-#ifndef OLYMPUS_11_IMPLEMEMT_UI
+#ifndef OLYMPUS_11_IMPLEMENT_UI
 #define OLYMPUS_11_IMPLEMENT_UI
 
 #include "build_types.h"
 #include "../io/6abstractIO.h"
-class Permanent; class Creature; class Player; class Target; class OptionAction; template<typename T> class PContainer;
-
-struct UIElement {
-    int topZ, leftY, yOffset, zOffset, ySize, zSize, maxItems;
-    static constexpr bool vertical = true, horizontal = false;
-
-    UIElement(int left, int top, int _ySize, int _zSize, int offset, int _maxItems, bool direction);
-
-    Rect get_coordinates(int *yOff, int *zOff) const;
-    void get_coordinates(int *y, int *z, int *yOff, int *zOff) const;
-    void get_coordinates(int itemNb, int *y, int *z) const;
-    void erase_background(AbstractIO *io) const;
-};
+#include "window.h"
+class Permanent; class Creature; class Player; class Target; class OptionAction;
+template<typename T> class CollectionTN; template<typename T> class StateTN;
 
 class DefaultUI {
 private:
-    ImplementIO* myIO;
+    AbstractIO* myIO;
 	int leftbarW, boardW, rightbarW;
 	int stackH, optionsH, playerH, iozH, posterH;
 	int permanentZSize, permanentYSize, permanentZMargin;
@@ -29,24 +19,23 @@ private:
 	int linesize;
     bool mouseSupport;
 
+    ModernElement screen;
 	DirectioL direction;
-	UIElement* playerPerms[2], *permanentZones[10];
-	UIElement* stackZone, * optionZone, * logbookZone;
+	ListElement* permanentZones[2];
+	ListElement* optionZone, * logbookZone;
 
-	UIElement* new_final_element(int y, int z, int width, int height, int offset, int maxItems, bool direction);
+//	Window* new_final_element(int y, int z, int width, int height, int offset, int nbItems, bool direction);
 public:
-	explicit DefaultUI(ImplementIO* IOLib);
-	~DefaultUI(){ delete playerPerms[0]; delete playerPerms[1]; delete optionZone; };
-	UIElement* declare_element(int typeofelement, char owner_id);
+	explicit DefaultUI(AbstractIO* IOLib);
+	~DefaultUI(){ delete optionZone; };
 	void get_player_coords(char player_id, Rect* zone, int* liby, int* libz, int* gravey, int* gravez, int* exily, int* exilz, int* cardzoneY, int* cardzoneZ);
-	bool chooseattackers(PContainer<Creature>& cowards, PContainer<Creature>& warriors, char player_id);
-	void chooseblockers(PContainer<Creature>& defenders, PContainer<Creature>& attackers, UIElement* defenderDisplay, UIElement* attackerDisplay);
+	bool chooseattackers(CollectionTN<Creature>& cowards, StateTN<Creature>& warriors);
+	void chooseblockers(CollectionTN<Creature>& defenders, StateTN<Creature>& attackers);
 	Creature* blocker_switch(const Creature& blocker, int blockerY, int blockerZ,
-		PContainer<Creature>& attackers, UIElement* attacker_io) const ;
+		StateTN<Creature>& attackers) const ;
 	void clear_opts();
-	UIElement* get_optionzone();
-	Target* iterate(bool needstarget, Player** pl, char returntypeflags);
-	OptionAction* choose_opt(bool sorceryspeed, Player* asker);
+	Target* iterate(bool needstarget, char returntypeflags);
+	uptr<OptionAction> chooseOpt(bool sorceryspeed, Player* asker);
 	void normalize_gridy_gridz();
 	void deadzone();
 };
@@ -55,4 +44,4 @@ namespace AbstractUI {
     constexpr int ELTYPE_STACK = 0, ELTYPE_LOGBOOK = 1, ELTYPE_PERMANENTS = 2;
 }
 
-#endif //OLYMPUS_11_IMPLEMEMT_UI
+#endif //OLYMPUS_11_IMPLEMENT_UI

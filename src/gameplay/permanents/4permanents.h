@@ -1,20 +1,19 @@
 #ifndef OLYMPUS_CLASSES_PERMANENTS_4_H
 #define OLYMPUS_CLASSES_PERMANENTS_4_H
 
-
-#include "gameplay/1general.h"
+#include "../1general.h"
+#include "../optionwrappers.h"
 #include "oracles/classes/1effects.h"
 #include "oracles/classes/3statics.h"
 #include "headI_identifiers.h"
+#include "headE_enums.h"
 #include <memory>
 #include <list>
 #include <agents/agent.h>
 
 class PermOption;
 
-#define uptr std::unique_ptr
-
-class Permanent: public Target, public OptionWrapper<PermOption> {
+class Permanent: public Target, public SpecificOptionWrapper<PermOption> {
 protected:
 	TriggerEvent triggers_permanent[4]; //becomes (state) - becomes (special) - ETB - LTB
 	std::unique_ptr<Card> source;
@@ -22,17 +21,18 @@ protected:
 	PermOption* first_actab;
 	ModifListNode* existing_statics;
 	int nb_actabs;
-	char etbBeforeThisTurn : 1, untapped : 1;
+	uchar etbBeforeThisTurn : 1, untapped : 1;
 	char keywords; //indestructible -
-	char color;
+	colorId::type color;
 public:
     typedef permanent_type type;
 
 	Permanent(uptr<Card> source, Player* pl);
 	virtual ~Permanent() = default;
 	virtual std::string describe() const;
-//	virtual void disp(const Rect& zone, bool highlight = false) const;
 
+    bool isUntapped() const { return untapped; }
+    bool noSummonSick() const { return etbBeforeThisTurn; }
     virtual void tap() { untapped = 0; }
 	virtual void untap() { untapped = 1; }
 	virtual void declare_beginturn(){ untap(); etbBeforeThisTurn = 1; };
@@ -43,13 +43,16 @@ public:
     type getType() const;
 
     Player* getController() override { return ctrl; }
+    uptr<OptionAction> chooseOptionAction();
+
+    friend class AbstractIO;
 };
 
 class Artifact: public Permanent{
 public:
 	static constexpr Identifier def_identifier = construct_id_perm(permanent_type::artifact, 0, 0);
 
-	Artifact(uptr<Card> src, Player* pl): Permanent(std::move(src), pl){};
+	Artifact(uptr<Card> src, Player* pl);
 //	Identifier reload_id() const override;
 };
 
@@ -71,8 +74,6 @@ public:
 	Creature(std::unique_ptr<Card> src, Player* pl);
 	std::string describe() const override;
 
-//	void disp(const Rect& zone, bool highlight) const;
-
 //	void damage(int nb_damage, Target* origin = 0) override;
 	void hit(Damageable* tgt);
 	void add_blocker(Creature* bl);
@@ -87,6 +88,8 @@ public:
     Player* getDmgController() override { return ctrl; }
 
     void splitDamage(Agent &agent);
+
+    friend class AbstractIO;
 };
 
 class Planeswalker: public Permanent, public Damageable{
@@ -104,6 +107,8 @@ public:
 
 //	Identifier reload_id() const override;
     Player* getDmgController() override { return ctrl; }
+
+    friend class AbstractIO;
 };
 
 class Land: public Permanent{
@@ -112,10 +117,10 @@ public:
 
 	Land(uptr<Card> src, Player* pl);
 
-//	void disp(const Rect& zone, bool highlight) const;
 	void untap() override;
 
 //	Identifier reload_id() const override;
+    friend class AbstractIO;
 };
 
 #endif //OLYMPUS_CLASSES_PERMANENTS_4_H

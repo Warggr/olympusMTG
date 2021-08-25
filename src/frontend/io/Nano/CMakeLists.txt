@@ -1,3 +1,3 @@
-add_library(IONano STATIC io_nano.cpp io_nano_combat.cpp)
-target_link_libraries(IONano Mana)
+add_library(IONano OBJECT io_nano.cpp io_nano_combat.cpp)
+target_link_libraries(IONano PUBLIC Mana)
 target_include_directories(IONano PUBLIC ${INCLUDES})

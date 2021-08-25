@@ -1,11 +1,11 @@
 #ifndef OLYMPUS_GENERALS_1_H
 #define OLYMPUS_GENERALS_1_H
 
+#include "9modifs.h"
 #include "headE_enums.h"
 #include <forward_list>
 #include <string>
 #include <list>
-#include "9modifs.h"
 
 using Identifier = int;
 
@@ -65,12 +65,7 @@ public:
 	virtual ~Damageable() = default;
 	virtual void damage(int nb_damage, Target* origin);
 	virtual void set_life(int life_total){life = life_total; }
-	virtual Player* getDmgController() = 0;
-};
-
-template<typename T>
-class OptionWrapper {
-
+	virtual Player* getDmgController() = 0; //Not const because Player returns a non-const reference to itself
 };
 
 #endif //OLYMPUS_GENERALS_1_H

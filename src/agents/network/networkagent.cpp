@@ -90,7 +90,7 @@ Target *NetworkAgent::chooseTarget(char type) {
     return nullptr; //TODO
 }
 
-void NetworkAgent::splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>) {
+void NetworkAgent::splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) {
 
 }
 
@@ -102,7 +102,7 @@ bool NetworkAgent::keepsHand() {
     return false;
 }
 
-OptionAction *NetworkAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
+uptr<OptionAction> NetworkAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
     return nullptr;
 }
 

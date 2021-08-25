@@ -5,7 +5,6 @@
 #include "collection_tn.h"
 #include "gameplay/permanents/4permanents.h"
 #include <memory>
-#define uptr std::unique_ptr
 
 template<typename T, bool iconst> class iterator;
 
@@ -34,10 +33,10 @@ public:
 
     void remove(Permanent* perm) {
         switch(perm->getType()) {
-            case permanent_type::creature: remove(dynamic_cast<Creature*>(perm));
-            case permanent_type::artifact: remove(dynamic_cast<Artifact*>(perm));
-            case permanent_type::planeswalker: remove(dynamic_cast<Planeswalker*>(perm));
-            case permanent_type::land: remove(dynamic_cast<Land*>(perm));
+            case permanent_type::creature: remove(dynamic_cast<Creature*>(perm)); break;
+            case permanent_type::artifact: remove(dynamic_cast<Artifact*>(perm)); break;
+            case permanent_type::planeswalker: remove(dynamic_cast<Planeswalker*>(perm)); break;
+            case permanent_type::land: remove(dynamic_cast<Land*>(perm)); break;
         }
     }
     void remove(Creature* crea);

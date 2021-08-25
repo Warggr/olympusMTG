@@ -27,13 +27,13 @@ public:
 
 	Target* chooseTarget(char type) override;
 
-    void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>) override;
+    void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) override;
 
     std::list<std::unique_ptr<Card>> chooseCardsToKeep(std::list<std::unique_ptr<Card>>& list) override;
 
     bool keepsHand() override;
 
-    OptionAction* chooseOpt(bool sorcerySpeed, Player* pl) override;
+    uptr<OptionAction> chooseOpt(bool sorcerySpeed, Player* pl) override;
 
     bool chooseAttackers(CollectionTN<Creature>& mycreas, StateTN<Creature>& myattackers) override;
 
