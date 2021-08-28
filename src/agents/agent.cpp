@@ -13,6 +13,7 @@ std::unique_ptr<Agent> createAgent(playerType desc) {
         //case NETWORK: return std::make_unique<NetworkAgent>();
 #endif
     }
+    exit(1); //Shouldn't happen, dunno why GCC doesn't see this
 }
 
 std::ostream& operator<<(std::ostream &output, const OracleDescr& desc) {

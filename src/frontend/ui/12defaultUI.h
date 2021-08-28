@@ -29,13 +29,13 @@ public:
 	explicit DefaultUI(AbstractIO* IOLib);
 	~DefaultUI(){ delete optionZone; };
 	void get_player_coords(char player_id, Rect* zone, int* liby, int* libz, int* gravey, int* gravez, int* exily, int* exilz, int* cardzoneY, int* cardzoneZ);
-	bool chooseattackers(CollectionTN<Creature>& cowards, StateTN<Creature>& warriors);
+	bool chooseattackers(CollectionTN<Creature>& cowards);
 	void chooseblockers(CollectionTN<Creature>& defenders, StateTN<Creature>& attackers);
 	Creature* blocker_switch(const Creature& blocker, int blockerY, int blockerZ,
 		StateTN<Creature>& attackers) const ;
 	void clear_opts();
 	Target* iterate(bool needstarget, char returntypeflags);
-	uptr<OptionAction> chooseOpt(bool sorceryspeed, Player* asker);
+	uptr<OptionAction> chooseOpt(bool sorceryspeed);
 	void normalize_gridy_gridz();
 	void deadzone();
 };

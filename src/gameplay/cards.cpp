@@ -54,6 +54,11 @@ void Player::puttozone(std::unique_ptr<Card>& x, enum cardzone nb_zone){
 
 void Player::draw(int nb_cards) {
     for(int i=0; i<nb_cards; i++) {
-        myHand.push_front(std::move(myLibrary.pop_front()));
+        uptr<Card> card = myLibrary.pop_front();
+        if(!card){
+            milledout = 1;
+            return;
+        }
+        myHand.push_front(std::move(card));
     }
 }

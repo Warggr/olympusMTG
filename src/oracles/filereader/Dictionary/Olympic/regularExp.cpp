@@ -21,7 +21,7 @@ template<typename T>
 SearchTreeNode<T>::SearchTreeNode(const char *name, int namelen, bool valid): valid(valid) { //makes a deep copy of name
     nnamelen = namelen;
     nodename = new char[nnamelen+1];
-    for(int i=0; i<nnamelen; i++) nodename[i] = name[i];
+    for(uint i=0; i<nnamelen; i++) nodename[i] = name[i];
     nodename[nnamelen] = 0;
     for(auto & i : children) i = nullptr;
 }

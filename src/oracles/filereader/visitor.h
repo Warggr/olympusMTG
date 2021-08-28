@@ -13,10 +13,10 @@ public:
     virtual ~ReaderVisitor() = default;
 protected:
     template<typename T>
-    void readArray(uint& nb_objects, T*& objects) {
+    void readArray(uint& nb_objects, T*& objects, bool create_new) {
         readNumberOfObjects(nb_objects);
-        if(nb_objects != 0) objects = new T[nb_objects];
-        for(int i=0; i<nb_objects; i++) {
+        if(nb_objects != 0 && create_new) objects = new T[nb_objects];
+        for(uint i=0; i<nb_objects; i++) {
             objects[i].init(*this);
         }
     }

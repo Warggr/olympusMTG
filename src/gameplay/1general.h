@@ -18,7 +18,7 @@ class TriggerEvent{ //contains all X-action triggers of a certain object, i.e. a
 public:
 	void trigger(Player* pl, Target* origin) const;
 	void add_trigger(Trigger_H* trig){ all_triggers.push_front(trig); };
-	std::string describe(int typeoftrig, const std::string& cardname) const;
+	std::string describe(trigtype type, const std::string& cardname) const;
 };
 
 class GameObject{ //Players, Permanents, Resolvables, Cards, and maybe enums or zones or abilities (as in: abilities can't be activated) later on? (Or, would that restriction be put on the origin, or the resolvable?)

@@ -102,7 +102,7 @@ bool go_down(Option*& iter, int& pos, int& metapos, Player* asker, Option*& lowe
 	return true;
 }*/
 
-uptr<OptionAction> DefaultUI::chooseOpt(bool sorceryspeed, Player* asker){ //asks user to choose option and pops that option
+uptr<OptionAction> DefaultUI::chooseOpt(bool sorceryspeed) { //asks user to choose option and pops that option
 	return dynamic_cast<OptionWrapper*>(screen.iterate(target_type::optionable, sorceryspeed))
 	->chooseOptionAction();
     /*int metapos = 0;

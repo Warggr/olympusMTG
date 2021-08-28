@@ -15,6 +15,7 @@ class PlainFileReader: public ReaderVisitor {
 private:
     DictHolder* dicts;
     std::istream& ifile;
+    enum State { go_on, invalid, breakout, end_reached } state;
 
     void read_section_flavor(char*& flavor_text, uint8_t offset_text) override;
     void read_section_othercasts(CardOptionListNode *&node) override;
@@ -28,7 +29,7 @@ private:
     void raise_error(const std::string& message) override;
     inline void consumeWhitespace() { while(ifile.peek() == ' ') ifile.get(); }
 public:
-    PlainFileReader(DictHolder* dicts, std::istream& istream): dicts(dicts), state(go_on), ifile(istream) {};
+    PlainFileReader(DictHolder* dicts, std::istream& istream): dicts(dicts), ifile(istream), state(go_on) {};
 
     void readName(std::string& name) override;
     void readManaCost(Mana& mana) override;
@@ -42,8 +43,6 @@ public:
     void readModifier(char &nbEffects, Modifier &firstEffect, Modifier *&otherEffects) override;
     bool read_one_criterion(Identifier &chars, Identifier &requs);
     void read_selector(Identifier &chars, Identifier &requs);
-
-    enum State { go_on, invalid, breakout, end_reached } state;
 
     void readActAb(Mana &mana, WeirdCost*& costs, Effect_H *&effects, bool &tapsymbol, bool &ismanaability, bool& instantspeed) override;
     void readEffectH(uint8_t &nb_params, char *&params, std::forward_list<AtomEffect_H> &atoms) override;

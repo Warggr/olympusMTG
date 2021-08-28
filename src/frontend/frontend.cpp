@@ -19,5 +19,5 @@ std::ifstream FrontEnd::getDeck() {
 }
 
 void FrontEnd::splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>> &blockers) {
-    //TODO
+    (void) power; (void) blockers; //TODO
 }

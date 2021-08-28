@@ -70,7 +70,10 @@ class Sprite: public UIElement {
 class Rectangle: public UIElement {
 public:
     Rectangle(int top, int left, int width, int height): UIElement(top, left, width, height) {};
-    Target* iterate(char requs, bool needstarget) override { return nullptr; }
+    Target* iterate(char requs, bool needstarget) override {
+        (void) requs; (void) needstarget;
+        return nullptr;
+    }
 };
 
 #endif //OLYMPUS_WINDOW_H

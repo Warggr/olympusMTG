@@ -1,0 +1,1 @@
+add_library(StdMapDict STATIC dict.cpp)

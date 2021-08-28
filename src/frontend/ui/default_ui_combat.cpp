@@ -3,7 +3,7 @@
 #include "yggdrasil/collection_tn.h"
 #include "gameplay/permanents/4permanents.h"
 
-bool DefaultUI::chooseattackers(CollectionTN<Creature>& cowards, StateTN<Creature>& warriors){
+bool DefaultUI::chooseattackers(CollectionTN<Creature>& cowards){
     myIO->message("Choose Attackers");
     bool ret = false;
     int i = 0;

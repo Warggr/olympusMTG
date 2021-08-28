@@ -44,7 +44,7 @@ DefaultUI::DefaultUI(AbstractIO* IOLib): myIO(IOLib), screen(3, UIElement::horiz
 
     ListElement* playerPerms[2];
     for(int i=0; i<2; i++) {
-        playerPerms[i] = new ListElement(0, 0, boardW, screenH / 2, UIElement::vertical, 4, 5 * permanentZSize);
+        playerPerms[i] = new ListElement(0, 0, boardW, screenH / 2, 5* permanentZSize, 4, UIElement::vertical);
         board->addElement(playerPerms[i], i);
     }
     playerY[0] = 0; playerY[1] = 0;

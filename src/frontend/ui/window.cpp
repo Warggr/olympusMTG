@@ -32,13 +32,13 @@ Target* Sprite<T>::iterate(char requs, bool needstarget) {
 }
 
 Target* ModernElement::iterate(char requs, bool needstarget) {
-    int index = 0; if(direction == LEFT || direction == UP) index = subWins.size();
+    uint index = 0; if(direction == LEFT || direction == UP) index = subWins.size();
     while(true) {
         Target* tar = subWins[index]->iterate(requs, needstarget);
         if(tar) return tar;
         if((direction == LEFT && orientation == vertical) or (direction == UP && orientation == horizontal) ) {
+            if(index == 0) return nullptr;
             index--;
-            if(index < 0) return nullptr;
         } else if((direction == RIGHT && orientation == horizontal) or (direction == DOWN && orientation == vertical)) {
             index++;
             if(index > subWins.size()) return nullptr;

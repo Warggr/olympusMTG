@@ -4,7 +4,7 @@
 bool Player::chooseAttackers(){
 	if(myboard.mycreas.empty()) return false;
 	myboard.myattackers = myboard.mycreas.defNewState();
-	bool ret = agent.chooseAttackers(myboard.mycreas, *(myboard.myattackers));
+	bool ret = agent.chooseAttackers(myboard.mycreas);
 	return ret;
 }
 

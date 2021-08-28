@@ -7,17 +7,17 @@ using namespace std;
 
 AbstractIO* newIOLib(){return new NanoIO; }
 
-void NanoIO::draw_full_rectangle(char color, const Rect& zone) const {}
+void NanoIO::draw_full_rectangle(char, const Rect& ) const { }
 
-void NanoIO::draw_rectangle(char color, const Rect& zone, int linewidth) const {}
+void NanoIO::draw_rectangle(char, const Rect&, int) const {}
 
-void NanoIO::erase_surface(const Rect& zone) const {}
+void NanoIO::erase_surface(const Rect&) const {}
 
-void NanoIO::print_text(const char* text, char color, int y, int z) const {
+void NanoIO::print_text(const char* text, char, int, int) const {
     cout << text << '\n';
 }
 
-void NanoIO::draw_boxed_text(const char* text, char color, char backgr_color, int y, int z, int width) const {
+void NanoIO::draw_boxed_text(const char* text, char, char, int , int , int ) const {
 	cout << "[" << text << "]\n";
 }
 
@@ -25,14 +25,16 @@ void NanoIO::message(const char* text) const {
 	cout << "[Computer]: " << text << "\n";
 }
 
-void NanoIO::draw_permanent(const Rect& zone, const string& name, char color, bool tapped, bool highlight, bool basicImg) const {
+void NanoIO::draw_permanent(const Rect&, const string& name, char, bool tapped, bool highlight, bool basicImg) const {
+    (void) highlight; (void) basicImg;
 	//if(highlight) is_iterating = true;
 	cout << "\t<" << name << "> ";
 	if(tapped) cout << "[TAPPED]";
 	cout << "\n";
 }
 
-void NanoIO::disp_header(const Rect& zone, const char* name, int life, char state, bool highlight, Mana pool) const {
+void NanoIO::disp_header(const Rect&, const char* name, int life, char state, bool highlight, Mana pool) const {
+    (void) highlight;
 	//if(highlight) is_iterating = true;
 	if(life >= 1000) gdebug(DBG_IOUI) << "Life total too high to be shown, most likely a bug";
 	cout << "[]: Player " << name << "\n\t" << life << " life\t" << pool.m2t() << " mana\n";
@@ -41,26 +43,33 @@ void NanoIO::disp_header(const Rect& zone, const char* name, int life, char stat
 	cout << "\tCurrently: " << phases_dcp[state >> 5] << "\n";
 }
 
-void NanoIO::disp_cardback(const Rect& zone, int oncard_number) const {
+void NanoIO::disp_cardback(const Rect&, int oncard_number) const {
 	cout << "\t" << oncard_number << " cards\n";
 }
 
-void NanoIO::poster(const string& name, Mana manacost, char color, const char* types,
-	const vector<string>& lines, int power, int toughness, char frametype, bool watermark) const {
-	cout << "[Describing]: " << name << "\t" << manacost.m2t() << "\n";
+void NanoIO::poster(const Rect&, bool highlight, const std::string& name, Mana manacost, char color,
+                      const char *types, const std::vector<std::string> &lines, int power, int toughness,
+                      char frametype, bool watermark) const {
+    (void) highlight; //TODO highlight
+    poster(name, manacost, color, types, lines, power, toughness, frametype, watermark);
+}
 
-	cout << "\t" << types << "\n";
-	for(auto& i : lines){
-		cout << i << "\n";
-	}
-	if(frametype == 1){
-		char x[10]; sprintf(x, "(%d/%d)", power, toughness);
-		cout << "\t\t" << x << "\n";
-	}
-	else if(frametype == 2){
-		char x[5]; sprintf(x, "\\%d/", power);
-		cout << "\t\t" << x << "\n";
-	}
+void NanoIO::poster(const string& name, Mana manacost, char, const char* types,
+	const vector<string>& lines, int power, int toughness, char frametype, bool) const {
+    cout << "[Describing]: " << name << "\t" << manacost.m2t() << "\n";
+
+    cout << "\t" << types << "\n";
+    for(auto& i : lines){
+        cout << i << "\n";
+    }
+    if(frametype == 1){
+        char x[10]; sprintf(x, "(%d/%d)", power, toughness);
+        cout << "\t\t" << x << "\n";
+    }
+    else if(frametype == 2){
+        char x[5]; sprintf(x, "\\%d/", power);
+        cout << "\t\t" << x << "\n";
+    }
 }
 
 void print_getkey_help(){
@@ -113,9 +122,9 @@ void NanoIO::getResolution(int& y, int& z, bool& hasMouseSupport, int& linesize)
 	linesize = 0;
 }
 
-void NanoIO::harmonize(const Rect& message, const Rect& poster, int nb_winzones){}
+void NanoIO::harmonize(const Rect&, const Rect&, int){}
 
-void NanoIO::declare_window(int& leftY, int& topz, int width, int height){}
+void NanoIO::declare_window(int&, int&, int, int){}
 
 NanoIO::~NanoIO(){ cout << "-----Ending Olympus Nano mode-----\n"; }
 
@@ -132,10 +141,9 @@ std::string NanoIO::getTextInput(const char *question) {
 
 void NanoIO::fulldisp() const { /*TODO*/ }
 
-void NanoIO::print_text(const std::string &text, char color, int x, int y) const { cout << text << "\n"; }
+void NanoIO::print_text(const std::string &text, char, int, int) const { cout << text << "\n"; }
 
-void NanoIO::draw_boxed_text(const std::string &text, char color, char backgr_color, int left, int top,
-                             int width) const {
+void NanoIO::draw_boxed_text(const std::string &text, char, char, int, int, int) const {
     cout << "[" << text << "]\n";
 }
 

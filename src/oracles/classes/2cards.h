@@ -1,11 +1,12 @@
 #ifndef OLYMPUS_2_CARDS_H
 #define OLYMPUS_2_CARDS_H
 
-#include <string>
-#include <fstream>
 #include "headE_enums.h"
 #include "Mana/lib2_mana.h"
 #include "oracles/classes/5rulesholder.h"
+#include <string>
+#include <fstream>
+#include <vector>
 
 using Identifier = int;
 class TriggerEvent;
@@ -29,6 +30,7 @@ public:
 //    Identifier generate_casted_id() const;
     std::string describe() const;
     inline Mana getCost() const { return rules.cast.cost; }
+    std::vector<std::string> allText(int &power, int &toughness, int& frametype) const;
 
     friend class Card;
     friend class AbstractIO;

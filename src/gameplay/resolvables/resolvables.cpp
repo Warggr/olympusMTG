@@ -6,8 +6,8 @@
 #include "stack.h"
 #include <iostream>
 
-std::string Spell::describe() const { return source->describe(); };
-const std::string& Spell::get_name() const { return source->get_name(); };
+std::string Spell::describe() const { return source->describe(); }
+const std::string& Spell::get_name() const { return source->get_name(); }
 
 void Resolvable::resolve(){
     if(on_resolve) on_resolve->activate(list_of_targets, ctrl, origin->getTarget());

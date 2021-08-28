@@ -87,29 +87,33 @@ void NetworkAgent::setSock(int sock) {
 }
 
 Target *NetworkAgent::chooseTarget(char type) {
-    return nullptr; //TODO
+    (void) type; //TODO implement
+    return nullptr;
 }
 
 void NetworkAgent::splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) {
-
+    (void) power; (void) blockers; //TODO implement
 }
 
 std::list<std::unique_ptr<Card>> NetworkAgent::chooseCardsToKeep(std::list<std::unique_ptr<Card>> &list) {
+    (void) list; //TODO implement
     return std::list<std::unique_ptr<Card>>();
 }
 
 bool NetworkAgent::keepsHand() {
-    return false;
+    return false; //TODO implement
 }
 
 uptr<OptionAction> NetworkAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
+    (void) sorcerySpeed; (void) pl; //TODO implement
     return nullptr;
 }
 
-bool NetworkAgent::chooseAttackers(CollectionTN<Creature> &mycreas, StateTN<Creature> &myattackers) {
+bool NetworkAgent::chooseAttackers(CollectionTN<Creature> &mycreas) {
+    (void) mycreas; //TODO implement
     return false;
 }
 
 void NetworkAgent::chooseBlockers(CollectionTN<Creature> &mycreas, StateTN<Creature> &attackers) {
-
+    (void) mycreas; (void) attackers; //TODO implement
 }

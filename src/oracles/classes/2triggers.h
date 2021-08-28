@@ -12,7 +12,7 @@ private:
 	// and put ability onto the stack.
 public:
     void init(ReaderVisitor& visitor);
-	std::string describe(int typeoftrig, const std::string& name) const;
+	std::string describe(trigtype type, const std::string& name) const;
 
     void trigger(Player* pl, Target* origin) const;
 };
@@ -22,6 +22,7 @@ struct TriggerHolder_H {
     Trigger_H trigger;
 
     void init(ReaderVisitor& visitor);
+    std::string describe(const std::string& name) const { return trigger.describe(type, name); }
 };
 
 /*A loses/gains B life

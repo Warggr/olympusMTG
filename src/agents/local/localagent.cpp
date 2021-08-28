@@ -5,12 +5,18 @@
 
 std::vector<OracleDescr> LocalAgent::getDeck() {
     std::vector<OracleDescr> ret;
-    std::ifstream fb("material/decks/deck1.dck", std::ios::in);
+    std::ifstream fb("../material/decks/deck1.dck", std::ios::in);
+    if(!fb) {
+        gdebug(DBG_IMPORTANT | DBG_READFILE) << "Error: no deck\n";
+        exit(1);
+    }
     while(fb.peek() != EOF) {
         char buffer[1024]; int nb;
         fb >> nb >> std::skipws;
         fb.getline(buffer, 1024);
-        ret.emplace_back(customcard, nb, std::string(buffer));
+        assert(buffer[0] == ' ');
+        ret.emplace_back(buffer[2] == '"' ? customcard : reference,
+                         nb, std::string(buffer + 1));
     }
     return ret;
 }
@@ -20,7 +26,8 @@ Target* LocalAgent::chooseTarget(char type) {
 }
 
 uptr<OptionAction> LocalAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
-    return frontEnd.ui.chooseOpt(sorcerySpeed, pl);
+    (void) pl; //No idea why we need it
+    return frontEnd.ui.chooseOpt(sorcerySpeed);
 }
 
 void LocalAgent::splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) {
@@ -35,8 +42,8 @@ bool LocalAgent::keepsHand() {
     return frontEnd.io.simpleChoice("Keep Hand", "Mulligan");
 }
 
-bool LocalAgent::chooseAttackers(CollectionTN<Creature>& mycreas, StateTN<Creature>& myattackers) {
-    return frontEnd.ui.chooseattackers(mycreas, myattackers);
+bool LocalAgent::chooseAttackers(CollectionTN<Creature>& mycreas) {
+    return frontEnd.ui.chooseattackers(mycreas);
 }
 
 void LocalAgent::chooseBlockers(CollectionTN<Creature>& mycreas, StateTN<Creature>& attackers) {

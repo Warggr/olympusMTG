@@ -102,7 +102,7 @@ const PHASEORDERTYPE Player::defaultPhaseOrder = PHASEORDERTYPE(
 #undef PHASEORDERTYPE
 
 Player::Player(Agent &agent, CardZone&& library): Target(name), Damageable(20), agent(agent),
-phase(0), nb_lands_remaining(1), milledout(0), zerolife(0), nb_mainphase(0), manapool(0) {
+phase(0), milledout(0), zerolife(0), nb_mainphase(0), nb_lands_remaining(1), manapool(0) {
     myLibrary = std::move(library);
     myLibrary.shuffle();
 

@@ -57,7 +57,7 @@ void NetworkManager::listen() {
         std::cout << "Orphans: " << orphan_clients.size() << "\n";
         sockaddr_in cli_addr;
         socklen_t clilen = sizeof(cli_addr);
-        int new_socket = accept( sockfd, (sockaddr*) &cli_addr, (socklen_t*) &cli_addr);
+        int new_socket = accept( sockfd, (sockaddr*) &cli_addr, &clilen);
         if (new_socket < 0) throw NetworkError();
         std::cout << "New socket open: " << new_socket << "\n";
 

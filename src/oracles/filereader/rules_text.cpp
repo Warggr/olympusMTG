@@ -22,10 +22,10 @@ void PlainFileReader::readAll(RulesHolder& rules, card_type type) {
 			gdebug(DBG_READFILE) << "Expecting section n°" << (int) section_name << "\n";
 			if(ifile.peek() != '<') switch(section_name){
 				case onresolve: readMainSpell(rules.cast); break;
-				case activated: readArray<PermOption>(rules.nb_actabs, rules.first_actab); break;
+				case activated: readArray<PermOption>(rules.nb_actabs, rules.first_actab, true); break;
 				case flavor: read_section_flavor(rules.flavor_text, offset_text); break;
-				case triggered: readArray<TriggerHolder_H>(rules.nb_triggers, rules.triggers); break;
-				case astatic: readArray<StaticAb_H>(rules.nb_statics, rules.statics); break;
+				case triggered: readArray<TriggerHolder_H>(rules.nb_triggers, rules.triggers, true); break;
+				case astatic: readArray<StaticAb_H>(rules.nb_statics, rules.statics, true); break;
 				case altcosts: read_section_othercasts(rules.otherCardOptions); break;
 			}
 			if(state == end_reached) break;
@@ -89,11 +89,10 @@ void PlainFileReader::read_section_flavor(char*& flavor_text, uint8_t offset_tex
 
 void PlainFileReader::readActAb(Mana &mana, WeirdCost*& addcosts, Effect_H *&effects,
                                 bool &tapsymbol, bool &ismanaability, bool& instantspeed) {
-    Mana cost = 0;
-    WeirdCost* others = nullptr;
-    readCosts(cost, tapsymbol, others);
+    readCosts(mana, tapsymbol, addcosts);
+    instantspeed = true; //Unless specified, actabs are instant-speed
 
-    gdebug(DBG_READFILE) << "Tap symbol:" << tapsymbol <<", cost: " << cost.m2t() << "\n";
+    //gdebug(DBG_READFILE) << "Tap symbol:" << tapsymbol <<", cost: " << mana.m2t() << "\n";
     ismanaability = (ifile.get() == ':'); //reading either : or ' '
     effects->init(*this);
 }
@@ -104,10 +103,10 @@ void PlainFileReader::readTriggerType(trigtype& type){
     ifile.get(); //getting ':'
     ifile.get(); //getting ' ' or ':'
     auto iter = dicts->dict_trigtypes.find(trigtype_tmp);
-    if(iter == Dictionary_tpl<trigtype>::not_found){
+    if(iter == dicts->dict_trigtypes.not_found){
         raise_error(std::string("trigger ") + trigtype_tmp + " does not exist");
     }
-    type = *iter;
+    type = iter->second;
 }
 
 void PlainFileReader::readEffectH(uint8_t &nb_params, char *&params, std::forward_list<AtomEffect_H> &atoms) {
@@ -145,10 +144,10 @@ void PlainFileReader::readModifier(char& nbEffects, Modifier& firstEffect, Modif
         }
         check_safepoint(' ', "after . or , in statics");
         auto result = dicts->dict_static_types.find(tmp);
-        if(result == Dictionary_tpl<Modifier::type>::not_found)
+        if(result == dicts->dict_static_types.not_found)
             raise_error(std::string("static ") + tmp + " does not exist");
         else
-            tmp_effect[i] = *result;
+            tmp_effect[i] = result->second;
 	}
     firstEffect.myType = tmp_effect[0];
 	if(nbEffects == 1) otherEffects = nullptr;
@@ -175,31 +174,38 @@ bool PlainFileReader::read_one_criterion(Identifier& chars, Identifier& requs){ 
         ++i; if(i > 30) raise_error("Selector value longer than 30, are you sure you didn't forget something?");
     }
     Dictionary::iterator selcriteria(nullptr);
-    switch (*seltype) {
+    switch (seltype->second) {
         case types:
             selcriteria = dicts->dict_selector_types.find(tmp);
-            chars = chars | cid_objtype(*selcriteria);
+            if (selcriteria == dicts->dict_selector_types.not_found)
+                requs = ~(0); //unatteignable value (e.g. Cowards you control have)
+            chars = chars | cid_objtype(selcriteria->second);
             requs = requs | rid_objtype;
             break;
         case subtypes:
             selcriteria = dicts->dict_selector_subtypes.find(tmp);
-            chars = chars | cid_perm_type((permanent_type) *selcriteria);
+            if (selcriteria == dicts->dict_selector_subtypes.not_found)
+                requs = ~(0); //unatteignable value (e.g. Cowards you control have)
+            chars = chars | cid_perm_type((permanent_type) selcriteria->second);
             requs = requs | rid_perm_type;
             break;
         case tribes:
             selcriteria = dicts->dict_selector_tribes.find(tmp);
-            chars = chars | cid_tribe(*selcriteria);
+            if (selcriteria == dicts->dict_selector_tribes.not_found)
+                requs = ~(0); //unatteignable value (e.g. Cowards you control have)
+            chars = chars | cid_tribe(selcriteria->second);
             requs = requs | rid_tribe;
             break;
         case players:
             selcriteria = dicts->dict_selector_players.find(tmp);
-            chars = chars | cid_controller(*selcriteria);
+            if (selcriteria == dicts->dict_selector_players.not_found)
+                requs = ~(0); //unatteignable value (e.g. Cowards you control have)
+            chars = chars | cid_controller(selcriteria->second);
             requs = requs | rid_controller;
             break;
         default:
             raise_error("Ability implemented but does not have a dictionary");
     }
-    if (selcriteria == Dictionary::not_found) requs = ~(0); //unatteignable value (e.g. Cowards you control have)
     if (!ret) consumeWhitespace();
     return ret;
 }
@@ -245,13 +251,13 @@ void PlainFileReader::readAtomEffect(effect_type& type, flag_t*& params, uint8_t
 }
 
 void PlainFileReader::readSelector(Identifier &chars, Identifier &requs) {
-    //TODO
+    (void) chars; (void) requs; //TODO
 }
 
 void PlainFileReader::read_section_othercasts(CardOptionListNode *&node) {
-
+    (void) node; //TODO
 }
 
 void PlainFileReader::readMainSpell(SpellOption &cast) {
-
+    (void) cast; //TODO
 }

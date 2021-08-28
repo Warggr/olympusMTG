@@ -35,8 +35,9 @@ constexpr inline Identifier construct_id_player(char player_id){
     return (target_type::player) + player_id*0b100;
 }
 inline Identifier construct_id_spell(bool is_spell, Card* origin){
+    (void) origin; //TODO add info about the card, e.g. CMC
     Identifier ret = (target_type::resolvable) + (is_spell ? 0x20 : 0);
-    return ret; //TODO add info about the card, e.g. CMC
+    return ret;
 }
 //enums seem too complex, we'll do them later
 /* An identifier will be an int containing all relevant properties of a game object, which can be a:

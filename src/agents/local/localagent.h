@@ -23,7 +23,7 @@ public:
 
     bool keepsHand() override;
 
-    bool chooseAttackers(CollectionTN<Creature>& mycreas, StateTN<Creature>& myattackers) override;
+    bool chooseAttackers(CollectionTN<Creature>& mycreas) override;
 
     void chooseBlockers(CollectionTN<Creature>& mycreas, StateTN<Creature>& attackers) override;
 

@@ -38,12 +38,13 @@ public:
     std::vector<OracleDescr> descriptors;
 
     virtual ~Agent() = default;
-    void setup() {
-        specificSetup();
-        descriptors = getDeck();
-        for(auto& desc : descriptors) std::cout << desc;
-    }; //Makes sure every player is connected and has a deck. May take a long time.
+    //Makes sure every player is connected and has a deck. May take a long time.
     //Should also make sure that each deck is *valid*. TODO
+    void setup() {
+        specificSetup(); //Wait for connection or setup
+        descriptors = getDeck();
+        for(auto& desc : descriptors) std::cout << desc; //Checks whether deck is valid (TODO) and puts it into descriptors
+    };
     virtual std::string getName() = 0;
 
     virtual uptr<OptionAction> chooseOpt(bool sorcerySpeed, Player* pl) = 0;
@@ -59,7 +60,7 @@ public:
 
     virtual std::list<std::unique_ptr<Card>> chooseCardsToKeep(std::list<std::unique_ptr<Card>>& list) = 0;
 
-    virtual bool chooseAttackers(CollectionTN<Creature>& mycreas, StateTN<Creature>& myattackers) = 0;
+    virtual bool chooseAttackers(CollectionTN<Creature>& mycreas) = 0;
 
     virtual void chooseBlockers(CollectionTN<Creature>& mycreas, StateTN<Creature>& attackers) = 0;
 };

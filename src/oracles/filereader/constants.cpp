@@ -85,6 +85,6 @@ dict_static_types(DICTIZ(static_descriptions)),
 dict_selectors(DICTIZ(selector_descriptions)),
 dict_selector_types(DICTIZ(selector_chars_type)),
 dict_selector_subtypes(DICTIZ(selector_chars_subtype)),
-dict_selector_players(DICTIZ(selector_chars_players)),
-dict_selector_tribes(DICTIZ(selector_chars_players))
+dict_selector_tribes(DICTIZ(selector_chars_players)),
+dict_selector_players(DICTIZ(selector_chars_players))
 {}

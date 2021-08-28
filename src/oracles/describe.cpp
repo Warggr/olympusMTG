@@ -4,6 +4,7 @@
 #include "oracles/classes/2triggers.h"
 #include "oracles/classes/3statics.h"
 #include "oracles/classes/PermOption.h"
+#include <vector>
 
 std::string PermOption::describe(const std::string& cardname) const {
     std::string ret = "[" + cost.m2t() + "]";
@@ -23,8 +24,8 @@ std::string CardOracle::describe() const {
     return ret;
 }
 
-std::string Trigger_H::describe(int typeoftrig, const std::string& name) const {
-    std::string ds = trigger_descriptions[typeoftrig];
+std::string Trigger_H::describe(trigtype type, const std::string& name) const {
+    std::string ds = trigger_descriptions[type];
     std::string ret = "Whenever ";
     for(char d : ds){
         if(d == '~') ret += name;
@@ -46,3 +47,33 @@ std::string AtomEffect_H::describe(const std::string& cardname) const {
     ret += ".";
     return ret;
 }
+
+std::string CardOption::describe(const std::string &name) const {
+    (void) name; return std::string(); //TODO
+}
+
+std::vector<std::string> CardOracle::allText(int& power, int& toughness, int& frametype) const {
+    std::vector<std::string> all_text;
+    if(rules.otherCardOptions) all_text.push_back((*rules.otherCardOptions)->describe(name));
+    for(uint i=0; i<rules.nb_actabs; i++){
+        all_text.push_back(rules.first_actab[i].describe(name));
+    }
+    for(uint i=0; i<rules.nb_triggers; i++){
+        all_text.push_back(rules.triggers[i].describe(name));
+    }
+    int offset = 0;
+    if(type.underlying == card_type::creature){
+        offset = 2;
+        frametype = 1;
+        power = rules.flavor_text[0];
+        toughness = rules.flavor_text[1];
+    }
+    else if(type.underlying == card_type::planeswalker){
+        offset = 1;
+        frametype = 2;
+        power = rules.flavor_text[0];
+    }
+    if(rules.flavor_text && rules.flavor_text[offset]) all_text.emplace_back(rules.flavor_text + offset);
+    return all_text;
+}
+

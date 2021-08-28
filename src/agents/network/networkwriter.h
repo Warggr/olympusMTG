@@ -12,7 +12,7 @@ class BinaryBufferWriter: public BinaryWriter {
     void write(const char *chars, long size) override;
     void savepoint() override { last_save = ptr; }
 public:
-    explicit BinaryBufferWriter(Networker* networker): networker(networker), last_save(0), ptr(0) {};
+    explicit BinaryBufferWriter(Networker* networker): last_save(0), ptr(0), networker(networker) {};
 };
 
 #endif //OLYMPUS_NETWORKWRITER_H

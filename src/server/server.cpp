@@ -1,4 +1,4 @@
-#include "networkagent.h"
+#include "server.h"
 #include "agents/agent.h"
 #include "agents/network/networkmanager.h"
 #include "control/7game.h"

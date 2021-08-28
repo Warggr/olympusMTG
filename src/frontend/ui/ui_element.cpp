@@ -39,5 +39,6 @@ void ListElement::get_coordinates(int itemNb, int* y, int* z) const {
 }
 
 Target *ListElement::iterate(char requs, bool needstarget) {
-    return nullptr; //TODO
+    (void) requs; (void) needstarget; //TODO implement
+    return nullptr;
 }

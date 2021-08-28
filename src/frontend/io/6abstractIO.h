@@ -39,6 +39,8 @@ public:
     static constexpr uint8_t WHITE = 0, BLACK = 1, GREY = 2, HIGH1=10, HIGH2=11;
     static ImplementIO* god;
 
+    virtual ~AbstractIO() = default;
+
 #define maybe_virtual virtual
 #define maybe_undef = 0
 #include "iomethods.cpp"
@@ -69,9 +71,11 @@ std::list<T> AbstractIO::checklist(std::list<T>& all) {
     while (true) {
         switch(get_direction_key()) {
             case LEFT:
-                if(i != 0) --i; break;
+                if(i != 0) --i;
+                break;
             case RIGHT:
-                if(i != all.size()) ++i; break;
+                if(i != all.size()) ++i;
+                break;
             case UP:
                 check[i] = true; break;
             case DOWN:
@@ -79,8 +83,8 @@ std::list<T> AbstractIO::checklist(std::list<T>& all) {
             case ENTER: {
                 std::list<T> ret;
                 auto iter = all.begin();
-                for(int i = 0; i != all.size(); i++) {
-                    if(check[i]) {
+                for(uint j = 0; j < all.size(); j++) {
+                    if(check[j]) {
                         auto i2 = iter;
                         iter++;
                         ret.splice(ret.end(), all, i2);

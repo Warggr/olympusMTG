@@ -10,22 +10,27 @@ CardZone parseDeck(const std::vector<OracleDescr>& deck) {
     leveldb::Options options;
     options.create_if_missing = true;
     CardZone ret;
-    for(auto& desc : deck) {
+    for (auto &desc : deck) {
         card_ptr oracle = nullptr;
         std::string str = desc.initializer;
-        switch(desc.type) {
+        switch (desc.type) {
             case customcard: {
                 std::istringstream stream(str, std::ios::in);
-                if(dictHolder == nullptr) dictHolder = new DictHolder();
+                if (dictHolder == nullptr) dictHolder = new DictHolder();
                 PlainFileReader reader(dictHolder, stream);
                 oracle = new_cardptr(reader);
-            } break;
+            }
+                break;
             case reference: {
-                if(ondisk_cards == nullptr) {
-                    leveldb::Status status = leveldb::DB::Open(options, "material/database/carddb", &ondisk_cards);
+                if (ondisk_cards == nullptr) {
+                    leveldb::Status status = leveldb::DB::Open(options, "database/carddb", &ondisk_cards);
+                    std::cout << "Status: " << status.ToString() << "\n";
                     assert(status.ok());
                 }
                 leveldb::Status status = ondisk_cards->Get(leveldb::ReadOptions(), desc.initializer, &str);
+                if (!status.ok()) {
+                    throw DeckbuildingError("No card called '" + str + "' in the database");
+                }
             } [[fallthrough]];
             case compiled_customcard: {
                 std::istringstream stream(str, std::ios::in);
@@ -33,9 +38,10 @@ CardZone parseDeck(const std::vector<OracleDescr>& deck) {
                 oracle = new_cardptr(reader);
             }
         }
-        for(int i=0; i<desc.nb; i++) {
+        for (int i = 0; i < desc.nb; i++) {
             ret.takeonecard(std::make_unique<Card>(oracle));
         }
     }
+    delete ondisk_cards;
     return ret;
 }

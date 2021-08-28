@@ -12,7 +12,7 @@ void Trigger_H::trigger(Player* pl, Target* origin) const {
 }
 
 void CardOracle::get_triggers(const char ttype, TriggerEvent& trigEv) const{
-    for(int i=0; i<rules.nb_triggers; i++){
+    for(uint i=0; i<rules.nb_triggers; i++){
         if(rules.triggers[i].type == ttype){
             trigEv.add_trigger(&(rules.triggers[i].trigger));
             //std::cout << "Trigger of type " << type << "was found and added" << std::endl;

@@ -21,7 +21,7 @@ protected:
     void net_send(const char* message, unsigned long size) const;
 public:
     Networker(): sockfd(-1), connected(false) {};
-    ~Networker();
+    virtual ~Networker();
     void send_file(std::ifstream& file);
     int getSock() const { return sockfd; }
     bool isConnected() const { return connected; }

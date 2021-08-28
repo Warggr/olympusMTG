@@ -36,7 +36,7 @@ void Mana::operator-=(Mana cost){
 	//doing a checksum and removing the necessary colored mana
 	uint generic = cmc(); //The correct total mana that should be left
 	for(uint offset = positions::FIRST_COLOR; offset <= positions::COLORLESS; offset++){
-		int color = MY_COLOR(mana, offset);
+		uint color = MY_COLOR(mana, offset);
 		if(color < generic) generic -= color;
 		else{
 			mana = mana - ((color - generic) << 4*offset);

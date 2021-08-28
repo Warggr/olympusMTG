@@ -9,6 +9,8 @@ class ReaderVisitor; class TriggerHolder_H;
 struct CardOptionListNode {
     CardOption option;
     CardOptionListNode* next {nullptr};
+
+    CardOption* operator->() { return &option; }
 };
 
 struct RulesHolder {

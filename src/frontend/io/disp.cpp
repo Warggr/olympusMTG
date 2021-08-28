@@ -38,34 +38,13 @@ void AbstractIO::disp(const std::unique_ptr<Card> &card, const Rect &pos, bool h
 }
 
 void AbstractIO::disp(const Option* opt, const Rect &pos, bool highlight) {
-    //TODO
+    (void) opt; (void) pos; (void) highlight; //TODO
 }
 
-void AbstractIO::disp(const CardOracle &card, const Rect &pos, bool highlight) {
-	const char* nametypes[] = {"Instant", "Land", "Artifact", "Planeswalker", "Creature", "Sorcery"};
-	std::vector<std::string> all_text;
-	/*if(card.rules.otherCardOptions) all_text.push_back(card.rules.otherCardOptions->describe(name));
-	for(int i=0; i<nb_actabs; i++){
-		all_text.push_back(first_actab[i].describe(name));
-	}
-	for(int i=0; i<nb_triggers; i++){
-		all_text.push_back(triggers[i].describe((int) typeof_triggers[i], name));
-	}*/
-	int power = 0, toughness = 0, frametype = 0, offset = 0;
-	if(card.type.underlying == card_type::creature){
-		offset = 2;
-		frametype = 1;
-		//power = flavor_text[0];
-		//toughness = flavor_text[1];
-	}
-	else if(card.type.underlying == card_type::planeswalker){
-		offset = 1;
-		frametype = 2;
-		//power = flavor_text[0];
-	}
-	//if(flavor_text) if(flavor_text[offset]) all_text.push_back(std::string(flavor_text + offset));*/
-
-	god->poster(card.name, card.getCost(), main_color(card.color),
+void AbstractIO::disp(const CardOracle &card, const Rect& pos, bool highlight) {
+    int power, toughness, frametype;
+    std::vector<std::string> all_text = card.allText(power, toughness, frametype);
+	god->poster(pos, highlight, card.name, card.getCost(), main_color(card.color),
                 card.type.toString().c_str(), all_text, power, toughness, frametype, card.type.land);
 	//lands have watermarks
 }

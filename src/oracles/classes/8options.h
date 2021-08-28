@@ -49,6 +49,7 @@ public:
     explicit CardOption(ReaderVisitor& visitor) { init(visitor); };
     void init(ReaderVisitor& visitor);
 //	void disp(int y, int z, int width, bool highlight, bool castable) const override;
+    std::string describe(const std::string& name) const;
 };
 
 class OptionAction {

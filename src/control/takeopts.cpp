@@ -60,6 +60,7 @@ bool Player::add_triggers_to_stack(){
 }
 
 bool Player::hasOptions(bool sorceryspeed) const {
+    (void) sorceryspeed; //TODO
 	/*if(!sorceryspeed and myoptions[0] == 0) return false;
 	else if(myoptions[2] != 0) return true;
 	else if(!hasplayedland() and myoptions[LANDOPTS]) return true; */

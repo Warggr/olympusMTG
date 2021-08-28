@@ -25,7 +25,7 @@ public:
     }
 
     void state_out(PermanentTN<T>* perm) {
-        //TODO
+        (void) perm;//TODO
     }
 
 //Merges every stateTN into one.
@@ -36,7 +36,7 @@ public:
     }
 
     void remove(T* object) {
-
+        (void) object; //TODO implement
     };
 
     iterator<T, false> begin() { return children.front().begin(); }

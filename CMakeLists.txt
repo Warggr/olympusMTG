@@ -38,7 +38,7 @@ endif()
 add_library(project_warnings INTERFACE)
 add_library(project_options INTERFACE)
 
-target_compile_features(project_options INTERFACE cxx_std_17)
+target_compile_features(project_options INTERFACE cxx_std_20) #20 needed for C-style struct initializer
 if(NOT SanitizeType STREQUAL "None")
     target_compile_options(project_options INTERFACE -fsanitize=${SanitizeType})
     target_link_libraries(project_options INTERFACE -fsanitize=${SanitizeType})
@@ -54,7 +54,7 @@ if(ENABLE_PROFILING)
 endif()
 
 #Warnings
-target_compile_options(project_warnings INTERFACE -Wall -Wextra
+target_compile_options(project_warnings INTERFACE -Wall -Wextra -Werror
         -Wnon-virtual-dtor -Wcast-align
         -Wunused -Woverloaded-virtual -Wpedantic
         -Wnull-dereference -Wdouble-promotion

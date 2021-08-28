@@ -1,0 +1,1 @@
+add_library(OlympicDict STATIC regularExp.cpp)

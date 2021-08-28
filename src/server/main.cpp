@@ -1,5 +1,6 @@
-#include "networkagent.h"
+#include "server.h"
 #include <iostream>
+#include <filesystem>
 
 [[ noreturn ]] void printUsageAndExit() {
     std::cout << "Usage: olympus_server [-n REMOTE_PLAYER_COUNT] [-l LOCAL_PLAYER_COUNT] [-b AI_PLAYER_COUNT]\n"
@@ -33,6 +34,8 @@ std::list<playerType> parseArgs(int nbargs, char** args) {
 }
 
 int main(int nbargs, char** args) {
+    std::filesystem::current_path("../material");
+
     std::list<playerType> l = parseArgs(nbargs, args);
     Server server;
     server.addPlayerX(l);

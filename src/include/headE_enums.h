@@ -55,12 +55,12 @@ namespace target_type {
 }
 
 struct card_type {
-    enum basic_type { flagged, basic, creature, planeswalker, instant, sorcery, invalid };
-    char legendary : 1, snow : 1;
-    char land : 1, artifact : 1, enchantment : 1;
+    enum basic_type { flagged, basic, creature, planeswalker, instant, sorcery };
+    uchar legendary : 1, snow : 1;
+    uchar land : 1, artifact : 1, enchantment : 1;
     basic_type underlying : 3;
 
-    constexpr card_type(): legendary(0), snow(0), land(0), artifact(0), enchantment(0), underlying(invalid) {};
+    constexpr card_type(): legendary(0), snow(0), land(0), artifact(0), enchantment(0), underlying(flagged) {};
     permanent_type toPermType() const {
         switch(underlying) {
             case basic: return permanent_type::land;

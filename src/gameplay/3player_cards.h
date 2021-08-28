@@ -21,7 +21,10 @@ public:
     inline void takeonecard(std::unique_ptr<Card> c){ ++size; cards.push_front(std::move(c)); }
     void placeOnBottom(std::unique_ptr<Card> c);
 
-    inline std::unique_ptr<Card> pop_front() { auto f = std::move(cards.front()); cards.pop_front(); size--; return f; };
+    inline std::unique_ptr<Card> pop_front() {
+        if(empty()) return nullptr;
+        auto f = std::move(cards.front()); cards.pop_front(); size--; return f;
+    }
     inline bool empty(){ return cards.empty(); }
     void revealTopCards(int nb_cards);
 

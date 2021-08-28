@@ -20,10 +20,10 @@ std::string Creature::describe() const {
 	return source->describe();
 }
 
-std::string TriggerEvent::describe(int typeoftrig, const std::string& cardname) const {
+std::string TriggerEvent::describe(trigtype type, const std::string& cardname) const {
 	std::string ds;
 	for(auto all_trigger : all_triggers){
-		ds += all_trigger->describe(typeoftrig, cardname);
+		ds += all_trigger->describe(type, cardname);
 	}
 	return ds;
 }
@@ -53,4 +53,5 @@ std::string card_type::toString() const {
         case sorcery:
             return ret + "Sorcery";
     }
+    return ret;
 }

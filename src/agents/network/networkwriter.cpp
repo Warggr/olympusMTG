@@ -18,5 +18,5 @@ void BinaryBufferWriter::write(const char *chars, long size) {
 }
 
 void BinaryBufferWriter::canary(char canary) {
-    //As of now, does nothing, because we want to keep the data size as small as possible
+    (void) canary; //As of now, does nothing, because we want to keep the data size as small as possible
 }

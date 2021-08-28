@@ -12,3 +12,7 @@ target_link_libraries(agents PRIVATE pthread)
 add_library(agents-mock-only STATIC agent.cpp)
 target_include_directories(agents-mock-only PUBLIC ${INCLUDES})
 target_link_libraries(agents-mock-only PRIVATE mock_agent)
+
+add_executable(agents-test test.cpp)
+target_link_libraries(agents-test PRIVATE agents)
+catch_discover_tests(agents-test)

@@ -10,7 +10,7 @@ SpellOption::SpellOption(bool isLand, bool instantSpeed): Option(0, instantSpeed
 SpellOption::SpellOption(card_type type): Option(0, type.underlying == card_type::instant), isLand(type.land) {}
 
 void CardOption::init(ReaderVisitor &visitor) {
-//TODO
+    (void) visitor; //TODO
 }
 
 PermOption::~PermOption() = default;

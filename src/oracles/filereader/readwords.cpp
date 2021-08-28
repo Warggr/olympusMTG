@@ -1,4 +1,4 @@
-#include "Dictionary/lib1_dictionary.h"
+#include "Dictionary/include/lib1_dict.h"
 #include "filereader.h"
 #include "headE_enums.h"
 #include "build_types.h"
@@ -27,10 +27,10 @@ effect_type PlainFileReader::readAbilityType(){ //gets only the action
 	char ability[30];
 	ifile >> ability;
 	auto ret = dicts->dict_abiltypes.find(ability);
-	if(ret == Dictionary_tpl<effect_type>::not_found){
+	if(ret == dicts->dict_abiltypes.not_found){
 		throw DeckbuildingError(std::string("Invalid ability type '") + ability + "'");
 	}
-	else return *ret;
+	else return ret->second;
 }
 
 short int PlainFileReader::readNumber(char a, bool can_be_zero, bool can_be_negative){
@@ -138,6 +138,7 @@ void PlainFileReader::readCardType(card_type& type) {
 }
 
 void PlainFileReader::readCosts(Mana &mana, bool &tapsymbol, WeirdCost *&others) {
+    (void) others; //TODO weirdcosts
     while(true){
         char copy[30];
         int j;

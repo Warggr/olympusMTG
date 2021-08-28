@@ -4,7 +4,7 @@ configure_file(../include/build_types.h ../include/build_types.h)
 
 target_compile_definitions(project_warnings INTERFACE uptr=std::unique_ptr uchar=unsigned\ char)
 
-link_libraries(project_warnings)
+link_libraries(project_options project_warnings)
 
 add_subdirectory(agents)
 add_subdirectory(control)

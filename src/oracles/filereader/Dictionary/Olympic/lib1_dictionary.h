@@ -19,7 +19,7 @@ private:
 	bool valid;
 	uint nnamelen; //length of the (partial) name, without ending NULL
 	char* nodename;
-	struct SearchTreeNode* children[28];
+	SearchTreeNode* children[28];
 
 	void set_child(int pos, SearchTreeNode* child){
 		children[pos] = child;
