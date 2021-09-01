@@ -8,7 +8,7 @@
 //Player::choicephase calls choose_and_use_opt. Calls check_and_pop. Popped option is returned and cast (aka added to stack, or land put in play)
 //Function returns 0 if Default was cast.
 //Player::choicephase lets opponent choose_and_use_opt afterwards.
-//When both return 0, Player::choicephase resolves the first Option of the stack via Spell::resolve. Then new alternating choose_and_use_opt
+//When both return 0, Player::choicephase resolves the first EmptyOption of the stack via Spell::resolve. Then new alternating choose_and_use_opt
 //When both pass and the stack is empty, Player::choicephase returns.
 
 void Player::choicephase(bool sorceryspeed){
@@ -72,8 +72,8 @@ bool Player::hasOptions(bool sorceryspeed) const {
 	Rect rect = optZone->get_coordinates(&dy, &dz);
 	int zone = 0;
 	bool castable = true, not_moved = true;
-	Option* iter = first_option(&zone);
-	Option* next = first_option(zone);
+	EmptyOption* iter = first_option(&zone);
+	EmptyOption* next = first_option(zone);
 	for(; iter != 0; iter = iter->next){
 		iter->disp(rect.y, rect.z, rect.width, not_moved, castable);
 		not_moved = false;

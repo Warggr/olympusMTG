@@ -20,8 +20,6 @@ public:
     std::string describe(const std::string& cardname) const;
 //    void disp(int y, int z, int width, bool highlight, bool castable) const override;
 
-    void fillout(Mana c, Effect_H *preRes, bool ts, bool ismana);
-
     bool iscastable(const Player *pl) const override;
 };
 

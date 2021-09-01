@@ -19,7 +19,8 @@ class PermanentTN: public AbstractN, public AbPermanentN {
     std::list<StateTN<T>*> parents;
     PermanentTN<T>* prev, * next; //PermanentTNs are doubly-linked in order to have fast iterating)
 public:
-    PermanentTN(std::unique_ptr<Card> source, Player* pl, StateTN<T>* par): describedObject(std::move(source), pl) {
+    PermanentTN(std::unique_ptr<Card> source, Player* pl, StateTN<T>* par): describedObject(std::move(source), pl),
+    prev(nullptr), next(nullptr) {
         parents.push_front(par);
     }
     //Guideline: linking is always initiated from prev to next (next = x, next->prev = this)

@@ -10,16 +10,15 @@ void al_draw_scaled_bitmap(ALLEGRO_BITMAP* bitmap, int picY, int picZ, int picW,
 }
 
 void AllegroIO::disp_mana(Mana mana, int endy, int topz) const {
-	int m = mana.m2i();
 	ExplicitMana ex = mana.m2x();
-	for(int i=0; i<6; i++){
-		for(int j=0; j < ex[i]; j++){
+	for(int i=Mana::positions::FIRST_COLOR; i<=Mana::positions::COLORLESS; ++i){
+		for(uint j=0; j < ex[i]; ++j){
 			endy -= 24;
 			al_draw_scaled_bitmap(ManaColorSym[i], 0, 0, 160, 160, endy, topz, 24, 24, 0);
 		}
 	}
-	if(ex[7]!=0 || mana.cmc() == 0){
-		al_draw_scaled_bitmap(ManaNumSym[ex[7]], 0, 0, 160, 160, endy-24, topz, 24, 24, 0);
+	if(ex[Mana::positions::GENERIC]!=0 || mana.cmc() == 0){
+		al_draw_scaled_bitmap(ManaNumSym[ex[Mana::positions::GENERIC]], 0, 0, 160, 160, endy-24, topz, 24, 24, 0);
 	}
 }
 
@@ -73,6 +72,7 @@ void AllegroIO::erase_surface(const Rect& zone) const {
 }
 
 void AllegroIO::disp_header(const Rect& zone, const char* name, int life, char state, bool highlight, Mana pool) const {
+    (void) state;
 	if(life >= 1000) {
         gdebug(DBG_IOUI) << "Life total too high to be shown, most likely a bug";
         exit(1);
@@ -84,30 +84,41 @@ void AllegroIO::disp_header(const Rect& zone, const char* name, int life, char s
 	disp_mana(pool, zone.y+zone.width, zone.height);
 }
 
-void AllegroIO::poster(const std::string& name, Mana manacost, char color, const char* types,
-	const std::vector<std::string>& lines, int power, int toughness, char frametype, bool watermark) const {
-	al_draw_bitmap(card_template[(int) color], posterY, posterZ, 0);
-	al_draw_text(fonts[0], al_map_rgb(0,0,0), posterY+29, posterZ+28, 0, &(name[0]));
-	disp_mana(manacost, posterY + fullcardY - 28, posterZ + 30);
-	al_draw_text(fonts[0], al_map_rgb(0,0,0), posterY+29, posterZ+295, 0, &(types[0]));
+void AllegroIO::poster(const std::string &name, Mana manacost, char color, const char *types,
+                       const std::vector<std::string> &lines, int power, int toughness, char frametype,
+                       bool watermark) const {
+    poster(Rect(posterY, posterZ, fullcardY, fullcardZ), false,
+           name, manacost, color, types, lines, power, toughness, frametype, watermark);
+}
+
+void AllegroIO::poster(const Rect& position, bool highlight,
+                       const std::string& name, Mana manacost, char color, const char* types,
+                       const std::vector<std::string>& lines, int power, int toughness, char frametype,
+                       bool watermark) const {
+    (void) highlight;
+	al_draw_bitmap(card_template[(int) color], position.y, position.z, 0);
+	al_draw_text(fonts[0], al_map_rgb(0,0,0), position.y+29, posterZ+28, 0, &(name[0]));
+	disp_mana(manacost, position.right() - 28, posterZ + 30);
+	al_draw_text(fonts[0], al_map_rgb(0,0,0), position.y+29, posterZ+295, 0, &(types[0]));
 	if(watermark){
-		al_draw_bitmap(watermarks[(int) color], posterY + 120, posterZ + 340, 0);
+		al_draw_bitmap(watermarks[(int) color], position.y + 120, posterZ + 340, 0);
 	}
 	int i=0;
 	for(const auto & line : lines){
-		al_draw_text(fonts[3], al_map_rgb(0,0,0), posterY+29, posterZ+360+ (i++)*20, 0, &(line[0]));
+		al_draw_text(fonts[3], al_map_rgb(0,0,0), position.y+29, posterZ+360+ (i++)*20, 0, &(line[0]));
 	}
 	const int yOffset = 85;
 	const int zOffset = 60;
 	if(frametype == 1){
-		al_draw_bitmap(pt_box[(int) color], posterY+fullcardY-yOffset, posterZ+fullcardZ-zOffset, 0);
+		al_draw_bitmap(pt_box[(int) color], position.right()-yOffset, position.bottom()-zOffset, 0);
 		char x[10]; sprintf(x, "%d/%d", power, toughness);
-		al_draw_text(fonts[0], al_map_rgb(0, 0, 0), posterY+fullcardY-yOffset + 20, posterZ+fullcardZ-zOffset + 5, 0, x);
+		al_draw_text(fonts[0], al_map_rgb(0, 0, 0),
+                     position.right()-yOffset + 20, position.bottom()-zOffset + 5, 0, x);
 	}
 	else if(frametype == 2){
-		al_draw_bitmap(loyalty, posterY+fullcardY-yOffset, posterZ+fullcardZ-zOffset, 0);
+		al_draw_bitmap(loyalty, position.right()-yOffset, position.bottom()-zOffset, 0);
 		char x[3]; sprintf(x, "%d", power);
-		al_draw_text(fonts[0], al_map_rgb(255, 255, 255), posterY+fullcardY-yOffset + 30, posterZ+fullcardZ-zOffset + 8, 0, x);
+		al_draw_text(fonts[0], al_map_rgb(255, 255, 255), position.right()-yOffset + 30, position.bottom()-zOffset + 8, 0, x);
 	}
 }
 
@@ -123,12 +134,12 @@ void must_init(bool test, const char *description){
     exit(1);
 }
 
-void AllegroIO::harmonize(const Rect& poster, const Rect& message, int nb_winzones){
+void AllegroIO::harmonize(const Rect& poster, const Rect& message, int){
 	posterY = poster.y; posterZ = poster.z;
 	messageY = message.y; messageZ = message.z;
 }
 
-AllegroIO::AllegroIO(){
+AllegroIO::AllegroIO(): AbstractIO(this) {
 	must_init(al_init(), "allegro");
 	must_init(al_install_keyboard(), "keyboard");
 	must_init(al_install_mouse(), "mouse");

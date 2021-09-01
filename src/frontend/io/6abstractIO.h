@@ -32,13 +32,14 @@ class UIClosedException: public std::exception{};
 
 class ImplementIO;
 
-class Permanent; class Card; class Creature; class CardOracle; class Option;
+class Permanent; class Card; class Creature; class CardOracle; class EmptyOption;
 
 class AbstractIO{
 public:
     static constexpr uint8_t WHITE = 0, BLACK = 1, GREY = 2, HIGH1=10, HIGH2=11;
-    static ImplementIO* god;
+    thread_local static AbstractIO* god;
 
+    AbstractIO(AbstractIO* hic) { (void) hic; god = hic; }
     virtual ~AbstractIO() = default;
 
 #define maybe_virtual virtual
@@ -52,7 +53,7 @@ public:
     void disp(const Creature& crea, const Rect& pos, bool highlight);
     void disp(const std::unique_ptr<Card>& card, const Rect& pos, bool highlight);
     void disp(const CardOracle& card, const Rect& pos, bool highlight);
-    void disp(const Option* opt, const Rect& pos, bool highlight);
+    void disp(const EmptyOption* opt, const Rect& pos, bool highlight);
     void poster(const CardOracle& card) { disp(card, Rect(), false); }
 
     template<typename T>

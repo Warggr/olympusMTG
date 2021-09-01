@@ -18,9 +18,9 @@ DEVOID(declare_window(int& leftY, int& topz, int width, int height));
 DEVOID(fulldisp() const);
 DEVOID(draw_permanent(const Rect& zone, const std::string& name, char color, bool tapped, bool highlight, bool basicImg) const);
 DEVOID(poster(const std::string& name, Mana manacost, char color, const char* types,
-      const std::vector<std::string>& lines, int power, int toughness, char frametype, bool watermark) const);
+              const std::vector<std::string>& lines, int power, int toughness, char frametype, bool watermark) const);
 DEVOID(poster(const Rect& position, bool highlight, const std::string& name, Mana manacost, char color, const char* types,
-                             const std::vector<std::string>& lines, int power, int toughness, char frametype, bool watermark) const);
+              const std::vector<std::string>& lines, int power, int toughness, char frametype, bool watermark) const);
 DEVOID(print_text(const char* text, char color, int x, int y) const);
 DEVOID(print_text(const std::string& text, char color, int x, int y) const);
 DEVOID(draw_boxed_text(const char* text, char color, char backgr_color, int left, int top, int width) const);

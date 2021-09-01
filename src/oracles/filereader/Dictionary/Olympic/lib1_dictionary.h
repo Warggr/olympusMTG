@@ -8,8 +8,8 @@ struct dict_iterator_tpl {
     const T* value;
     constexpr explicit dict_iterator_tpl(const T* value): value(value) {};
     constexpr explicit dict_iterator_tpl(const T& value): value(&value) {};
-    const T& operator*() { return *value; }
-    bool operator==(const dict_iterator_tpl<T>& other) { return value == other.value; }
+    const T& operator*() const { return *value; }
+    bool operator==(const dict_iterator_tpl<T>& other) const { return value == other.value; }
 };
 
 template<typename T>
@@ -19,44 +19,42 @@ private:
 	bool valid;
 	uint nnamelen; //length of the (partial) name, without ending NULL
 	char* nodename;
-	SearchTreeNode* children[28];
+	SearchTreeNode* children[28]{nullptr};
 
-	void set_child(int pos, SearchTreeNode* child){
-		children[pos] = child;
-	};
 	SearchTreeNode* existing_append(const char* name, int namelen, T id);
 	SearchTreeNode(const char* name, int namelen, T id): identifier(id) { SearchTreeNode<T>(name, namelen, true); }
 	SearchTreeNode(const char* name, int namelen, bool valid);
 public:
 	~SearchTreeNode();
 
-	static void append(SearchTreeNode** root, const char* name, int namelen, T id);
+	static void append(SearchTreeNode*& root, const char* name, int namelen, T id);
 	dict_iterator_tpl<T> find(const char* key) const;
 
-	void show(int depth);
+	void show(int depth) const;
 };
 
 template<typename T>
 class Dictionary_tpl {
 protected:
-	SearchTreeNode<T>* root;
+	SearchTreeNode<T>* root {nullptr};
 	bool is_a_copy;
 public:
     typedef dict_iterator_tpl<T> iterator;
     static constexpr iterator not_found {nullptr};
 
-	Dictionary_tpl(): root(nullptr), is_a_copy(false){};
+	Dictionary_tpl(): is_a_copy(false){};
 	Dictionary_tpl(int nbinserts, const char* const * inserts);
 	Dictionary_tpl(Dictionary_tpl const& copy): root(copy.root), is_a_copy(true){};
-	~Dictionary_tpl(){if(root && !is_a_copy) delete root; };
+	~Dictionary_tpl(){ if(root && !is_a_copy) delete root; };
 
-	iterator find(const char* key) const{
-		if(root == 0) return not_found;
+	iterator find(const char* key) const {
+		if(root == nullptr) return not_found;
 		else return root->find(key);
 	};
 
 	void insert(const char* key, int namelen, T id){
-		SearchTreeNode<T>::append(&root, key, namelen, id);
+		SearchTreeNode<T>::append(root, key, namelen, id);
+//		show();
 	};
 
 	void show() const { if(root) root->show(0); else std::cout << "No values!" << std::endl; };

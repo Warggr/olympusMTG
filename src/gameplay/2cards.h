@@ -33,7 +33,7 @@ public:
 	card_type get_type() const { return oracle->type; };
 	bool has_flash() const { return oracle->type.underlying == card_type::instant; } //TODO implement flash
 	Mana get_cost() const { return oracle->rules.cast.cost; };
-	const Effect_H* get_preRes() const { return oracle->rules.cast.effects; };
+	const Effect_H* get_preRes() const { return &oracle->rules.cast.effects; };
 	colorId::type get_color() const { return oracle->color; };
 	void get_permabs(PermOption** pr, int* nb_opts) const { *pr = oracle->rules.first_actab; *nb_opts = oracle->rules.nb_actabs; };
 	void get_triggers(const char type, TriggerEvent& trigEv) const { oracle->get_triggers(type, trigEv); };

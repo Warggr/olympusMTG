@@ -12,7 +12,7 @@ std::string PermOption::describe(const std::string& cardname) const {
         ret += ", [T]";
     }
     ret += ": ";
-    ret += effects->describe(cardname);
+    ret += effects.describe(cardname);
     return ret;
 }
 

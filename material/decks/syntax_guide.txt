@@ -1,7 +1,8 @@
 4 !"Faerie Artisan" AC 2U {<k>Flying <x>I made a Jailor copy with my faerie artisans...} 2/2
 3 !"Tragic Slip" I B { }
 10 Plains (DOM/1)
-3 "Elesh Norn, Grand Cenobite" +LC -Phyrexian-Praetor 4WWW {
+3 "Elesh Norn, Grand Cenobite" LC -Phyrexian-Praetor 4WWW {
     <k>Vigilance. <s>pt @creature1[ctrl=you] +2 +2. pt @creature2[ctrl=opponent] -2 -2.
     <x>Behold blessed perfection. } 7/7
 2 "Attune with Aether" S G {tutor -card1[type=basic&type=land]. put_counters you 2 energy. <x>stuff. }
+1 "Drowned Secrets" E 1U { <t>cast (who=you, type=spell): mill %player1 2. }

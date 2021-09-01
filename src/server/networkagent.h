@@ -1,5 +1,5 @@
-#ifndef OLYMPUS_SERVER_H
-#define OLYMPUS_SERVER_H
+#ifndef OLYMPUS_NETWORKAGENT_H
+#define OLYMPUS_NETWORKAGENT_H
 
 #include "agents/agent.h"
 #include <list>
@@ -17,8 +17,10 @@ public:
 	~Server();
 
 	void addPlayer(playerType type);
-	void addPlayerX(const std::list<playerType>& types);
+	void addPlayers(const std::list<playerType>& types);
 	void launchGame();
 };
 
-#endif //OLYMPUS_SERVER_H
+void refreshDatabase();
+
+#endif //OLYMPUS_NETWORKAGENT_H

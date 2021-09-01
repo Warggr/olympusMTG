@@ -14,7 +14,7 @@ void Effect_H::init(ReaderVisitor& visitor) {
 }
 
 void PermOption::init(ReaderVisitor &visitor) {
-    visitor.readActAb(cost, additional_costs, effects, tapsymbol, ismanaability, instantspeed);
+    visitor.readActAb(cost, additional_costs, &effects, tapsymbol, ismanaability, instantspeed);
 }
 
 void AtomEffect_H::init(ReaderVisitor &reader, char* allassignedparams, uint8_t& nbassignedparams) {
@@ -32,10 +32,25 @@ void Trigger_H::init(ReaderVisitor& visitor) {
 
 void CardOracle::get_read(ReaderVisitor &reader) {
     reader.readName(name);
-    reader.readManaCost(rules.cast.cost);
     reader.readCardType(type);
-    color = rules.cast.cost.m2color(); if(type.land) color = 0; //lands are colorless
 
+    if(type.land) {
+        color = 0; //lands are colorless
+    } else {
+        reader.readManaCost(rules.cast.cost);
+        color = rules.cast.cost.m2color();
+    }
+
+    //reader.readCardSubtypes(); //TODO implement subtypes
     reader.readAll(rules, type);
 //    casted_id = generate_casted_id();
+}
+
+RulesHolder::~RulesHolder() {
+    delete[] otherCardOptions;
+    delete[] first_actab;
+    delete[] triggers;
+    delete[] statics;
+    delete[] flavor_text;
+    for(auto* i = otherCardOptions; i != nullptr; ) { auto* i2 = i; i = i->next; delete i2; };
 }

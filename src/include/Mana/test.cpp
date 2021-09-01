@@ -7,6 +7,7 @@ TEST_CASE( "Mana library", "[mana]" ) {
     mana -= Mana("1W");
     REQUIRE( (mana.m2t().c_str()[0] == 'W' &&  mana.m2t().c_str()[1] == 'W') );
     REQUIRE( mana >= Mana("W") );
+    REQUIRE_FALSE( mana >= Mana("R"));
     INFO(mana.m2t());
     INFO((int) mana.m2color().fields);
     REQUIRE(mana.m2color() == colorId::white );

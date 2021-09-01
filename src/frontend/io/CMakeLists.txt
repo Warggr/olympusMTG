@@ -16,7 +16,4 @@ target_link_libraries(IO PUBLIC IO${IOLibType})
 string(TOLOWER ${IOLibType} LowerCaseIOLib)
 set(LowerCaseIOLib ${LowerCaseIOLib} CACHE INTERNAL "")
 
-add_executable(IO-test test.cpp)
-target_link_libraries(IO-test PRIVATE Catch2::Catch2WithMain
-        PUBLIC IO)
-catch_discover_tests(IO-test)
+create_test(IO)

@@ -43,7 +43,7 @@ inline float AllegroIO::gmouseY() { return mousey; }
 inline float AllegroIO::gmouseZ() { return mousez; }
 inline bool AllegroIO::gmouseActive(){ return mouseActive; }
 
-inline void AllegroIO::declare_window(int &leftY, int &topz, int width, int height) {};
+inline void AllegroIO::declare_window(int&, int&, int, int) {}
 inline void AllegroIO::print_text(const std::string &text, char color, int x, int y) const {
     print_text(text.c_str(), color, x, y);
 }

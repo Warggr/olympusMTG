@@ -27,9 +27,13 @@ CardZone parseDeck(const std::vector<OracleDescr>& deck) {
                     std::cout << "Status: " << status.ToString() << "\n";
                     assert(status.ok());
                 }
-                leveldb::Status status = ondisk_cards->Get(leveldb::ReadOptions(), desc.initializer, &str);
+                char buffer[128];
+                int i;
+                for(i=1; desc.initializer[i] != '>'; ++i) buffer[i-1] = desc.initializer[i];
+                buffer[i-1] = 0;
+                leveldb::Status status = ondisk_cards->Get(leveldb::ReadOptions(), std::string(buffer), &str);
                 if (!status.ok()) {
-                    throw DeckbuildingError("No card called '" + str + "' in the database");
+                    throw DeckbuildingError("No card called '" + std::string(buffer) + "' in the database");
                 }
             } [[fallthrough]];
             case compiled_customcard: {

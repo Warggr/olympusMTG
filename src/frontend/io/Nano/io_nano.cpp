@@ -113,7 +113,7 @@ int NanoIO::getInt(int lowerBound, int upperBound){
 	}
 }
 
-NanoIO::NanoIO(): is_iterating(false) { cout << "-----IO Library set to Nano. Welcome!-----\n"; }
+NanoIO::NanoIO(): AbstractIO(this), is_iterating(false) { cout << "-----IO Library set to Nano. Welcome!-----\n"; }
 
 void NanoIO::getResolution(int& y, int& z, bool& hasMouseSupport, int& linesize) const {
 	y = 0;

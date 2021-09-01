@@ -1,43 +1,71 @@
-#include "server.h"
+#include "networkagent.h"
 #include <iostream>
 #include <filesystem>
 
 [[ noreturn ]] void printUsageAndExit() {
-    std::cout << "Usage: olympus_server [-n REMOTE_PLAYER_COUNT] [-l LOCAL_PLAYER_COUNT] [-b AI_PLAYER_COUNT]\n"
+    std::cout << "Usage: olympus_server [option(s)] [-n REMOTE_PLAYER_COUNT] [-l LOCAL_PLAYER_COUNT] [-b AI_PLAYER_COUNT]\n"
                  "where each PLAYER_COUNT is a single-digit number.\n"
                  "Please specify at least 2 players.\n";
     exit(1);
 }
 
-std::list<playerType> parseArgs(int nbargs, char** args) {
-    std::list<playerType> list;
+struct Usage {
+    bool refresh_db{false}, start_game{false};
+    uchar local{0}/*, bot, network*/;
+};
+
+Usage parseArgs(int nbargs, char** args) {
+    Usage ret;
     int i = 1;
-    playerType type;
     while(i != nbargs) {
-        if(args[i][0] != '-' || i+1 == nbargs || args[i+1][0] > '9' || args[i+1][0] < '0' || args[i+1][1] != 0)
-            printUsageAndExit();
+        if(args[i][0] != '-') printUsageAndExit();
         switch(args[i][1]) {
-            //case 'n': type = NETWORK; break;
-            case 'l': type = LOCAL; break;
-            //case 'b': type = BOT; break;
+            //case 'n':
+            //case 'b':
+            case 'l': {
+                if (i + 1 == nbargs || args[i + 1][0] > '9' || args[i + 1][0] < '0' || args[i + 1][1] != 0)
+                    printUsageAndExit();
+                uchar nb = args[i+1][0] - '0';
+                switch(args[i][1]) {
+                    //case 'n': ret.network += nb;
+                    //case 'b': ret.bot += nb;
+                    case 'l': ret.local += nb;
+                }
+                ++i;
+            } break;
+            case 'r': ret.refresh_db = true; break;
             default: printUsageAndExit();
         }
-        std::cout << args[i+1][0] - '0' << " of type " << args[i][1] << ":";
-        for(int j=0; j<(args[i+1][0] - '0'); j++) {
-            list.push_front(type);
-        }
-        std::cout << list.size() << "\n";
-        i += 2;
+        i++;
     }
-    if(list.size() < 2) printUsageAndExit();
-    return list;
+    uchar nb_players = ret.local /* + ret.bot + ret.network */;
+    if(nb_players == 0) { if(!ret.refresh_db) printUsageAndExit(); }
+    else if(nb_players < 2) printUsageAndExit();
+    else ret.start_game = true;
+    return ret;
 }
 
 int main(int nbargs, char** args) {
     std::filesystem::current_path("../material");
 
-    std::list<playerType> l = parseArgs(nbargs, args);
+    Usage usage = parseArgs(nbargs, args);
+    if(usage.refresh_db) refreshDatabase();
+    if(!usage.start_game) return 0;
+
+    std::list<playerType> types;
+    for(int j=0; j<usage.local; j++) {
+        types.push_front(LOCAL);
+    }
+    /*for(int j=0; j<usage.network; j++) {
+        types.push_front(NETWORK);
+    }
+    for(int j=0; j<usage.bot; j++) {
+        types.push_front(NOT);
+    }*/
+
     Server server;
-    server.addPlayerX(l);
+    server.addPlayers(types);
     server.launchGame();
+
+    return 0;
 }

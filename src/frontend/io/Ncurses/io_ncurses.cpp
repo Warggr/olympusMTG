@@ -17,11 +17,11 @@ void NcursesIO::draw_full_rectangle(char color, const Rect& zone) const {
 	wattroff(win, A_BOLD | A_STANDOUT);
 }
 
-void NcursesIO::draw_rectangle(char color, const Rect& zone, int linewidth) const {
+void NcursesIO::draw_rectangle(char, const Rect& zone, int) const {
 	WINDOW* win = winzones[zone.zone];
 	mvwprintw(win, zone.z, zone.y, "/"); for(int i=0; i<zone.width-2; i++) printw("-"); printw("\\");
 	for(int i=0; i<zone.height-2; i++){
-		mvwprintw(win, zone.z+i+1, zone.y, "|"); for(int i=0; i<zone.width-2; i++) printw("*"); printw("|");
+		mvwprintw(win, zone.z+i+1, zone.y, "|"); for(int j=0; j < zone.width - 2; j++) printw("*"); printw("|");
 	}
 	mvwprintw(win, zone.bottom(), zone.y, "\\"); for(int i=0; i<zone.width-2; i++) printw("-"); printw("//");
 }
@@ -40,12 +40,12 @@ void NcursesIO::erase_surface(const Rect& zone) const {
 	}
 }
 
-void NcursesIO::print_text(const char* text, char color, int y, int z) const {
+void NcursesIO::print_text(const char* text, char, int y, int z) const {
     WINDOW* win = winzones[y >> 11]; y = y & 0x7ff;
     mvwprintw(win, z, y, "%s", text);
 }
 
-void NcursesIO::draw_boxed_text(const char* text, char color, char backgr_color, int y, int z, int width) const {
+void NcursesIO::draw_boxed_text(const char* text, char color, char, int y, int z, int width) const {
 	WINDOW* win = winzones[y >> 11]; y = y & 0x7ff;
 	if(color & AbstractIO::HIGH2) wattron(win, A_BOLD);
 	if(color & AbstractIO::HIGH1) wattron(win, A_STANDOUT);
@@ -62,7 +62,7 @@ void NcursesIO::message(const char* text) const {
 	mvwprintw(message_zone, 0, 0, "%s", text);
 }
 
-void NcursesIO::draw_permanent(const Rect& zone, const std::string& name, char color, bool tapped, bool highlight, bool basicImg) const {
+void NcursesIO::draw_permanent(const Rect& zone, const std::string& name, char color, bool tapped, bool highlight, bool) const {
 	WINDOW* win = winzones[zone.zone];
 	wattron(win, COLOR_PAIR(color+1));
 	char sep = tapped ? '/' : '|';

@@ -1,4 +1,4 @@
-#include "Dictionary/include/lib1_dict.h"
+#include "lib1_dict.h"
 #include "filereader.h"
 #include "headE_enums.h"
 #include "build_types.h"
@@ -30,7 +30,7 @@ effect_type PlainFileReader::readAbilityType(){ //gets only the action
 	if(ret == dicts->dict_abiltypes.not_found){
 		throw DeckbuildingError(std::string("Invalid ability type '") + ability + "'");
 	}
-	else return ret->second;
+	else return *ret;
 }
 
 short int PlainFileReader::readNumber(char a, bool can_be_zero, bool can_be_negative){
@@ -42,7 +42,7 @@ short int PlainFileReader::readNumber(char a, bool can_be_zero, bool can_be_nega
 		if(!can_be_negative && b < 0) throw DeckbuildingError("Invalid ability parameter: expected positive number");
 		return b;
 	}
-	else{ throw DeckbuildingError("Invalid ability parameter: expected a number"); return 0; }
+	else{ throw DeckbuildingError("Invalid ability parameter: expected a number"); }
 }
 
 inline mtg::manatype read_mana_to_add(char a){
@@ -126,7 +126,7 @@ void PlainFileReader::readCardType(card_type& type) {
     if(a == 'A') { type.artifact = 1; a = ifile.get(); }
     if(a == 'L') { type.land = 1; a = ifile.get(); }
     switch (a) {
-        case ' ': type.underlying = card_type::flagged; return;
+        case ' ': return; //underlying is 'flagged' by default
         case 'I': type.underlying = card_type::instant; break;
         case 'P': type.underlying = card_type::planeswalker; break;
         case 'C': type.underlying = card_type::creature; break;
@@ -144,15 +144,14 @@ void PlainFileReader::readCosts(Mana &mana, bool &tapsymbol, WeirdCost *&others)
         int j;
         for(j=0; j<30; j++) {
             copy[j] = ifile.get();
-            if(copy[j-1] != ',' && copy[j-1] != ':') break;//reading one cost
+            if(copy[j] == ',' || copy[j] == ':') break; //reading one cost
         }
         if(j==30) raise_error("Error: cost is longer than 30 symbols; are you sure you are declaring the cost of an activated ability?");
-        if(copy[0] == 'T'){
+        if(copy[0] == 'T') {
             tapsymbol = true;
-        }
-        else{
+        } else {
             mana = Mana(copy);
         }
-        if(copy[j-1] == ':') break;
+        if(copy[j] == ':') break;
     }
 }

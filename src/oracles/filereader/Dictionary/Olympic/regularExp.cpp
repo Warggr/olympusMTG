@@ -1,3 +1,6 @@
+#ifndef WARGGRS_OLYMPIC_DICT_PART_2
+#define WARGGRS_OLYMPIC_DICT_PART_2
+
 #include "lib1_dictionary.h"
 
 template<typename T>
@@ -18,12 +21,10 @@ Dictionary_tpl<T>::Dictionary_tpl(int nbinserts, const char* const* inserts): ro
 }
 
 template<typename T>
-SearchTreeNode<T>::SearchTreeNode(const char *name, int namelen, bool valid): valid(valid) { //makes a deep copy of name
-    nnamelen = namelen;
+SearchTreeNode<T>::SearchTreeNode(const char *name, int namelen, bool valid): valid(valid), nnamelen(namelen) { //makes a deep copy of name
     nodename = new char[nnamelen+1];
     for(uint i=0; i<nnamelen; i++) nodename[i] = name[i];
     nodename[nnamelen] = 0;
-    for(auto & i : children) i = nullptr;
 }
 
 template<typename T>
@@ -32,7 +33,7 @@ SearchTreeNode<T>* SearchTreeNode<T>::existing_append(const char* name, int name
 	int x = 0; //position of the first divergence (we know the first letter is the same)
 	while(true){
 		//if((name[x] < '_' || name[x] > 'z') && name[x] != 0) throw std::invalid_argument(name[x] + " is invalid: Keys should consists of lowercase letters, ` or _");
-		//std::cout << "COMPARING " << name[x] << " with " << nodename[x] << std::endl;
+		std::cout << "COMPARING " << name[x] << " with " << nodename[x] << "\n";
 		if(name[x] == 0 && nodename[x] == 0){ //if we found the exact word in the tree
 		    valid = true;
 			identifier = id; //the placeholder node becomes an answer node
@@ -40,7 +41,8 @@ SearchTreeNode<T>* SearchTreeNode<T>::existing_append(const char* name, int name
 		}
 		else if(nodename[x] == 0){ //new node is a child of old node
 			int pos = name[x] - '_';
-			append(&(children[pos]), name+x+1, namelen-x-1, id); //full name, minus common characters, minus one character which is given by the position in the tree
+			std::cout << pos << "\n";
+			append(children[pos], name+x+1, namelen-x-1, id); //full name, minus common characters, minus one character which is given by the position in the tree
 			return this;
 		}
 		else if(name[x] == 0){ //old node is a child of new node
@@ -54,11 +56,11 @@ SearchTreeNode<T>* SearchTreeNode<T>::existing_append(const char* name, int name
 			nodename = this_new_name;
 
 			auto* new_child = new SearchTreeNode(name, namelen, id);
-			new_child->set_child(last_char_of_old_name - '_', this);
+			new_child->children[last_char_of_old_name - '_'] = this;
 			return new_child;
 		}
 		else if(name[x] != nodename[x]){ //both nodes are siblings
-			//std::cout << nodename << " and " << name << " are siblings!\n";
+			std::cout << nodename << " and " << name << " are siblings!\n";
 			auto* new_child = new SearchTreeNode(name+x+1, namelen-x-1, id);
 
 			char last_char_of_old_name = nodename[x]; //the last differenciating char will be lost when updating the node's name,
@@ -73,8 +75,8 @@ SearchTreeNode<T>* SearchTreeNode<T>::existing_append(const char* name, int name
 			nodename = this_new_name;
 
 			auto* common_parent = new SearchTreeNode(tmp, x, -1);
-			common_parent->set_child(name[x] - '_', new_child);
-			common_parent->set_child(last_char_of_old_name - '_', this);
+			common_parent->children[name[x] - '_'] = new_child;
+			common_parent->children[last_char_of_old_name - '_'] = this;
 
 			return common_parent;
 		}
@@ -86,16 +88,15 @@ SearchTreeNode<T>* SearchTreeNode<T>::existing_append(const char* name, int name
 }
 
 template<typename T>
-void SearchTreeNode<T>::append(SearchTreeNode<T>** root, const char* name, int namelen, T id){
-	//As a user, you can ignore the return value. This method will: return this; when used on the tree root
-	//You should also be aware that -1 is used for values which are not in the table. Thus giving your key the id -1 is not a good idea.
-	if(*root == 0){
-		auto* new_child = new SearchTreeNode(name, namelen, id);
-		*root = new_child;
+void SearchTreeNode<T>::append(SearchTreeNode<T>*& root, const char* name, int namelen, T id){
+	//You should also be aware that -1 is used for values which are not in the table.
+	// Thus giving your key the id -1 is not a good idea.
+	if(root == nullptr){
+		root = new SearchTreeNode<T>(name, namelen, id);
+	} else {
+		root = root->existing_append(name, namelen, id);
 	}
-	else{
-		*root = (*root)->existing_append(name, namelen, id);
-	}
+	root->show(0);
 }
 
 template<typename T>
@@ -120,9 +121,9 @@ dict_iterator_tpl<T> SearchTreeNode<T>::find(const char* key) const {
 }
 
 template<typename T>
-void SearchTreeNode<T>::show(int depth){
+void SearchTreeNode<T>::show(int depth) const {
 	for(int i=0; i<depth; i++) std::cout << " ";
-	for(int i=0; i<nnamelen; i++) std::cout << nodename[i];
+	for(uint i=0; i<nnamelen; i++) std::cout << nodename[i];
 	if(nodename[nnamelen] != 0) std::cout << "[!error: not NULL-terminated or wrong length]";
 	else std::cout << "0";
 	std::cout << "(with value " << identifier << ")" << std::endl;
@@ -130,3 +131,5 @@ void SearchTreeNode<T>::show(int depth){
 		if(i != 0) i->show(depth+1);
 	}
 }
+
+#endif //WARGGRS_OLYMPIC_DICT_PART_2

@@ -2,23 +2,24 @@
 #define OLYMPUS_HEADER_5_YGGDRASIL_H
 
 #include <condition_variable>
+#include <iterator>
 
 template<typename T> class PermanentTN;
 class AbPermanentN;
 class Permanent;
 
 template<typename T, bool iconst>
-class iterator{
+class iterator: public std::bidirectional_iterator_tag {
     using BasicObj = typename std::conditional<iconst, const T, T>::type;
     using BasicCont = typename std::conditional<iconst, const PermanentTN<T>, PermanentTN<T>>::type;
 
     BasicCont* pointed;
     bool is_primary;
 public:
-    iterator(): pointed(0), is_primary(false){};
+    iterator(): pointed(nullptr), is_primary(false){};
     iterator(BasicCont* pted, bool primary): pointed(pted), is_primary(primary){};
     bool get_primary(){return is_primary; }
-    //void set_primary(bool prim){is_primary = prim; };
+    //void set_primary(bool prim){ is_primary = prim; }
     iterator operator++(){
         pointed = pointed->next;
         return *this;
@@ -45,7 +46,7 @@ public:
 };
 
 template<bool iconst>
-class iterator<Permanent, iconst>{
+class iterator<Permanent, iconst>: public std::bidirectional_iterator_tag {
     using BasicObj = typename std::conditional<iconst, const Permanent, Permanent>::type;
     using BasicCont = typename std::conditional<iconst, const AbPermanentN, AbPermanentN>::type;
 

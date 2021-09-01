@@ -9,7 +9,7 @@ bool AllegroIO::simpleChoice(const char *optTrue, const char *optFalse) {
         switch(dir) {
             case UP:
             case DOWN:
-                current = !current;
+                current = !current; break;
             case ENTER:
                 return current;
             case MOUSE: //TODO

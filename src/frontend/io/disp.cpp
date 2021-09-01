@@ -6,7 +6,7 @@
 #include "oracles/classes/8options.h"
 #include "oracles/classes/PermOption.h"
 
-ImplementIO* AbstractIO::god = nullptr;
+thread_local AbstractIO* AbstractIO::god = nullptr;
 
 /*void Resolvable::disp(const Rect& zone, bool highlight) const {
 	ImplementIO::god->draw_boxed_text(describe(), AbstractIO::BLACK, highlight ? AbstractIO::HIGH2 : AbstractIO::WHITE, zone.y, zone.z, zone.width);
@@ -37,7 +37,7 @@ void AbstractIO::disp(const std::unique_ptr<Card> &card, const Rect &pos, bool h
     disp(*(card->oracle), pos, highlight);
 }
 
-void AbstractIO::disp(const Option* opt, const Rect &pos, bool highlight) {
+void AbstractIO::disp(const EmptyOption* opt, const Rect &pos, bool highlight) {
     (void) opt; (void) pos; (void) highlight; //TODO
 }
 

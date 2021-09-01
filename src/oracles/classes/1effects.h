@@ -34,7 +34,8 @@ class Effect_H { //an Effect_H is a printed instruction such as "X fights Y, and
 public:
 	Effect_H() = default;
 	Effect_H(ReaderVisitor& reader){ init(reader); }
-	Effect_H(Effect_H&& other) noexcept : nb_parameters(other.nb_parameters), parameters(other.parameters) { effects = std::move(effects); }
+	Effect_H(Effect_H&& other) noexcept : nb_parameters(other.nb_parameters), parameters(other.parameters) { effects = std::move(other.effects); }
+	~Effect_H() { delete parameters; }
 	void init(ReaderVisitor& reader);
 	std::string describe(const std::string& known_sourcename) const;
 	uint8_t getNbParams() const { return nb_parameters; }

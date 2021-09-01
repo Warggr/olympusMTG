@@ -1,5 +1,5 @@
 #include "headC_constants.h"
-#include "dictholder.h"
+#include "oracles/filereader/Dictionary/dictholder.h"
 
 const std::string trigger_descriptions[] = {"~ enters the battlefield",
 "~ leaves the battlefield",

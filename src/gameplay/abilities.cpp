@@ -45,8 +45,8 @@ void AtomEffect_H::activate(Targeter* list_of_targets, Player* ctrl, Target* ori
 	    case untap:
             (dynamic_cast<Permanent*>(target1))->untap(); break;
         default:
-			gdebug(DBG_IMPORTANT | DBG_INTERNAL) << "Internal error: this ability ("<< type <<") hasn't been implemented yet\n";
-	}
+			gdebug(DBG_IMPORTANT | DBG_INTERNAL) << "Internal error: this ability (" << static_cast<int>(type) <<") hasn't been implemented yet\n";
+    }
 }
 
 //To understand the use of the Target* origin, a quick example: Niv-Mizzet, the Firemind. His ability "ping 1" goes on the stack.

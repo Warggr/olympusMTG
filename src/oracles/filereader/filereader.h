@@ -7,7 +7,7 @@
 #include "headE_enums.h"
 #include "build_types.h"
 #include "visitor.h"
-#include "dictholder.h"
+#include "oracles/filereader/Dictionary/dictholder.h"
 
 class WeirdCost;
 
@@ -21,9 +21,9 @@ private:
     void read_section_othercasts(CardOptionListNode *&node) override;
     void readCosts(Mana& mana, bool& tapsymbol, WeirdCost*& others) override;
 
-    uint nb_phrases(char ending_character); //Reads how many phrases there are, separated by ';' and ended by '<'
-    void readNumberOfObjects(uint& nb) override { nb = nb_phrases(';'); }
-    void readNumberOfObjects(uint8_t& nb) override { nb = nb_phrases(';'); }
+    uint nb_phrases(); //Reads how many phrases there are, separated by . and ended by '<' or '}'
+    void readNumberOfObjects(uint& nb) override { nb = nb_phrases(); }
+    void readNumberOfObjects(uint8_t& nb) override { nb = nb_phrases(); }
 
     void check_safepoint(char expected, const char* error_msg);
     void raise_error(const std::string& message) override;
@@ -44,13 +44,19 @@ public:
     bool read_one_criterion(Identifier &chars, Identifier &requs);
     void read_selector(Identifier &chars, Identifier &requs);
 
-    void readActAb(Mana &mana, WeirdCost*& costs, Effect_H *&effects, bool &tapsymbol, bool &ismanaability, bool& instantspeed) override;
-    void readEffectH(uint8_t &nb_params, char *&params, std::forward_list<AtomEffect_H> &atoms) override;
+    void readActAb(Mana &mana, WeirdCost*& costs, Effect_H* effects, bool &tapsymbol, bool &ismanaability, bool& instantspeed) override;
+    void readEffectH(uint8_t &nb_params, char*& params, std::forward_list<AtomEffect_H> &atoms) override;
     void readAtomEffect(effect_type& type, flag_t*& params, uint8_t& nbparams, char* param_hashtable) override;
 
     void readTriggerType(trigtype& type) override;
     void readSelector(Identifier &chars, Identifier &requs) override;
     void readMainSpell(SpellOption& cast) override;
 };
+
+#ifdef F_STRICT
+#define pedantic_safepoint(a, b) check_safepoint(a, b)
+#else
+#define pedantic_safepoint(a, b) ifile.get()
+#endif
 
 #endif //OLYMPUS_FILEREADER_H

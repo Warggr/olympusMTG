@@ -4,8 +4,6 @@
 #include <cstdlib>
 #include <string>
 
-using flag_t = unsigned char;
-
 namespace target_type {
     constexpr flag_t damageable = 0x80,
             optionable = 0x40,
@@ -76,6 +74,8 @@ struct card_type {
     std::string toString() const;
 };
 
-enum trigtype {};
+enum trigtype {
+    etb, ltb, statechange, becomes, attacks, is_damaged
+};
 
 #endif //OLYMPUS_HEAD_E_ENUMS_H

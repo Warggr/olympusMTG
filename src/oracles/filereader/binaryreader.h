@@ -30,7 +30,7 @@ public:
     void readEffectH(uint8_t &nb_params, char *&params, std::forward_list<AtomEffect_H> &atoms) override;
     void readTriggerType(trigtype& type) override;
     void readAtomEffect(effect_type& type, flag_t*& params, uint8_t& nbparams, char* param_hashtable) override;
-    void readActAb(Mana &mana, WeirdCost*& add_costs, Effect_H *&effects, bool &tapsymbol, bool &ismanaability, bool& instantspeed) override;
+    void readActAb(Mana &mana, WeirdCost*& add_costs, Effect_H* effects, bool &tapsymbol, bool &ismanaability, bool& instantspeed) override;
 
     void readMainSpell(SpellOption& cast) override;
 

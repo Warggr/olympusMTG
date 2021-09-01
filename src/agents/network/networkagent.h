@@ -20,7 +20,7 @@ public:
 
     void setName(const char* name);
 	std::string getName() override { return name; }
-    //virtual Option* chooseOpt() override { return nullptr; }
+    //virtual EmptyOption* chooseOpt() override { return nullptr; }
     void setSock(int sock);
 
     std::vector<OracleDescr> getDeck() override;

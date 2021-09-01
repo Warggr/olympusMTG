@@ -49,15 +49,15 @@ void BinaryReader::readTriggerType(trigtype& type) {
 void BinaryReader::readAtomEffect(effect_type& type, flag_t*& params, uint8_t& effect_params, char* param_hashtable) {
     (void) effect_params; (void) param_hashtable;
     directRead(type);
-    int nb_params = target_type::target_numbers[type];
+    int nb_params = target_type::target_numbers[static_cast<int>(type)];
     params = new flag_t[nb_params];
     ifile.read(reinterpret_cast<char*>(params), nb_params);
 }
 
-void BinaryReader::readActAb(Mana& mana, WeirdCost*& cost, Effect_H*& effects, bool &tapsymbol, bool &ismanaability, bool& instantspeed) {
+void BinaryReader::readActAb(Mana& mana, WeirdCost*& cost, Effect_H* effects, bool &tapsymbol, bool &ismanaability, bool& instantspeed) {
     (void) cost; //TODO implement WeirdCost
     directRead(mana);
-    effects = new Effect_H(*this);
+    effects->init(*this);
     char twobools = ifile.get();
     tapsymbol = twobools & 0x1; ismanaability = twobools & 0x2; instantspeed = twobools & 0x4;
 }

@@ -1,1 +1,1 @@
-add_library(OlympicDict STATIC regularExp.cpp)
+add_library(OlympicDict INTERFACE) #OlympicDict is a header-only template.

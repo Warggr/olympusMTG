@@ -1,0 +1,155 @@
+[
+	{	"name":"triggers",
+		"content":[
+			{"description": "enters the battlefield",
+				"short": "etb",
+				"arguments": []},
+			{"description": "leaves the battlefield",
+				"short": "ltb",
+				"arguments": []},
+			{"description": "changes state",
+				"short": "statechange",
+				"arguments": [
+					{ "type":"enum", "values": [
+						{"yes":"tapped", "no":"untapped"},
+						{"yes":"transformed","no":"transformed back"},
+						{"yes":"flipped","no":"unflipped"},
+						{"yes":"phased out","no":"phased in"}] }
+				]},
+			{"description": "becomes something",
+				"short": "becomes",
+				"arguments": [
+					{ "type":"enum", "values": [
+						"monstrous", "adapted", "exerted", "renowed"
+					]}
+				]},
+			{"description": "attacks",
+				"short": "attacks",
+				"arguments": []},
+			{"description": "is dealt damage",
+				"short": "is_damaged",
+				"arguments": [{ "type":"gameobject"}]},
+		]
+	},
+
+	{	"name":"effects",
+		"content":[
+			{"description": "%1 deals ? damage to %2",
+				"short": "ping",
+				"arguments": []},
+			{"description": "%1 draws ? cards",
+				"short": "draw",
+				"arguments": []},
+			{"description": "%1 gains ? life",
+				"short": "add_life",
+				"arguments": []},
+			{"description": "%1's life total becomes ?",
+				"short": "set_life",
+				"arguments": []},
+			{"description": "%1 one mana of color ?",
+				"short": "add",
+				"arguments": []},
+			{"description": "Destroy %1",
+				"short": "destroy",
+				"arguments": []},
+			{"description": "Exile %1",
+				"short": "exile",
+				"arguments": []},
+			{"description": "Counter %1",
+				"short": "counter",
+				"arguments": []},
+			{"description": "Put ? +1/+1 counters on %1",
+				"short": "put_counter",
+				"arguments": []},
+			{"description": "Untap %1",
+				"short": "untap"}
+		]
+	},
+
+	{	"name": "all_keywords",
+		"content": [
+			"vigilance"
+		]
+	},
+
+	{	"name": "selectors",
+		"content": [
+			{	"variable": "objtype",
+				"values": [ "player", "permanent", "resolvable", "card"] }
+			{	"variable": "type",
+				"values": [
+					{	"value": "creature",
+						"subtypes": [
+							"advisor", "aetherborn", "ally", "angel", "antelope", "ape", "archer", "archon",
+							"army", "artificer", "assassin", "assembly-worker", "atog", "aurochs", "avatar", "azra",
+							"badger", "barbarian", "basilisk", "bat", "bear", "beast", "beeble", "berserker",
+							"bird", "blinkmoth", "boar", "bringer", "brushwagg", "camarid", "camel", "caribou",
+							"carrier", "cat", "centaur", "cephalid", "chimera", "citizen", "cleric", "cockatrice",
+							"construct", "coward", "crab", "crocodile", "cyclops", "dauthi", "demigod", "demon",
+							"deserter", "devil", "dinosaur", "djinn", "dog", "dragon", "drake", "dreadnought",
+							"drone", "druid", "dryad", "dwarf", "efreet", "egg", "elder", "eldrazi",
+							"elemental", "elephant", "elf", "elk", "eye", "faerie", "ferret", "fish",
+							"flagbearer", "fox", "frog", "fungus", "gargoyle", "germ", "giant", "gnome",
+							"goat", "goblin", "god", "golem", "gorgon", "graveborn", "gremlin", "griffin",
+							"hag", "harpy", "hellion", "hippo", "hippogriff", "homarid", "homunculus", "horror",
+							"horse", "human", "hydra", "hyena", "illusion", "imp", "incarnation", "insect",
+							"jackal", "jellyfish", "juggernaut", "kavu", "kirin", "kithkin", "knight", "kobold",
+							"kor", "kraken", "lamia", "lammasu", "leech", "leviathan", "lhurgoyf", "licid",
+							"lizard", "manticore", "masticore", "mercenary", "merfolk", "metathran", "minion", "minotaur",
+							"mole", "monger", "mongoose", "monk", "monkey", "moonfolk", "mouse", "mutant",
+							"myr", "mystic", "naga", "nautilus", "nephilim", "nightmare", "nightstalker", "ninja",
+							"noble", "noggle", "nomad", "nymph", "octopus", "ogre", "ooze", "orb",
+							"orc", "orgg", "otter", "ouphe", "ox", "oyster", "pangolin", "peasant", "pegasus",
+							"pentavite", "pest", "phelddagrif", "phoenix", "phyrexian", "pilot", "pincher", "pirate",
+							"plant", "praetor", "prism", "processor", "rabbit", "rat", "rebel", "reflection",
+							"rhino", "rigger", "rogue", "sable", "salamander", "samurai", "sand", "saproling",
+							"satyr", "scarecrow", "scion", "scorpion", "scout", "sculpture", "serf", "serpent",
+							"servo", "shade", "shaman", "shapeshifter", "shark", "sheep", "siren", "skeleton",
+							"slith", "sliver", "slug", "snake", "soldier", "soltari", "spawn", "specter",
+							"spellshaper", "sphinx", "spider", "spike", "spirit", "splinter", "sponge", "squid",
+							"squirrel", "starfish", "surrakar", "survivor", "tentacle", "tetravite", "thalakos", "thopter",
+							"thrull", "treefolk", "trilobite", "triskelavite", "troll", "turtle", "unicorn", "vampire",
+							"vedalken", "viashino", "volver", "wall", "warlock", "warrior", "weird", "werewolf",
+							"whale", "wizard", "wolf", "wolverine", "wombat", "worm", "wraith", "wurm",
+							"yeti", "zombie", "zubera" ] },
+					{	"value": "artifact",
+						"subtypes": [
+							"clue", "contraption", "equipment", "food", "fortification", "gold", "treasure", "vehicle"] },
+					{	"value": "enchantment",
+						"subtypes": [
+							"aura", "cartouche", "curse", "rune", "saga", "shrine" ] },
+					{	"value": "land",
+						"subtypes": [
+							"plains", "island", "swamp", "mountain", "forest", "desert", "gate", "lair", "locus", "urza's", "mine", "power-plant", "tower"] },
+					{	"value": "planeswalker",
+						"subtypes": [
+							"ajani", "aminatou", "angrath", "arlinn", "ashiok", "basri", "bolas", "calix",
+							"chandra", "dack", "daretti", "davriel", "domri", "dovin", "elspeth", "estrid",
+							"freyalise", "garruk", "gideon", "huatli", "jace", "jaya", "jeska", "karn",
+							"kasmina", "kaya", "kiora", "koth", "liliana", "lukka", "nahiri", "narset",
+							"niko", "nissa", "nixilis", "oko", "ral", "rowan", "saheeli", "samut",
+							"sarkhan", "serra", "sorin", "szat", "tamiyo", "teferi", "teyo", "tezzeret",
+							"tibalt", "tyvar", "ugin", "venser", "vivien", "vraska", "will", "windgrace",
+							"wrenn", "xenagos", "yanggu", "yanling"] },
+					{	"value": "instant",
+						"subtypes": [
+							"adventure", "arcane", "trap" ] },
+					{	"value": "sorcery",
+						"subtypes": [
+							"adventure", "arcane", "trap" ] },
+					{	"value": "actability",
+						"subtypes": [] },
+					{	"value": "trigability",
+						"subtypes": [] }
+				] }
+			{ "variable": "subtype",
+				"values": [] },
+			{ "variable": "color",
+				"values": ["white", "blue", "black", "red", "green"] },
+			{ "variable": "color_frame",
+				"values": ["colorless", "white", "blue", "balck", "red", "green"] },
+			{ "variable": "controller",
+				"values": [ "you", "opponent"] }
+		]
+	}
+]

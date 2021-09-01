@@ -1,1 +1,1 @@
-add_library(StdMapDict STATIC dict.cpp)
+add_library(StdMapDict INTERFACE)

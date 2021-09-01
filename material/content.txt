@@ -1,10 +1,15 @@
 OLYMPUS-MTG: Runtime-required materials
 Materials/
+|- database/
+    |- oracles.txt
+    |- LEA.txt
+    ...
+    |- ZRN.txt
+|- decks/
+   |- syntax_guide.txt
 |- fonts/
    |- BelerenBold.ttf
    |- matrixb.ttf
-|- decks/
-   |- magicDecks.txt
 |- images/
    |- wallpapers/
    	|- Omnath.jpg

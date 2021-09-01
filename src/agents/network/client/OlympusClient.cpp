@@ -15,7 +15,7 @@ void OlympusClient::play() {
 }
 
 void OlympusClient::query(const char *question) {
-
+    (void) question; //TODO
 }
 
 void OlympusClient::start() {

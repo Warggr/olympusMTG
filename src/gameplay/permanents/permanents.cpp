@@ -24,7 +24,7 @@ Land::Land(std::unique_ptr<Card> src, Player* pl): Permanent(std::move(src), pl)
 }
 
 Permanent::Permanent(std::unique_ptr<Card> src, Player* pl): Target(src->get_name()),
-	source(std::move(src)), ctrl(pl), first_actab(nullptr), existing_statics(nullptr),
+	source(std::move(src)), ctrl(pl), first_actab(nullptr),
 	nb_actabs(0), etbBeforeThisTurn(0), untapped(1), keywords(0), color(source->get_color())
 {
 	t_type = target_type::permanent;

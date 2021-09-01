@@ -39,14 +39,14 @@ public:
         (void) object; //TODO implement
     };
 
-    iterator<T, false> begin() { return children.front().begin(); }
-    iterator<T, false> end() const { return children.back().end(); }
-    iterator<T, true> cbegin() const { return children.front().cbegin(); }
-    iterator<T, true> cend() const { return children.back().cend(); }
-    iterator<Permanent, false> pbegin() { return children.front().pbegin(); }
-    iterator<Permanent, false> pend() const { return children.back().pend(); }
-    iterator<Permanent, true> cpbegin() const { return children.front().cpbegin(); }
-    iterator<Permanent, true> cpend() const { return children.back().cpend(); }
+    iterator<T, false> begin() { if(children.empty()) return end(); else return children.front().begin(); }
+    iterator<T, false> end() const { return {}; }
+    iterator<T, true> cbegin() const { if(children.empty()) return cend(); else return children.front().cbegin(); }
+    iterator<T, true> cend() const { return {}; }
+    iterator<Permanent, false> pbegin() { if(children.empty()) return pend(); else return children.front().pbegin(); }
+    iterator<Permanent, false> pend() const { return {}; }
+    iterator<Permanent, true> cpbegin() const { if(children.empty()) return cpend(); return children.front().cpbegin(); }
+    iterator<Permanent, true> cpend() const { return {}; }
 };
 
 #endif //OLYMPUS_YGGDRASIL_2_H

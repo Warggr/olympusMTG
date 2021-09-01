@@ -50,11 +50,11 @@ void BinaryWriter::readTriggerType(trigtype& type) {
 
 void BinaryWriter::readAtomEffect(effect_type& type, flag_t*& params, uint8_t&, char*) {
     directRead(type);
-    int nb_params = target_type::target_numbers[type];
+    int nb_params = target_type::target_numbers[static_cast<int>(type)];
     write(reinterpret_cast<char*>(params), nb_params);
 }
 
-void BinaryWriter::readActAb(Mana& mana, WeirdCost*& add_costs, Effect_H*& effects,
+void BinaryWriter::readActAb(Mana& mana, WeirdCost*& add_costs, Effect_H* effects,
                              bool& tapsymbol, bool& ismanaability, bool& instantspeed) {
     (void) add_costs;
     directRead(mana);
@@ -72,4 +72,16 @@ void BinaryWriter::read_section_othercasts(CardOptionListNode *&node) {
 
 void BinaryWriter::readMainSpell(SpellOption &cast) {
     (void) cast; //TODO
+}
+
+void BinaryWriter::readSelector(Identifier &chars, Identifier &requs) {
+    (void) chars; (void) requs; //TODO
+}
+
+void BinaryWriter::readModifier(char &i, Modifier &first_effect, Modifier *&other_effects) {
+    (void) i; (void) first_effect; (void) other_effects; //TODO
+}
+
+void BinaryWriter::readCosts(Mana &mana, bool &tapsymbol, WeirdCost *&others) {
+    (void) mana; (void) tapsymbol; (void) others; //TODO
 }

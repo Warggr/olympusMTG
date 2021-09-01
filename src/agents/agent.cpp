@@ -1,7 +1,11 @@
 #include "agent.h"
+#ifdef MOCK_AGENT
+#include "mock/MockAgent.h"
+#else
 #include "bot/botagent.h"
 #include "local/localagent.h"
 #include "network/networkagent.h"
+#endif
 
 std::unique_ptr<Agent> createAgent(playerType desc) {
     switch(desc) {

@@ -19,7 +19,6 @@ protected:
 	std::unique_ptr<Card> source;
 	Player* ctrl;
 	PermOption* first_actab;
-	ModifListNode* existing_statics;
 	int nb_actabs;
 	uchar etbBeforeThisTurn : 1, untapped : 1;
 	char keywords; //indestructible -
@@ -43,7 +42,7 @@ public:
     type getType() const;
 
     Player* getController() override { return ctrl; }
-    uptr<OptionAction> chooseOptionAction();
+    uptr<OptionAction> chooseOptionAction() override;
 
     friend class AbstractIO;
 };

@@ -1,4 +1,4 @@
-#include "server.h"
+#include "networkagent.h"
 #include "agents/agent.h"
 #include "agents/network/networkmanager.h"
 #include "control/7game.h"
@@ -23,7 +23,7 @@ void Server::addPlayer(playerType type) {
     (*players.begin())->setup();
 }
 
-void Server::addPlayerX(const std::list<playerType>& types) {
+void Server::addPlayers(const std::list<playerType>& types) {
     std::list<std::thread> setups;
     for(auto desc : types) {
         std::unique_ptr<Agent> agent = createAgent(desc);

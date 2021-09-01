@@ -77,7 +77,7 @@ Target* DefaultUI::iterate(bool needstarget, char returntypeflags){
 	}*/
 }
 
-/*bool go_up(Option*& iter, int& pos, int& metapos, Player* asker, Option*& lower_border){
+/*bool go_up(EmptyOption*& iter, int& pos, int& metapos, Player* asker, EmptyOption*& lower_border){
 	if(iter->prev == 0) return false;
 	--pos;
 	if(iter == asker->myoptions[metapos]){
@@ -90,7 +90,7 @@ Target* DefaultUI::iterate(bool needstarget, char returntypeflags){
 	return true;
 }
 
-bool go_down(Option*& iter, int& pos, int& metapos, Player* asker, Option*& lower_border){
+bool go_down(EmptyOption*& iter, int& pos, int& metapos, Player* asker, EmptyOption*& lower_border){
 	if(iter->next == 0) return false;
 	++pos;
 	iter = iter->next;
@@ -110,7 +110,7 @@ uptr<OptionAction> DefaultUI::chooseOpt(bool sorceryspeed) { //asks user to choo
 	int dy, dz;
 	Rect rect = optionZone->get_coordinates(&dy, &dz);
 	int pos = 0;
-	Option* lower_border = asker->first_option(metapos+1);
+	EmptyOption* lower_border = asker->first_option(metapos+1);
 	if(myIO->gmouseActive()){
 		while(rect.z + (pos+1)*dz < myIO->gmouseZ()){
 			if(go_down(iter, pos, metapos, asker, lower_border) == false) break;

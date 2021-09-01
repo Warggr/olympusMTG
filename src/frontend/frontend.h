@@ -14,12 +14,16 @@
  * most hidden information
  */
 
+//FrontEnd acts as a gateway between the program code and the local IO/UI.
+// Every call to FrontEnd will switch the context and update the AbstractIO::god and AbstractUI::god values.
+
 struct FrontEnd {
     ImplementIO io;
     ImplementUI ui;
     CardOracle* mycards;
 
     FrontEnd(): io(), ui(&io) { io.setMenuScene(); }
+    inline void switchContext() { AbstractIO::god = &io; }
     std::string getName();
     std::string getLogin();
     std::ifstream getDeck();

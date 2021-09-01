@@ -8,10 +8,10 @@
 #include <list>
 
 class Target; class Creature; template<typename T> class SpecificTargeter; class Card; class Player;
-class OptionAction; class Option; class SpellOption; class PermOption;
+class OptionAction; class EmptyOption; class SpellOption; class PermOption;
 template<typename T> class CollectionTN; template<typename T> class StateTN;
 
-#ifdef MOCK_AGENT_ONLY
+#ifdef MOCK_AGENT
 enum playerType { MOCK };
 #else
 enum playerType { LOCAL, /*BOT, NETWORK*/  };

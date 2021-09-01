@@ -2,7 +2,7 @@
 #define OLYMPUS_DICTHOLDER_H
 
 #include "oracles/classes/3statics.h"
-#include "Dictionary/include/lib1_dict.h"
+#include "lib1_dict.h"
 #include "headE_enums.h"
 
 enum selectors { types, subtypes, tribes, players };

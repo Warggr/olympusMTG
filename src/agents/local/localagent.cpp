@@ -5,7 +5,7 @@
 
 std::vector<OracleDescr> LocalAgent::getDeck() {
     std::vector<OracleDescr> ret;
-    std::ifstream fb("../material/decks/deck1.dck", std::ios::in);
+    std::ifstream fb("decks/deck1.dck", std::ios::in);
     if(!fb) {
         gdebug(DBG_IMPORTANT | DBG_READFILE) << "Error: no deck\n";
         exit(1);
@@ -15,7 +15,7 @@ std::vector<OracleDescr> LocalAgent::getDeck() {
         fb >> nb >> std::skipws;
         fb.getline(buffer, 1024);
         assert(buffer[0] == ' ');
-        ret.emplace_back(buffer[2] == '"' ? customcard : reference,
+        ret.emplace_back(buffer[1] == '"' ? customcard : reference,
                          nb, std::string(buffer + 1));
     }
     return ret;

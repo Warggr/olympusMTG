@@ -3,12 +3,29 @@
 
 void ModernElement::addElement(UIElement *element, int pos) {
     subWins[pos] = element;
-    if(pos != 0) endLines[pos] = endLines[pos-1] + (orientation == horizontal ? element->coords.width : element->coords.height);
-    else endLines[pos] = (orientation == horizontal ? element->coords.width : element->coords.height);
+    if(orientation == horizontal) {
+        element->coords.y = (pos == 0) ? 0 : endLines[pos-1];
+        element->coords.z = coords.z;
+        element->coords.height = coords.height;
+        endLines[pos] = element->coords.right();
+    } else {
+        element->coords.z = (pos == 0) ? 0 : endLines[pos-1];
+        element->coords.y = coords.y;
+        element->coords.height = coords.height;
+        endLines[pos] = element->coords.right();
+    }
 }
 
 void ModernElement::addLastElement(UIElement* element) {
-    subWins.push_back(element);
+    if(orientation == horizontal) {
+        element->coords.y = endLines[subWins.size()-1];
+        element->coords.z = coords.z;
+        element->coords.height = coords.height;
+    } else {
+        element->coords.z = endLines[subWins.size()-1];
+        element->coords.y = coords.y;
+        element->coords.height = coords.height;
+    }
     subWins.shrink_to_fit();
 }
 

@@ -23,6 +23,9 @@ protected:
 
 //    Identifier casted_id;
 public:
+#ifdef F_TESTS
+    CardOracle(): name("Test card") {}
+#endif
     explicit CardOracle(ReaderVisitor& reader) { get_read(reader); }
     void get_read(ReaderVisitor& reader);
 
@@ -30,6 +33,7 @@ public:
 //    Identifier generate_casted_id() const;
     std::string describe() const;
     inline Mana getCost() const { return rules.cast.cost; }
+    inline const std::string& getName() const { return name; }
     std::vector<std::string> allText(int &power, int &toughness, int& frametype) const;
 
     friend class Card;

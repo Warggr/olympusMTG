@@ -6,6 +6,7 @@ olympus
 material/*
 !material/decks
 !material/content.txt
+!material/constants.json
 
 material/decks/*
 !material/decks/syntax_guide.txt
