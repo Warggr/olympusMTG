@@ -1,0 +1,1 @@
+add_executable(Yggdrasil Yggdrsail.cpp Node.cpp)
