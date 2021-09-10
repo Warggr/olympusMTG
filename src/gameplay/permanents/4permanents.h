@@ -47,14 +47,6 @@ public:
     friend class AbstractIO;
 };
 
-class Artifact: public Permanent{
-public:
-	static constexpr Identifier def_identifier = construct_id_perm(permanent_type::artifact, 0, 0);
-
-	Artifact(uptr<Card> src, Player* pl);
-//	Identifier reload_id() const override;
-};
-
 class Creature: public Permanent, public Damageable{
 private:
 	TriggerEvent triggers_creature[4]; //attacks - blocks - becomes blocked - isn't blocked
@@ -107,18 +99,6 @@ public:
 //	Identifier reload_id() const override;
     Player* getDmgController() override { return ctrl; }
 
-    friend class AbstractIO;
-};
-
-class Land: public Permanent{
-public:
-	static constexpr Identifier def_identifier = construct_id_perm(permanent_type::land, 0, 0);
-
-	Land(uptr<Card> src, Player* pl);
-
-	void untap() override;
-
-//	Identifier reload_id() const override;
     friend class AbstractIO;
 };
 

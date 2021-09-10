@@ -3,6 +3,8 @@ build/
 outputs/
 olympus
 
+olympus.und/
+
 material/*
 !material/decks
 !material/content.txt

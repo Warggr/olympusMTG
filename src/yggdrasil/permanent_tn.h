@@ -2,58 +2,49 @@
 #define OLYMPUS_PERMANENT_TN_H
 
 #include "abstract_n.h"
-template<typename T> class StateTN; class Player;
+#include "gameplay/permanents/4permanents.h"
+class Player;
 
-class AbPermanentN {
+class PermanentN {
 public:
-    AbPermanentN* pprev, * pnext;
-    virtual ~AbPermanentN() = default;
-    virtual const Permanent& get_describedObject(const Permanent* signature_compl) const = 0;
-    virtual Permanent& get_describedObject(Permanent* signature_compl) = 0;
+    virtual ~PermanentN() = default;
+    virtual Permanent* getPermanent() = 0;
+    virtual const Permanent* getPermanent() const = 0;
 };
 
 //the base class is the PermanentTN. It contains (and owns) a permanent.
 template <typename T>
-class PermanentTN: public AbstractN, public AbPermanentN {
+class PermanentTN: public Yggdrasil<T>, public PermanentN {
     T describedObject;
-    std::list<StateTN<T>*> parents;
-    PermanentTN<T>* prev, * next; //PermanentTNs are doubly-linked in order to have fast iterating)
+    std::list<Yggdrasil_base*> parents;
 public:
-    PermanentTN(std::unique_ptr<Card> source, Player* pl, StateTN<T>* par): describedObject(std::move(source), pl),
-    prev(nullptr), next(nullptr) {
-        parents.push_front(par);
-    }
-    //Guideline: linking is always initiated from prev to next (next = x, next->prev = this)
-    void place_before(PermanentTN<T>* nxt) {
-        prev = nxt->prev;
-        next = nxt;
-        nxt->prev = this;
-    }
-    void unlink() { //removes object from its siblings
-        if(prev) prev->next = next;
-        if(next) next->prev = prev;
-    }
-
-    void unstate(){ unlink(); parents.front()->state_out(this); } //changes state
-    //void add(T* per);
-    //void obliterate(){single_out(); delete this; }; //unconnects from siblings & parents, signal its death to its parents (TODO) and deletes itself
-
+    PermanentTN(std::unique_ptr<Card> source, Player* pl): describedObject(std::move(source), pl) {}
     bool empty() const override { return false; }
-    const Permanent& get_describedObject(const Permanent* signature_compl) const override {
-        (void) signature_compl; return describedObject;
-    }
-    Permanent& get_describedObject(Permanent* signature_compl) override {
-        (void) signature_compl; return describedObject;
-    }
+    iterator<T, false> begin() override { return { new ConcreteLeaf<T, false>(this, nullptr) }; }
+    iterator<T, true> cbegin() const override { return { new ConcreteLeaf<T, true>(this, nullptr) }; }
 
-    template<typename X, bool iconst> friend class iterator;
+    ConcreteLeaf<T, false>* createStart(inner_iterator<T, false>* parent) override {
+        return new ConcreteLeaf<T, false>(this, parent);
+    }
+    ConcreteLeaf<T, true>* createStart(inner_iterator<T, true>* parent) const override {
+        return new ConcreteLeaf<T, true>(this, parent);
+    }
+    Leaf<Permanent, false>* pcreateStart(inner_iterator<Permanent, false>* parent) override {
+        return new AdapterLeaf<T, false>( new ConcreteLeaf<T, false>(this, nullptr), parent);
+    }
+    Leaf<Permanent, true>* pcreateStart(inner_iterator<Permanent, true>* parent) const override {
+        return new AdapterLeaf<T, true>( new ConcreteLeaf<T, true>(this, nullptr), parent);
+    }
+    iterator<Permanent, false> pbegin() override {
+        return { new AdapterLeaf<T, false>( new ConcreteLeaf<T, false>(this, nullptr), nullptr) };
+    }
+    iterator<Permanent, true> cpbegin() const override {
+        return { new AdapterLeaf<T, true>(new ConcreteLeaf<T, true>(this, nullptr), nullptr) };
+    }
+    Permanent* getPermanent() override { return &describedObject; }
+    const Permanent* getPermanent() const override { return &describedObject; }
 
-    template<typename X, bool iconst> iterator<X, iconst> xbegin() const {
-        return iterator<X, iconst>(this, true);
-    }
-    template<typename X, bool iconst> iterator<X, iconst> xend() const {
-        return iterator<X, iconst>(next, true);
-    }
+    friend class Leaf<T, true>; friend class Leaf<T, false>;
 };
 
 #endif //OLYMPUS_PERMANENT_TN_H

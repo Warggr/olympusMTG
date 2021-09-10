@@ -116,7 +116,6 @@ set(WANTED_DEBUG_FLAGS "DBG_NONE" CACHE STRING "")
 set(RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/outputs)
 
 add_subdirectory(src)
-add_subdirectory(yggdrasil)
 
 set(CONFIGURED_ONCE TRUE CACHE INTERNAL
         "A flag showing that CMake has configured at least once.")

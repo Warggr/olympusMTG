@@ -15,16 +15,16 @@ bool DefaultUI::chooseattackers(CollectionTN<Creature>& cowards){
             if(attacks){
                 auto newatt = iter;
                 myIO->disp(*newatt, pos, false); //disp creature normally
-                iter++;
+                ++iter;
                 newatt.get_pointed()->unstate(); //move creature to list "warriors"
                 ret = true;
             }
             else{
                 myIO->disp(*iter, pos, false); //disp creature normally
-                iter++;
+                ++iter;
             }
         }
-        else iter++;
+        else ++iter;
         pos.shift(yOff, zOff);
     }
     return ret;
@@ -32,7 +32,7 @@ bool DefaultUI::chooseattackers(CollectionTN<Creature>& cowards){
 
 void DefaultUI::chooseblockers(CollectionTN<Creature>& defenders, StateTN<Creature>& attackers){
     int pos = 0;
-    for(auto blocker = defenders.begin(); blocker != defenders.end(); blocker++){
+    for(auto blocker = defenders.begin(); blocker != defenders.end(); ++blocker){
         if(blocker->isUntapped()){ //untapped
             int y, z;
             permanentZones[4]->get_coordinates(pos, &y, &z);

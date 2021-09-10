@@ -20,13 +20,15 @@ public:
 	static char next_tag;
 	char tag;
 
-	EmptyOption(EmptyOption* pre, EmptyOption* nxt, Mana c): prev(pre), next(nxt), cost(c), instantspeed(0){exists = true; tag = next_tag; next_tag++;};
-	virtual ~EmptyOption() {exists = false; };
+	virtual ~EmptyOption() { exists = false; };
 #else
-	EmptyOption() = default;
-	explicit EmptyOption(Mana c, bool instantspeed): cost(c), instantspeed(instantspeed){};
 	virtual ~EmptyOption() = default; //{ delete additional_costs; }
 #endif
+    explicit EmptyOption(Mana c, bool instantspeed): cost(c), instantspeed(instantspeed){
+#ifdef F_TESTS
+        exists = true; tag = next_tag; next_tag++;
+#endif
+    };
 //	virtual void disp(int y, int z, int width, bool highlight, bool castable) const = 0;
     virtual bool iscastable(const Player* pl) const = 0;
 };

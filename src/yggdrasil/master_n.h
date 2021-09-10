@@ -6,7 +6,7 @@
 
 class BoardN;
 
-class MasterN: public AbstractN {
+class MasterN: public Yggdrasil {
     std::vector<BoardN*> boards;
 public:
     void addPlayerBoard(BoardN* board) { boards.push_back(board); }

@@ -3,46 +3,53 @@
 
 #include "abstract_n.h"
 #include "collection_tn.h"
-#include "gameplay/permanents/4permanents.h"
 #include <memory>
 
 template<typename T, bool iconst> class iterator;
 
-class BoardN: public AbstractN {
+class BoardN: public Yggdrasil<Permanent> {
 public:
-    CollectionTN<Land> mylands;
-    CollectionTN<Artifact> myartos;
+    template<bool b>
+    class myiterator: public inner_iterator<Permanent, b> {
+        isitconst(BoardN, b)* par;
+        char pos : 2;
+    public:
+        myiterator(isitconst(BoardN, b)* par, inner_iterator<Permanent, b>* parent = nullptr):
+            inner_iterator<Permanent, b>(parent), par(par), pos(0) {};
+        void advance() override { pos++; }
+        bool isEnd() const override { return pos == 3; }
+
+        Leaf<Permanent, b>* down() override {
+            return (pos == 0) ? par->myartos.createStart(this) :
+                (pos == 1) ? par->mycreas.pcreateStart(this) :
+                    par->mysuperfriends.pcreateStart(this);
+        }
+    };
+
+    CollectionTN<Permanent> myartos;
     CollectionTN<Planeswalker> mysuperfriends;
     CollectionTN<Creature> mycreas;
     StateTN<Creature>* myattackers {nullptr};
 
-    BoardN(): mylands(this), myartos(this), mysuperfriends(this), mycreas(this) {};
-
-    bool empty() const override { return mylands.empty() && myartos.empty() && mysuperfriends.empty() && mycreas.empty(); }
+    BoardN(): myartos(this), mysuperfriends(this), mycreas(this) {};
 
     void insert(uptr<Card> to_add, Player* pl);
 //    void remove(Permanent* perm, permanent_type type);
 
-    iterator<Permanent, false> pbegin() { return mylands.pbegin(); }
-    iterator<Permanent, false> pend() const { return mycreas.pend(); }
-    iterator<Permanent, true> cpbegin() const { return mylands.cpbegin(); }
-    iterator<Permanent, true> cpend() const { return mycreas.cpend(); }
-
-    iterator<Permanent, false> begin() { return pbegin(); }
-    iterator<Permanent, false> end() const { return pend(); }
-
-    void remove(Permanent* perm) {
-        switch(perm->getType()) {
-            case permanent_type::creature: remove(dynamic_cast<Creature*>(perm)); break;
-            case permanent_type::artifact: remove(dynamic_cast<Artifact*>(perm)); break;
-            case permanent_type::planeswalker: remove(dynamic_cast<Planeswalker*>(perm)); break;
-            case permanent_type::land: remove(dynamic_cast<Land*>(perm)); break;
-        }
-    }
+    void remove(Permanent* perm);
     void remove(Creature* crea);
-    void remove(Artifact* arti);
     void remove(Planeswalker* plan);
-    void remove(Land* land);
+
+    bool empty() const override { return myartos.empty() && mysuperfriends.empty() && mycreas.empty(); }
+
+    iterator<Permanent, false> begin() override { return myartos.begin(); }
+    iterator<Permanent, true> cbegin() const override { return myartos.cbegin(); }
+    ConcreteLeaf<Permanent, false>* createStart(inner_iterator<Permanent, false>* parent) override {
+        return myartos.createStart(new myiterator<false>(this, parent));
+    }
+    ConcreteLeaf<Permanent, true>* createStart(inner_iterator<Permanent, true>* parent) const override {
+        return myartos.createStart(new myiterator<true>(this, parent));
+    }
 };
 
 #endif //OLYMPUS_YGGDRASIL_BOARDN_H

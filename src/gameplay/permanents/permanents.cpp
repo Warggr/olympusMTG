@@ -17,12 +17,6 @@ void Player::insert_permanent(uptr<Card> source){
 	myboard.insert(std::move(source), this);
 }
 
-Land::Land(std::unique_ptr<Card> src, Player* pl): Permanent(std::move(src), pl){
-	/*pl->possiblepool += src->get_cost();
-	pl->highestpool += src->get_cost();
-	pl->check_too_expensive();*/
-}
-
 Permanent::Permanent(std::unique_ptr<Card> src, Player* pl): Target(src->get_name()),
 	source(std::move(src)), ctrl(pl), first_actab(nullptr),
 	nb_actabs(0), etbBeforeThisTurn(0), untapped(1), keywords(0), color(source->get_color())
@@ -125,11 +119,6 @@ Permanent::type Permanent::getType() const {
     return source->get_type().toPermType();
 }
 
-void Land::untap(){
-	Permanent::untap();
-	//ctrl->possiblepool += source->get_cost();
-}
-
 void Planeswalker::activate() {
     /*thisturn = true;
     god.myIO->message("Press UP, SPACE or DOWN to select a loyalty ability");
@@ -144,5 +133,3 @@ void Planeswalker::activate() {
     loyalty -= loyalty_costs[(int) x];
     addtostack(new Resolvable(ctrl, loyalty_abs + x, (Target*) this));*/
 }
-
-Artifact::Artifact(uptr<Card> src, Player* pl): Permanent(std::move(src), pl){}
