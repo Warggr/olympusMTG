@@ -58,7 +58,7 @@ public:
 
     virtual bool keepsHand() = 0;
 
-    virtual std::list<std::unique_ptr<Card>> chooseCardsToKeep(std::list<std::unique_ptr<Card>>& list) = 0;
+    virtual std::list<std::unique_ptr<Card>> chooseCardsToKeep(std::list<std::unique_ptr<Card>>& list, unsigned nbToDiscard) = 0;
 
     virtual bool chooseAttackers(Y_Hashtable<Creature>& mycreas) = 0;
 

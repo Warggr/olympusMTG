@@ -8,7 +8,7 @@
 #include "headC_constants.h"
 
 void Player::resolve_playland(uptr<Card> source){
-	OutputManager::addToLog("  Land played");
+//	OutputManager::addToLog("  Land played");
 	nb_lands_remaining -= 1;
 	insert_permanent(std::move(source));
 }
@@ -17,34 +17,34 @@ void Player::insert_permanent(uptr<Card> source){
 	myboard.insert(std::move(source), this);
 }
 
-Permanent::Permanent(std::unique_ptr<Card> src, Player* pl): Target(src->get_name()),
-	source(std::move(src)), ctrl(pl), first_actab(nullptr),
-	nb_actabs(0), etbBeforeThisTurn(0), untapped(1), keywords(0), color(source->get_color())
+Permanent::Permanent(std::unique_ptr<Card> src, Player* pl): Target(src->get_name()), source(std::move(src)),
+    ctrl(pl), first_actab(nullptr), nb_actabs(0),
+    etbBeforeThisTurn(0), untapped(1), keywords(0), color(source->get_color())
 {
 	t_type = target_type::permanent;
-	src->get_permabs(&first_actab, &nb_actabs);
-	src->get_triggers(trigger_types::PermETB, triggers_permanent[0]);
-	src->get_triggers(trigger_types::PermLTB, triggers_permanent[1]);
-	src->get_triggers(trigger_types::PermStateChange, triggers_permanent[2]);
-	src->get_triggers(trigger_types::PermBecomes, triggers_permanent[3]);
+	source->get_permabs(&first_actab, &nb_actabs);
+	source->get_triggers(trigger_types::PermETB, triggers_permanent[0]);
+	source->get_triggers(trigger_types::PermLTB, triggers_permanent[1]);
+	source->get_triggers(trigger_types::PermStateChange, triggers_permanent[2]);
+	source->get_triggers(trigger_types::PermBecomes, triggers_permanent[3]);
 
 	triggers_permanent[0].trigger(pl, this);
 }
 
 Creature::Creature(std::unique_ptr<Card> src, Player* pl):
-        Permanent(std::move(src), pl), Damageable(0, src.get()){
+        Permanent(std::move(src), pl), Damageable(0, source.get()){
 	t_type = target_type::creature;
 
-	const char* tmp = src->get_flavor_text();
+	const char* tmp = source->get_flavor_text();
 	self_power = tmp[0];
 	self_toughness = tmp[1];
 	set_power = tmp[0];
 	set_toughness = tmp[1];
-	src->get_triggers(trigger_types::CreaAttacks, triggers_creature[0]);
+	source->get_triggers(trigger_types::CreaAttacks, triggers_creature[0]);
 }
 
 Planeswalker::Planeswalker(std::unique_ptr<Card> src, Player* pl):
-    Permanent(std::move(src), pl), Damageable(static_cast<int>(src->get_flavor_text()[0]), src.get()) {
+    Permanent(std::move(src), pl), Damageable(static_cast<int>(source->get_flavor_text()[0]), source.get()) {
     t_type = target_type::planeswalker;
     thisturn = false;
 }

@@ -34,8 +34,7 @@ public:
     inline void setParent(Y_Hashtable<T>* pr) { parent = pr; }
 
     void insert(std::unique_ptr<Card> origin, Player* pl) {
-        (void) origin; (void) pl;
-        //TODO
+        children.template emplace_back(std::move(origin), pl);
     }
 
     bool empty() const override { for(auto& i : children) if(!i.empty()) return false; return true; }
@@ -80,6 +79,9 @@ public:
     Leaf<Permanent, true>* pcreateStart(inner_iterator<Permanent, true>* iter, bool bk) const override {
         return new AdapterLeaf<T, true>(createStart(nullptr, bk), iter);
     }
+#ifdef F_TESTS
+    const std::list<PermanentTN<T>>& getChildren() const { return children; }
+#endif
 };
 
 #endif //OLYMPUS_YGGDRASIL_2_H

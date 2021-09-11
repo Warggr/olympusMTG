@@ -107,8 +107,7 @@ public:
     constexpr iterator(Leaf<T, iconst>* in) : in(in) {};
     iterator operator--() { in = in->next(false); return *this; }
     iterator operator++() { in = in->next(true); return *this; }
-    bool operator==(const iterator& other) const { return *in == *other.in; }
-    bool operator==(const nullptr_t&) const { return in == nullptr; }
+    bool operator==(const iterator& other) const { return in == other.in or *in == *other.in; }
     bool operator!=(const iterator& other) const { return !operator==(other); }
     template<typename S = T>
     typename std::enable_if<!std::is_same<S, Permanent>::value,

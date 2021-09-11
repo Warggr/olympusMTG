@@ -30,7 +30,7 @@ public:
 
     void init(int mult, Y_Hashtable<T>* par) { multiplicity = mult; parent = par; }
     bool empty() const override {
-        return parent->partlyEmpty(multiplicity);
+        return parent == nullptr or parent->partlyEmpty(multiplicity);
     }
     iterator<T, false> begin() override { return { createStart(nullptr, true) }; }
     iterator<T, true> cbegin() const override { return { createStart(nullptr, true) }; }

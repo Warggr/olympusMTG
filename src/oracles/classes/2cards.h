@@ -24,7 +24,7 @@ protected:
 //    Identifier casted_id;
 public:
 #ifdef F_TESTS
-    CardOracle(): name("Test card") {}
+    CardOracle(type_t type): name("Test card"), type(type) {}
 #endif
     explicit CardOracle(ReaderVisitor& reader) { get_read(reader); }
     void get_read(ReaderVisitor& reader);

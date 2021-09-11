@@ -5,6 +5,7 @@
 #include <list>
 #include <forward_list>
 #include "3player.h"
+#include "gameplay/resolvables/stack.h"
 
 class Agent;
 
@@ -20,6 +21,7 @@ public:
 	//~Game();
 
 	void play(){
+	    Stack stack;
 		while(true){
 			for( Player& player : players ) {
 			    if(player.turn()) return;

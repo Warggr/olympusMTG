@@ -34,8 +34,8 @@ void LocalAgent::splitDamage(int power, std::list<std::pair<uint8_t, SpecificTar
     frontEnd.splitDamage(power, blockers);
 }
 
-std::list<std::unique_ptr<Card>> LocalAgent::chooseCardsToKeep(std::list<std::unique_ptr<Card>>& list) {
-    return frontEnd.io.checklist(list);
+std::list<std::unique_ptr<Card>> LocalAgent::chooseCardsToKeep(std::list<std::unique_ptr<Card>>& list, unsigned nbToDiscard) {
+    return frontEnd.io.checklist(list, nbToDiscard, nbToDiscard);
 }
 
 bool LocalAgent::keepsHand() {

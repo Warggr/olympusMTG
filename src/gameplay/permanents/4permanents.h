@@ -1,5 +1,5 @@
-#ifndef OLYMPUS_CLASSES_PERMANENTS_4_H
-#define OLYMPUS_CLASSES_PERMANENTS_4_H
+#ifndef OLYMPUS_PERMANENTS_4_H
+#define OLYMPUS_PERMANENTS_4_H
 
 #include "../1general.h"
 #include "../optionwrappers.h"
@@ -102,4 +102,4 @@ public:
     friend class AbstractIO;
 };
 
-#endif //OLYMPUS_CLASSES_PERMANENTS_4_H
+#endif //OLYMPUS_PERMANENTS_4_H

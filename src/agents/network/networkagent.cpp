@@ -95,8 +95,8 @@ void NetworkAgent::splitDamage(int power, std::list<std::pair<uint8_t, SpecificT
     (void) power; (void) blockers; //TODO implement
 }
 
-std::list<std::unique_ptr<Card>> NetworkAgent::chooseCardsToKeep(std::list<std::unique_ptr<Card>> &list) {
-    (void) list; //TODO implement
+std::list<std::unique_ptr<Card>> NetworkAgent::chooseCardsToKeep(std::list<std::unique_ptr<Card>> &list, uint nbToDiscard) {
+    (void) list; (void) nbToDiscard; //TODO implement
     return std::list<std::unique_ptr<Card>>();
 }
 

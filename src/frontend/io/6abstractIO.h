@@ -48,7 +48,7 @@ public:
 #undef maybe_virtual
 #undef maybe_undef
 
-    template<typename O> std::list<O> checklist(std::list<O>& all);
+    template<typename O> std::list<O> checklist(std::list<O>& all, unsigned min = 0, unsigned max = 0);
     void disp(const Permanent& perm, const Rect& pos, bool highlight);
     void disp(const Creature& crea, const Rect& pos, bool highlight);
     void disp(const std::unique_ptr<Card>& card, const Rect& pos, bool highlight);
@@ -61,14 +61,15 @@ public:
 };
 
 template<typename T>
-std::list<T> AbstractIO::checklist(std::list<T>& all) {
+std::list<T> AbstractIO::checklist(std::list<T>& all, unsigned min, unsigned max) {
+    if(max == 0 and min == 0) return std::list<T>();
     Rect rect(0, 0, 0, 0);
     for (auto &obj : all) {
         disp(obj, rect, true);
         rect.shift(rect.width, 0);
     }
     std::vector<bool> check(all.size(), true);
-    uint i = 0;
+    uint i = 0, nb_checks = 0;
     while (true) {
         switch(get_direction_key()) {
             case LEFT:
@@ -78,22 +79,24 @@ std::list<T> AbstractIO::checklist(std::list<T>& all) {
                 if(i != all.size()) ++i;
                 break;
             case UP:
-                check[i] = true; break;
+                check[i] = true; nb_checks++; break;
             case DOWN:
-                check[i] = false; break;
+                check[i] = false; nb_checks--; break;
             case ENTER: {
-                std::list<T> ret;
-                auto iter = all.begin();
-                for(uint j = 0; j < all.size(); j++) {
-                    if(check[j]) {
-                        auto i2 = iter;
-                        iter++;
-                        ret.splice(ret.end(), all, i2);
-                    } else {
-                        iter++;
+                if( min > max or (min < nb_checks and nb_checks < max)) {
+                    std::list<T> ret;
+                    auto iter = all.begin();
+                    for(uint j = 0; j < all.size(); j++) {
+                        if(check[j]) {
+                            auto i2 = iter;
+                            iter++;
+                            ret.splice(ret.end(), all, i2);
+                        } else {
+                            iter++;
+                        }
                     }
+                    return ret;
                 }
-                return ret;
             }
             default:
                 break;

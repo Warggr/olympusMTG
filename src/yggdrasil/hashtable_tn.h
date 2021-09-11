@@ -4,6 +4,7 @@
 #include "abstract_n.h"
 #include "collection_tn.h"
 class BoardN; class Player; class Card;
+template<typename T> class StateTN;
 
 template<typename T>
 class Y_Hashtable : public Yggdrasil<T> {
@@ -46,11 +47,17 @@ public:
         delete[] ht;
         ht = new_ht;
     }
+    inline CollectionTN<T>* firstNonEmpty(int multiplicity) {
+        for(int i = 0; i < (1 << (ht_size_log-multiplicity+1)); ++i )
+            for (int j = 0; j < (1 << (multiplicity-1)); ++j )
+                if (!ht[(1<<multiplicity)*i + j].empty()) return ht + (1<<multiplicity)*i + j;
+        return nullptr;
+    }
+    inline const CollectionTN<T>* firstNonEmpty(int multiplicity) const {
+        return const_cast<Y_Hashtable<T>*>(this)->firstNonEmpty(multiplicity);
+    }
     inline bool partlyEmpty(int multiplicity) const {
-        for(int i = 0; i < (1 << (ht_size_log-multiplicity-1)); ++i )
-            for (int j = 0; j < multiplicity; ++j )
-                if (!ht[2*i*multiplicity + j].empty()) return false;
-        return true;
+        return firstNonEmpty(multiplicity) == nullptr;
     }
     bool empty() const override {
         return partlyEmpty(ht_size_log+1);
@@ -95,14 +102,17 @@ public:
     }
 
     void insert(std::unique_ptr<Card> origin, Player* pl) {
-        (void) origin; (void) pl;
-        //TODO
+        ht[0].insert(std::move(origin), pl); //TODO check whether the permanent fulfills one or more criteria
     }
 
     void remove(T* object) {
         (void) object; //TODO implement
     };
 
+#ifdef F_TESTS
+    int getSize() const { return ht_size_log; }
+    const CollectionTN<T>* getObject(int index) const { return &ht[index]; }
+#endif
     friend class StateTN<T>;
 };
 
