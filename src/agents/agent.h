@@ -9,7 +9,7 @@
 
 class Target; class Creature; template<typename T> class SpecificTargeter; class Card; class Player;
 class OptionAction; class EmptyOption; class SpellOption; class PermOption;
-template<typename T> class CollectionTN; template<typename T> class StateTN;
+template<typename T> class Y_Hashtable; template<typename T> class StateTN;
 
 #ifdef MOCK_AGENT
 enum playerType { MOCK };
@@ -60,9 +60,9 @@ public:
 
     virtual std::list<std::unique_ptr<Card>> chooseCardsToKeep(std::list<std::unique_ptr<Card>>& list) = 0;
 
-    virtual bool chooseAttackers(CollectionTN<Creature>& mycreas) = 0;
+    virtual bool chooseAttackers(Y_Hashtable<Creature>& mycreas) = 0;
 
-    virtual void chooseBlockers(CollectionTN<Creature>& mycreas, StateTN<Creature>& attackers) = 0;
+    virtual void chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature>& attackers) = 0;
 };
 
 std::unique_ptr<Agent> createAgent(playerType desc);

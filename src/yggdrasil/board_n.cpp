@@ -1,4 +1,5 @@
 #include "3player_board.h"
+#include "gameplay/permanents/4permanents.h"
 #include "gameplay/2cards.h"
 
 void BoardN::insert(std::unique_ptr<Card> to_add, Player *pl) {
@@ -14,8 +15,8 @@ void BoardN::insert(std::unique_ptr<Card> to_add, Player *pl) {
 
 void BoardN::remove(Permanent *perm) {
     switch(perm->getType()) {
-        case permanent_type::creature: remove(dynamic_cast<Creature*>(perm)); break;
-        case permanent_type::planeswalker: remove(dynamic_cast<Planeswalker*>(perm)); break;
+        case permanent_type::creature: remove(static_cast<Creature*>(perm)); break;
+        case permanent_type::planeswalker: remove(static_cast<Planeswalker*>(perm)); break;
         default: myartos.remove(perm); break;
     }
 }

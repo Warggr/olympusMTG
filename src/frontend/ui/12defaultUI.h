@@ -5,7 +5,7 @@
 #include "../io/6abstractIO.h"
 #include "window.h"
 class Permanent; class Creature; class Player; class Target; class OptionAction;
-template<typename T> class CollectionTN; template<typename T> class StateTN;
+template<typename T> class Y_Hashtable; template<typename T> class StateTN;
 
 class DefaultUI {
 private:
@@ -29,8 +29,8 @@ public:
 	explicit DefaultUI(AbstractIO* IOLib);
 	~DefaultUI(){ delete optionZone; };
 	void get_player_coords(char player_id, Rect* zone, int* liby, int* libz, int* gravey, int* gravez, int* exily, int* exilz, int* cardzoneY, int* cardzoneZ);
-	bool chooseattackers(CollectionTN<Creature>& cowards);
-	void chooseblockers(CollectionTN<Creature>& defenders, StateTN<Creature>& attackers);
+	bool chooseattackers(Y_Hashtable<Creature>& cowards);
+	void chooseblockers(Y_Hashtable<Creature>& defenders, StateTN<Creature>& attackers);
 	Creature* blocker_switch(const Creature& blocker, int blockerY, int blockerZ,
 		StateTN<Creature>& attackers) const ;
 	void clear_opts();

@@ -109,11 +109,11 @@ uptr<OptionAction> NetworkAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
     return nullptr;
 }
 
-bool NetworkAgent::chooseAttackers(CollectionTN<Creature> &mycreas) {
+bool NetworkAgent::chooseAttackers(Y_Hashtable<Creature>& mycreas) {
     (void) mycreas; //TODO implement
     return false;
 }
 
-void NetworkAgent::chooseBlockers(CollectionTN<Creature> &mycreas, StateTN<Creature> &attackers) {
+void NetworkAgent::chooseBlockers(Y_Hashtable<Creature> &mycreas, StateTN<Creature> &attackers) {
     (void) mycreas; (void) attackers; //TODO implement
 }

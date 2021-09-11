@@ -2,7 +2,7 @@
 #define OLYMPUS_YGGDRASIL_1_H
 
 #include "oracles/classes/3statics.h"
-#include "headB_board.h"
+#include "iterators.h"
 #include "headI_identifiers.h"
 #include <list>
 
@@ -20,10 +20,10 @@ public:
 
     virtual iterator<Permanent, false> pbegin() = 0;
     virtual iterator<Permanent, true> cpbegin() const = 0;
-    virtual Leaf<Permanent, false>* pcreateStart(inner_iterator<Permanent, false>* parent) = 0;
-    virtual Leaf<Permanent, true>* pcreateStart(inner_iterator<Permanent, true>* parent) const = 0;
-    constexpr nullptr_t pend() const { return nullptr; }
-    constexpr nullptr_t cpend() const { return nullptr; }
+    virtual Leaf<Permanent, false>* pcreateStart(inner_iterator<Permanent, false>* parent, bool bk) = 0;
+    virtual Leaf<Permanent, true>* pcreateStart(inner_iterator<Permanent, true>* parent, bool bk) const = 0;
+    constexpr iterator<Permanent, false> pend() const { return { nullptr }; }
+    constexpr iterator<Permanent, true> cpend() const { return { nullptr }; }
 
     virtual bool empty() const = 0;
 };
@@ -34,10 +34,10 @@ public:
     virtual ~Yggdrasil_N() = default;
     virtual iterator<T, false> begin() = 0;
     virtual iterator<T, true> cbegin() const = 0;
-    virtual ConcreteLeaf<T, false>* createStart(inner_iterator<T, false>* parent) = 0;
-    virtual ConcreteLeaf<T, true>* createStart(inner_iterator<T, true>* parent) const = 0;
-    constexpr nullptr_t end() const { return nullptr; }
-    constexpr nullptr_t cend() const { return nullptr; }
+    virtual ConcreteLeaf<T, false>* createStart(inner_iterator<T, false>* parent, bool bk) = 0;
+    virtual ConcreteLeaf<T, true>* createStart(inner_iterator<T, true>* parent, bool bk) const = 0;
+    constexpr iterator<T, false> end() const { return { nullptr }; }
+    constexpr iterator<T, true> cend() const { return { nullptr }; }
 };
 
 template<typename T>
@@ -53,12 +53,8 @@ public:
 
     iterator<Permanent, false> pbegin() override { return begin(); }
     iterator<Permanent, true> cpbegin() const override { return cbegin(); }
-    Leaf<Permanent, false>* pcreateStart(inner_iterator<Permanent, false>* parent) override {
-        return createStart(parent);
-    }
-    Leaf<Permanent, true>* pcreateStart(inner_iterator<Permanent, true>* parent) const override {
-        return createStart(parent);
-    }
+    Leaf<Permanent, false>* pcreateStart(inner_iterator<Permanent, false>* parent, bool bk) override { return createStart(parent, bk); }
+    Leaf<Permanent, true>* pcreateStart(inner_iterator<Permanent, true>* parent, bool bk) const override { return createStart(parent, bk); }
 };
 
 #endif //OLYMPUS_YGGDRASIL_1_H

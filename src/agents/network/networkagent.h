@@ -35,9 +35,9 @@ public:
 
     uptr<OptionAction> chooseOpt(bool sorcerySpeed, Player* pl) override;
 
-    bool chooseAttackers(CollectionTN<Creature>& mycreas) override;
+    bool chooseAttackers(Y_Hashtable<Creature>& mycreas) override;
 
-    void chooseBlockers(CollectionTN<Creature>& mycreas, StateTN<Creature>& attackers) override;
+    void chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature>& attackers) override;
 };
 
 #endif //OLYMPUS_AGENT_NETWORK_H

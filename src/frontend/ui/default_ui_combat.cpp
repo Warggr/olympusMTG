@@ -1,9 +1,10 @@
 #include "12defaultUI.h"
 #include "lib3_IO.h"
 #include "yggdrasil/collection_tn.h"
+#include "yggdrasil/state_n.h"
 #include "gameplay/permanents/4permanents.h"
 
-bool DefaultUI::chooseattackers(CollectionTN<Creature>& cowards){
+bool DefaultUI::chooseattackers(Y_Hashtable<Creature>& cowards){
     myIO->message("Choose Attackers");
     bool ret = false;
     int i = 0;
@@ -16,7 +17,7 @@ bool DefaultUI::chooseattackers(CollectionTN<Creature>& cowards){
                 auto newatt = iter;
                 myIO->disp(*newatt, pos, false); //disp creature normally
                 ++iter;
-                newatt.get_pointed()->unstate(); //move creature to list "warriors"
+                //newatt.getPointed()->unstate(); //move creature to list "warriors"
                 ret = true;
             }
             else{
@@ -30,7 +31,7 @@ bool DefaultUI::chooseattackers(CollectionTN<Creature>& cowards){
     return ret;
 }
 
-void DefaultUI::chooseblockers(CollectionTN<Creature>& defenders, StateTN<Creature>& attackers){
+void DefaultUI::chooseblockers(Y_Hashtable<Creature>& defenders, StateTN<Creature>& attackers){
     int pos = 0;
     for(auto blocker = defenders.begin(); blocker != defenders.end(); ++blocker){
         if(blocker->isUntapped()){ //untapped

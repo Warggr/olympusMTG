@@ -23,9 +23,9 @@ public:
 
     bool keepsHand() override;
 
-    bool chooseAttackers(CollectionTN<Creature>& mycreas) override;
+    bool chooseAttackers(Y_Hashtable<Creature>& mycreas) override;
 
-    void chooseBlockers(CollectionTN<Creature>& mycreas, StateTN<Creature>& attackers) override;
+    void chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature>& attackers) override;
 
     uint chooseAmong(std::vector<PermOption *> opts) override;
     uint chooseAmong(std::vector<SpellOption *> opts) override;

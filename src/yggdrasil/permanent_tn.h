@@ -23,16 +23,16 @@ public:
     iterator<T, false> begin() override { return { new ConcreteLeaf<T, false>(this, nullptr) }; }
     iterator<T, true> cbegin() const override { return { new ConcreteLeaf<T, true>(this, nullptr) }; }
 
-    ConcreteLeaf<T, false>* createStart(inner_iterator<T, false>* parent) override {
+    ConcreteLeaf<T, false>* createStart(inner_iterator<T, false>* parent, bool) override {
         return new ConcreteLeaf<T, false>(this, parent);
     }
-    ConcreteLeaf<T, true>* createStart(inner_iterator<T, true>* parent) const override {
+    ConcreteLeaf<T, true>* createStart(inner_iterator<T, true>* parent, bool) const override {
         return new ConcreteLeaf<T, true>(this, parent);
     }
-    Leaf<Permanent, false>* pcreateStart(inner_iterator<Permanent, false>* parent) override {
+    Leaf<Permanent, false>* pcreateStart(inner_iterator<Permanent, false>* parent, bool) override {
         return new AdapterLeaf<T, false>( new ConcreteLeaf<T, false>(this, nullptr), parent);
     }
-    Leaf<Permanent, true>* pcreateStart(inner_iterator<Permanent, true>* parent) const override {
+    Leaf<Permanent, true>* pcreateStart(inner_iterator<Permanent, true>* parent, bool) const override {
         return new AdapterLeaf<T, true>( new ConcreteLeaf<T, true>(this, nullptr), parent);
     }
     iterator<Permanent, false> pbegin() override {
@@ -43,6 +43,8 @@ public:
     }
     Permanent* getPermanent() override { return &describedObject; }
     const Permanent* getPermanent() const override { return &describedObject; }
+    T* getObject() { return &describedObject; }
+    const T* getObject() const { return &describedObject; }
 
     friend class Leaf<T, true>; friend class Leaf<T, false>;
 };

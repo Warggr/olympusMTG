@@ -4,17 +4,13 @@
 #include "abstract_n.h"
 #include "permanent_tn.h"
 
+template<class T> class Y_Hashtable;
 class BoardN; class Player;
-
-class CollectionA {
-public:
-    bool isEnd();
-};
 
 template <typename T>
 class CollectionTN: public Yggdrasil<T> {
 protected:
-    BoardN* parent;
+    Y_Hashtable<T>* parent;
     std::list<PermanentTN<T>> children;
 public:
     template<bool iconst>
@@ -26,14 +22,16 @@ public:
     public:
         myiterator(isitconst(CollectionTN<T>, iconst)* n, inner_iterator<T, iconst>* in = nullptr):
             inner_iterator<T, iconst>(in), node(n), it(n->children.begin()) {}
-        void advance() override { it++; }
-        bool isEnd() const override { return it == node->children.end(); }
-        Leaf<T, iconst>* down() override {
-            return it->createStart(this);
+        void advance(bool bk) override { if(bk) ++it; else --it; }
+        bool isEnd(bool bk) const override { return (bk and it == node->children.end()) or (!bk and it == --node->children.begin()); }
+        Leaf<T, iconst>* down(bool bk) override {
+            return it->createStart(this, bk);
         }
     };
 
-    explicit CollectionTN(BoardN* parent): parent(parent) {}
+    explicit CollectionTN(Y_Hashtable<T>* parent = nullptr): parent(parent) {}
+    CollectionTN& operator=(CollectionTN&& other) noexcept { parent = other.parent; children = std::move(other.children); return *this; }
+    inline void setParent(Y_Hashtable<T>* pr) { parent = pr; }
 
     void insert(std::unique_ptr<Card> origin, Player* pl) {
         (void) origin; (void) pl;
@@ -46,33 +44,41 @@ public:
         (void) object; //TODO implement
     };
 
-    void slice_in_two(/*Criterion crit,*/ CollectionTN<T>* fulfilled, CollectionTN<T>* not_fulfilled) {
-        /*for(auto i = children.begin(); i != children.end(); ++i) {
+    void merge(CollectionTN& other) {
+        children.splice(children.end(), other.children);
+    }
+
+    /*void slice_in_two(Criterion crit, CollectionTN<T>* fulfilled, CollectionTN<T>* not_fulfilled) {
+        for(auto i = children.begin(); i != children.end(); ++i) {
             if(i->fulfills(crit)) {
                 not_fulfilled->objs.splice(not_fulfilled->objs.begin(), children, i);
             }
-        }*/
+        }
         fulfilled->objs = std::move(children);
-    }
-    iterator<T, false> begin() override { return { createStart(nullptr) }; }
-    iterator<T, true> cbegin() const override { return { createStart(nullptr) }; }
+    }*/
+    iterator<T, false> begin() override { return { createStart(nullptr, true) }; }
+    iterator<T, true> cbegin() const override { return { createStart(nullptr, true) }; }
     iterator<Permanent, false> pbegin() override {
-        return { new AdapterLeaf<T, false>( createStart(nullptr), nullptr) };
+        return { new AdapterLeaf<T, false>( createStart(nullptr, true), nullptr) };
     }
     iterator<Permanent, true> cpbegin() const override {
-        return { new AdapterLeaf<T, true>( createStart(nullptr), nullptr) };
+        return { new AdapterLeaf<T, true>( createStart(nullptr, true), nullptr) };
     }
-    ConcreteLeaf<T, false>* createStart(inner_iterator<T, false>* iter) override {
-        return children.begin()->createStart(new myiterator<false>(this, iter));
+    ConcreteLeaf<T, false>* createStart(inner_iterator<T, false>* iter, bool bk) override {
+        return children.empty() ? nullptr :
+        bk ? children.begin()->createStart(new myiterator<false>(this, iter), true) :
+        (--(children.end()))->createStart(new myiterator<false>(this, iter), false);
     }
-    ConcreteLeaf<T, true>* createStart(inner_iterator<T, true>* iter) const override {
-        return children.begin()->createStart(new myiterator<true>(this, iter));
+    ConcreteLeaf<T, true>* createStart(inner_iterator<T, true>* iter, bool bk) const override {
+        return children.empty() ? nullptr :
+        bk ? children.begin()->createStart(new myiterator<true>(this, iter), true) :
+        (--(children.end()))->createStart(new myiterator<true>(this, iter), false);
     }
-    Leaf<Permanent, false>* pcreateStart(inner_iterator<Permanent, false>* iter) override {
-        return new AdapterLeaf<T, false>(createStart(nullptr), iter);
+    Leaf<Permanent, false>* pcreateStart(inner_iterator<Permanent, false>* iter, bool bk) override {
+        return new AdapterLeaf<T, false>(createStart(nullptr, bk), iter);
     }
-    Leaf<Permanent, true>* pcreateStart(inner_iterator<Permanent, true>* iter) const override {
-        return new AdapterLeaf<T, true>(createStart(nullptr), iter);
+    Leaf<Permanent, true>* pcreateStart(inner_iterator<Permanent, true>* iter, bool bk) const override {
+        return new AdapterLeaf<T, true>(createStart(nullptr, bk), iter);
     }
 };
 

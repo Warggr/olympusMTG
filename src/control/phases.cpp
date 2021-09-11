@@ -51,7 +51,7 @@ void Player::declareattackersstep(){
 	phase = afterattack;
 }
 void Player::declareblockersstep(){
-	if(myboard.myattackers) nextopponent->chooseBlockers(*myboard.myattackers);
+	if(!myboard.myattackers.empty()) nextopponent->chooseBlockers(myboard.myattackers);
     phase = afterblock;
 }
 void Player::endstep(){
@@ -78,10 +78,10 @@ bool Player::statebasedactions(){
 	for(auto iter = myboard.mycreas.begin(); iter != myboard.mycreas.end(); iter = iter){
 		if(iter->get_toughness() + iter->get_life() <= 0){
 			auto i2 = iter;
-			iter++;
+			++iter;
 			i2->destroy();
 		}
-		else iter++;
+		else ++iter;
 	}
 	return false;
 }

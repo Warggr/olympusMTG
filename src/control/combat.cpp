@@ -3,7 +3,7 @@
 
 bool Player::chooseAttackers(){
 	if(myboard.mycreas.empty()) return false;
-	myboard.myattackers = myboard.mycreas.defNewState();
+    myboard.mycreas.unfold(&myboard.myattackers);
 	bool ret = agent.chooseAttackers(myboard.mycreas);
 	return ret;
 }
@@ -18,14 +18,13 @@ void Creature::splitDamage(Agent& agent) {
 
 void Player::damagestep(){
 	phase = afterdamage;
-	if(myboard.myattackers == nullptr) return;
-	for(auto & attacker : *myboard.myattackers) {
+	if(myboard.myattackers.empty()) return;
+	for(auto & attacker : myboard.myattackers) {
 	    attacker.splitDamage(getAgent());
 	}
-	for(auto & attacker : *myboard.myattackers){
+	for(auto & attacker : myboard.myattackers){
 		attacker.resolve_attack(nextopponent);
 	}
-	myboard.myattackers = nullptr;
-	myboard.mycreas.restate(); //destroying attackers list
+	myboard.myattackers.restate(); //destroying attackers list
 	Game::god->stateBasedActions();
 }

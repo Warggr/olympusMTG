@@ -42,11 +42,11 @@ bool LocalAgent::keepsHand() {
     return frontEnd.io.simpleChoice("Keep Hand", "Mulligan");
 }
 
-bool LocalAgent::chooseAttackers(CollectionTN<Creature>& mycreas) {
+bool LocalAgent::chooseAttackers(Y_Hashtable<Creature>& mycreas) {
     return frontEnd.ui.chooseattackers(mycreas);
 }
 
-void LocalAgent::chooseBlockers(CollectionTN<Creature>& mycreas, StateTN<Creature>& attackers) {
+void LocalAgent::chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature>& attackers) {
     return frontEnd.ui.chooseblockers(mycreas, attackers);
 }
 
