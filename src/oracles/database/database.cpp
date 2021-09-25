@@ -1,4 +1,3 @@
-#include "server/networkagent.h"
 #include "oracles/filereader/filereader.h"
 #include "oracles/filereader/binarywriter.h"
 #include "build_types.h"

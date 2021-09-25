@@ -62,3 +62,9 @@ void Player::draw(int nb_cards) {
         myHand.push_front(std::move(card));
     }
 }
+
+inline Identifier construct_id_spell(bool is_spell, Card* origin){
+    (void) origin; //TODO add info about the card, e.g. CMC
+    Identifier ret = (target_type::resolvable) + (is_spell ? 0x20 : 0);
+    return ret;
+}

@@ -13,7 +13,7 @@ void BoardN::insert(std::unique_ptr<Card> to_add, Player *pl) {
     }
 }
 
-void BoardN::remove(Permanent *perm) {
+void BoardN::remove(Permanent* perm) {
     switch(perm->getType()) {
         case permanent_type::creature: remove(static_cast<Creature*>(perm)); break;
         case permanent_type::planeswalker: remove(static_cast<Planeswalker*>(perm)); break;
