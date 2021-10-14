@@ -76,7 +76,7 @@ std::string Mana::m2t() const {
 		for(int j=0; j < (mcopy&0xf); j++) ret += colors[i];
 	}
 	generic -= ret.length();
-	if(generic!=0) ret = std::to_string(generic) + ret;
+	if(generic!=0 or mana == 0) ret = std::to_string(generic) + ret;
 	return ret;
 }
 
