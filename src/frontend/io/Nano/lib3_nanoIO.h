@@ -15,4 +15,6 @@ public:
 #include "../iomethods.cpp"
 };
 
+inline void NanoIO::disp(const CardOracle& oracle, const Rect&, bool) const { poster(oracle); }
+
 #endif //OLYMPUS_11_NANOIO

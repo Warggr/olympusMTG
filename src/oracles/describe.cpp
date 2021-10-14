@@ -1,6 +1,6 @@
 #include "headC_constants.h"
 #include "oracles/classes/1effects.h"
-#include "oracles/classes/2cards.h"
+#include "oracles/classes/card_oracle.h"
 #include "oracles/classes/2triggers.h"
 #include "oracles/classes/3statics.h"
 #include "oracles/classes/PermOption.h"
@@ -24,7 +24,7 @@ std::string CardOracle::describe() const {
     return ret;
 }
 
-std::string Trigger_H::describe(trigtype type, const std::string& name) const {
+std::string TriggerHolder_H::describe(const std::string &name, const Effect_H *effects, trigtype type) {
     std::string ds = trigger_descriptions[type];
     std::string ret = "Whenever ";
     for(char d : ds){
@@ -34,6 +34,10 @@ std::string Trigger_H::describe(trigtype type, const std::string& name) const {
     ret += ". ";
     ret += effects->describe(name);
     return ret;
+}
+
+std::string TriggerHolder_H::describe(const std::string& name) const {
+    return describe(name, effects, type);
 }
 
 std::string AtomEffect_H::describe(const std::string& cardname) const {
@@ -76,4 +80,3 @@ std::vector<std::string> CardOracle::allText(int& power, int& toughness, int& fr
     if(rules.flavor_text && rules.flavor_text[offset]) all_text.emplace_back(rules.flavor_text + offset);
     return all_text;
 }
-

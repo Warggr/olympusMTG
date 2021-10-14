@@ -3,7 +3,7 @@
 
 #include "lib3_IO.h"
 #include "ui/12defaultUI.h"
-#include "oracles/classes/2cards.h"
+#include "oracles/classes/card_oracle.h"
 #include <string>
 #include <list>
 
@@ -35,6 +35,8 @@ struct FrontEnd {
     bool askMulligan();
 
     void splitDamage(int power, std::__cxx11::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers);
+
+    uptr<OptionAction> chooseOpt(bool sorcerySpeed) { return ui.chooseOpt(sorcerySpeed); }
 };
 
 #endif //OLYMPUS_FRONTEND_H

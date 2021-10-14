@@ -1,21 +1,16 @@
-#include "oracles/classes/2cards.h"
+#include "oracles/classes/card_oracle.h"
 #include "oracles/classes/2triggers.h"
 #include "control/3player.h"
 
 void TriggerEvent::trigger(Player* pl, Target* origin) const {
 	for(auto trigger : all_triggers)
-	    trigger->trigger(pl, origin);
+	    pl->addToPrestack(trigger, origin);
 }
 
-void Trigger_H::trigger(Player* pl, Target* origin) const {
-	pl->addtoPrestack(effects, origin);
-}
-
-void CardOracle::get_triggers(const char ttype, TriggerEvent& trigEv) const{
+void CardOracle::getTriggers(const char ttype, TriggerEvent& trigEv) const{
     for(uint i=0; i<rules.nb_triggers; i++){
         if(rules.triggers[i].type == ttype){
-            trigEv.add_trigger(&(rules.triggers[i].trigger));
-            //std::cout << "Trigger of type " << type << "was found and added" << std::endl;
+            trigEv.addTrigger(rules.triggers[i].effects);
         }
     }
 }

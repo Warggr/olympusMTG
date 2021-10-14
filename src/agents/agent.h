@@ -7,7 +7,8 @@
 #include <vector>
 #include <list>
 
-class Target; class Creature; template<typename T> class SpecificTargeter; class Card; class Player;
+class Target; class Creature; template<typename T> class SpecificTargeter; class Card;
+class Player; class Game;
 class OptionAction; class EmptyOption; class SpellOption; class PermOption;
 template<typename T> class Y_Hashtable; template<typename T> class StateTN;
 
@@ -30,6 +31,8 @@ struct OracleDescr {
     friend std::ostream& operator<<( std::ostream& output, const OracleDescr& desc );
 };
 
+class Viewer;
+
 class Agent {
 protected:
     virtual std::vector<OracleDescr> getDeck() = 0;
@@ -38,12 +41,12 @@ public:
     std::vector<OracleDescr> descriptors;
 
     virtual ~Agent() = default;
+    virtual Viewer& getViewer() = 0;
     //Makes sure every player is connected and has a deck. May take a long time.
     //Should also make sure that each deck is *valid*. TODO
     void setup() {
         specificSetup(); //Wait for connection or setup
-        descriptors = getDeck();
-        for(auto& desc : descriptors) std::cout << desc; //Checks whether deck is valid (TODO) and puts it into descriptors
+        descriptors = getDeck(); //Checks whether deck is valid (TODO) and puts it into descriptors
     };
     virtual std::string getName() = 0;
 
@@ -57,12 +60,17 @@ public:
     virtual void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) = 0;
 
     virtual bool keepsHand() = 0;
-
     virtual std::list<std::unique_ptr<Card>> chooseCardsToKeep(std::list<std::unique_ptr<Card>>& list, unsigned nbToDiscard) = 0;
 
     virtual bool chooseAttackers(Y_Hashtable<Creature>& mycreas) = 0;
-
     virtual void chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature>& attackers) = 0;
+};
+
+class Viewer {
+public:
+    virtual ~Viewer() = default;
+    virtual void connectGame(Game* game) = 0;
+    virtual void onDraw(const std::list<uptr<Card>>& cards) = 0;
 };
 
 std::unique_ptr<Agent> createAgent(playerType desc);

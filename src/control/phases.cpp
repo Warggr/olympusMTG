@@ -14,7 +14,7 @@ struct Phase{ //AFAIK there are no "additional step" cards, but there might be s
 	bool operator()(Player* pl) const {
 		for(int i = 0; i < _nb_steps; i++){
 			(*pl.*(_steps[i]))();
-			pl->empty_pool();
+			pl->emptyPool();
 			if(Game::god->haswon) return true;
 		}
 		return false;
@@ -33,7 +33,7 @@ bool Player::turn(){
 void Player::untapstep(){
 	phase = upkeep; nb_lands_remaining = 1;
 	nb_mainphase = 0;
-	std::for_each(myboard.pbegin(), myboard.pend(), [](Permanent& p){p.declare_beginturn(); });
+	std::for_each(myboard.pbegin(), myboard.pend(), [](Permanent& p){p.declareBeginturn(); });
 }
 
 void Player::upkeepstep(){}
@@ -58,25 +58,24 @@ void Player::endstep(){
 	phase = end;
 }
 void Player::cleanupstep(){
-	std::for_each(myboard.mycreas.begin(), myboard.mycreas.end(), [](Creature& c){c.set_life(0); });
+	std::for_each(myboard.mycreas.begin(), myboard.mycreas.end(), [](Creature& c){c.setLife(0); });
 	phase = nonactive;
 }
 
-void Player::empty_pool(){
-	//possiblepool -= manapool; //saying goodbye to all mana currently in pool
+void Player::emptyPool(){
 	manapool = Mana();
 }
 
 void Game::stateBasedActions(){
 	for(auto& player : players){
-		haswon = haswon | player.statebasedactions();
+		haswon = haswon | player.stateBasedActions();
 	}
 }
 
-bool Player::statebasedactions(){
-	if(life <= 0) return true;
+bool Player::stateBasedActions(){
+	if(life <= 0 or milledout) return true;
 	for(auto iter = myboard.mycreas.begin(); iter != myboard.mycreas.end(); iter = iter){
-		if(iter->get_toughness() + iter->get_life() <= 0){
+		if(iter->getToughness() + iter->get_life() <= 0){
 			auto i2 = iter;
 			++iter;
 			i2->destroy();
@@ -101,8 +100,8 @@ const PHASEORDERTYPE Player::defaultPhaseOrder = PHASEORDERTYPE(
         );
 #undef PHASEORDERTYPE
 
-Player::Player(Agent &agent, CardZone&& library): Target(name), Damageable(20), agent(agent),
-phase(0), milledout(0), zerolife(0), nb_mainphase(0), nb_lands_remaining(1), manapool(0) {
+Player::Player(Agent &agent, CardZone&& library): Target(name), Damageable(20), agent(agent), viewer(agent.getViewer()),
+phase(0), milledout(0), zerolife(0), nb_mainphase(0), nb_lands_remaining(1), myOptions(this), manapool(0) {
     myLibrary = std::move(library);
     myLibrary.shuffle();
 

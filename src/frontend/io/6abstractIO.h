@@ -32,7 +32,7 @@ class UIClosedException: public std::exception{};
 
 class ImplementIO;
 
-class Permanent; class Card; class Creature; class CardOracle; class EmptyOption;
+class Permanent; class Card; class Creature; class CardOracle; class EmptyOption; class Player; class Resolvable;
 
 class AbstractIO{
 public:
@@ -51,10 +51,12 @@ public:
     template<typename O> std::list<O> checklist(std::list<O>& all, unsigned min = 0, unsigned max = 0);
     void disp(const Permanent& perm, const Rect& pos, bool highlight);
     void disp(const Creature& crea, const Rect& pos, bool highlight);
-    void disp(const std::unique_ptr<Card>& card, const Rect& pos, bool highlight);
-    void disp(const CardOracle& card, const Rect& pos, bool highlight);
+    void disp(const Card& card, const Rect& pos, bool highlight);
+    void disp(const uptr<Card>& card, const Rect& pos, bool highlight) {
+        disp(*card.get(), pos, highlight);
+    }
     void disp(const EmptyOption* opt, const Rect& pos, bool highlight);
-    void poster(const CardOracle& card) { disp(card, Rect(), false); }
+    void disp(const Resolvable& res, const Rect& pos, bool highlight);
 
     template<typename T>
     uint chooseAmong(std::vector<T> objects);

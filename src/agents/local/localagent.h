@@ -4,12 +4,21 @@
 #include "../agent.h"
 #include "frontend/frontend.h"
 
-class LocalAgent: public Agent {
+class LocalViewer: public Viewer {
     FrontEnd frontEnd;
+public:
+    void connectGame(Game *game) override;
+    void onDraw(const std::list<uptr<Card>>& cards) override;
+
+    friend class LocalAgent;
+};
+
+class LocalAgent: public Agent {
+    LocalViewer viewer;
 public:
     LocalAgent() = default;
     void specificSetup() override {};
-    std::string getName() override { return frontEnd.getName(); }
+    std::string getName() override { return viewer.frontEnd.getName(); }
 
     std::vector<OracleDescr> getDeck() override;
 
@@ -29,6 +38,8 @@ public:
 
     uint chooseAmong(std::vector<PermOption *> opts) override;
     uint chooseAmong(std::vector<SpellOption *> opts) override;
+
+    Viewer& getViewer() override { return viewer; }
 };
 
 #endif //OLYMPUS_LOCALAGENT_H

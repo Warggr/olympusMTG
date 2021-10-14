@@ -11,9 +11,9 @@ class Agent;
 
 class Game{
 private:
-	std::list<Player> players;
 	Player* active_player;
 public:
+    std::list<Player> players;
     static Game* god;
 	bool haswon = false;
 

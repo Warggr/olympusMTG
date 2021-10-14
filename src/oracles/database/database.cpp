@@ -32,7 +32,7 @@ void refreshDatabase() {
         BinaryFileWriter writer(oss);
 
         auto* oracle = new CardOracle(reader);
-        oracle->get_read(writer);
+        oracle->init(writer);
 
         status = db->Put(leveldb::WriteOptions(), oracle->getName(), binary);
         assert(status.ok());

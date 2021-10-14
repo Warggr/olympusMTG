@@ -22,8 +22,8 @@ std::string Creature::describe() const {
 
 std::string TriggerEvent::describe(trigtype type, const std::string& cardname) const {
 	std::string ds;
-	for(auto all_trigger : all_triggers){
-		ds += all_trigger->describe(type, cardname);
+	for(auto trigger : all_triggers){
+		ds += TriggerHolder_H::describe(cardname, trigger, type);
 	}
 	return ds;
 }
@@ -34,24 +34,23 @@ void Card::reveal() const {
 
 std::string card_type::toString() const {
     std::string ret;
-    if(legendary) ret += "Legendary";
-    if(underlying == basic) ret += "Basic";
-    if(snow) ret += "Snow";
-    if(artifact) ret += "Artifact";
-    if(enchantment) ret += "Enchantment";
-    if(land) ret += "Land";
+    if(legendary) ret += "Legendary ";
+    if(snow) ret += "Snow ";
+    if(artifact) ret += "Artifact ";
+    if(enchantment) ret += "Enchantment ";
+    if(land){
+        if(shift) return ret + "Basic Land";
+        else ret += "Land ";
+    }
     switch(underlying) {
         case flagged:
-        case basic:
             return ret;
         case creature:
             return ret + "Creature";
         case planeswalker:
             return ret + "Planeswalker";
-        case instant:
-            return ret + "Instant";
         case sorcery:
-            return ret + "Sorcery";
+            return ret + (shift ? "Instant" : "Sorcery");
     }
     return ret;
 }

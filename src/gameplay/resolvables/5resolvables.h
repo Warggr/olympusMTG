@@ -31,8 +31,7 @@ public:
 	virtual void resolve(); //this is what a resolvable is about
 	virtual std::string describe() const { return description; };
 	virtual void counter();
-	const std::string& get_name() const override { return description; };
-//	virtual Identifier reload_id() const;
+	const std::string& getName() const override { return description; };
 
 //  virtual void disp(const Rect& zone, bool highlight = false) const;
     Player * getController() override { return ctrl; }
@@ -46,7 +45,7 @@ public:
 	void resolve() override;
 	void counter() override;
 	std::string describe() const override;
-	const std::string& get_name() const override;
+	const std::string& getName() const override;
 //	virtual Identifier reload_id() const;
 };
 

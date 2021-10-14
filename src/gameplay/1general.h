@@ -9,15 +9,15 @@
 
 using Identifier = int;
 
-class Player; class Target; class Trigger_H; class Card;
+class Player; class Target; class Effect_H; class Card;
 
 class TriggerEvent{ //contains all X-action triggers of a certain object, i.e. all Death triggers of one permanent.
 	//a Trigger contains 3 constraints about the actions that might trigger him: whenever <a Beeble> deals <combat damage> to <a Brushwagg>, ...
-	std::forward_list<Trigger_H*> all_triggers;
+	std::forward_list<Effect_H*> all_triggers;
 	int id_args[3];
 public:
 	void trigger(Player* pl, Target* origin) const;
-	void add_trigger(Trigger_H* trig){ all_triggers.push_front(trig); };
+	void addTrigger(Effect_H* trig){ all_triggers.push_front(trig); };
 	std::string describe(trigtype type, const std::string& cardname) const;
 };
 
@@ -28,8 +28,6 @@ private:
 public:
     GameObject(): identifier(0), id_still_correct(false) {};
     void invalidate(){ id_still_correct = false; };
-//    virtual Identifier reload_id() const = 0;
-//    Identifier identify();
 };
 
 class Target: public GameObject{ //Permanents, Players, Cards (not Oracles!), and Resolvables
@@ -44,13 +42,13 @@ public:
 	explicit Target(const std::string& name): target_flags(0), name(name) {};
 	//Target(SameObjectTN* arch, char type, std::string name): GameObject(arch), t_type(type), target_flags(0), name(std::move(name)) {};
 	virtual ~Target();
-	void add_persecutor(AbstractTargeter* tar);
-	void remove_persecutor(AbstractTargeter* tar);
-	flag_t target_type() const { return t_type; };
+	void addPersecutor(AbstractTargeter* tar);
+	void removePersecutor(AbstractTargeter* tar);
+	flag_t targetType() const { return t_type; };
 
 	virtual Player* getController() = 0;
-	virtual const std::string* get_name_ref() const {return &name; };
-	virtual const std::string& get_name() const {return name; };
+	virtual const std::string* getNameRef() const {return &name; };
+	virtual const std::string& getName() const {return name; };
 };
 
 class Damageable { //Planeswalkers, Creatures and Players
@@ -64,7 +62,7 @@ public:
 	int get_life() const { return life; };
 	virtual ~Damageable() = default;
 	virtual void damage(int nb_damage, Target* origin);
-	virtual void set_life(int life_total){life = life_total; }
+	virtual void setLife(int life_total){life = life_total; }
 	virtual Player* getDmgController() = 0; //Not const because Player returns a non-const reference to itself
 };
 

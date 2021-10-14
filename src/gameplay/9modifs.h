@@ -36,19 +36,19 @@ public:
 	SpecificTargeter(T* tar): AbstractTargeter(true) {
         content = tar;
         gdebug(DBG_TARGETING) << "Target chosen. this Targeter "<< this <<" was set to target"<<tar<<"\n";
-        tar->add_persecutor(this);
-        name = tar->get_name();
+        tar->addPersecutor(this);
+        name = tar->getName();
 	}
 	SpecificTargeter(): AbstractTargeter(false), colorIdentity(-1) { gdebug(DBG_TARGETING) << " Creating a Targeter\n"; }
 	~SpecificTargeter(){
-	    content->remove_persecutor(this); //removes references to itself from its victim
+	    content->removePersecutor(this); //removes references to itself from its victim
 	};
 	void setTarget(T* tgt) {
         assert(tgt != nullptr);
 	    valid = true; content = tgt;
 	}
 	T* getTarget() const { if(valid) return content; else return nullptr; };
-	const std::string& get_name() const { return name; };
+	const std::string& getName() const { return name; };
 	T* operator*() { return content; }
 	T* operator->() { return content; }
 	explicit operator bool() {

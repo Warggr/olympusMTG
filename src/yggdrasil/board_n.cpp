@@ -2,8 +2,8 @@
 #include "gameplay/permanents/4permanents.h"
 #include "gameplay/2cards.h"
 
-void BoardN::insert(std::unique_ptr<Card> to_add, Player *pl) {
-    switch(to_add->get_type().underlying) {
+void BoardN::insert(uptr<Card> to_add, Player *pl) {
+    switch(to_add->getType().underlying) {
         case card_type::planeswalker:
             mysuperfriends.insert(std::move(to_add), pl); break;
         case card_type::creature:

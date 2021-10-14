@@ -34,7 +34,7 @@ public:
     bool noSummonSick() const { return etbBeforeThisTurn; }
     virtual void tap() { untapped = 0; }
 	virtual void untap() { untapped = 1; }
-	virtual void declare_beginturn(){ untap(); etbBeforeThisTurn = 1; };
+	virtual void declareBeginturn(){ untap(); etbBeforeThisTurn = 1; };
 	virtual void activate();
 //	bool directactivate();
 	virtual void destroy();
@@ -67,15 +67,14 @@ public:
 
 //	void damage(int nb_damage, Target* origin = 0) override;
 	void hit(Damageable* tgt);
-	void add_blocker(Creature* bl);
-	void set_blocking(){is_block = true; };
-	void resolve_attack(Player* nextopponent);
-	int get_power() const {if(pt_switched) return set_power + added_power; else return set_toughness + added_toughness; };
-	int get_toughness() const {if(pt_switched) return set_toughness + added_toughness; else return set_power + added_power; };
-	void plus_power(char dpower){added_power += dpower; };
-	void plus_toughness(char dtoughness){added_toughness += dtoughness; };
+	void addBlocker(Creature* bl);
+	void setBlocking(){is_block = true; };
+	void resolveAttack(Player* nextopponent);
+	int getPower() const {if(pt_switched) return set_power + added_power; else return set_toughness + added_toughness; };
+	int getToughness() const {if(pt_switched) return set_toughness + added_toughness; else return set_power + added_power; };
+	void plusPower(char dpower){added_power += dpower; };
+	void plusToughness(char dtoughness){added_toughness += dtoughness; };
 
-//    Identifier reload_id() const override;
     Player* getDmgController() override { return ctrl; }
 
     void splitDamage(Agent &agent);
@@ -89,14 +88,12 @@ class Planeswalker: public Permanent, public Damageable{
     int loyalty; */
     bool thisturn; //TODO planeswalker abilities
 public:
-//	static constexpr Identifier def_identifier = construct_id_perm(planeswalker, 0, false);
 
 	Planeswalker(uptr<Card> src, Player* pl);
 //	void damage(int nb_damage, Target* origin) override;
 	void activate() override;
-	void declare_beginturn() override { Permanent::declare_beginturn(); thisturn = false; };
+	void declareBeginturn() override { Permanent::declareBeginturn(); thisturn = false; };
 
-//	Identifier reload_id() const override;
     Player* getDmgController() override { return ctrl; }
 
     friend class AbstractIO;

@@ -10,7 +10,7 @@
 
 using Identifier = int;
 class TriggerEvent;
-class ReaderVisitor; class WriterVisitor;
+class ReaderVisitor;
 
 class CardOracle{ //represents an Oracle text. Should never be modified.
 public:
@@ -20,21 +20,20 @@ protected:
     type_t type;
     colorId::type color;
     RulesHolder rules;
-
-//    Identifier casted_id;
 public:
 #ifdef F_TESTS
     CardOracle(type_t type): name("Test card"), type(type) {}
 #endif
-    explicit CardOracle(ReaderVisitor& reader) { get_read(reader); }
-    void get_read(ReaderVisitor& reader);
+    explicit CardOracle(ReaderVisitor& reader) { init(reader); }
+    void init(ReaderVisitor& reader);
 
-    void get_triggers(char type, TriggerEvent& trigEv) const;
-//    Identifier generate_casted_id() const;
     std::string describe() const;
+    std::vector<std::string> allText(int &power, int &toughness, int& frametype) const;
+
     inline Mana getCost() const { return rules.cast.cost; }
     inline const std::string& getName() const { return name; }
-    std::vector<std::string> allText(int &power, int &toughness, int& frametype) const;
+    inline type_t getType() const { return type; }
+    void getTriggers(char type, TriggerEvent& trigEv) const;
 
     friend class Card;
     friend class AbstractIO;

@@ -19,11 +19,12 @@ public:
 	AtomEffect_H(ReaderVisitor& reader, char* params_hashtable, unsigned char& effects_param) {
 	    init(reader, params_hashtable, effects_param);
 	}
+    ~AtomEffect_H() { delete[] params; }
 	void init(ReaderVisitor& reader, char* allassignedparams, unsigned char& nbassignedparams);
-	~AtomEffect_H() { delete[] params; }
-	std::string describe(const std::string& cardname) const;
 
 	void activate(SpecificTargeter<Target>* list_of_targets, Player* ctrl, Target* origin) const;
+
+    std::string describe(const std::string& cardname) const;
 };
 
 class Effect_H { //an Effect_H is a printed instruction such as "X fights Y, and you gain 3 life",
@@ -34,16 +35,20 @@ class Effect_H { //an Effect_H is a printed instruction such as "X fights Y, and
 public:
 	Effect_H() = default;
 	Effect_H(ReaderVisitor& reader){ init(reader); }
-	Effect_H(Effect_H&& other) noexcept : nb_parameters(other.nb_parameters), parameters(other.parameters) { effects = std::move(other.effects); }
+	Effect_H(Effect_H&& other) noexcept : nb_parameters(other.nb_parameters), parameters(other.parameters) {
+	    effects = std::move(other.effects);
+	}
 	~Effect_H() { delete parameters; }
 	void init(ReaderVisitor& reader);
+
+    void activate(SpecificTargeter<Target>* list_of_targets, Player* ctrl, Target* origin) const;
+
 	std::string describe(const std::string& known_sourcename) const;
+
 	uint8_t getNbParams() const { return nb_parameters; }
 	const char* getParams() const { return parameters; }
 
 //    void straight_cast(Player* pl, Permanent* origin);
-    void activate(SpecificTargeter<Target>* list_of_targets, Player* ctrl, Target* origin) const;
-
 //    void disp(const Rect& zone, std::string origin_name) const; //mimicks a Resolvable on top of the stack
 };
 

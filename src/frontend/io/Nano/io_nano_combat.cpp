@@ -2,7 +2,7 @@
 
 using namespace std;
 
-bool NanoIO::attack_switch(int, int, int, int) const {
+bool NanoIO::attackSwitch(int, int, int, int) const {
 	cout << "[Input]: Do you want to attack with this creature? (Y/n): ";
 	char rep;
 	while(true){

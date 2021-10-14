@@ -4,7 +4,7 @@
 #include "1general.h"
 #include "optionwrappers.h"
 #include "Mana/lib2_mana.h"
-#include "oracles/classes/2cards.h"
+#include "oracles/classes/card_oracle.h"
 #include <memory>
 #include <forward_list>
 
@@ -22,29 +22,26 @@ class SpellOption;
 
 class Card: public Target {
     Player* ctrl; //TODO: couldn't we optimize this away?
-	card_ptr oracle;
 public:
-	explicit Card(light_cardptr orc): Target(orc->name), oracle(orc) { t_type = target_type::card; }
-	std::string describe() const { return oracle->describe(); };
-	//void disp(bool highlight) const; //{ oracle->poster(); }
-	//void poster() const; //{ oracle->poster(); }
-    void reveal() const;
+	card_ptr oracle;
 
-	card_type get_type() const { return oracle->type; };
-	bool has_flash() const { return oracle->type.underlying == card_type::instant; } //TODO implement flash
-	Mana get_cost() const { return oracle->rules.cast.cost; };
-	const Effect_H* get_preRes() const { return &oracle->rules.cast.effects; };
-	colorId::type get_color() const { return oracle->color; };
-	void get_permabs(PermOption** pr, int* nb_opts) const { *pr = oracle->rules.first_actab; *nb_opts = oracle->rules.nb_actabs; };
-	void get_triggers(const char type, TriggerEvent& trigEv) const { oracle->get_triggers(type, trigEv); };
-	const char* get_flavor_text() const {return oracle->rules.flavor_text; }
-//  Identifier casted_id() const {return oracle->casted_id; };
-//	Identifier reload_id() const override;
-	//get_name is provided by being a child of Target
-	Player* getController() override { return ctrl; }
+	explicit Card(light_cardptr orc): Target(orc->name), oracle(orc) { t_type = target_type::card; }
+
     uptr<OptionAction> chooseOptionAction(uptr<Card>& me);
 
-	friend class AbstractIO;
+    void reveal() const;
+    std::string describe() const { return oracle->describe(); };
+
+	card_type getType() const { return oracle->getType(); };
+	bool hasFlash() const { return oracle->type.underlying == card_type::sorcery and oracle->type.shift; } //TODO implement flash
+	Mana getCost() const { return oracle->getCost(); };
+	const Effect_H* getEffect() const { return &oracle->rules.cast.effects; };
+	colorId::type getColor() const { return oracle->color; };
+	void getPermabs(PermOption** pr, int* nb_opts) const { *pr = oracle->rules.first_actab; *nb_opts = oracle->rules.nb_actabs; };
+	void getTriggers(const char type, TriggerEvent& trigEv) const { oracle->getTriggers(type, trigEv); };
+	const char* getFlavorText() const {return oracle->rules.flavor_text; }
+    Player* getController() override { return ctrl; }
+	//get_name is provided by being a child of Target
 };
 
 #endif //OLYMPUS_CLASSES_CARDS_2_H

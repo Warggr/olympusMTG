@@ -2,7 +2,7 @@
 #include "oracles/classes/1effects.h"
 #include "control/3player.h"
 
-void Player::add_mana(char c){
+void Player::addMana(char c){
 	manapool += c;
 }
 
@@ -31,11 +31,11 @@ void AtomEffect_H::activate(Targeter* list_of_targets, Player* ctrl, Target* ori
 		case draw:
 			(dynamic_cast<Player*> (target1))->draw(params[1]); break;
 		case gain_life:
-			(dynamic_cast<Player*> (target1))->gain_life(params[1]); break;
+			(dynamic_cast<Player*> (target1))->gainLife(params[1]); break;
 		case set_life:
-			(dynamic_cast<Player*> (target1))->set_life(params[1]); break;
+			(dynamic_cast<Player*> (target1))->setLife(params[1]); break;
 		case add_mana:
-			(dynamic_cast<Player*> (target1))->add_mana(params[1]); break;
+			(dynamic_cast<Player*> (target1))->addMana(params[1]); break;
 		case destroy:
 			(dynamic_cast<Permanent*> (target1))->destroy(); break;
 	    case exile:

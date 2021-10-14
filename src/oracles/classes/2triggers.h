@@ -5,25 +5,15 @@
 #include <string>
 class Effect_H; class Player; class Target; class ReaderVisitor;
 
-class Trigger_H {
-private:
-	//the exact trigger type (such as 'deals damage') is implicitly contained by the Trigger_event
-	Effect_H* effects; //and then the effects. The Effect_H contains everything necessary to choose targets
-	// and put ability onto the stack. TODO why is this a pointer?
-public:
-    ~Trigger_H() { delete effects; }
-    void init(ReaderVisitor& visitor);
-	std::string describe(trigtype type, const std::string& name) const;
-
-    void trigger(Player* pl, Target* origin) const;
-};
-
 struct TriggerHolder_H {
     trigtype type;
-    Trigger_H trigger;
+    Effect_H* effects;
 
     void init(ReaderVisitor& visitor);
-    std::string describe(const std::string& name) const { return trigger.describe(type, name); }
+    ~TriggerHolder_H() { delete effects; }
+
+    std::string describe(const std::string& name) const;
+    static std::string describe(const std::string& name, const Effect_H* effects, trigtype type);
 };
 
 /*A loses/gains B life

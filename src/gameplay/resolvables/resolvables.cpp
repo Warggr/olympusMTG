@@ -7,7 +7,7 @@
 #include <iostream>
 
 std::string Spell::describe() const { return source->describe(); }
-const std::string& Spell::get_name() const { return source->get_name(); }
+const std::string& Spell::getName() const { return source->getName(); }
 
 void Resolvable::resolve(){
     if(on_resolve) on_resolve->activate(list_of_targets, ctrl, origin->getTarget());
@@ -19,12 +19,10 @@ void Resolvable::resolve(){
 //As a general rule, the one to take the Resolvable out of the stack is the one to destroy it
 void Spell::resolve(){
     if(on_resolve) on_resolve->activate(list_of_targets, ctrl, this);
-    switch(source->get_type().underlying){
-        case card_type::instant:
-        case card_type::sorcery:
-            ctrl->puttozone(source, graveyard_zn); break;
-        default:
-            ctrl->insert_permanent(std::move(source));
+    if(source->getType().underlying == card_type::sorcery) {
+        ctrl->putToZone(source, graveyard_zn);
+    } else {
+        ctrl->myboard.insert(std::move(source), ctrl);
     }
 }
 
@@ -33,12 +31,12 @@ void Resolvable::counter(){
 }
 
 void Spell::counter(){
-    gdebug(DBG_TARGETING) << "A Spell called "<< source->get_name()<<" is countered! Removing it from stack and deleting it...\n";
-    ctrl->puttozone(source, graveyard_zn);
+    gdebug(DBG_TARGETING) << "A Spell called "<< source->getName()<<" is countered! Removing it from stack and deleting it...\n";
+    ctrl->putToZone(source, graveyard_zn);
     Stack::god->removeFromStack(this);
 }
 
-Spell::Spell(std::unique_ptr<Card> src, Player* ct): Resolvable(ct, src->get_preRes()), source(std::move(src)) {}
+Spell::Spell(std::unique_ptr<Card> src, Player* ct): Resolvable(ct, src->getEffect()), source(std::move(src)) {}
 
 Resolvable::Resolvable(Player* ct, const Effect_H* tocast, Target* org): Target(description), ctrl(ct){
 	//Technically, Resolvables are put on the stack, then targets are chosen.
@@ -59,8 +57,7 @@ Resolvable::Resolvable(Player* ct, const Effect_H* tocast, Target* org): Target(
 		for(int i=0; i<nb_targets; i++){
 			list_of_targets[i].setTarget( ct->getAgent().chooseTarget(params[i]) );
 		}
-	}
-	else{ //the resolvable, e.g. a permanent spell, has no on_resolve abilities
+	} else{ //the resolvable, e.g. a permanent spell, has no on_resolve abilities
 		nb_targets = 0;
 		list_of_targets = nullptr;
 		on_resolve = nullptr;

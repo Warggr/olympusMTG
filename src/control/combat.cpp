@@ -13,7 +13,7 @@ void Player::chooseBlockers(StateTN<Creature>& attackers){
 }
 
 void Creature::splitDamage(Agent& agent) {
-    agent.splitDamage(get_power(), assigned_bl);
+    agent.splitDamage(getPower(), assigned_bl);
 }
 
 void Player::damagestep(){
@@ -23,7 +23,7 @@ void Player::damagestep(){
 	    attacker.splitDamage(getAgent());
 	}
 	for(auto & attacker : myboard.myattackers){
-		attacker.resolve_attack(nextopponent);
+		attacker.resolveAttack(nextopponent);
 	}
 	myboard.myattackers.restate(); //destroying attackers list
 	Game::god->stateBasedActions();

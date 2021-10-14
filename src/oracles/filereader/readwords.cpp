@@ -121,13 +121,13 @@ void PlainFileReader::readCardType(card_type& type) {
     char a = ifile.get();
     if(a == 'L') { type.legendary = 1; a = ifile.get(); }
     if(a == 'W') { type.snow = 1; a = ifile.get(); }
-    if(a == 'B') { type.underlying = card_type::basic; a = ifile.get(); }
+    if(a == 'B') { type.shift = 1; a = ifile.get(); }
     if(a == 'E') { type.enchantment = 1; a = ifile.get(); }
     if(a == 'A') { type.artifact = 1; a = ifile.get(); }
     if(a == 'L') { type.land = 1; a = ifile.get(); }
     switch (a) {
         case ' ': return; //underlying is 'flagged' by default
-        case 'I': type.underlying = card_type::instant; break;
+        case 'I': type.underlying = card_type::sorcery; type.shift = 1; break;
         case 'P': type.underlying = card_type::planeswalker; break;
         case 'C': type.underlying = card_type::creature; break;
         case 'S': type.underlying = card_type::sorcery; break;

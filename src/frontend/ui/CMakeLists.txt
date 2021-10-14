@@ -1,4 +1,4 @@
-set(SOURCES default_ui.cpp ui_element.cpp window.cpp default_ui_combat.cpp default_ui_iterate.cpp)
+set(SOURCES default_ui.cpp ui_element.cpp default_ui_combat.cpp default_ui_iterate.cpp argus.cpp)
 
 add_library(UIDefault STATIC ${SOURCES})
 add_library(UIDefaultWithMock STATIC ${SOURCES})

@@ -13,9 +13,9 @@ bool SpellOption::iscastable(const Player* pl) const {
 }
 
 void SpellOption::cast_opt(Player* pl, uptr<Card>& origin){
-    gdebug(DBG_TARGETING) << "CASTING SPELL " << origin->get_name() << "\n";
+    gdebug(DBG_TARGETING) << "CASTING SPELL " << origin->getName() << "\n";
     EmptyOption::payCosts(pl);
-    if(isLand) pl->resolve_playland(std::move(origin));
+    if(isLand) pl->resolvePlayland(std::move(origin));
     else Stack::god->addToStack(std::make_unique<Spell>(std::move(origin), pl));
 }
 

@@ -18,6 +18,8 @@ namespace target_type {
             none = 0x0;
 }
 
+inline bool B_is_a_A(flag_t a, flag_t b) { return (a & b)==b; }
+
 namespace colorId {
     struct type {
         char fields;
@@ -53,15 +55,15 @@ namespace target_type {
 }
 
 struct card_type {
-    enum basic_type { flagged, basic, creature, planeswalker, instant, sorcery };
+    enum basic_type { flagged, creature, planeswalker, sorcery };
     uchar legendary : 1, snow : 1;
     uchar land : 1, artifact : 1, enchantment : 1;
-    basic_type underlying : 3;
+    uchar shift: 1; //means 'basic' for a land, 'instant' for a sorcery, and undefined for the rest
+    basic_type underlying : 2;
 
-    constexpr card_type(): legendary(0), snow(0), land(0), artifact(0), enchantment(0), underlying(flagged) {};
+    constexpr card_type(): legendary(0), snow(0), land(0), artifact(0), enchantment(0), shift(0), underlying(flagged) {};
     permanent_type toPermType() const {
         switch(underlying) {
-            case basic: return permanent_type::land;
             case creature: return permanent_type::creature;
             case planeswalker: return permanent_type::planeswalker;
             case flagged:
@@ -71,6 +73,7 @@ struct card_type {
                 exit(1);
         }
     };
+    inline bool isInstant() const { return underlying == sorcery and shift == true; }
     std::string toString() const;
 };
 

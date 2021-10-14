@@ -2,6 +2,7 @@
 #include "gameplay/2cards.h"
 #include "oracles/classes/PermOption.h"
 #include <fstream>
+#include "control/7game.h"
 
 std::vector<OracleDescr> LocalAgent::getDeck() {
     std::vector<OracleDescr> ret;
@@ -22,38 +23,42 @@ std::vector<OracleDescr> LocalAgent::getDeck() {
 }
 
 Target* LocalAgent::chooseTarget(char type) {
-    return frontEnd.ui.iterate(true, type);
+    return viewer.frontEnd.ui.iterate(true, type);
 }
 
 uptr<OptionAction> LocalAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
     (void) pl; //No idea why we need it
-    return frontEnd.ui.chooseOpt(sorcerySpeed);
+    return viewer.frontEnd.ui.chooseOpt(sorcerySpeed);
 }
 
 void LocalAgent::splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) {
-    frontEnd.splitDamage(power, blockers);
+    viewer.frontEnd.splitDamage(power, blockers);
 }
 
 std::list<std::unique_ptr<Card>> LocalAgent::chooseCardsToKeep(std::list<std::unique_ptr<Card>>& list, unsigned nbToDiscard) {
-    return frontEnd.io.checklist(list, nbToDiscard, nbToDiscard);
+    return viewer.frontEnd.io.checklist(list, nbToDiscard, nbToDiscard);
 }
 
 bool LocalAgent::keepsHand() {
-    return frontEnd.io.simpleChoice("Keep Hand", "Mulligan");
+    return viewer.frontEnd.io.simpleChoice("Keep Hand", "Mulligan");
 }
 
 bool LocalAgent::chooseAttackers(Y_Hashtable<Creature>& mycreas) {
-    return frontEnd.ui.chooseattackers(mycreas);
+    return viewer.frontEnd.ui.chooseattackers(mycreas);
 }
 
 void LocalAgent::chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature>& attackers) {
-    return frontEnd.ui.chooseblockers(mycreas, attackers);
+    return viewer.frontEnd.ui.chooseblockers(mycreas, attackers);
 }
 
 uint LocalAgent::chooseAmong(std::vector<PermOption*> opts) {
-    return frontEnd.io.chooseAmong(opts);
+    return viewer.frontEnd.io.chooseAmong(opts);
 }
 
 uint LocalAgent::chooseAmong(std::vector<SpellOption *> opts) {
-    return frontEnd.io.chooseAmong(opts);
+    return viewer.frontEnd.io.chooseAmong(opts);
+}
+
+void LocalViewer::connectGame(Game* game) {
+    frontEnd.ui.registerPlayers(game->players);
 }

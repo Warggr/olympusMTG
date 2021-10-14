@@ -2,12 +2,12 @@
 #include "9modifs.h"
 #include <iostream>
 
-void Target::add_persecutor(AbstractTargeter* tar){
+void Target::addPersecutor(AbstractTargeter* tar){
 	//god.gdebug(DBG_TARGETING) << "This Target "<<this<<" is the target of a Targeter" <<tar<<std::endl;
 	to_target.push_front(tar);
 }
 
-void Target::remove_persecutor(AbstractTargeter* tar){
+void Target::removePersecutor(AbstractTargeter* tar){
 #ifdef F_STRICT
 	gdebug(DBG_TARGETING) << "Removing: this Target "<<this<<" is not any longer harassed by"<<tar<<"\n";
 	std::list<Targeter*>::iterator iter;

@@ -4,7 +4,7 @@
 #include <forward_list>
 #include <oracles/classes/3statics.h>
 #include "oracles/classes/1effects.h"
-#include "oracles/classes/2cards.h"
+#include "oracles/classes/card_oracle.h"
 
 class WeirdCost;
 

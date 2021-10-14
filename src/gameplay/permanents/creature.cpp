@@ -3,10 +3,10 @@
 #include "control/3player.h"
 
 void Creature::hit(Damageable* tgt) {
-	tgt->damage(get_power(), this);
+	tgt->damage(getPower(), this);
 }
 
-void Creature::resolve_attack(Player* nextopponent){
+void Creature::resolveAttack(Player* nextopponent){
     if(!is_block){
         hit(nextopponent);
     }
@@ -26,7 +26,7 @@ void Creature::resolve_attack(Player* nextopponent){
     assigned_bl.clear();
 }
 
-void Creature::add_blocker(Creature* bl){
+void Creature::addBlocker(Creature* bl){
     is_block = true;
     assigned_bl.emplace_front(std::pair<uint8_t, SpecificTargeter<Creature>>(0, bl));
 }

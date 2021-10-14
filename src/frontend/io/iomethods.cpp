@@ -3,54 +3,47 @@
 #define maybe_undef override
 #endif
 
-#ifndef BOOLEAN
-#define BOOLEAN(x) maybe_virtual bool x maybe_undef
-#define INTEGER(x) maybe_virtual int x maybe_undef
-#define DEVOID(x) maybe_virtual void x maybe_undef
-#define FLOATING(x) maybe_virtual float x maybe_undef
-#define STRING(x) maybe_virtual std::string x maybe_undef
-#define DIRECTIONENUM(x) maybe_virtual DirectioL x maybe_undef
+#ifndef METHOD
+#define METHOD(x) maybe_virtual x maybe_undef
 #endif
 
-DEVOID(getResolution(int& posterYSize, int& posterZSize, bool& hasMouseSupport, int& linesize) const);
-DEVOID(harmonize(const Rect& poster, const Rect& message, int nb_winzones));
-DEVOID(declare_window(int& leftY, int& topz, int width, int height));
-DEVOID(fulldisp() const);
-DEVOID(draw_permanent(const Rect& zone, const std::string& name, char color, bool tapped, bool highlight, bool basicImg) const);
-DEVOID(poster(const std::string& name, Mana manacost, char color, const char* types,
-              const std::vector<std::string>& lines, int power, int toughness, char frametype, bool watermark) const);
-DEVOID(poster(const Rect& position, bool highlight, const std::string& name, Mana manacost, char color, const char* types,
-              const std::vector<std::string>& lines, int power, int toughness, char frametype, bool watermark) const);
-DEVOID(print_text(const char* text, char color, int x, int y) const);
-DEVOID(print_text(const std::string& text, char color, int x, int y) const);
-DEVOID(draw_boxed_text(const char* text, char color, char backgr_color, int left, int top, int width) const);
-DEVOID(draw_boxed_text(const std::string& text, char color, char backgr_color, int left, int top, int width) const);
-DEVOID(message(const char* message) const);
-DEVOID(message(const std::string& text) const);
-DEVOID(erase_surface(const Rect& rectangle) const);
-DEVOID(draw_rectangle(char color, const Rect& rect, int linewidth) const);
-BOOLEAN( attack_switch(int leftY, int rightY, int topZ, int arrowlength) const);
-DEVOID(disp_header(const Rect& zone, const char* name, int life, char phase, bool highlight, Mana pool) const);
-DEVOID(draw_full_rectangle(char color, const Rect& rectangle) const);
-DEVOID(disp_cardback(const Rect& zone, int oncard_number) const);
-INTEGER(getInt(int lowerBound, int upperBound));
+METHOD(void getResolution(int& posterYSize, int& posterZSize, bool& hasMouseSupport, int& linesize) const);
+METHOD(void harmonize(const Rect& poster, const Rect& message, int nb_winzones));
+METHOD(void declare_window(int& leftY, int& topz, int width, int height));
 
-DIRECTIONENUM(get_direction_key());
-FLOATING( gmouseY());
-FLOATING( gmouseZ());
-BOOLEAN( gmouseActive());
-DEVOID(setMenuScene());
-DEVOID(setGameScene());
-STRING( getTextInput(const char* question));
+METHOD(void setMenuScene());
+METHOD(void setGameScene());
 
-BOOLEAN( simpleChoice(const char* optTrue, const char* optFalse));
+METHOD(void fulldisp() const);
+METHOD(void erase_surface(const Rect& rectangle) const);
+METHOD(void draw_rectangle(char color, const Rect& rect, int linewidth) const);
+METHOD(void draw_full_rectangle(char color, const Rect& rectangle) const);
 
-#undef BOOLEAN
-#undef INTEGER
-#undef FLOATING
-#undef DIRECTIONENUM
-#undef STRING
-#undef DEVOID
+METHOD(void print_text(const char* text, char color, int x, int y) const);
+METHOD(void print_text(const std::string& text, char color, int x, int y) const);
+METHOD(void draw_boxed_text(const char* text, char color, char backgr_color, int left, int top, int width) const);
+METHOD(void draw_boxed_text(const std::string& text, char color, char backgr_color, int left, int top, int width) const);
+METHOD(void message(const char* message) const);
+METHOD(void message(const std::string& text) const);
+
+METHOD(void draw_permanent(const Rect& zone, const std::string& name, char color, bool tapped, bool highlight, bool basicImg) const);
+METHOD(void disp(const Player& player, const Rect& zone, bool highlight) const);
+METHOD(void disp_cardback(const Rect& zone, int oncard_number) const);
+METHOD(void disp(const CardOracle& card, const Rect& zone, bool highlight) const);
+METHOD(void poster(const CardOracle& card) const);
+
+METHOD(bool attackSwitch(int leftY, int rightY, int topZ, int arrowlength) const);
+
+METHOD(int getInt(int lowerBound, int upperBound));
+METHOD(DirectioL get_direction_key());
+METHOD(std::string getTextInput(const char* question));
+METHOD(bool simpleChoice(const char* optTrue, const char* optFalse));
+
+METHOD(float gmouseY());
+METHOD(float gmouseZ());
+METHOD(bool gmouseActive());
+
+#undef METHOD
 
 #undef maybe_undef
 #undef maybe_virtual

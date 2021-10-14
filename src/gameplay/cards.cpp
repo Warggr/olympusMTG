@@ -44,7 +44,7 @@ void CardZone::placeOnBottom(std::unique_ptr<Card> c) {
     cards.emplace_after(iter, std::move(c));
 }
 
-void Player::puttozone(std::unique_ptr<Card>& x, enum cardzone nb_zone){
+void Player::putToZone(std::unique_ptr<Card>& x, enum cardzone nb_zone){
     switch(nb_zone){
         case library_zn: myLibrary.takeonecard(std::move(x)); break;
         case exile_zn: myExile.takeonecard(std::move(x)); break;
@@ -53,14 +53,19 @@ void Player::puttozone(std::unique_ptr<Card>& x, enum cardzone nb_zone){
 }
 
 void Player::draw(int nb_cards) {
+    std::list<uptr<Card>> temporaryZone; //according to Magic rules, these cards are already in your hand.
+    //We just cache them in a temporary zone and assume nothing happens while they're in the process of being drawn.
     for(int i=0; i<nb_cards; i++) {
         uptr<Card> card = myLibrary.pop_front();
         if(!card){
             milledout = 1;
+            //Rule 104.3c: a player who must draw too many cards loses the game the next time a player would receive prio
             return;
         }
-        myHand.push_front(std::move(card));
+        temporaryZone.push_front(std::move(card));
     }
+    viewer.onDraw(temporaryZone);
+    myHand.splice(myHand.end(), temporaryZone);
 }
 
 inline Identifier construct_id_spell(bool is_spell, Card* origin){

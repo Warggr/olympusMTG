@@ -23,14 +23,10 @@ void AtomEffect_H::init(ReaderVisitor &reader, char* allassignedparams, uint8_t&
 
 void TriggerHolder_H::init(ReaderVisitor &visitor) {
     visitor.readTriggerType(type);
-    trigger.init(visitor);
-}
-
-void Trigger_H::init(ReaderVisitor& visitor) {
     effects->init(visitor);
 }
 
-void CardOracle::get_read(ReaderVisitor &reader) {
+void CardOracle::init(ReaderVisitor &reader) {
     reader.readName(name);
     reader.readCardType(type);
 

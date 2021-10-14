@@ -15,20 +15,9 @@ public:
 	Mana cost;
 	WeirdCost* additional_costs = nullptr;
 	bool instantspeed = false;
-#ifdef F_TESTS
-	bool exists;
-	static char next_tag;
-	char tag;
 
-	virtual ~EmptyOption() { exists = false; };
-#else
-	virtual ~EmptyOption() = default; //{ delete additional_costs; }
-#endif
-    explicit EmptyOption(Mana c, bool instantspeed): cost(c), instantspeed(instantspeed){
-#ifdef F_TESTS
-        exists = true; tag = next_tag; next_tag++;
-#endif
-    };
+    EmptyOption(Mana c, bool instantspeed): cost(c), instantspeed(instantspeed) {};
+    virtual ~EmptyOption() = default; //{ delete additional_costs; }
 //	virtual void disp(int y, int z, int width, bool highlight, bool castable) const = 0;
     virtual bool iscastable(const Player* pl) const = 0;
 };

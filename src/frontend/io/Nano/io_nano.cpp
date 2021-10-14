@@ -2,6 +2,8 @@
 #include <list>
 #include <iostream>
 #include "headQ_rect.h"
+#include "oracles/classes/card_oracle.h"
+#include "control/3player.h"
 
 using namespace std;
 
@@ -27,38 +29,30 @@ void NanoIO::message(const char* text) const {
 
 void NanoIO::draw_permanent(const Rect&, const string& name, char, bool tapped, bool highlight, bool basicImg) const {
     (void) highlight; (void) basicImg;
-	//if(highlight) is_iterating = true;
 	cout << "\t<" << name << "> ";
 	if(tapped) cout << "[TAPPED]";
 	cout << "\n";
 }
 
-void NanoIO::disp_header(const Rect&, const char* name, int life, char state, bool highlight, Mana pool) const {
+void NanoIO::disp(const Player& pl, const Rect&, bool highlight) const {
     (void) highlight;
-	//if(highlight) is_iterating = true;
-	if(life >= 1000) gdebug(DBG_IOUI) << "Life total too high to be shown, most likely a bug";
-	cout << "[]: Player " << name << "\n\t" << life << " life\t" << pool.m2t() << " mana\n";
+	cout << "[]: Player " << pl.getName() << "\n\t" << pl.get_life() << " life\t" << pl.manapool.m2t() << " mana\n";
 
 	const char* phases_dcp[] = {"Begin", "First Main", "Declare Attackers", "Declare Blockers", "Damage", "Second Main", "End", "Not active"};
-	cout << "\tCurrently: " << phases_dcp[state >> 5] << "\n";
+	cout << "\tCurrently: " << phases_dcp[pl.getPhase()] << "\n";
 }
 
 void NanoIO::disp_cardback(const Rect&, int oncard_number) const {
 	cout << "\t" << oncard_number << " cards\n";
 }
 
-void NanoIO::poster(const Rect&, bool highlight, const std::string& name, Mana manacost, char color,
-                      const char *types, const std::vector<std::string> &lines, int power, int toughness,
-                      char frametype, bool watermark) const {
-    (void) highlight; //TODO highlight
-    poster(name, manacost, color, types, lines, power, toughness, frametype, watermark);
-}
+void NanoIO::poster(const CardOracle& oracle) const {
+    cout << "[Describing]: " << oracle.getName() << "\t" << oracle.getCost().m2t() << "\n";
 
-void NanoIO::poster(const string& name, Mana manacost, char, const char* types,
-	const vector<string>& lines, int power, int toughness, char frametype, bool) const {
-    cout << "[Describing]: " << name << "\t" << manacost.m2t() << "\n";
+    cout << "\t" << oracle.getType().toString() << "\n";
 
-    cout << "\t" << types << "\n";
+    int power, toughness, frametype;
+    auto lines = oracle.allText(power, toughness, frametype);
     for(auto& i : lines){
         cout << i << "\n";
     }

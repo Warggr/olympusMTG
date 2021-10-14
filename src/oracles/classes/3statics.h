@@ -15,8 +15,8 @@ class StaticAb_H {
     Modifier* other_effects; //0 +1/+1 - 1 +1/+0 - 2 +0/+1
 public:
     StaticAb_H() = default;
-    ~StaticAb_H() { delete[] other_effects; }
     void init(ReaderVisitor& myfile);
+    ~StaticAb_H() { delete[] other_effects; }
 };
 
 struct ModifListNode{

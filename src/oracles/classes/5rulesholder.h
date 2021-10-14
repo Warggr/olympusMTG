@@ -1,7 +1,7 @@
 #ifndef OLYMPUS_RULESHOLDER_H
 #define OLYMPUS_RULESHOLDER_H
 
-class PermOption; class Trigger_H; class StaticAb_H;
+class PermOption; class StaticAb_H;
 class ReaderVisitor; struct TriggerHolder_H;
 
 #include "8options.h"

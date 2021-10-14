@@ -29,22 +29,18 @@ void AbstractIO::disp(const Permanent& perm, const Rect& zone, bool highlight) {
 
 void AbstractIO::disp(const Creature& crea, const Rect& zone, bool highlight) {
 	disp((Permanent&) crea, zone, highlight);
-	char pt[6]; sprintf(pt, "%d/%d", crea.get_power(), crea.get_toughness());
+	char pt[6]; sprintf(pt, "%d/%d", crea.getPower(), crea.getToughness());
 	god->print_text(pt, AbstractIO::BLACK, zone.y + zone.width/2, zone.z + zone.height - 20);
 }
 
-void AbstractIO::disp(const std::unique_ptr<Card> &card, const Rect &pos, bool highlight) {
-    disp(*(card->oracle), pos, highlight);
+void AbstractIO::disp(const Card& card, const Rect &pos, bool highlight) {
+    disp(*(card.oracle), pos, highlight);
 }
 
 void AbstractIO::disp(const EmptyOption* opt, const Rect &pos, bool highlight) {
     (void) opt; (void) pos; (void) highlight; //TODO
 }
 
-void AbstractIO::disp(const CardOracle &card, const Rect& pos, bool highlight) {
-    int power, toughness, frametype;
-    std::vector<std::string> all_text = card.allText(power, toughness, frametype);
-	god->poster(pos, highlight, card.name, card.getCost(), main_color(card.color),
-                card.type.toString().c_str(), all_text, power, toughness, frametype, card.type.land);
-	//lands have watermarks
+void AbstractIO::disp(const Resolvable& res, const Rect &pos, bool highlight) {
+    draw_boxed_text(res.describe(), highlight ? WHITE : BLACK, highlight ? HIGH1 : GREY, pos.y, pos.z, pos.width);
 }

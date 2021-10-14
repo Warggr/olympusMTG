@@ -16,8 +16,8 @@ void PlainFileReader::readAll(RulesHolder& rules, card_type type) {
 	}
 	else{
         check_safepoint(' ', "after opening {");
-		enum section_types{ onresolve, altcosts, activated, triggered , flavor, astatic } section_name = activated;
-		if(type.underlying == card_type::sorcery || type.underlying == card_type::instant) section_name = onresolve;
+		enum section_types{ onresolve, altcosts, activated, triggered , flavor, astatic };
+		section_types section_name = (type.underlying == card_type::sorcery) ? onresolve : activated;
 		while(true){ //loop to read all sections
 			gdebug(DBG_READFILE) << "Expecting section n°" << (int) section_name << "\n";
 			if(ifile.peek() != '<') switch(section_name){
