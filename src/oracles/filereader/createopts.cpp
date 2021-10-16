@@ -1,4 +1,4 @@
-#include "oracles/classes/PermOption.h"
+#include "oracles/classes/perm_option.h"
 #include "oracles/classes/8options.h"
 
 SpellOption::SpellOption(bool isLand, bool instantSpeed): Option(0, instantSpeed), isLand(isLand) {}

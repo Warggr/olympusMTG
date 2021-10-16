@@ -28,6 +28,8 @@ public:
     inline bool empty(){ return cards.empty(); }
     void revealTopCards(int nb_cards);
 
+    const std::forward_list<uptr<Card>>& getCards() { return cards; }
+
 //    std::string describe() const; //TODO
 };
 

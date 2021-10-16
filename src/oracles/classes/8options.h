@@ -18,6 +18,7 @@ public:
 
     EmptyOption(Mana c, bool instantspeed): cost(c), instantspeed(instantspeed) {};
     virtual ~EmptyOption() = default; //{ delete additional_costs; }
+
 //	virtual void disp(int y, int z, int width, bool highlight, bool castable) const = 0;
     virtual bool iscastable(const Player* pl) const = 0;
 };

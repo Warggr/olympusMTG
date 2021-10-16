@@ -1,12 +1,15 @@
 #include "localagent.h"
 #include "gameplay/2cards.h"
-#include "oracles/classes/PermOption.h"
+#include "oracles/classes/perm_option.h"
 #include <fstream>
 #include "control/7game.h"
 
 std::vector<OracleDescr> LocalAgent::getDeck() {
     std::vector<OracleDescr> ret;
-    std::ifstream fb("decks/deck1.dck", std::ios::in);
+    std::ifstream fb(
+            viewer.frontEnd->getBasicIO()->getTextInput("Name of the deck file?"),
+            std::ios::in
+        );
     if(!fb) {
         gdebug(DBG_IMPORTANT | DBG_READFILE) << "Error: no deck\n";
         exit(1);
@@ -23,42 +26,47 @@ std::vector<OracleDescr> LocalAgent::getDeck() {
 }
 
 Target* LocalAgent::chooseTarget(char type) {
-    return viewer.frontEnd.ui.iterate(true, type);
+    return viewer.frontEnd->chooseTarget(type);
 }
 
 uptr<OptionAction> LocalAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
     (void) pl; //No idea why we need it
-    return viewer.frontEnd.ui.chooseOpt(sorcerySpeed);
+    return viewer.frontEnd->chooseOpt(sorcerySpeed);
 }
 
 void LocalAgent::splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) {
-    viewer.frontEnd.splitDamage(power, blockers);
+    viewer.frontEnd->splitDamage(power, blockers);
 }
 
 std::list<std::unique_ptr<Card>> LocalAgent::chooseCardsToKeep(std::list<std::unique_ptr<Card>>& list, unsigned nbToDiscard) {
-    return viewer.frontEnd.io.checklist(list, nbToDiscard, nbToDiscard);
+    return viewer.frontEnd->chooseCardsToKeep(list, nbToDiscard);
 }
 
-bool LocalAgent::keepsHand() {
-    return viewer.frontEnd.io.simpleChoice("Keep Hand", "Mulligan");
+bool LocalAgent::keepsHand(const std::forward_list<uptr<Card>>& cards) {
+    viewer.showTop(cards, 7);
+    return viewer.frontEnd->getBasicIO()->simpleChoice("Keep Hand", "Mulligan");
 }
 
 bool LocalAgent::chooseAttackers(Y_Hashtable<Creature>& mycreas) {
-    return viewer.frontEnd.ui.chooseattackers(mycreas);
+    return viewer.frontEnd->chooseattackers(mycreas);
 }
 
 void LocalAgent::chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature>& attackers) {
-    return viewer.frontEnd.ui.chooseblockers(mycreas, attackers);
+    return viewer.frontEnd->chooseblockers(mycreas, attackers);
 }
 
 uint LocalAgent::chooseAmong(std::vector<PermOption*> opts) {
-    return viewer.frontEnd.io.chooseAmong(opts);
+    return viewer.frontEnd->getBasicIO()->chooseAmong(opts);
 }
 
 uint LocalAgent::chooseAmong(std::vector<SpellOption *> opts) {
-    return viewer.frontEnd.io.chooseAmong(opts);
+    return viewer.frontEnd->getBasicIO()->chooseAmong(opts);
+}
+
+std::string LocalAgent::getName() {
+    return viewer.frontEnd->getBasicIO()->getTextInput("Your name:");
 }
 
 void LocalViewer::connectGame(Game* game) {
-    frontEnd.ui.registerPlayers(game->players);
+    frontEnd->registerPlayers(game->players);
 }

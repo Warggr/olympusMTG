@@ -2,7 +2,7 @@
 #include "oracles/classes/1effects.h"
 #include "oracles/classes/2triggers.h"
 #include "oracles/classes/3statics.h"
-#include "oracles/classes/PermOption.h"
+#include "oracles/classes/perm_option.h"
 
 void StaticAb_H::init(ReaderVisitor& ifile){
     ifile.readSelector(chars, requs); //reads up to ':'

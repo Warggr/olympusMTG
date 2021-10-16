@@ -31,7 +31,7 @@ public:
 
     std::list<std::unique_ptr<Card>> chooseCardsToKeep(std::list<std::unique_ptr<Card>>& list, uint nbToDiscard) override;
 
-    bool keepsHand() override;
+    bool keepsHand(const std::forward_list<uptr<Card>>& cards) override;
 
     uptr<OptionAction> chooseOpt(bool sorcerySpeed, Player* pl) override;
 

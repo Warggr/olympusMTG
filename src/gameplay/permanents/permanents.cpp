@@ -4,7 +4,7 @@
 #include "../1general.h"
 #include "../2cards.h"
 #include "oracles/classes/card_oracle.h"
-#include "oracles/classes/PermOption.h"
+#include "oracles/classes/perm_option.h"
 #include "headC_constants.h"
 
 void Player::resolvePlayland(uptr<Card> source){
@@ -70,6 +70,8 @@ void Permanent::activate(){
 Permanent::type Permanent::getType() const {
     return source->getType().toPermType();
 }
+
+Mana Permanent::getManaCost() const { return source->getCost(); }
 
 void Planeswalker::activate() {
     //TODO

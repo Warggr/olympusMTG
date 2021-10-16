@@ -1,5 +1,5 @@
 #include "oracles/classes/8options.h"
-#include "oracles/classes/PermOption.h"
+#include "oracles/classes/perm_option.h"
 #include "2cards.h"
 #include "control/3player.h"
 #include <iostream>

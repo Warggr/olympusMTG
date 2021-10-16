@@ -5,10 +5,13 @@
 #include "frontend/frontend.h"
 
 class LocalViewer: public Viewer {
-    FrontEnd frontEnd;
+    AbstractFrontEnd* frontEnd;
 public:
+    LocalViewer(): frontEnd(AbstractFrontEnd::factory()) {};
+    ~LocalViewer() { delete frontEnd; }
     void connectGame(Game *game) override;
     void onDraw(const std::list<uptr<Card>>& cards) override;
+    void showTop(const std::forward_list<uptr<Card>>& cards, uint nb);
 
     friend class LocalAgent;
 };
@@ -18,7 +21,7 @@ class LocalAgent: public Agent {
 public:
     LocalAgent() = default;
     void specificSetup() override {};
-    std::string getName() override { return viewer.frontEnd.getName(); }
+    std::string getName() override;
 
     std::vector<OracleDescr> getDeck() override;
 
@@ -30,7 +33,7 @@ public:
 
     std::list<std::unique_ptr<Card>> chooseCardsToKeep(std::list<std::unique_ptr<Card>>& list, unsigned nbToDiscard) override;
 
-    bool keepsHand() override;
+    bool keepsHand(const std::forward_list<uptr<Card>>& cards) override;
 
     bool chooseAttackers(Y_Hashtable<Creature>& mycreas) override;
 

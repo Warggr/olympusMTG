@@ -6,7 +6,7 @@
 #include "oracles/classes/1effects.h"
 #include "oracles/classes/2triggers.h"
 #include "oracles/classes/3statics.h"
-#include "oracles/classes/PermOption.h"
+#include "oracles/classes/perm_option.h"
 
 void PlainFileReader::readAll(RulesHolder& rules, card_type type) {
 	check_safepoint('{', "at the beginning of the rules text");

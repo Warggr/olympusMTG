@@ -16,6 +16,7 @@ public:
     public:
         myiterator(isitconst(BoardN, b)* par, inner_iterator<Permanent, b>* parent = nullptr):
             inner_iterator<Permanent, b>(parent), par(par), pos(0) {};
+
         void advance(bool bk) override { if(bk) pos++; else pos--; }
         bool isEnd(bool) const override { return pos == 3; }
 
@@ -44,6 +45,7 @@ public:
 
     iterator<Permanent, false> begin() override { return myartos.begin(); }
     iterator<Permanent, true> cbegin() const override { return myartos.cbegin(); }
+
     ConcreteLeaf<Permanent, false>* createStart(inner_iterator<Permanent, false>* parent, bool bk) override {
         Leaf<Permanent, false>* ret = myartos.createStart(new myiterator<false>(this, parent), bk);
         if(!ret) ret = new AdapterLeaf<Creature, false>(mycreas.createStart(nullptr, bk), parent);

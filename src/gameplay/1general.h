@@ -59,7 +59,7 @@ public:
 
 	explicit Damageable(int lif): life(lif){};
 	Damageable(int lif, Card* source);
-	int get_life() const { return life; };
+	int getLife() const { return life; };
 	virtual ~Damageable() = default;
 	virtual void damage(int nb_damage, Target* origin);
 	virtual void setLife(int life_total){life = life_total; }

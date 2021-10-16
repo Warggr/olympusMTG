@@ -3,7 +3,7 @@
 #include "agents/agent.h"
 #include "cardinhand.h"
 #include "oracles/classes/8options.h"
-#include "oracles/classes/PermOption.h"
+#include "oracles/classes/perm_option.h"
 
 uptr<OptionAction> Permanent::chooseOptionAction() {
     return std::make_unique<PermOptionAction>(

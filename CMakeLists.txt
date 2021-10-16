@@ -106,10 +106,9 @@ if(ENABLE_TESTING)
     find_package(Catch2 REQUIRED)
     include(CTest)
     include(Catch)
-    add_subdirectory(test)
 endif()
 
-set(INCLUDES ${PROJECT_SOURCE_DIR}/src ${PROJECT_BINARY_DIR}/include)
+include_directories(${PROJECT_BINARY_DIR}/include)
 
 set(WANTED_DEBUG_FLAGS "DBG_NONE" CACHE STRING "")
 

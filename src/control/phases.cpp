@@ -75,7 +75,7 @@ void Game::stateBasedActions(){
 bool Player::stateBasedActions(){
 	if(life <= 0 or milledout) return true;
 	for(auto iter = myboard.mycreas.begin(); iter != myboard.mycreas.end(); iter = iter){
-		if(iter->getToughness() + iter->get_life() <= 0){
+		if(iter->getToughness() + iter->getLife() <= 0){
 			auto i2 = iter;
 			++iter;
 			i2->destroy();
@@ -110,8 +110,7 @@ phase(0), milledout(0), zerolife(0), nb_mainphase(0), nb_lands_remaining(1), myO
 
 void Player::drawStartingHand() {
     for(int i=0; i<8; i++) {
-        myLibrary.revealTopCards(7);
-        if(agent.keepsHand()) {
+        if(agent.keepsHand(myLibrary.getCards())) {
             draw(7);
             auto cardsDiscarded = agent.chooseCardsToKeep(myHand, i);
             for(auto& card: cardsDiscarded) {

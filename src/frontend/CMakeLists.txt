@@ -1,18 +1,22 @@
-set(INCLUDES ${INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${PROJECT_BINARY_DIR}/src/frontend/include)
-set(TEST-INCLUDES ${INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${PROJECT_BINARY_DIR}/src/frontend/test-include)
+set(UIType "Graphical" CACHE STRING "Use a graphical or terminal-based user interface")
+set_property(CACHE UIType PROPERTY STRINGS "Graphical" "Cli")
 
-add_subdirectory(io)
-add_subdirectory(ui)
+string(TOLOWER ${UIType} LowerCaseUIType)
+set(LowerCaseUIType ${LowerCaseUIType} CACHE INTERNAL "")
 
-add_library(FrontEnd STATIC frontend.cpp menuscreen.cpp)
-target_include_directories(FrontEnd PUBLIC ${INCLUDES})
+configure_file(include/implementUI.h include/implementUI.h)
+configure_file(include/nameUI.h include/nameUI.h)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 
-target_link_libraries(FrontEnd PRIVATE UI${UILibType})
-target_link_libraries(FrontEnd PRIVATE IO)
+message(STATUS "Choosing ${UIType} as an UI type")
 
-if(ENABLE_TESTING)
-    add_executable(FrontEnd-test test.cpp)
-    target_include_directories(FrontEnd-test PUBLIC ${TEST-INCLUDES})
-    target_link_libraries(FrontEnd-test PRIVATE FrontEnd)
-    catch_discover_tests(FrontEnd-test)
-endif()
+add_subdirectory(graphical)
+add_subdirectory(cli)
+
+add_library(FrontEnd STATIC frontend.cpp)
+
+target_link_libraries(FrontEnd PRIVATE CLI)
+target_link_libraries(FrontEnd PRIVATE GUI)
+target_include_directories(FrontEnd PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/include)
+
+create_test(FrontEnd)

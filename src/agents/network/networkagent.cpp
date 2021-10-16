@@ -100,7 +100,8 @@ std::list<std::unique_ptr<Card>> NetworkAgent::chooseCardsToKeep(std::list<std::
     return std::list<std::unique_ptr<Card>>();
 }
 
-bool NetworkAgent::keepsHand() {
+bool NetworkAgent::keepsHand(const fwdlist<uptr<Card>>& cards) {
+    (void) cards;
     return false; //TODO implement
 }
 

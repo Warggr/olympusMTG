@@ -3,7 +3,7 @@
 #include "oracles/classes/card_oracle.h"
 #include "oracles/classes/2triggers.h"
 #include "oracles/classes/3statics.h"
-#include "oracles/classes/PermOption.h"
+#include "oracles/classes/perm_option.h"
 #include <vector>
 
 std::string PermOption::describe(const std::string& cardname) const {

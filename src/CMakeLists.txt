@@ -2,7 +2,11 @@ set(INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/include" ${INCLUDES})
 
 configure_file(../include/build_types.h ../include/build_types.h)
 
-target_compile_definitions(project_warnings INTERFACE uptr=std::unique_ptr uchar=unsigned\ char flag_t=unsigned\ char)
+target_compile_definitions(project_warnings INTERFACE
+        uptr=std::unique_ptr
+        uchar=unsigned\ char
+        flag_t=unsigned\ char
+        fwdlist=std::forward_list)
 
 link_libraries(project_options project_warnings)
 
@@ -13,9 +17,10 @@ function(create_test SUT)
         target_link_libraries(${SUT}-test PRIVATE ${SUT} Catch2::Catch2WithMain)
         target_compile_definitions(${SUT}-test PRIVATE F_TESTS)
         catch_discover_tests(${SUT}-test)
-        message(STATUS "Includes for ${SUT}-test: ${INCLUDES}")
     endif()
 endfunction()
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_subdirectory(agents)
 add_subdirectory(control)

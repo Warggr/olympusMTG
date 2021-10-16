@@ -7,6 +7,7 @@
 #include "oracles/classes/3statics.h"
 #include "headI_identifiers.h"
 #include "headE_enums.h"
+#include "Mana/lib2_mana.h"
 #include <memory>
 #include <list>
 #include <agents/agent.h>
@@ -40,6 +41,7 @@ public:
 	virtual void destroy();
 	virtual void exile();
     type getType() const;
+    Mana getManaCost() const;
 
     Player* getController() override { return ctrl; }
     uptr<OptionAction> chooseOptionAction() override;
