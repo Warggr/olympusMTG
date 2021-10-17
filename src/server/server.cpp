@@ -19,14 +19,14 @@ void Server::launchGame() {
 }
 
 void Server::addPlayer(playerType type) {
-	players.push_front(createAgent(type));
+	players.push_front(Agent::factory(type));
     (*players.begin())->setup();
 }
 
 void Server::addPlayers(const std::list<playerType>& types) {
     std::list<std::thread> setups;
     for(auto desc : types) {
-        std::unique_ptr<Agent> agent = createAgent(desc);
+        std::unique_ptr<Agent> agent = Agent::factory(desc);
         setups.emplace_front(&Agent::setup, &(*agent));
         players.push_front(std::move(agent));
     }

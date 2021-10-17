@@ -3,11 +3,13 @@
 
 #include "nameUI.h"
 #include "oracles/classes/card_oracle.h"
-#include <string>
-#include <list>
 #include "basicIO.h"
 
-class Creature; template<typename T> class Y_Hashtable; template<typename T> class StateTN;
+#include <string>
+#include <list>
+#include <memory>
+
+class Creature; template<typename T> class Y_Hashtable; template<typename T> class StateTN; class Card;
 
 /* FrontEnd recreates part of the game state on its own.
  * What it has:

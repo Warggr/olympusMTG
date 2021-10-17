@@ -4,10 +4,11 @@
 #include "../agent.h"
 #include "network.h"
 
-class NetworkAgent: public Agent, public Networker {
+class NetworkAgent: public Agent, public Networker, public Viewer {
     bool idle; //whether he has been assigned a connection/IP adress yet
     bool unread; //whether any unread messages are in the buffer
     long message_length;
+    Game* game;
     std::string name;
 
     const char* net_receive() override;
@@ -20,10 +21,10 @@ public:
 
     void setName(const char* name);
 	std::string getName() override { return name; }
+	std::string getLogin() override;
+	std::unique_ptr<std::istream> getDeckFile() override;
     //virtual EmptyOption* chooseOpt() override { return nullptr; }
     void setSock(int sock);
-
-    std::vector<OracleDescr> getDeck() override;
 
 	Target* chooseTarget(char type) override;
 
@@ -38,6 +39,14 @@ public:
     bool chooseAttackers(Y_Hashtable<Creature>& mycreas) override;
 
     void chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature>& attackers) override;
+
+    Viewer& getViewer() override { return *this; }
+
+    uint chooseAmong(std::vector<SpellOption *> opts) override;
+    uint chooseAmong(std::vector<PermOption *> opts) override;
+
+    void connectGame(Game *game) override;
+    void onDraw(const std::list<std::unique_ptr<Card>> &cards) override;
 };
 
 #endif //OLYMPUS_AGENT_NETWORK_H

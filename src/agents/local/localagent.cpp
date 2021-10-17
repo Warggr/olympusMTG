@@ -2,27 +2,19 @@
 #include "gameplay/2cards.h"
 #include "oracles/classes/perm_option.h"
 #include <fstream>
+#include <filesystem>
 #include "control/7game.h"
 
-std::vector<OracleDescr> LocalAgent::getDeck() {
-    std::vector<OracleDescr> ret;
-    std::ifstream fb(
+uptr<std::istream> LocalAgent::getDeckFile() {
+    auto fb = std::make_unique<std::ifstream>(
             viewer.frontEnd->getBasicIO()->getTextInput("Name of the deck file?"),
             std::ios::in
-        );
-    if(!fb) {
+    );
+    if(!*fb) {
         gdebug(DBG_IMPORTANT | DBG_READFILE) << "Error: no deck\n";
         exit(1);
     }
-    while(fb.peek() != EOF) {
-        char buffer[1024]; int nb;
-        fb >> nb >> std::skipws;
-        fb.getline(buffer, 1024);
-        assert(buffer[0] == ' ');
-        ret.emplace_back(buffer[1] == '"' ? customcard : reference,
-                         nb, std::string(buffer + 1));
-    }
-    return ret;
+    return fb;
 }
 
 Target* LocalAgent::chooseTarget(char type) {
@@ -65,6 +57,10 @@ uint LocalAgent::chooseAmong(std::vector<SpellOption *> opts) {
 
 std::string LocalAgent::getName() {
     return viewer.frontEnd->getBasicIO()->getTextInput("Your name:");
+}
+
+std::string LocalAgent::getLogin() {
+    return viewer.frontEnd->getBasicIO()->getTextInput("IP address:");
 }
 
 void LocalViewer::connectGame(Game* game) {

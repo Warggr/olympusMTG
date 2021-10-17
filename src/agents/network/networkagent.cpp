@@ -2,10 +2,12 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <fstream>
+#include <sstream>
 #include <oracles/filereader/visitor.h>
 #include "networkagent.h"
 #include "networkmanager.h"
 #include "gameplay/2cards.h"
+#include "oracles/filereader/binarywriter.h"
 
 NetworkAgent::NetworkAgent(): idle(true) {
     NetworkManager::declareAgent(this);
@@ -51,7 +53,7 @@ void NetworkAgent::setName(const char *read_name) {
     std::cout << "Read name: " << name << "\n";
 }
 
-unsigned int parse_number(const char *line, unsigned int& pos) {
+unsigned int parse_number(const char* line, unsigned int& pos) {
     unsigned int ret = 0;
     while (true) {
         if (line[pos] == ' ') return ret;
@@ -59,25 +61,6 @@ unsigned int parse_number(const char *line, unsigned int& pos) {
             ret = 10 * ret + line[pos] - '0';
         else throw DeckbuildingError("Not a number");
         pos++;
-    }
-}
-
-std::vector<OracleDescr> NetworkAgent::getDeck() {
-    std::vector<OracleDescr> ret;
-    while(true) { //read all segments
-        net_receive();
-        //for(int i=0; i<message_length + 3; i++) std::cout << "[" << i << "]: " << (buffer[i] == 0 ? '#' : buffer[i]) << "\n";
-        unsigned int start = 0;
-        while(true) { //read all cards
-            //std::cout << "[" << start << "]: " << (buffer[start] == 0 ? '#' : buffer[start]) << "\n";
-            if(start == message_length) break;
-            if(start > message_length) throw NetworkError();
-            if(buffer[start] == '\n') return ret; //\n is the ending character, because \0 is used as line delimiter
-            auto nb_cards = parse_number(buffer, start);
-            start++; //start points to the position after the space
-            ret.emplace_back(customcard, nb_cards, buffer + start);
-            start += ret.back().initializer.size() + 1;
-        }
     }
 }
 
@@ -95,7 +78,7 @@ void NetworkAgent::splitDamage(int power, std::list<std::pair<uint8_t, SpecificT
     (void) power; (void) blockers; //TODO implement
 }
 
-std::list<std::unique_ptr<Card>> NetworkAgent::chooseCardsToKeep(std::list<std::unique_ptr<Card>> &list, uint nbToDiscard) {
+std::list<uptr<Card>> NetworkAgent::chooseCardsToKeep(std::list<uptr<Card>> &list, uint nbToDiscard) {
     (void) list; (void) nbToDiscard; //TODO implement
     return std::list<std::unique_ptr<Card>>();
 }
@@ -115,6 +98,37 @@ bool NetworkAgent::chooseAttackers(Y_Hashtable<Creature>& mycreas) {
     return false;
 }
 
-void NetworkAgent::chooseBlockers(Y_Hashtable<Creature> &mycreas, StateTN<Creature> &attackers) {
+void NetworkAgent::chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature>& attackers) {
     (void) mycreas; (void) attackers; //TODO implement
+}
+
+void NetworkAgent::connectGame(Game* gm) {
+    game = gm;
+}
+
+void NetworkAgent::onDraw(const std::list<uptr<Card>>& cards) {
+    char header[2] = { static_cast<char>(CREATE), static_cast<char>(cards.size()) };
+    net_send(header, 2);
+    for(auto& card: cards) {
+        std::stringstream oracle_stream;
+        BinaryFileWriter oracle_reader(oracle_stream);
+        card->init(oracle_reader);
+        net_send(oracle_stream.str());
+    }
+}
+
+uint NetworkAgent::chooseAmong(std::vector<SpellOption*> opts) {
+    (void) opts; return 0; //TODO
+}
+
+uint NetworkAgent::chooseAmong(std::vector<PermOption*> opts) {
+    (void) opts; return 0; //TODO
+}
+
+std::string NetworkAgent::getLogin() {
+    return "127.0.0.1"; //value irrelevant - you're not supposed to chain two network agents
+}
+
+uptr<std::istream> NetworkAgent::getDeckFile() {
+    return receive_file();
 }

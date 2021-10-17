@@ -11,7 +11,9 @@
 
 struct Usage {
     bool refresh_db{false}, start_game{false};
-    uchar local{0}/*, bot, network*/;
+    ENABLE_IF_LOCAL(uchar local{0};)
+    ENABLE_IF_BOT(uchar bot{0};)
+    ENABLE_IF_NETWORK(uchar network{0};)
 };
 
 Usage parseArgs(int nbargs, char** args) {
@@ -20,16 +22,17 @@ Usage parseArgs(int nbargs, char** args) {
     while(i != nbargs) {
         if(args[i][0] != '-') printUsageAndExit();
         switch(args[i][1]) {
-            //case 'n':
-            //case 'b':
-            case 'l': {
+            ENABLE_IF_NETWORK(case 'n':)
+            ENABLE_IF_BOT(case 'b':)
+            ENABLE_IF_LOCAL(case 'l':)
+            {
                 if (i + 1 == nbargs || args[i + 1][0] > '9' || args[i + 1][0] < '0' || args[i + 1][1] != 0)
                     printUsageAndExit();
                 uchar nb = args[i+1][0] - '0';
                 switch(args[i][1]) {
-                    //case 'n': ret.network += nb;
-                    //case 'b': ret.bot += nb;
-                    case 'l': ret.local += nb;
+                    ENABLE_IF_NETWORK(case 'n': ret.network += nb; break;)
+                    ENABLE_IF_BOT(case 'b': ret.bot += nb; break;)
+                    ENABLE_IF_LOCAL(case 'l': ret.local += nb; break;)
                 }
                 ++i;
             } break;
@@ -38,7 +41,7 @@ Usage parseArgs(int nbargs, char** args) {
         }
         i++;
     }
-    uchar nb_players = ret.local /* + ret.bot + ret.network */;
+    uchar nb_players = ENABLE_IF_LOCAL(+ ret.local) ENABLE_IF_BOT( + ret.bot) ENABLE_IF_NETWORK(+ ret.network);
     if(nb_players == 0) { if(!ret.refresh_db) printUsageAndExit(); }
     else if(nb_players < 2) printUsageAndExit();
     else ret.start_game = true;
@@ -53,15 +56,15 @@ int main(int nbargs, char** args) {
     if(!usage.start_game) return 0;
 
     std::list<playerType> types;
-    for(int j=0; j<usage.local; j++) {
+    ENABLE_IF_LOCAL(for(int j=0; j<usage.local; j++) {
         types.push_front(LOCAL);
-    }
-    /*for(int j=0; j<usage.network; j++) {
+    })
+    ENABLE_IF_NETWORK(for(int j=0; j<usage.network; j++) {
         types.push_front(NETWORK);
-    }
-    for(int j=0; j<usage.bot; j++) {
-        types.push_front(NOT);
-    }*/
+    })
+    ENABLE_IF_BOT(for(int j=0; j<usage.bot; j++) {
+        types.push_front(BOT);
+    })
 
     Server server;
     server.addPlayers(types);

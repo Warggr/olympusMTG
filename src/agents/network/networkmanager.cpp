@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <ifaddrs.h>
 #include <cstring>
+#include <iostream>
 #include "networkmanager.h"
 #include "networkagent.h"
 
@@ -43,12 +44,15 @@ void NetworkManager::listen() {
 
     if(!orphan_clients.empty()) FD_SET(sockfd, &readfds); //add master socket to set
     for (NetworkAgent* agent : clients) if(agent->isConnected()) { //add child sockets to set
+        std::cout << "Agent " << agent << " is connected on socket " << agent->getSock() << "\n";
         if(agent->getSock() > max_fd) max_fd = agent->getSock();
         FD_SET( agent->getSock() , &readfds); //add to read list
+    } else {
+        std::cout << "Agent " << agent << " is not connected\n";
     }
 
     //wait for an activity on one of the sockets , timeout is NULL , so wait indefinitely
-    int activity = select( max_fd + 1 , &readfds , NULL , NULL , NULL);
+    int activity = select( max_fd + 1 , &readfds , nullptr , nullptr , nullptr);
     if ((activity < 0) && (errno!=EINTR)) throw NetworkError();
 
     //If something happened on the master socket ,
@@ -86,7 +90,7 @@ bool NetworkManager::init_connection(int new_connection) {
     long n = read(new_connection, buffer, 255);
     if(n < 0) throw NetworkError();
     buffer[n] = 0;
-    int i = 0;
+    int i;
     for(i=0; id_client[i] != 0; i++) if(id_client[i] != buffer[i]) return false;
     for(int j = 0; version_client[j] != 0; i++, j++) if(version_client[j] != buffer[i]) {
         std::cout << "Version mismatch: " << buffer + strlen(id_client) << " vs. " << version_client << "\n";
@@ -116,6 +120,14 @@ void printMyIp() {
 
 bool NetworkManager::initialized = false;
 int NetworkManager::sockfd = 0;
+
+void NetworkManager::declareAgent(NetworkAgent *agent) {
+    if(!initialized) initialize();
+    clients.push_back(agent);
+    orphan_clients.push_back(agent);
+    std::cout << "Added an agent\n";
+}
+
 std::vector<NetworkAgent*> NetworkManager::clients;
 std::vector<NetworkAgent*> NetworkManager::orphan_clients;
 char NetworkManager::buffer[256];

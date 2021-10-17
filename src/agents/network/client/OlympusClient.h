@@ -2,15 +2,16 @@
 #define OLYMPUS_OLYMPUSCLIENT_H
 
 #include "networkclient.h"
-#include "frontend/frontend.h"
+#include "../../local/localagent.h"
 
 class OlympusClient {
-    FrontEnd frontEnd;
+    LocalAgent agent;
     NetworkClient network;
 public:
     OlympusClient() = default;
     void init(const char* hostIp, const char* playerName);
-    void init() { init(frontEnd.getLogin().c_str(), frontEnd.getName().c_str()); }
+    void init(const char* hostIp, const char* playerName, const char* fileName);
+    void init();
     void start();
     void play();
     void query(const char* question);

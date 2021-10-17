@@ -2,19 +2,22 @@
 #define OLYMPUS_NETWORK_H
 
 #include <exception>
-#include <fstream>
+#include <istream>
+#include <memory>
 
 constexpr int PORT_NO = 4242;
 
 extern const char* id_client, * id_server, * version_server, * version_client;
 
+enum operations { CREATE, UPDATE, DELETE };
+
 class NetworkError: public std::exception {};
 
 class Networker {
 protected:
-    static constexpr int BUFFER_SIZE = 50;
+    static constexpr int BUFFER_SIZE = 100;
     char buffer[BUFFER_SIZE]{};
-    int sockfd;
+    int sockfd {-1};
     bool connected; //whether he is currently connected to that IP adress
 
     void net_send(const std::string& message) const { net_send(message.c_str(), message.size()); }
@@ -22,7 +25,8 @@ protected:
 public:
     Networker(): sockfd(-1), connected(false) {};
     virtual ~Networker();
-    void send_file(std::ifstream& file);
+    void send_file(std::istream& file);
+    uptr<std::istream> receive_file();
     int getSock() const { return sockfd; }
     bool isConnected() const { return connected; }
 

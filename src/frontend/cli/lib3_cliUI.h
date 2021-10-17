@@ -3,6 +3,8 @@
 
 #include "../frontend.h"
 #include "lib3_nanoIO.h"
+#include <forward_list>
+#include <memory>
 
 class CliUI: public AbstractFrontEnd {
     NanoIO io;

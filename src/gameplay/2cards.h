@@ -42,6 +42,10 @@ public:
 	const char* getFlavorText() const {return oracle->rules.flavor_text; }
     Player* getController() override { return ctrl; }
 	//get_name is provided by being a child of Target
+
+	void init(ReaderVisitor& visitor) const {
+	    const_cast<CardOracle*>(oracle.get())->init(visitor);
+	}
 };
 
 #endif //OLYMPUS_CLASSES_CARDS_2_H

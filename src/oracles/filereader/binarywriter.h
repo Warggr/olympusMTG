@@ -3,7 +3,6 @@
 
 #include "visitor.h"
 #include <memory>
-class Networker;
 
 class BinaryWriter : public ReaderVisitor {
 protected:

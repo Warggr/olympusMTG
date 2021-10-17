@@ -22,8 +22,9 @@ public:
     LocalAgent() = default;
     void specificSetup() override {};
     std::string getName() override;
+    std::string getLogin() override;
 
-    std::vector<OracleDescr> getDeck() override;
+    uptr<std::istream> getDeckFile() override;
 
     Target* chooseTarget(char type) override;
 

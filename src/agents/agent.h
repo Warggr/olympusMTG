@@ -1,7 +1,7 @@
 #ifndef OLYMPUS_AGENT_H
 #define OLYMPUS_AGENT_H
 
-#include <iostream>
+#include <istream>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -13,11 +13,37 @@ class Player; class Game;
 class OptionAction; class EmptyOption; class SpellOption; class PermOption;
 template<typename T> class Y_Hashtable; template<typename T> class StateTN;
 
+#define NO_BOT_AGENT
+
+#define ENABLE_IF_LOCAL(x)
+#define ENABLE_IF_NETWORK(x)
+#define ENABLE_IF_BOT(x)
+#define ENABLE_IF_MOCK(x)
+
+enum playerType {
 #ifdef MOCK_AGENT
-enum playerType { MOCK };
+#undef ENABLE_IF_MOCK
+#define ENABLE_IF_MOCK(x) x
+    MOCK,
 #else
-enum playerType { LOCAL, /*BOT, NETWORK*/  };
+#ifndef NO_LOCAL_AGENT
+#undef ENABLE_IF_LOCAL
+#define ENABLE_IF_LOCAL(x) x
+    LOCAL,
 #endif
+#ifndef NO_BOT_AGENT
+#undef ENABLE_IF_BOT
+#define ENABLE_IF_BOT(x) x
+    BOT,
+#endif
+#ifndef NO_NETWORK_AGENT
+#undef ENABLE_IF_NETWORK
+#define ENABLE_IF_NETWORK(x) x
+    NETWORK,
+#endif
+#endif
+};
+
 enum oracle_type { reference, customcard, compiled_customcard };
 
 struct OracleDescr {
@@ -36,10 +62,11 @@ class Viewer;
 
 class Agent {
 protected:
-    virtual std::vector<OracleDescr> getDeck() = 0;
     virtual void specificSetup() = 0;
 public:
     std::vector<OracleDescr> descriptors;
+
+    static uptr<Agent> factory(playerType desc);
 
     virtual ~Agent() = default;
     virtual Viewer& getViewer() = 0;
@@ -50,6 +77,9 @@ public:
         descriptors = getDeck(); //Checks whether deck is valid (TODO) and puts it into descriptors
     };
     virtual std::string getName() = 0;
+    virtual std::string getLogin() = 0;
+    virtual uptr<std::istream> getDeckFile() = 0;
+    std::vector<OracleDescr> getDeck();
 
     virtual uptr<OptionAction> chooseOpt(bool sorcerySpeed, Player* pl) = 0;
 
@@ -74,7 +104,5 @@ public:
 
     virtual void onDraw(const std::list<uptr<Card>>& cards) = 0;
 };
-
-std::unique_ptr<Agent> createAgent(playerType desc);
 
 #endif //OLYMPUS_AGENT_H

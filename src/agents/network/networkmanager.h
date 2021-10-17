@@ -20,12 +20,7 @@ private:
     static bool init_connection(int new_connection);
 public:
     static std::mutex listener_mutex;
-    static void declareAgent(NetworkAgent* agent){
-        if(!initialized) initialize();
-        clients.push_back(agent);
-        orphan_clients.push_back(agent);
-        std::cout << "Added an agent\n";
-    }
+    static void declareAgent(NetworkAgent* agent);
     static void closeInstances();
     static void listen();
 };
