@@ -1,4 +1,4 @@
-#include "networkagent.h"
+#include "server.h"
 #include "agents/agent.h"
 #include "agents/network/networkmanager.h"
 #include "control/7game.h"
@@ -27,7 +27,7 @@ void Server::addPlayers(const std::list<playerType>& types) {
     std::list<std::thread> setups;
     for(auto desc : types) {
         std::unique_ptr<Agent> agent = Agent::factory(desc);
-        setups.emplace_front(&Agent::setup, &(*agent));
+        setups.emplace_front(&Agent::setup, agent.get());
         players.push_front(std::move(agent));
     }
     for(auto& setup : setups) {

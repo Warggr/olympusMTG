@@ -6,14 +6,12 @@
 #include "control/7game.h"
 
 uptr<std::istream> LocalAgent::getDeckFile() {
-    auto fb = std::make_unique<std::ifstream>(
-            viewer.frontEnd->getBasicIO()->getTextInput("Name of the deck file?"),
-            std::ios::in
-    );
-    if(!*fb) {
-        gdebug(DBG_IMPORTANT | DBG_READFILE) << "Error: no deck\n";
-        exit(1);
-    }
+    uptr<std::istream> fb;
+    do {
+        fb = std::make_unique<std::ifstream>(
+                viewer.frontEnd->getBasicIO()->getTextInput("Name of the deck file?"),
+                std::ios::in );
+    } while(!*fb);
     return fb;
 }
 

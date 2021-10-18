@@ -1,5 +1,5 @@
-#ifndef OLYMPUS_NETWORKAGENT_H
-#define OLYMPUS_NETWORKAGENT_H
+#ifndef OLYMPUS_SERVER_H
+#define OLYMPUS_SERVER_H
 
 #include "agents/agent.h"
 #include <list>
@@ -23,4 +23,4 @@ public:
 
 void refreshDatabase();
 
-#endif //OLYMPUS_NETWORKAGENT_H
+#endif //OLYMPUS_SERVER_H

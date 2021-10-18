@@ -35,5 +35,4 @@ public:
     uint chooseAmong(std::vector<SpellOption *> opts) override { (void) opts; return 0; }
 };
 
-
 #endif //OLYMPUS_MOCKAGENT_H

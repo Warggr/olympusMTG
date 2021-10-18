@@ -13,8 +13,6 @@ class Player; class Game;
 class OptionAction; class EmptyOption; class SpellOption; class PermOption;
 template<typename T> class Y_Hashtable; template<typename T> class StateTN;
 
-#define NO_BOT_AGENT
-
 #define ENABLE_IF_LOCAL(x)
 #define ENABLE_IF_NETWORK(x)
 #define ENABLE_IF_BOT(x)
