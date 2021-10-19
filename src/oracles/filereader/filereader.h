@@ -18,7 +18,7 @@ private:
     enum State { go_on, invalid, breakout, end_reached } state;
 
     void read_section_flavor(char*& flavor_text, uint8_t offset_text) override;
-    void read_section_othercasts(CardOptionListNode *&node) override;
+    void read_section_othercasts(fwdlist<CardOption>& node) override;
     void readCosts(Mana& mana, bool& tapsymbol, WeirdCost*& others) override;
 
     uint nb_phrases(); //Reads how many phrases there are, separated by . and ended by '<' or '}'

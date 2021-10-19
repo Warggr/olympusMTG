@@ -4,11 +4,11 @@
 #include <vector>
 #include <memory>
 
-class OptionAction; class Player;
+class Option; class Player;
 
 struct OptionWrapper {
     virtual ~OptionWrapper() = default;
-    virtual uptr<OptionAction> chooseOptionAction() = 0;
+    virtual Option* chooseOptionAction() = 0;
 };
 
 template<typename T>

@@ -5,17 +5,16 @@ class PermOption; class StaticAb_H;
 class ReaderVisitor; struct TriggerHolder_H;
 
 #include "8options.h"
+#include <forward_list>
 
-struct CardOptionListNode {
-    CardOption option;
-    CardOptionListNode* next {nullptr};
-
-    CardOption* operator->() { return &option; }
+struct SpellOption {
+    Mana cost;
+    Effect_H* effects;
 };
 
 struct RulesHolder {
     SpellOption cast;
-    CardOptionListNode* otherCardOptions {nullptr};
+    std::forward_list<CardOption> otherCardOptions;
     uint nb_actabs {0};
     PermOption* first_actab {nullptr};
     uint nb_triggers {0};

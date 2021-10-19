@@ -62,7 +62,7 @@ void BinaryReader::readActAb(Mana& mana, WeirdCost*& cost, Effect_H* effects, bo
     tapsymbol = twobools & 0x1; ismanaability = twobools & 0x2; instantspeed = twobools & 0x4;
 }
 
-void BinaryReader::readMainSpell(SpellOption &cast) {
+void BinaryReader::readMainSpell(SpellOption& cast) {
     (void) cast; //TODO
 }
 
@@ -78,7 +78,7 @@ void BinaryReader::readCosts(Mana &mana, bool &tapsymbol, WeirdCost *&others) {
     (void) mana; (void) tapsymbol; (void) others; //TODO
 }
 
-void BinaryReader::read_section_othercasts(CardOptionListNode *&node) {
+void BinaryReader::read_section_othercasts(fwdlist<CardOption>& node) {
     (void) node; //TODO
 }
 

@@ -11,7 +11,7 @@ void CliUI::splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter
     (void) power; (void) blockers; //TODO
 }
 
-uptr<OptionAction> CliUI::chooseOpt(bool sorcerySpeed) {
+uptr<Option> CliUI::chooseOpt(bool sorcerySpeed) {
     (void) sorcerySpeed; return nullptr;
 }
 

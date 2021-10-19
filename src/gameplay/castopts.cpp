@@ -6,25 +6,23 @@
 #include "resolvables/5resolvables.h"
 #include "resolvables/stack.h"
 
-//These functions are somehow ignored by the linker. So they have been defined again in createopts.cpp
-bool SpellOption::iscastable(const Player* pl) const {
-    if(isLand) return pl->canPlayLand();
-    else return pl->manapool >= cost;
-}
-
-void SpellOption::cast_opt(Player* pl, uptr<Card>& origin){
+void DefaultCardOption::castOpt(Player* pl){
     gdebug(DBG_TARGETING) << "CASTING SPELL " << origin->getName() << "\n";
-    EmptyOption::payCosts(pl);
-    if(isLand) pl->resolvePlayland(std::move(origin));
-    else Stack::god->addToStack(std::make_unique<Spell>(std::move(origin), pl));
+    if(origin->getType().land) {
+        pl->resolvePlayland(std::move(origin));
+    } else {
+        pl->manapool -= origin->getCost();
+        Stack::god->addToStack(std::make_unique<Spell>(std::move(origin), pl));
+    }
 }
 
-bool PermOption::iscastable(const Player* pl) const {
-    return pl->manapool >= cost;
+bool DefaultCardOption::isCastable(bool sorceryspeed) const {
+    return (sorceryspeed or origin->hasFlash()) and (origin->getController()->manapool >= origin->getCost());
 }
 
-void EmptyOption::payCosts(Player *pl) const {
-    pl->manapool -= cost;
+bool PermOption::isCastable(bool sorceryspeed) const {
+    (void) sorceryspeed; //TODO some abilities are only sorcery-speed
+    return origin->getController()->manapool >= cost;
 }
 
 void PermOption::straight_cast(Player* pl){
@@ -32,8 +30,13 @@ void PermOption::straight_cast(Player* pl){
     typecasted.resolve();
 }
 
-void PermOption::cast_opt(Player* pl, Permanent& origin){
-    EmptyOption::payCosts(pl);
-    if(tapsymbol) origin.tap();
+void PermOption::castOpt(Player* pl){
+    pl->manapool -= cost;
+    if(tapsymbol) origin->tap();
     Stack::god->addToStack(std::make_unique<Resolvable>(pl, &effects));
+}
+
+std::string CardOption::describe(const std::string& cardName) const {
+    (void) cardName;
+    return std::string(); //TODO
 }

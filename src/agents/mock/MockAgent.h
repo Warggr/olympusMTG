@@ -15,7 +15,7 @@ public:
 
     Target* chooseTarget(char type) override { (void) type; return nullptr; }
 
-    uptr<OptionAction> chooseOpt(bool sorcerySpeed, Player* pl) override { (void) sorcerySpeed; (void) pl; return nullptr; }
+    uptr<Option> chooseOpt(bool sorcerySpeed, Player* pl) override { (void) sorcerySpeed; (void) pl; return nullptr; }
 
     void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) override {
         (void) power; (void) blockers;

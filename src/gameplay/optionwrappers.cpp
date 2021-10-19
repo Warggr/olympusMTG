@@ -5,16 +5,10 @@
 #include "oracles/classes/8options.h"
 #include "oracles/classes/perm_option.h"
 
-uptr<OptionAction> Permanent::chooseOptionAction() {
-    return std::make_unique<PermOptionAction>(
-            *options.at(ctrl->getAgent().chooseAmong(options)),
-            *this
-    );
+Option* Permanent::chooseOptionAction() {
+    return options.at(ctrl->getAgent().chooseAmong(options));
 }
 
-uptr<OptionAction> CardInHand::chooseOptionAction() {
-    return std::make_unique<SpellOptionAction>(
-            *options.at(origin->getController()->getAgent().chooseAmong(options)),
-            origin
-    );
+Option* CardInHand::chooseOptionAction() {
+    return options.at(origin->getController()->getAgent().chooseAmong(options));
 }

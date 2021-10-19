@@ -61,9 +61,7 @@ void Permanent::destroy(){
 
 void Permanent::activate(){
 	if(nb_actabs == 1){
-		if(first_actab[0].get_tapsymbol()) untapped = 0;
-		ctrl->manapool -= first_actab[0].cost;
-		first_actab[0].cast_opt(ctrl, *this);
+		first_actab[0].castOpt(ctrl);
 	}
 }
 

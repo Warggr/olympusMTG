@@ -14,7 +14,7 @@ public:
 
     Target* chooseTarget(char type) override;
 
-    uptr<OptionAction> chooseOpt(bool sorcerySpeed, Player* pl) override;
+    uptr<Option> chooseOpt(bool sorcerySpeed, Player* pl) override;
 
     void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) override;
 
@@ -26,8 +26,8 @@ public:
 
     void chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature>& attackers) override;
 
-    uint chooseAmong(std::vector<PermOption *> opts) override;
-    uint chooseAmong(std::vector<SpellOption *> opts) override;
+    uint chooseAmong(std::vector<PermOption*> opts) override;
+    uint chooseAmong(std::vector<CardOption*> opts) override;
 
     Viewer& getViewer() override { return *this; }
 

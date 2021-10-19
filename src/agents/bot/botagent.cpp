@@ -19,7 +19,7 @@ Target *BotAgent::chooseTarget(char type) {
     (void) type; return nullptr;
 }
 
-uptr<OptionAction> BotAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
+uptr<Option> BotAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
     (void) sorcerySpeed; (void) pl;
     return nullptr;
 }
@@ -50,7 +50,7 @@ uint BotAgent::chooseAmong(std::vector<PermOption*> opts) {
     (void) opts; return 0;
 }
 
-uint BotAgent::chooseAmong(std::vector<SpellOption *> opts) {
+uint BotAgent::chooseAmong(std::vector<CardOption *> opts) {
     (void) opts;
     return 0;
 }

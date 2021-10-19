@@ -19,7 +19,7 @@ Target* LocalAgent::chooseTarget(char type) {
     return viewer.frontEnd->chooseTarget(type);
 }
 
-uptr<OptionAction> LocalAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
+uptr<Option> LocalAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
     (void) pl; //No idea why we need it
     return viewer.frontEnd->chooseOpt(sorcerySpeed);
 }
@@ -49,7 +49,7 @@ uint LocalAgent::chooseAmong(std::vector<PermOption*> opts) {
     return viewer.frontEnd->getBasicIO()->chooseAmong(opts);
 }
 
-uint LocalAgent::chooseAmong(std::vector<SpellOption *> opts) {
+uint LocalAgent::chooseAmong(std::vector<CardOption *> opts) {
     return viewer.frontEnd->getBasicIO()->chooseAmong(opts);
 }
 

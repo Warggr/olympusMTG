@@ -6,31 +6,24 @@
 
 class PermOption: public Option {
 private:
-    bool tapsymbol, ismanaability;
+    bool tapsymbol, ismanaability, instantspeed;
+    Permanent* origin;
+    Effect_H effects;
+    Mana cost;
+    WeirdCost* additional_costs;
 public:
-    PermOption(): Option(0), tapsymbol(false), ismanaability(false) {};
+    PermOption(): tapsymbol(false), ismanaability(false), cost(0) {};
     ~PermOption();
     void init(ReaderVisitor& visitor);
 
-    void cast_opt(Player* pl, Permanent& origin);
+    void castOpt(Player* pl) override;
     void straight_cast(Player* pl);
 
     bool get_tapsymbol() const { return tapsymbol; };
     bool get_ismana() const { return ismanaability; };
     std::string describe(const std::string& cardname) const;
-//    void disp(int y, int z, int width, bool highlight, bool castable) const override;
 
-    bool iscastable(const Player *pl) const override;
-};
-
-class PermOptionAction: public OptionAction {
-    PermOption& option;
-    Permanent& perm;
-public:
-    PermOptionAction(PermOption& option, Permanent& origin): option(option), perm(origin) {}
-    void cast_opt(Player* pl) override {
-        option.cast_opt(pl, perm);
-    }
+    bool isCastable(bool sorceryspeed) const override;
 };
 
 #endif //OLYMPUS_PERM_OPTION_H

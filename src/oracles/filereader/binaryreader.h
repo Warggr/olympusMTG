@@ -15,7 +15,7 @@ public:
     void readManaCost(Mana& cost) override { directRead<>(cost); }
     void readCardType(card_type& type) override { directRead<>(type); }
     void read_section_flavor(char*& flavor_text, uint8_t offset_text) override;
-    void read_section_othercasts(CardOptionListNode*& node) override;
+    void read_section_othercasts(fwdlist<CardOption>& node) override;
 
     void readAll(RulesHolder& rules, card_type type) override;
 

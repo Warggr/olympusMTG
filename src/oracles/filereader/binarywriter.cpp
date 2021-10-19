@@ -16,7 +16,7 @@ void BinaryWriter::readAll(RulesHolder& rules, card_type type) {
     readMainSpell(rules.cast);
     char flags = 0;
     if(rules.first_actab) flags += 0x1;
-    if(rules.otherCardOptions) flags += 0x2;
+    if(!rules.otherCardOptions.empty()) flags += 0x2;
     if(rules.statics) flags += 0x4;
     if(rules.triggers) flags += 0x8;
     if(rules.flavor_text) flags += 0x10;
@@ -66,12 +66,8 @@ void BinaryWriter::readActAb(Mana& mana, WeirdCost*& add_costs, Effect_H* effect
     directRead(twobools);
 }
 
-void BinaryWriter::read_section_othercasts(CardOptionListNode *&node) {
+void BinaryWriter::read_section_othercasts(fwdlist<CardOption>& node) {
     (void) node; //TODO
-}
-
-void BinaryWriter::readMainSpell(SpellOption &cast) {
-    (void) cast; //TODO
 }
 
 void BinaryWriter::readSelector(Identifier &chars, Identifier &requs) {
@@ -84,4 +80,8 @@ void BinaryWriter::readModifier(char &i, Modifier &first_effect, Modifier *&othe
 
 void BinaryWriter::readCosts(Mana &mana, bool &tapsymbol, WeirdCost *&others) {
     (void) mana; (void) tapsymbol; (void) others; //TODO
+}
+
+void BinaryWriter::readMainSpell(SpellOption &cast) {
+    (void) cast; //TODO
 }

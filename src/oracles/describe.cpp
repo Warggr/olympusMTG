@@ -58,13 +58,11 @@ std::string AtomEffect_H::describe(const std::string& cardname) const {
     return ret;
 }
 
-std::string CardOption::describe(const std::string &name) const {
-    (void) name; return std::string(); //TODO
-}
-
 std::vector<std::string> CardOracle::allText(int& power, int& toughness, int& frametype) const {
     std::vector<std::string> all_text;
-    if(rules.otherCardOptions) all_text.push_back((*rules.otherCardOptions)->describe(name));
+    for(const auto& i : rules.otherCardOptions) {
+        all_text.push_back(i.describe(name));
+    }
     for(uint i=0; i<rules.nb_actabs; i++){
         all_text.push_back(rules.first_actab[i].describe(name));
     }

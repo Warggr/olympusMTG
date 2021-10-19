@@ -17,7 +17,7 @@ public:
 
     void splitDamage(int power, std::__cxx11::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) override;
 
-    uptr<OptionAction> chooseOpt(bool sorcerySpeed) override;
+    uptr<Option> chooseOpt(bool sorcerySpeed) override;
 
     Target* chooseTarget(char type) override;
 

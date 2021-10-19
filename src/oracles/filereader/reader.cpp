@@ -43,10 +43,8 @@ void CardOracle::init(ReaderVisitor &reader) {
 }
 
 RulesHolder::~RulesHolder() {
-    delete[] otherCardOptions;
     delete[] first_actab;
     delete[] triggers;
     delete[] statics;
     delete[] flavor_text;
-    for(auto* i = otherCardOptions; i != nullptr; ) { auto* i2 = i; i = i->next; delete i2; };
 }

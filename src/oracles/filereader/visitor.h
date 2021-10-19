@@ -29,7 +29,7 @@ protected:
         (type.underlying == card_type::planeswalker) ? 1 : 0; //2 for creatures, 1 for planeswalkers
     }
     virtual void read_section_flavor(char*& flavor_text, uint8_t offset_text) = 0;
-    virtual void read_section_othercasts(CardOptionListNode*& node) = 0;
+    virtual void read_section_othercasts(fwdlist<CardOption>& node) = 0;
 public:
     virtual void readName(std::string& name) = 0;
     virtual void readManaCost(Mana& cost) = 0;

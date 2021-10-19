@@ -6,63 +6,35 @@
 #include <memory>
 class Resolvable; class Player; class Card; class Permanent; class WeirdCost;
 
-//An option is a precise casting instruction.
-//Together with an OptionWrapper, it represents an action you can do.
-class EmptyOption {
+//OptionAction are the standard format for any action the player can do.
+class Option {
+public:
+    virtual ~Option() = default;
+    virtual bool isCastable(bool sorceryspeed) const = 0;
+    // Whether it is possible to cast it on principle. Returns true by default.
+    // Filters out more or less easy restrictions such as "only as a sorcery"
+    virtual void castOpt(Player* pl) = 0;
+};
+
+//There are multiple types of options:
+// - casting a spell
+// - activating an ability of a permanent or a card in {exile, graveyard, your hand, the command zone}
+// - special actions: playing a land, morphing, "take an action at a later time", "take an action to ignore a rule", suspend, companions, foretell
+// Special actions are so indistinguishable from normal abilities that I will ignore them for now.
+
+class DefaultCardOption: public Option {
 protected:
-    void payCosts(Player* pl) const;
+    uptr<Card> origin;
 public:
-	Mana cost;
-	WeirdCost* additional_costs = nullptr;
-	bool instantspeed = false;
-
-    EmptyOption(Mana c, bool instantspeed): cost(c), instantspeed(instantspeed) {};
-    virtual ~EmptyOption() = default; //{ delete additional_costs; }
-
-//	virtual void disp(int y, int z, int width, bool highlight, bool castable) const = 0;
-    virtual bool iscastable(const Player* pl) const = 0;
+    bool isCastable(bool sorceryspeed) const override;
+    void castOpt(Player *pl) override;
 };
 
-class Option: public EmptyOption {
+class CardOption: public Option {
 public:
-    Effect_H effects;
-    explicit Option(Mana c, bool instantspeed = false): EmptyOption(c, instantspeed) {};
-};
-
-class SpellOption: public Option {
-    bool isLand;
-public:
-    explicit SpellOption(card_type type);
-    explicit SpellOption(bool isLand = false, bool instantSpeed = false);
-    virtual ~SpellOption() = default;
-//    void disp(int y, int z, int width, bool highlight, bool castable) const override;
-    virtual void cast_opt(Player* pl, uptr<Card>& origin);
-    bool iscastable(const Player* pl) const override;
-};
-
-class CardOption: public SpellOption {
-    bool isSpell, requiresDiscarding;
-public:
-    explicit CardOption(ReaderVisitor& visitor) { init(visitor); };
-    void init(ReaderVisitor& visitor);
-//	void disp(int y, int z, int width, bool highlight, bool castable) const override;
-    std::string describe(const std::string& name) const;
-};
-
-class OptionAction {
-public:
-    virtual ~OptionAction() = default;
-    virtual void cast_opt(Player* pl) = 0;
-};
-
-class SpellOptionAction : public OptionAction {
-    SpellOption& option;
-    uptr<Card>& optionHolder;
-public:
-    SpellOptionAction(SpellOption& option, uptr<Card>& holder): option(option), optionHolder(holder) {};
-    void cast_opt(Player* pl) override {
-        option.cast_opt(pl, optionHolder);
-    }
+    bool isCastable(bool sorceryspeed) const override;
+    void castOpt(Player *pl) override;
+    std::string describe(const std::string& cardName) const;
 };
 
 #endif //OLYMPUS_CLASSES_OPTIONS_7_H

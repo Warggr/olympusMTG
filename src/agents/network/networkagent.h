@@ -34,7 +34,7 @@ public:
 
     bool keepsHand(const std::forward_list<uptr<Card>>& cards) override;
 
-    uptr<OptionAction> chooseOpt(bool sorcerySpeed, Player* pl) override;
+    uptr<Option> chooseOpt(bool sorcerySpeed, Player* pl) override;
 
     bool chooseAttackers(Y_Hashtable<Creature>& mycreas) override;
 
@@ -42,7 +42,7 @@ public:
 
     Viewer& getViewer() override { return *this; }
 
-    uint chooseAmong(std::vector<SpellOption *> opts) override;
+    uint chooseAmong(std::vector<CardOption *> opts) override;
     uint chooseAmong(std::vector<PermOption *> opts) override;
 
     void connectGame(Game *game) override;

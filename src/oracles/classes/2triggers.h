@@ -23,8 +23,8 @@ A gains ability B (cf. Theros Archetypes)
 A creates B tokens (because C) "a PINK effect causes YOU to create BEEBLE tokens"
 A sacrifices B (because C)
 A prevents damage (dealt by B)
-A shuffles their myLibrary (because C)
-A searches their myLibrary (because C)
+A shuffles their library (because C)
+A searches their library (because C)
 A does special action B, i.e. investigate, explore, clash, scry, crew, regenerate, mutate, on C
 A plays a land
 A is destroyed (by B) (cf. Karmic Justice)

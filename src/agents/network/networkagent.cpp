@@ -88,7 +88,7 @@ bool NetworkAgent::keepsHand(const fwdlist<uptr<Card>>& cards) {
     return false; //TODO implement
 }
 
-uptr<OptionAction> NetworkAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
+uptr<Option> NetworkAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
     (void) sorcerySpeed; (void) pl; //TODO implement
     return nullptr;
 }
@@ -117,7 +117,7 @@ void NetworkAgent::onDraw(const std::list<uptr<Card>>& cards) {
     }
 }
 
-uint NetworkAgent::chooseAmong(std::vector<SpellOption*> opts) {
+uint NetworkAgent::chooseAmong(std::vector<CardOption*> opts) {
     (void) opts; return 0; //TODO
 }
 

@@ -259,7 +259,7 @@ void PlainFileReader::readSelector(Identifier &chars, Identifier &requs) {
     (void) chars; (void) requs; //TODO
 }
 
-void PlainFileReader::read_section_othercasts(CardOptionListNode *&node) {
+void PlainFileReader::read_section_othercasts(fwdlist<CardOption>& node) {
     (void) node; //TODO
 }
 

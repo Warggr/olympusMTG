@@ -10,7 +10,7 @@
 
 class Target; class Creature; template<typename T> class SpecificTargeter; class Card;
 class Player; class Game;
-class OptionAction; class EmptyOption; class SpellOption; class PermOption;
+class Option; class CardOption; class PermOption;
 template<typename T> class Y_Hashtable; template<typename T> class StateTN;
 
 #define ENABLE_IF_LOCAL(x)
@@ -79,10 +79,10 @@ public:
     virtual uptr<std::istream> getDeckFile() = 0;
     std::vector<OracleDescr> getDeck();
 
-    virtual uptr<OptionAction> chooseOpt(bool sorcerySpeed, Player* pl) = 0;
+    virtual uptr<Option> chooseOpt(bool sorcerySpeed, Player* pl) = 0;
 
     virtual uint chooseAmong(std::vector<PermOption*> opts) = 0;
-    virtual uint chooseAmong(std::vector<SpellOption*> opts) = 0;
+    virtual uint chooseAmong(std::vector<CardOption*> opts) = 0;
 
     virtual Target* chooseTarget(char type) = 0;
 
