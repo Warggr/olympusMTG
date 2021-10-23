@@ -1,5 +1,4 @@
 #include "headI_identifiers.h"
-#include "headC_constants.h"
 #include "oracles/classes/5rulesholder.h"
 #include "filereader.h"
 #include "build_types.h"
@@ -98,7 +97,7 @@ void PlainFileReader::readActAb(Mana& mana, WeirdCost*& addcosts, Effect_H* effe
     effects->init(*this);
 }
 
-void PlainFileReader::readTriggerType(trigtype& type){
+void PlainFileReader::readTriggerType(trig_type& type){
     char trigtype_tmp[20];
     ifile.get(trigtype_tmp, 20, ':');
     ifile.get(); //getting ':'

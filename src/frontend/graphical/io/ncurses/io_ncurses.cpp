@@ -75,7 +75,7 @@ void NcursesIO::draw_permanent(const Rect& zone, const std::string& name, char c
 	wattroff(win, A_STANDOUT);
 }
 
-void NcursesIO::disp(const Player& player, const Rect& zone, bool highlight) const {
+void NcursesIO::draw(const Player& player, const Rect& zone, bool highlight) const {
 	WINDOW* win = winzones[zone.zone];
 	if(highlight) wattron(win, A_STANDOUT);
 	assert(player.getLife() < 1000);
@@ -94,7 +94,7 @@ void NcursesIO::disp(const Player& player, const Rect& zone, bool highlight) con
 	wrefresh(win);
 }
 
-void NcursesIO::disp_cardback(const Rect& zone, int oncard_number) const {
+void NcursesIO::draw_cardback(const Rect& zone, int oncard_number) const {
 	WINDOW* win = winzones[zone.zone];
 	if(zone.width >= 7 && zone.height >= 3){
 		mvwprintw(win, zone.z, zone.y,   "/MAGIC\\");
@@ -155,7 +155,7 @@ void disp_mana(WINDOW* win, Mana mana, int endy, int topz){
 	mvwprintw(win, endy-m.size(), topz, "%s", m.c_str());
 }
 
-DirectioL NcursesIO::get_direction_key(){
+DirectioL NcursesIO::get_direction_key() {
 	while(true){
 		int ch;
 		ch = getch();

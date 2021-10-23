@@ -30,11 +30,11 @@ public:
 	virtual ~Resolvable() = default;
 	virtual void resolve(); //this is what a resolvable is about
 	virtual std::string describe() const { return description; };
+    virtual void disp(BasicIO* io) const override;
 	virtual void counter();
 	const std::string& getName() const override { return description; };
 
-//  virtual void disp(const Rect& zone, bool highlight = false) const;
-    Player * getController() override { return ctrl; }
+    Player* getController() override { return ctrl; }
 };
 
 class Spell: public Resolvable{
@@ -46,7 +46,8 @@ public:
 	void counter() override;
 	std::string describe() const override;
 	const std::string& getName() const override;
-//	virtual Identifier reload_id() const;
+
+    void disp(BasicIO* io) const override;
 };
 
 #endif //OLYMPUS_CLASSES_RESOLVABLE_5_H

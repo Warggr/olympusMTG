@@ -5,7 +5,7 @@
 #include "../2cards.h"
 #include "oracles/classes/card_oracle.h"
 #include "oracles/classes/perm_option.h"
-#include "headC_constants.h"
+#include "headE_enums.h"
 
 void Player::resolvePlayland(uptr<Card> source){
 //	OutputManager::addToLog("  Land played");
@@ -19,10 +19,10 @@ Permanent::Permanent(std::unique_ptr<Card> src, Player* pl): Target(src->getName
 {
 	t_type = target_type::permanent;
 	source->getPermabs(&first_actab, &nb_actabs);
-	source->getTriggers(trigger_types::PermETB, triggers_permanent[0]);
-	source->getTriggers(trigger_types::PermLTB, triggers_permanent[1]);
-	source->getTriggers(trigger_types::PermStateChange, triggers_permanent[2]);
-	source->getTriggers(trigger_types::PermBecomes, triggers_permanent[3]);
+	source->getTriggers(trig_type::etb, triggers_permanent[0]);
+	source->getTriggers(trig_type::ltb, triggers_permanent[1]);
+	source->getTriggers(trig_type::statechange, triggers_permanent[2]);
+	source->getTriggers(trig_type::becomes, triggers_permanent[3]);
 
 	triggers_permanent[0].trigger(pl, this);
 }
@@ -36,7 +36,7 @@ Creature::Creature(std::unique_ptr<Card> src, Player* pl):
 	self_toughness = tmp[1];
 	set_power = tmp[0];
 	set_toughness = tmp[1];
-	source->getTriggers(trigger_types::CreaAttacks, triggers_creature[0]);
+	source->getTriggers(trig_type::is_damaged, triggers_creature[0]);
 }
 
 Planeswalker::Planeswalker(std::unique_ptr<Card> src, Player* pl):
@@ -46,7 +46,7 @@ Planeswalker::Planeswalker(std::unique_ptr<Card> src, Player* pl):
 }
 
 Damageable::Damageable(int lif, Card* source): life(lif){
-	source->getTriggers(trigger_types::DamageableIsDamaged, is_damaged);
+	source->getTriggers(trig_type::is_damaged, is_damaged);
 }
 
 void Permanent::exile(){

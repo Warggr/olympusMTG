@@ -20,7 +20,7 @@ void NanoIO::draw_permanent(const string& name, char, bool tapped, bool highligh
 	cout << "\n";
 }
 
-void NanoIO::disp(const Player& pl, int flags) const {
+void NanoIO::disp_player(const Player& pl, int flags) const {
     (void) flags; //TODO
 	cout << "[]: Player " << pl.getName() << "\n\t" << pl.getLife() << " life\t" << pl.manapool.m2t() << " mana\n";
 
@@ -60,10 +60,11 @@ void NanoIO::setMenuScene() { cout << "---Menu---\n"; }
 
 void NanoIO::setGameScene() { cout << "---Game Scene---\n"; }
 
-std::string NanoIO::getTextInput(const char *question) {
-    std::cout << question << "\n>\t";
+std::string NanoIO::getTextInput(const char *question, bool newline) {
+    std::cout << question;
+    if(newline) std::cout << "\n>\t";
     std::string ret;
-    std::cin >> ret;
+    std::getline( std::cin, ret );
     return ret;
 }
 
@@ -110,11 +111,29 @@ void NanoIO::disp(const CardOracle& oracle, int flags) const {
     }
 }
 
-void NanoIO::disp(const Option& option, int flags) const {
-    (void) option; (void) flags;
-    std::cout << "[ERROR NOT IMPLEMENTED Displaying an option]\n";
+void NanoIO::disp_inrow(const Displayable* card, int number, int total, int flags) const {
+    cout << '(' << number << '/' << total << ')' << ' '
+        << (flags & HIGHLIGHT ? '[' : ' ') << card->describe() << (flags & HIGHLIGHT ? ']' : ' ') << '\n';
 }
 
-void NanoIO::disp(const unique_ptr<Card> &card, int flags) const {
-    disp(*card->oracle, flags);
+void NanoIO::disp(const Option& option, int flags) const {
+    (void) option; (void) flags;
+    cout << "[ERROR NOT IMPLEMENTED Displaying an option]\n";
+}
+
+void NanoIO::disp(const Card& card, int flags) const {
+    disp(*card.oracle, flags);
+}
+
+BasicIO::checklistCallbackAction NanoIO::getNextPosition(abstract_iterator_wrapper* iter, uint& position, uint max) {
+    std::cout << "What do you want to do? Enter the number which you want to select/unselect or -1 to submit\n";
+    int what = getInt(-1, max);
+    if (what == -1) {
+        return BasicIO::commit;
+    } else {
+        uint where = static_cast<uint>(what);
+        for (; position <= where; ++position, ++iter);
+        for (; position >= where; --position, --iter);
+        return BasicIO::change;
+    }
 }

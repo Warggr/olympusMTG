@@ -14,7 +14,7 @@ struct PlayerHeader: public Sprite<Player> {
     PlayerHeader(): Sprite<Player>(nullptr) {}
     inline void setPlayer(Player* player) { std::cout << "Set target to " << player << "\n"; target = player; }
     void fullDisp(AbstractIO* io) const override {
-        io->disp(*target, coords, false);
+        io->draw(*target, coords, false);
     }
 };
 

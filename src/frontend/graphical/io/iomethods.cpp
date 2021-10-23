@@ -27,11 +27,12 @@ METHOD(void message(const char* message) const);
 METHOD(void message(const std::string& text) const);
 
 METHOD(void draw_permanent(const Rect& zone, const std::string& name, char color, bool tapped, bool highlight, bool basicImg) const);
-METHOD(void disp(const Player& player, const Rect& zone, bool highlight) const);
-METHOD(void disp_cardback(const Rect& zone, int oncard_number) const);
-METHOD(void disp(const CardOracle& card, const Rect& zone, bool highlight) const);
-METHOD(void disp(const Permanent& perm, const Rect& zone, bool highlight) const);
-METHOD(void disp(const Resolvable& resolvable, const Rect& zone, bool highlight) const);
+METHOD(void draw(const Player& player, const Rect& zone, bool highlight) const);
+METHOD(void disp_player(const Player& player, int flags) const);
+METHOD(void draw_cardback(const Rect& zone, int oncard_number) const);
+METHOD(void draw(const CardOracle& card, const Rect& zone, bool highlight) const);
+METHOD(void draw(const Permanent& perm, const Rect& zone, bool highlight) const);
+METHOD(void draw(const Resolvable& resolvable, const Rect& zone, bool highlight) const);
 METHOD(void poster(const CardOracle& card) const);
 
 METHOD(bool attackSwitch(int leftY, int rightY, int topZ, int arrowlength) const);

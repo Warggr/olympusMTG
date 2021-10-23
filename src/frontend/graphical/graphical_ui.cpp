@@ -63,7 +63,7 @@ Creature* GraphicalUI::blockerSwitch(const Creature& blocker, int blockerIndex, 
     return &(*attackers.begin()); //TODO
 }
 
-uptr<Option> GraphicalUI::chooseOpt(bool sorcerySpeed) {
+Option* GraphicalUI::chooseOpt(bool sorcerySpeed) {
     (void) sorcerySpeed;
     return nullptr; //TODO
 }
@@ -74,6 +74,6 @@ bool GraphicalUI::attackSwitch(int leftY, int rightY, int topZ, int arrowlength)
 
 void GraphicalUI::disp(fwdlist<uptr<Card>>::const_iterator begin, const fwdlist<uptr<Card>>::const_iterator end) {
     for(auto i = begin; i != end; ++i) {
-        io->disp(*i, Rect(0, 0, 0, 0), false); //TODO
+        io->draw(**i, Rect(0, 0, 0, 0), false); //TODO
     }
 }

@@ -62,7 +62,7 @@ protected:
 public:
     Sprite(T* content): target(content) {}
     Target* getTarget(char requs) const override { if(B_is_a_A(requs, target->targetType())) return target; else return nullptr; }
-    void fullDisp(AbstractIO *io) const override { io->disp(*target, coords, false); }
+    void fullDisp(AbstractIO *io) const override { io->draw(*target, coords, false); }
 };
 
 class Rectangle: public LowestUIElement {

@@ -78,9 +78,13 @@ public:
     inline void setOpp(Player* opp){ nextopponent = opp; };
 
 	Player* getDmgController() override { return this; }
+	Target* getMeAsTarget() override { return this; }
     Player* getController() override { return this; }
     Agent& getAgent() const { return agent; }
     u_char getPhase() const { return phase; }
+
+    void disp(BasicIO* io) const override;
+	std::string describe() const override;
 
     friend class OptionManager;
 };

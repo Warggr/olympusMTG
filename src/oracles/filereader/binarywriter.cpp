@@ -44,7 +44,7 @@ void BinaryWriter::readEffectH(uint8_t &nb_params, char *&params, std::forward_l
     canary('y');
 }
 
-void BinaryWriter::readTriggerType(trigtype& type) {
+void BinaryWriter::readTriggerType(trig_type& type) {
     directRead<>(type);
 }
 

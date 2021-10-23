@@ -19,7 +19,7 @@ Target *BotAgent::chooseTarget(char type) {
     (void) type; return nullptr;
 }
 
-uptr<Option> BotAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
+Option * BotAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
     (void) sorcerySpeed; (void) pl;
     return nullptr;
 }

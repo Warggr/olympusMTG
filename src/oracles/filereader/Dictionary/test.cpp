@@ -6,7 +6,7 @@
 
 TEST_CASE("Dictionary", "[dict]") {
     DictHolder dicts;
-    REQUIRE(*dicts.dict_trigtypes.find("etb") == trigtype::etb);
+    REQUIRE(*dicts.dict_trigtypes.find("etb") == trig_type::etb);
     REQUIRE(dicts.dict_trigtypes.find("imaginary") == dicts.dict_trigtypes.not_found);
 
     REQUIRE(*dicts.dict_selector_players.find("you") == 0);

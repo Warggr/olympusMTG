@@ -3,6 +3,7 @@
 
 #include "9modifs.h"
 #include "headE_enums.h"
+#include "displayable.h"
 #include <forward_list>
 #include <string>
 #include <list>
@@ -18,7 +19,7 @@ class TriggerEvent{ //contains all X-action triggers of a certain object, i.e. a
 public:
 	void trigger(Player* pl, Target* origin) const;
 	void addTrigger(Effect_H* trig){ all_triggers.push_front(trig); };
-	std::string describe(trigtype type, const std::string& cardname) const;
+	std::string describe(trig_type type, const std::string& cardname) const;
 };
 
 class GameObject{ //Players, Permanents, Resolvables, Cards, and maybe enums or zones or abilities (as in: abilities can't be activated) later on? (Or, would that restriction be put on the origin, or the resolvable?)
@@ -30,7 +31,7 @@ public:
     void invalidate(){ id_still_correct = false; };
 };
 
-class Target: public GameObject{ //Permanents, Players, Cards (not Oracles!), and Resolvables
+class Target: public GameObject, public Displayable { //Permanents, Players, Cards (not Oracles!), and Resolvables
 protected:
 	std::list<AbstractTargeter*> to_target;
 	flag_t t_type{0};
@@ -64,6 +65,7 @@ public:
 	virtual void damage(int nb_damage, Target* origin);
 	virtual void setLife(int life_total){life = life_total; }
 	virtual Player* getDmgController() = 0; //Not const because Player returns a non-const reference to itself
+	virtual Target* getMeAsTarget() = 0;
 };
 
 #endif //OLYMPUS_GENERALS_1_H

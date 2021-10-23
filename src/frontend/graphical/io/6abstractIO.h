@@ -28,7 +28,7 @@ inline enum framecolor main_color(colorId::type color){
     }
 }
 
-class Permanent; class Card; class Creature; class CardOracle; class EmptyOption; class Player; class Resolvable;
+class Permanent; class Card; class Creature; class CardOracle; class Player; class Resolvable;
 
 class AbstractIO : public BasicIO {
 public:
@@ -45,8 +45,7 @@ public:
 #undef maybe_virtual
 #undef maybe_undef
 
-    void disp(const uptr<Card>& card, const Rect& pos, bool highlight);
-    void disp(const Card& card, const Rect& rect, bool highlight);
+    void draw(const Card& card, const Rect& rect, bool highlight);
 };
 
 #endif //OLYMPUS_6_ABSTRACT_IO_H

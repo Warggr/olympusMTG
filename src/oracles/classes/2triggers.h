@@ -6,14 +6,14 @@
 class Effect_H; class Player; class Target; class ReaderVisitor;
 
 struct TriggerHolder_H {
-    trigtype type;
+    trig_type type;
     Effect_H* effects;
 
     void init(ReaderVisitor& visitor);
     ~TriggerHolder_H() { delete effects; }
 
     std::string describe(const std::string& name) const;
-    static std::string describe(const std::string& name, const Effect_H* effects, trigtype type);
+    static std::string describe(const std::string& name, const Effect_H* effects, trig_type type);
 };
 
 /*A loses/gains B life

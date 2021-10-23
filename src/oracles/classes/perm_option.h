@@ -21,7 +21,9 @@ public:
 
     bool get_tapsymbol() const { return tapsymbol; };
     bool get_ismana() const { return ismanaability; };
+    std::string describe() const override;
     std::string describe(const std::string& cardname) const;
+    void disp(BasicIO* io) const override;
 
     bool isCastable(bool sorceryspeed) const override;
 };

@@ -42,7 +42,7 @@ void BinaryReader::readEffectH(uint8_t &nb_params, char *&params, std::forward_l
     canary('y');
 }
 
-void BinaryReader::readTriggerType(trigtype& type) {
+void BinaryReader::readTriggerType(trig_type& type) {
     directRead<>(type);
 }
 

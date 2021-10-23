@@ -40,7 +40,7 @@ void Player::choicephase(bool sorceryspeed){
 
 bool Player::chooseAndUseOpt(bool sorceryspeed){ //AKA "giving priority". Returns false if a pass option was chosen
 	if(!myOptions.hasOptions(sorceryspeed)) return false;
-	uptr<Option> choice = agent.chooseOpt(sorceryspeed, this); //chooses opt, pops it and returns it, returns 0 if passing was chosen
+	Option* choice = agent.chooseOpt(sorceryspeed, this); //chooses opt, pops it and returns it, returns 0 if passing was chosen
 	if(!choice) return false;
 	choice->castOpt(this); //casts the spell and deletes the option
 	return true;

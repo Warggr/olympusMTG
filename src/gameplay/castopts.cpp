@@ -40,3 +40,7 @@ std::string CardOption::describe(const std::string& cardName) const {
     (void) cardName;
     return std::string(); //TODO
 }
+
+std::string CardOption::describe() const {
+    return std::string(); //TODO
+}

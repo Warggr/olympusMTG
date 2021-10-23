@@ -34,7 +34,7 @@ public:
 
     bool keepsHand(const std::forward_list<uptr<Card>>& cards) override;
 
-    uptr<Option> chooseOpt(bool sorcerySpeed, Player* pl) override;
+    Option * chooseOpt(bool sorcerySpeed, Player* pl) override;
 
     bool chooseAttackers(Y_Hashtable<Creature>& mycreas) override;
 

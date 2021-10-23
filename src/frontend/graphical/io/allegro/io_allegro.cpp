@@ -22,6 +22,12 @@ void AllegroIO::disp_mana(Mana mana, int endy, int topz) const {
 	}
 }
 
+void AllegroIO::disp(const CardOracle &oracle, int flags) const { disp_inrow(&oracle, 1, 1, flags); }
+
+void AllegroIO::disp_inrow(const Displayable* disp, int number, int total, int flags) const {
+    (void) disp; (void) number; (void) total; (void) flags; //TODO
+}
+
 void AllegroIO::draw_permanent(const Rect& zone, const std::string& name, char color, bool tapped, bool highlight, bool basicImg) const {
 	if(basicImg) al_draw_scaled_bitmap(basiclands, 384*(main_color(color)-1), (500-384)/2, 384, 384, zone, 0);
 	else draw_full_rectangle(main_color(color) + 3, zone);
@@ -31,33 +37,6 @@ void AllegroIO::draw_permanent(const Rect& zone, const std::string& name, char c
 	if(tapped) al_draw_bitmap(tapsymbol, zone.y, zone.z, 0);
 	const int lw = 10;
 	if(highlight) al_draw_rectangle(zone.y+lw/2, zone.z+lw/2, zone.y+zone.width-lw/2, zone.z+zone.height-lw/2, registeredColors[AbstractIO::HIGH2], lw);
-}
-
-int AllegroIO::getInt(int lowerBound, int upperBound){
-	if(lowerBound >= upperBound) return lowerBound;
-	int ret = lowerBound;
-	while(true){
-		char tmp[3]; std::sprintf(tmp, "%d", ret);
-		al_draw_text(fonts[1], registeredColors[AbstractIO::BLACK], messageY, messageZ + 30, 0, tmp);
-		al_flip_display();
-		ALLEGRO_EVENT event;
-		al_wait_for_event(queue, &event);
-		switch(event.type){
-			case ALLEGRO_EVENT_KEY_CHAR:
-				switch(event.keyboard.keycode){
-				    case ALLEGRO_KEY_DOWN: ret--; break;
-					case ALLEGRO_KEY_UP: ret++; break;
-					case ALLEGRO_KEY_ENTER: return ret;
-					case ALLEGRO_KEY_RIGHT: ret += 5; break;
-					case ALLEGRO_KEY_LEFT: ret -= 5; break;
-					default: return 0;
-				} break;
-			case ALLEGRO_EVENT_DISPLAY_CLOSE:
-				throw UIClosedException();
-		}
-		if(ret < lowerBound) ret = lowerBound;
-		if(ret > upperBound) ret = upperBound;
-	}
 }
 
 void AllegroIO::getResolution(int& y, int& z, int& linesize) const {
@@ -70,18 +49,18 @@ void AllegroIO::erase_surface(const Rect& zone) const {
 	al_draw_scaled_bitmap(wallpaper, zone.y, zone.z, zone.width, zone.height, zone.y, zone.z, zone.width, zone.height, 0);
 }
 
-void AllegroIO::disp(const Permanent& perm, const Rect& zone, bool highlight) const {
+void AllegroIO::draw(const Permanent& perm, const Rect& zone, bool highlight) const {
     char color = main_color(perm.getManaCost().m2color());
     draw_full_rectangle(color, zone);
     draw_boxed_text(perm.getName(), highlight ? HIGH1 : BLACK, highlight ? BLACK : WHITE, zone.y, zone.z, zone.width);
 }
 
-void AllegroIO::disp(const Resolvable& resolvable, const Rect& zone, bool highlight) const {
+void AllegroIO::draw(const Resolvable& resolvable, const Rect& zone, bool highlight) const {
     draw_full_rectangle(GREY, zone);
     draw_boxed_text(resolvable.getName(), highlight ? HIGH1 : BLACK, highlight ? BLACK : WHITE, zone.y, zone.z, zone.width);
 }
 
-void AllegroIO::disp(const Player& player, const Rect& zone, bool highlight) const {
+void AllegroIO::draw(const Player& player, const Rect& zone, bool highlight) const {
 	int x = highlight ? HIGH2 : WHITE;
 	al_draw_text(fonts[0], registeredColors[x], zone.y + zone.width/2 - 20, zone.z + 3, 0, player.getName().c_str());
 	char lifec[4]; std::sprintf(lifec, "%3d", player.getLife());
@@ -89,9 +68,9 @@ void AllegroIO::disp(const Player& player, const Rect& zone, bool highlight) con
 	disp_mana(player.manapool, zone.y+zone.width, zone.height);
 }
 
-void AllegroIO::poster(const CardOracle &card) const { disp(card, posterZone, false); }
+void AllegroIO::poster(const CardOracle &card) const { draw(card, posterZone, false); }
 
-void AllegroIO::disp(const CardOracle& card, const Rect& rect, bool highlight) const {
+void AllegroIO::draw(const CardOracle& card, const Rect& rect, bool highlight) const {
     (void) highlight; //TODO
     int card_color = main_color(card.getCost().m2color());
 
@@ -235,7 +214,7 @@ AllegroIO::~AllegroIO(){
     al_destroy_mouse_cursor(cursor);
 }
 
-void AllegroIO::disp_cardback(const Rect& zone, int oncard_number) const {
+void AllegroIO::draw_cardback(const Rect& zone, int oncard_number) const {
 	int zfactor = 140/zone.height; int yfactor = 101/zone.width;
 	int factor = (zfactor > yfactor) ? yfactor : zfactor;
 	if(factor == 0) factor = 1;

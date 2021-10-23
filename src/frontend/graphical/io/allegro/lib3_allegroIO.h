@@ -37,6 +37,10 @@ public:
 
 #include "../iomethods.cpp"
 
+    void disp(const CardOracle& oracle, int flags) const override;
+    void disp_inrow(const Displayable* disp, int number, int total, int flags) const override;
+
+    checklistCallbackAction getNextPosition(abstract_iterator_wrapper* iter, uint &position, uint max) override;
 };
 
 inline float AllegroIO::gmouseY() { return mousey; }

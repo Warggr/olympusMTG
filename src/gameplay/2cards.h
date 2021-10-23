@@ -36,7 +36,7 @@ public:
 	const Effect_H* getEffect() const { return oracle->rules.cast.effects; };
 	colorId::type getColor() const { return oracle->color; };
 	void getPermabs(PermOption** pr, int* nb_opts) const { *pr = oracle->rules.first_actab; *nb_opts = oracle->rules.nb_actabs; };
-	void getTriggers(const char type, TriggerEvent& trigEv) const { oracle->getTriggers(type, trigEv); };
+	void getTriggers(trig_type type, TriggerEvent& trigEv) const { oracle->getTriggers(type, trigEv); };
 	const char* getFlavorText() const {return oracle->rules.flavor_text; }
     Player* getController() override { return owner; }
 	//getName is provided by being a child of Target
@@ -44,6 +44,7 @@ public:
 	void init(ReaderVisitor& visitor) const {
 	    const_cast<CardOracle*>(oracle.get())->init(visitor);
 	}
+	void disp(BasicIO* io) const override;
 };
 
 #endif //OLYMPUS_CLASSES_CARDS_2_H

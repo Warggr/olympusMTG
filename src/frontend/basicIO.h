@@ -3,31 +3,99 @@
 
 #include <list>
 #include <vector>
+#include <iterator>
+#include <memory>
+#include "displayable.h"
+
+class CardOracle; class Target; class Card; class Player;
 
 class BasicIO {
+protected:
+    enum checklistCallbackAction { commit, change };
+    class abstract_iterator_wrapper {
+    public:
+        virtual ~abstract_iterator_wrapper() = default;
+        virtual abstract_iterator_wrapper& operator++() = 0;
+        virtual abstract_iterator_wrapper& operator--() = 0;
+    };
+    template<typename Container> class iterator_wrapper: public abstract_iterator_wrapper {
+    public:
+        typename Container::iterator inner;
+        constexpr iterator_wrapper(typename Container::iterator i): inner(i) {};
+        abstract_iterator_wrapper& operator++() override { ++inner; return *this; }
+        abstract_iterator_wrapper& operator--() override { ++inner; return *this; }
+    };
+
+    template<typename T> const Displayable* to_disp(const T* t) { return t; }
+    template<typename T> const Displayable* to_disp(const uptr<T>& t) { return t.get(); }
+    virtual checklistCallbackAction getNextPosition(abstract_iterator_wrapper* iter, uint& position, uint max) = 0;
 public:
+    static constexpr int INLINE = 1, INROW = 2, HIGHLIGHT = 4;
     virtual ~BasicIO() = default;
-    template<typename O> std::list<O> checklist(std::list<O>& all, unsigned min = 0, unsigned max = 0);
-    template<typename O> uint chooseAmong(std::vector<O>& objects);
-    virtual bool simpleChoice(const char* optTrue, const char* optFalse) = 0;
 
     virtual void message(const char* message) const = 0;
     virtual void message(const std::string& text) const = 0;
+    virtual void disp(const CardOracle& oracle, int flags) const = 0;
+    virtual void disp_inrow(const Displayable*, int number, int total, int flags) const = 0;
+    virtual void disp_player(const Player& player, int flags) const = 0;
+
     virtual std::string getTextInput(const char* question) = 0;
     virtual int getInt(int lowerBound, int upperBound) = 0;
+    virtual bool simpleChoice(const char* optTrue, const char* optFalse) = 0;
+
+    template<typename O>
+    uint chooseAmong(std::vector<O> all) {
+        iterator_wrapper<std::vector<O>> wrapper = all.begin();
+        uint pos = 0;
+        int i = 0;
+        for(auto iter = all.begin(); iter != all.end(); ++iter, ++i)
+            disp_inrow(to_disp(*iter), i, all.size(), 0);
+        while(true) {
+            auto action = getNextPosition(&wrapper, pos, all.size());
+            if(action == commit) return pos;
+        }
+    }
+
+    template<typename O>
+    std::list<O> checklist(std::list<O>& all, uint min, uint max) {
+        std::list<O> ret;
+        if(max == 0) return ret;
+        if(min == all.size()) {
+            ret.splice(ret.begin(), all);
+            return ret;
+        }
+        uint nbSelected = 0;
+        std::vector<bool> selected(all.size() + 1, false);
+
+        iterator_wrapper<std::list<O>> wrapper = all.begin();
+        uint pos = 0;
+        while(true) {
+            int i=0;
+            for(auto iter = all.begin(); iter != all.end(); ++iter, ++i)
+                disp_inrow(to_disp(*iter), i, all.size(), 0);
+            auto action = getNextPosition(&wrapper, pos, all.size());
+            if(action == change) {
+                if(selected[pos]) nbSelected -= 1;
+                else nbSelected += 1;
+                selected[pos] = !selected[pos];
+            }
+            else if(action == commit and min <= nbSelected and nbSelected <= max) {
+                break;
+            } else message("Please select between {} and {}");
+        }
+        auto lastPos = all.end();
+        auto iter2 = all.begin();
+        for(uint i=0; i<all.size(); ++i, ++iter2) if(selected[i] != selected[i+1]) {
+                if(lastPos == all.end()) {
+                    lastPos = iter2;
+                } else {
+                    ret.splice(ret.end(), all, iter2, lastPos);
+                    lastPos = all.end();
+                }
+            }
+        return ret;
+    }
 };
-
-template<typename O>
-std::list<O> BasicIO::checklist(std::list<O>& all, unsigned int min, unsigned int max) {
-    (void) all; (void) min; (void) max;
-    return std::list<O>(); //TODO
-}
-
-template<typename O>
-uint BasicIO::chooseAmong(std::vector<O>& objects) {
-    (void) objects;
-    return 0; //TODO
-}
 
 class UIClosedException: public std::exception{};
 

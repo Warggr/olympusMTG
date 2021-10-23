@@ -88,7 +88,7 @@ bool NetworkAgent::keepsHand(const fwdlist<uptr<Card>>& cards) {
     return false; //TODO implement
 }
 
-uptr<Option> NetworkAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
+Option * NetworkAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
     (void) sorcerySpeed; (void) pl; //TODO implement
     return nullptr;
 }

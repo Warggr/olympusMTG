@@ -54,7 +54,7 @@ std::string AllegroIO::getTextInput(const char* question) {
     return ret;
 }
 
-DirectioL AllegroIO::get_direction_key(){
+DirectioL AllegroIO::get_direction_key() {
     while(true){
         refresh_display();
         ALLEGRO_EVENT event;
@@ -80,6 +80,50 @@ DirectioL AllegroIO::get_direction_key(){
             case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
                 mouseActive = true;
                 return ENTER;
+        }
+    }
+}
+
+int AllegroIO::getInt(int lowerBound, int upperBound){
+    if(lowerBound >= upperBound) return lowerBound;
+    int ret = lowerBound;
+    while(true){
+        char tmp[3]; std::sprintf(tmp, "%d", ret);
+        al_draw_text(fonts[1], registeredColors[AbstractIO::BLACK], messageY, messageZ + 30, 0, tmp);
+        al_flip_display();
+        ALLEGRO_EVENT event;
+        al_wait_for_event(queue, &event);
+        switch(event.type){
+            case ALLEGRO_EVENT_KEY_CHAR:
+                switch(event.keyboard.keycode){
+                    case ALLEGRO_KEY_DOWN: ret--; break;
+                    case ALLEGRO_KEY_UP: ret++; break;
+                    case ALLEGRO_KEY_ENTER: return ret;
+                    case ALLEGRO_KEY_RIGHT: ret += 5; break;
+                    case ALLEGRO_KEY_LEFT: ret -= 5; break;
+                    default: return 0;
+                } break;
+            case ALLEGRO_EVENT_DISPLAY_CLOSE:
+                throw UIClosedException();
+        }
+        if(ret < lowerBound) ret = lowerBound;
+        if(ret > upperBound) ret = upperBound;
+    }
+}
+
+BasicIO::checklistCallbackAction AllegroIO::getNextPosition(BasicIO::abstract_iterator_wrapper* iter, uint &position, uint max) {
+    while(true) {
+        DirectioL dir = get_direction_key();
+        switch(dir) {
+        case UP: case DOWN: return change;
+        case ENTER: case BACK: return commit;
+        case LEFT: if(position != 0) {
+                --position; iter->operator--();
+            } break;
+        case RIGHT: if(position != max) {
+                ++position; iter->operator++();
+            } break;
+        default: break;
         }
     }
 }

@@ -1,9 +1,11 @@
 #include "localagent.h"
 #include "gameplay/2cards.h"
+#include "oracles/classes/8options.h"
 #include "oracles/classes/perm_option.h"
+#include "gameplay/permanents/4permanents.h"
+#include "control/7game.h"
 #include <fstream>
 #include <filesystem>
-#include "control/7game.h"
 
 uptr<std::istream> LocalAgent::getDeckFile() {
     uptr<std::istream> fb;
@@ -19,7 +21,7 @@ Target* LocalAgent::chooseTarget(char type) {
     return viewer.frontEnd->chooseTarget(type);
 }
 
-uptr<Option> LocalAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
+Option * LocalAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
     (void) pl; //No idea why we need it
     return viewer.frontEnd->chooseOpt(sorcerySpeed);
 }

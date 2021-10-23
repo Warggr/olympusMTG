@@ -35,7 +35,7 @@ public:
 
     virtual void splitDamage(int power, std::__cxx11::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) = 0;
 
-    virtual uptr<Option> chooseOpt(bool sorcerySpeed) = 0;
+    virtual Option* chooseOpt(bool sorcerySpeed) = 0;
 
     virtual Target* chooseTarget(char type) = 0;
 

@@ -3,6 +3,7 @@
 
 #include "../frontend.h"
 #include "lib3_nanoIO.h"
+#include "headE_enums.h"
 #include <forward_list>
 #include <memory>
 
@@ -17,7 +18,7 @@ public:
 
     void splitDamage(int power, std::__cxx11::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) override;
 
-    uptr<Option> chooseOpt(bool sorcerySpeed) override;
+    Option* chooseOpt(bool sorcerySpeed) override;
 
     Target* chooseTarget(char type) override;
 
@@ -33,6 +34,8 @@ public:
     void disp(fwdlist<uptr<Card>>::const_iterator begin, fwdlist<uptr<Card>>::const_iterator end) override;
 
     BasicIO* getBasicIO() override { return &io; }
+
+    void list(zone::zone zone);
 };
 
 #endif //OLYMPUS_LIB3_UI_CLI

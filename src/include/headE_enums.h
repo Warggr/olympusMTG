@@ -37,9 +37,12 @@ namespace mtg {
     enum class manatype { white, blue, black, red, green, colorless };
 }
 
-enum effect_type {
-    deal_damage, draw, gain_life, set_life, add_mana, destroy, exile, counter, put_counter, untap, ueot
-};
+namespace effect {
+    enum type {
+        deal_damage, draw, gain_life, set_life, add_mana, destroy, exile, counter, put_counter, untap, ueot
+    };
+}
+using effect_type = effect::type;
 
 namespace target_type {
     extern const flag_t tars1[];
@@ -77,8 +80,18 @@ struct card_type {
     std::string toString() const;
 };
 
-enum trigtype {
+enum class trig_type {
     etb, ltb, statechange, becomes, attacks, is_damaged
 };
+
+namespace zone {
+    enum zone {
+        hand, graveyard, battlefield, stack, exile, commandzone
+    };
+    extern const char* descriptions[6];
+}
+
+extern const std::string trigger_descriptions[6];
+extern const std::string ability_descriptions[12];
 
 #endif //OLYMPUS_HEAD_E_ENUMS_H

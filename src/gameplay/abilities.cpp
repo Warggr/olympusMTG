@@ -8,7 +8,7 @@ void Player::addMana(char c){
 
 void Damageable::damage(int nb_damage, Target* origin){
 	life -= nb_damage;
-	is_damaged.trigger(getDmgController(), (Target*)(this));
+	is_damaged.trigger(getDmgController(), getMeAsTarget());
 	origin->deals_damage.trigger(origin->getController(), nullptr);
 }
 
@@ -19,6 +19,7 @@ void Effect_H::activate(SpecificTargeter<Target> *list_of_targets, Player *ctrl,
 }
 
 void AtomEffect_H::activate(Targeter* list_of_targets, Player* ctrl, Target* origin) const {
+    using namespace effect;
 	Target* target1;
     if(params[0] == 0){
         target1 = dynamic_cast<Target*> (ctrl);

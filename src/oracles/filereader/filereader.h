@@ -48,7 +48,7 @@ public:
     void readEffectH(uint8_t &nb_params, char*& params, std::forward_list<AtomEffect_H> &atoms) override;
     void readAtomEffect(effect_type& type, flag_t*& params, uint8_t& nbparams, char* param_hashtable) override;
 
-    void readTriggerType(trigtype& type) override;
+    void readTriggerType(trig_type& type) override;
     void readSelector(Identifier &chars, Identifier &requs) override;
     void readMainSpell(SpellOption& cast) override;
 };

@@ -30,6 +30,7 @@ public:
 	Permanent(uptr<Card> source, Player* pl);
 	virtual ~Permanent() = default;
 	virtual std::string describe() const;
+    void disp(BasicIO* io) const override;
 
     bool isUntapped() const { return untapped; }
     bool noSummonSick() const { return etbBeforeThisTurn; }
@@ -78,6 +79,7 @@ public:
 	void plusToughness(char dtoughness){added_toughness += dtoughness; };
 
     Player* getDmgController() override { return ctrl; }
+    Target* getMeAsTarget() override { return this; }
 
     void splitDamage(Agent &agent);
 
@@ -97,6 +99,7 @@ public:
 	void declareBeginturn() override { Permanent::declareBeginturn(); thisturn = false; };
 
     Player* getDmgController() override { return ctrl; }
+    Target* getMeAsTarget() override { return this; }
 
     friend class AbstractIO;
 };

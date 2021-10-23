@@ -8,7 +8,7 @@
 enum selectors { types, subtypes, tribes, players };
 
 struct DictHolder {
-    const Dictionary_tpl<trigtype> dict_trigtypes;
+    const Dictionary_tpl<trig_type> dict_trigtypes;
     const Dictionary_tpl<effect_type> dict_abiltypes;
     const Dictionary_tpl<Modifier::type> dict_static_types;
     const Dictionary_tpl<selectors> dict_selectors;

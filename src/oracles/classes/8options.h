@@ -3,11 +3,12 @@
 
 #include "Mana/lib2_mana.h"
 #include "1effects.h"
+#include "displayable.h"
 #include <memory>
 class Resolvable; class Player; class Card; class Permanent; class WeirdCost;
 
 //OptionAction are the standard format for any action the player can do.
-class Option {
+class Option : public Displayable {
 public:
     virtual ~Option() = default;
     virtual bool isCastable(bool sorceryspeed) const = 0;
@@ -34,6 +35,7 @@ class CardOption: public Option {
 public:
     bool isCastable(bool sorceryspeed) const override;
     void castOpt(Player *pl) override;
+    std::string describe() const override;
     std::string describe(const std::string& cardName) const;
 };
 

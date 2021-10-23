@@ -38,8 +38,8 @@ public:
     virtual void readAll(RulesHolder& rules, card_type type) = 0;
 
     virtual void readEffectH(uint8_t &nb_params, char *&params, std::forward_list<AtomEffect_H> &atoms) = 0;
-    virtual void readTriggerType(trigtype& type) = 0;
-    virtual void readAtomEffect(effect_type& type, flag_t*& params, uint8_t& nbparams, char* param_hashtable) = 0;
+    virtual void readTriggerType(trig_type& type) = 0;
+    virtual void readAtomEffect(effect::type& type, flag_t*& params, uint8_t& nbparams, char* param_hashtable) = 0;
     virtual void readActAb(Mana &mana, WeirdCost*& cost, Effect_H* effects, bool &tapsymbol, bool &ismanaability, bool& instantspeed) = 0;
     virtual void readSelector(Identifier &chars, Identifier &requs) = 0;
     virtual void readModifier(char &i, Modifier& first_effect, Modifier*& other_effects) = 0;

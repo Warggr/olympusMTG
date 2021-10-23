@@ -1,4 +1,4 @@
-#include "headC_constants.h"
+#include "headE_enums.h"
 #include "oracles/classes/1effects.h"
 #include "oracles/classes/card_oracle.h"
 #include "oracles/classes/2triggers.h"
@@ -16,6 +16,10 @@ std::string PermOption::describe(const std::string& cardname) const {
     return ret;
 }
 
+std::string PermOption::describe() const {
+    return describe("CARDNAME"); //TODO
+}
+
 std::string CardOracle::describe() const {
     std::string ret = name;
     if(type.land == 0){
@@ -30,8 +34,8 @@ std::string Effect_H::describe(const std::string& name) const {
     return ret;
 }
 
-std::string TriggerHolder_H::describe(const std::string &name, const Effect_H *effects, trigtype type) {
-    std::string ds = trigger_descriptions[type];
+std::string TriggerHolder_H::describe(const std::string &name, const Effect_H *effects, trig_type type) {
+    std::string ds = trigger_descriptions[static_cast<int>(type)];
     std::string ret = "Whenever ";
     for(char d : ds){
         if(d == '~') ret += name;

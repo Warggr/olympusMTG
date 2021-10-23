@@ -1,3 +1,6 @@
+
+#include <oracles/classes/card_oracle.h>
+
 #include "visitor.h"
 #include "oracles/classes/1effects.h"
 #include "oracles/classes/2triggers.h"
