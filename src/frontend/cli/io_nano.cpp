@@ -112,8 +112,9 @@ void NanoIO::disp(const CardOracle& oracle, int flags) const {
 }
 
 void NanoIO::disp_inrow(const Displayable* card, int number, int total, int flags) const {
-    cout << '(' << number << '/' << total << ')' << ' '
-        << (flags & HIGHLIGHT ? '[' : ' ') << card->describe() << (flags & HIGHLIGHT ? ']' : ' ') << '\n';
+    cout << '[' << (flags & SELECTED ? 'X' : ' ')
+    << number+1 << '/' << total << ']' << ' '
+    << (flags & HIGHLIGHT ? '[' : ' ') << card->describe() << (flags & HIGHLIGHT ? ']' : ' ') << '\n';
 }
 
 void NanoIO::disp(const Option& option, int flags) const {

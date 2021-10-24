@@ -3,6 +3,7 @@
 #include "oracles/classes/perm_option.h"
 #include "gameplay/2cards.h"
 #include "gameplay/permanents/4permanents.h"
+#include "control/3player.h"
 
 void CliUI::addCards(const std::list<std::unique_ptr<Card>>&) {}
 
@@ -39,7 +40,7 @@ void CliUI::disp(fwdlist<uptr<Card>>::const_iterator begin, const fwdlist<uptr<C
 void CliUI::list(zone::zone zone) {
     switch (zone) {
         case zone::hand:
-            break;
+            for(const auto& card : pl->getHand()) card->disp(&io);
         case zone::graveyard:
             break;
         case zone::battlefield:
@@ -51,4 +52,8 @@ void CliUI::list(zone::zone zone) {
         case zone::commandzone:
             break;
     }
+}
+
+void CliUI::registerMe(Player* player) {
+    pl = player;
 }

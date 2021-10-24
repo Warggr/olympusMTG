@@ -1,12 +1,14 @@
 #include "lib3_cliUI.h"
 #include "gameplay/1general.h"
 #include "gameplay/optionwrappers.h"
+#include "control/3player.h"
 #include "headE_enums.h"
+#include "boost/format.hpp"
 
 struct Command {
     using zone = zone::zone;
-    enum command { cd = 0, ls, sel, view, back, pwd, man } _command;
-    static const char* descriptions[7];
+    enum command { cd = 0, ls, sel, view, back, pwd, help, concede, pass } _command;
+    static const char* descriptions[9];
     union {
         zone _where;
         Target* _who;
@@ -17,10 +19,10 @@ struct Command {
 };
 
 const char* zone::descriptions[] = { "hand", "graveyard", "battlefield", "stack", "exile", "commandzone" };
-const char* Command::descriptions[] = { "cd", "ls", "sel", "view", "back", "pwd", "man" };
+const char* Command::descriptions[] = { "cd", "ls", "sel", "view", "back", "pwd", "help", "exit", "pass" };
 
 bool readCommand(std::string command, Command::zone zone, Command& output);
-void man();
+void help();
 
 Option* CliUI::chooseOpt(bool sorcerySpeed) {
     (void) sorcerySpeed; //TODO
@@ -28,7 +30,9 @@ Option* CliUI::chooseOpt(bool sorcerySpeed) {
     while(true) {
         Command cmd;
         while(true) {
-            std::string input = io.getTextInput("$~>", false);
+            std::string input = io.getTextInput(
+                    (boost::format("%s@local:%s>") % pl->getName() % zone::descriptions[zone]).str().c_str(),
+                    false);
             if(readCommand(input, zone, cmd)) break;
         }
         switch(cmd._command){
@@ -38,7 +42,9 @@ Option* CliUI::chooseOpt(bool sorcerySpeed) {
             case Command::view: cmd._what._who->disp(&io); break;
             case Command::back: return nullptr;
             case Command::pwd: std::cout << zone::descriptions[zone] << '\n'; break;
-            case Command::man: man();
+            case Command::help: help(); break;
+            case Command::concede: throw UIClosedException();
+            case Command::pass: return nullptr;
         }
     }
 }
@@ -72,7 +78,7 @@ bool readCommand(std::string command, Command::zone zone, Command& output) {
     constexpr int nb_commands = sizeof Command::descriptions / sizeof (const char*);
     uint i, j;
     if(!read(command.c_str(), Command::descriptions, nb_commands, i, j)) {
-        std::cout << "Unrecognized command: " << command << '\n'; return false;
+        std::cout << "Unrecognized command: " << command << ". Try 'help'.\n"; return false;
     }
     output._command = static_cast<Command::command>(i);
     switch(output._command) {
@@ -80,19 +86,18 @@ bool readCommand(std::string command, Command::zone zone, Command& output) {
         case Command::sel:
             output._what._who = readTarget(command.c_str()+j+1, zone);
             return (output._what._who != nullptr);
-        case Command::ls:
-        case Command::back:
-        case Command::pwd:
-        case Command::man:
-            return true;
         case Command::cd:
             return readZone(command.c_str()+j+1, output._what._where);
+        default:
+            return true;
     }
-    return false; //unreachable
 }
 
-void man() {
+void help() {
     std::cout << "Available commands: ";
     for(auto& description : Command::descriptions) std::cout << description << " ";
+    std::cout << '\n';
+    std::cout << "Available zones: ";
+    for(auto& description : zone::descriptions) std::cout << description << " ";
     std::cout << '\n';
 }

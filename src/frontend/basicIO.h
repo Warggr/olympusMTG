@@ -5,6 +5,7 @@
 #include <vector>
 #include <iterator>
 #include <memory>
+#include "boost/format.hpp"
 #include "displayable.h"
 
 class CardOracle; class Target; class Card; class Player;
@@ -30,7 +31,7 @@ protected:
     template<typename T> const Displayable* to_disp(const uptr<T>& t) { return t.get(); }
     virtual checklistCallbackAction getNextPosition(abstract_iterator_wrapper* iter, uint& position, uint max) = 0;
 public:
-    static constexpr int INLINE = 1, INROW = 2, HIGHLIGHT = 4;
+    static constexpr int INLINE = 1, INROW = 2, HIGHLIGHT = 4, SELECTED = 8;
     virtual ~BasicIO() = default;
 
     virtual void message(const char* message) const = 0;
@@ -72,27 +73,30 @@ public:
         while(true) {
             int i=0;
             for(auto iter = all.begin(); iter != all.end(); ++iter, ++i)
-                disp_inrow(to_disp(*iter), i, all.size(), 0);
+                disp_inrow(to_disp(*iter), i, all.size(), selected[i+1] ? SELECTED : 0);
             auto action = getNextPosition(&wrapper, pos, all.size());
             if(action == change) {
-                if(selected[pos]) nbSelected -= 1;
+                if(selected[pos+1]) nbSelected -= 1;
                 else nbSelected += 1;
-                selected[pos] = !selected[pos];
+                selected[pos+1] = !selected[pos+1];
             }
             else if(action == commit and min <= nbSelected and nbSelected <= max) {
                 break;
-            } else message("Please select between {} and {}");
+            } else message(
+                    (boost::format("Please select between %d and %d (currently: %d)\n")
+                    % min % max % nbSelected).str()
+                    );
         }
-        auto lastPos = all.end();
-        auto iter2 = all.begin();
+        auto lastPos = all.end(), iter2 = all.begin();
         for(uint i=0; i<all.size(); ++i, ++iter2) if(selected[i] != selected[i+1]) {
                 if(lastPos == all.end()) {
                     lastPos = iter2;
                 } else {
-                    ret.splice(ret.end(), all, iter2, lastPos);
+                    ret.splice(ret.end(), all, lastPos, iter2);
                     lastPos = all.end();
                 }
-            }
+        }
+        if(lastPos != all.end()) ret.splice(ret.end(), all, lastPos, iter2);
         return ret;
     }
 };

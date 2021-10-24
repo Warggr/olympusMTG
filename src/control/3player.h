@@ -86,6 +86,8 @@ public:
     void disp(BasicIO* io) const override;
 	std::string describe() const override;
 
+	const std::list<uptr<Card>>& getHand() const { return myHand; }
+
     friend class OptionManager;
 };
 

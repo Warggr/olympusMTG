@@ -132,3 +132,5 @@ std::string NetworkAgent::getLogin() {
 uptr<std::istream> NetworkAgent::getDeckFile() {
     return receive_file();
 }
+
+void NetworkAgent::registerMe(Player*) {}

@@ -10,6 +10,7 @@
 class CliUI: public AbstractFrontEnd {
     NanoIO io;
     const std::list<Player>* the_players {nullptr};
+    const Player* pl;
 public:
 //    void create(const char* descr);
 //    void update(const char* descr);
@@ -25,6 +26,7 @@ public:
     bool attackSwitch(int leftY, int rightY, int topZ, int arrowlength) const override;
 
     void registerPlayers(std::list<Player>& players) override;
+    void registerMe(Player* pl) override;
 
     bool chooseattackers(Y_Hashtable<Creature>& cowards) override;
     void chooseblockers(Y_Hashtable<Creature>& defenders, StateTN<Creature>& attackers) override;

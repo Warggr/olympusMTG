@@ -62,3 +62,7 @@ void BotAgent::connectGame(Game* game) {
 void BotAgent::onDraw(const std::list<std::unique_ptr<Card>> &cards) {
     (void) cards;
 }
+
+void BotAgent::registerMe(Player* pl) {
+    (void) pl;
+}

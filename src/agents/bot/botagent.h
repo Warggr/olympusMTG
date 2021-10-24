@@ -34,6 +34,7 @@ public:
     void connectGame(Game *game) override;
 
     void onDraw(const std::list<std::unique_ptr<Card>> &cards) override;
+    void registerMe(Player* pl) override;
 };
 
 #endif //OLYMPUS_BOTAGENT_H

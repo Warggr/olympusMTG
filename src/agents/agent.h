@@ -101,6 +101,7 @@ public:
     virtual void connectGame(Game* game) = 0;
 
     virtual void onDraw(const std::list<uptr<Card>>& cards) = 0;
+    virtual void registerMe(Player* pl) = 0;
 };
 
 #endif //OLYMPUS_AGENT_H

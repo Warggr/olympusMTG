@@ -34,7 +34,7 @@ public:
 
     bool keepsHand(const std::forward_list<uptr<Card>>& cards) override;
 
-    Option * chooseOpt(bool sorcerySpeed, Player* pl) override;
+    Option* chooseOpt(bool sorcerySpeed, Player* pl) override;
 
     bool chooseAttackers(Y_Hashtable<Creature>& mycreas) override;
 
@@ -42,11 +42,12 @@ public:
 
     Viewer& getViewer() override { return *this; }
 
-    uint chooseAmong(std::vector<CardOption *> opts) override;
-    uint chooseAmong(std::vector<PermOption *> opts) override;
+    uint chooseAmong(std::vector<CardOption*> opts) override;
+    uint chooseAmong(std::vector<PermOption*> opts) override;
 
-    void connectGame(Game *game) override;
+    void connectGame(Game* game) override;
     void onDraw(const std::list<std::unique_ptr<Card>> &cards) override;
+    void registerMe(Player* pl) override;
 };
 
 #endif //OLYMPUS_AGENT_NETWORK_H
