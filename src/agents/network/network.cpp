@@ -69,7 +69,7 @@ uptr<std::istream> Networker::receive_file() {
     while(true) { //read all segments
         uint segment_length = read( sockfd , buffer, 1024);
         assert(buffer[segment_length-1] == '\0');
-        //for(uint i=0; i<segment_length; i++) std::cout << "[" << i << "]: " << (buffer[i] == 0 ? '#' : buffer[i]) << "\n";
+        for(uint i=0; i<segment_length; i++) std::cout << "[" << i << "]: " << (buffer[i] == 0 ? '#' : buffer[i]) << "\n";
         ret->write(buffer, segment_length - 2); //ignoring the last \0
         if(buffer[segment_length-1] == '\n') {
             return ret;

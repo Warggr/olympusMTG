@@ -21,7 +21,7 @@ struct Command {
 const char* zone::descriptions[] = { "hand", "graveyard", "battlefield", "stack", "exile", "commandzone" };
 const char* Command::descriptions[] = { "cd", "ls", "sel", "view", "back", "pwd", "help", "exit", "pass" };
 
-bool readCommand(std::string command, Command::zone zone, Command& output);
+bool readCommand(std::string command, Command::zone zone, Command& output, Player* pl);
 void help();
 
 Option* CliUI::chooseOpt(bool sorcerySpeed) {
@@ -33,7 +33,7 @@ Option* CliUI::chooseOpt(bool sorcerySpeed) {
             std::string input = io.getTextInput(
                     (boost::format("%s@local:%s>") % pl->getName() % zone::descriptions[zone]).str().c_str(),
                     false);
-            if(readCommand(input, zone, cmd)) break;
+            if(readCommand(input, zone, cmd, pl)) break;
         }
         switch(cmd._command){
             case Command::cd: zone = cmd._what._where; break;
@@ -49,8 +49,19 @@ Option* CliUI::chooseOpt(bool sorcerySpeed) {
     }
 }
 
-Target* readTarget(const char* str, Command::zone zone) {
-    (void) str; (void) zone;
+Target* readTarget(const char* str, Command::zone zone, Player* pl) {
+    int pos = str[0] - '0';
+    if(0 <= pos and pos <= 10) {
+        switch(zone) {
+        case zone::hand: {
+            auto iter = pl->getHand().begin();
+            std::advance(iter, pos);
+            return iter->get();
+        }
+        default:
+            std::cout << "Zone not implemented yet.\n";
+        }
+    }
     std::cout << "Unrecognized target: '" << str << "'\n";
     return nullptr; //TODO
 }
@@ -74,7 +85,7 @@ bool readZone(const char* str, Command::zone& output) {
     return true;
 }
 
-bool readCommand(std::string command, Command::zone zone, Command& output) {
+bool readCommand(std::string command, Command::zone zone, Command& output, Player* pl) {
     constexpr int nb_commands = sizeof Command::descriptions / sizeof (const char*);
     uint i, j;
     if(!read(command.c_str(), Command::descriptions, nb_commands, i, j)) {
@@ -84,10 +95,12 @@ bool readCommand(std::string command, Command::zone zone, Command& output) {
     switch(output._command) {
         case Command::view:
         case Command::sel:
-            output._what._who = readTarget(command.c_str()+j+1, zone);
+            output._what._who = readTarget(command.c_str()+j+1, zone, pl);
             return (output._what._who != nullptr);
         case Command::cd:
             return readZone(command.c_str()+j+1, output._what._where);
+        case Command::ls:
+            output._what._where = zone; [[fallthrough]];
         default:
             return true;
     }

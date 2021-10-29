@@ -137,8 +137,7 @@ void PlainFileReader::readCardType(card_type& type) {
     check_safepoint(' ', "after card types");
 }
 
-void PlainFileReader::readCosts(Mana &mana, bool &tapsymbol, WeirdCost *&others) {
-    (void) others; //TODO weirdcosts
+void PlainFileReader::readCosts(Cost& cost, bool& tapsymbol) {
     while(true){
         char copy[30];
         int j;
@@ -150,7 +149,7 @@ void PlainFileReader::readCosts(Mana &mana, bool &tapsymbol, WeirdCost *&others)
         if(copy[0] == 'T') {
             tapsymbol = true;
         } else {
-            mana = Mana(copy);
+            cost.mana = Mana(copy);
         }
         if(copy[j] == ':') break;
     }

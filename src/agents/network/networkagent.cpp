@@ -78,9 +78,9 @@ void NetworkAgent::splitDamage(int power, std::list<std::pair<uint8_t, SpecificT
     (void) power; (void) blockers; //TODO implement
 }
 
-std::list<uptr<Card>> NetworkAgent::chooseCardsToKeep(std::list<uptr<Card>> &list, uint nbToDiscard) {
+std::list<CardWrapper> NetworkAgent::chooseCardsToKeep(std::list<CardWrapper> &list, uint nbToDiscard) {
     (void) list; (void) nbToDiscard; //TODO implement
-    return std::list<std::unique_ptr<Card>>();
+    return std::list<CardWrapper>();
 }
 
 bool NetworkAgent::keepsHand(const fwdlist<uptr<Card>>& cards) {
@@ -106,13 +106,13 @@ void NetworkAgent::connectGame(Game* gm) {
     game = gm;
 }
 
-void NetworkAgent::onDraw(const std::list<uptr<Card>>& cards) {
+void NetworkAgent::onDraw(const std::list<CardWrapper>& cards) {
     char header[2] = { static_cast<char>(CREATE), static_cast<char>(cards.size()) };
     net_send(header, 2);
     for(auto& card: cards) {
         std::stringstream oracle_stream;
         BinaryFileWriter oracle_reader(oracle_stream);
-        card->init(oracle_reader);
+        const_cast<CardWrapper&>(card)->init(oracle_reader);
         net_send(oracle_stream.str());
     }
 }

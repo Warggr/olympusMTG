@@ -6,8 +6,6 @@
 #include "oracles/classes/1effects.h"
 #include "oracles/classes/card_oracle.h"
 
-class WeirdCost;
-
 class ReaderVisitor {
 public:
     virtual ~ReaderVisitor() = default;
@@ -32,27 +30,27 @@ protected:
     virtual void read_section_othercasts(fwdlist<CardOption>& node) = 0;
 public:
     virtual void readName(std::string& name) = 0;
-    virtual void readManaCost(Mana& cost) = 0;
+    virtual void readCost(Cost& cost) = 0;
     virtual void readCardType(card_type& type) = 0;
 
     virtual void readAll(RulesHolder& rules, card_type type) = 0;
 
-    virtual void readEffectH(uint8_t &nb_params, char *&params, std::forward_list<AtomEffect_H> &atoms) = 0;
+    virtual void readEffectH(uint8_t& nb_params, char *&params, std::forward_list<AtomEffect_H>& atoms) = 0;
     virtual void readTriggerType(trig_type& type) = 0;
     virtual void readAtomEffect(effect::type& type, flag_t*& params, uint8_t& nbparams, char* param_hashtable) = 0;
-    virtual void readActAb(Mana &mana, WeirdCost*& cost, Effect_H* effects, bool &tapsymbol, bool &ismanaability, bool& instantspeed) = 0;
-    virtual void readSelector(Identifier &chars, Identifier &requs) = 0;
-    virtual void readModifier(char &i, Modifier& first_effect, Modifier*& other_effects) = 0;
-    virtual void readCosts(Mana& mana, bool& tapsymbol, WeirdCost*& others) = 0;
+    virtual void readActAb(Cost& cost, Effect_H* effects, bool& tapsymbol, bool& ismanaability, bool& instantspeed) = 0;
+    virtual void readSelector(Identifier& chars, Identifier& requs) = 0;
+    virtual void readModifier(char& i, Modifier& first_effect, Modifier*& other_effects) = 0;
+    virtual void readCosts(Cost& cost, bool& tapsymbol) = 0;
 
-    virtual void readMainSpell(SpellOption& cast) = 0;
+    virtual void readMainSpell(Cost& cost, Effect_H*& effects) = 0;
 };
 
 class DeckbuildingError: public std::exception {
     std::string descr;
 public:
     explicit DeckbuildingError(std::string what): descr(std::move(what)) {};
-    const char * what() const noexcept override { return descr.c_str(); }
+    const char* what() const noexcept override { return descr.c_str(); }
 };
 
 #endif //OLYMPUS_VISITOR_H

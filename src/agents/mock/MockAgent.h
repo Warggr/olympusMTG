@@ -21,7 +21,7 @@ public:
         (void) power; (void) blockers;
     }
 
-    std::list<std::unique_ptr<Card>> chooseCardsToKeep(std::list<std::unique_ptr<Card>>& list) override {
+    std::list <CardWrapper> chooseCardsToKeep(std::list<CardWrapper>& list) override {
         std::list<std::unique_ptr<Card>> ret; ret.splice(ret.cend(), list); return ret;
     }
 

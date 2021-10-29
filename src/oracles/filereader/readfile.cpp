@@ -10,7 +10,7 @@ CardZone parseDeck(const std::vector<OracleDescr>& deck) {
     leveldb::Options options;
     options.create_if_missing = true;
     CardZone ret;
-    for (auto &desc : deck) {
+    for (auto& desc : deck) {
         card_ptr oracle = nullptr;
         std::string str = desc.initializer;
         switch (desc.type) {

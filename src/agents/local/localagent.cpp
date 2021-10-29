@@ -30,7 +30,7 @@ void LocalAgent::splitDamage(int power, std::list<std::pair<uint8_t, SpecificTar
     viewer.frontEnd->splitDamage(power, blockers);
 }
 
-std::list<std::unique_ptr<Card>> LocalAgent::chooseCardsToKeep(std::list<std::unique_ptr<Card>>& list, unsigned nbToDiscard) {
+std::list<CardWrapper> LocalAgent::chooseCardsToKeep(std::list<CardWrapper>& list, unsigned nbToDiscard) {
     return viewer.frontEnd->chooseCardsToKeep(list, nbToDiscard);
 }
 

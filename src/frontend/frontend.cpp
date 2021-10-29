@@ -5,7 +5,11 @@ AbstractFrontEnd* AbstractFrontEnd::factory() {
     return new ImplFrontEnd();
 }
 
-std::list<uptr<Card>>
-AbstractFrontEnd::chooseCardsToKeep(std::list<uptr<Card>>& list, unsigned int nbToDiscard) {
+const Card* BasicIO::to_disp(const CardWrapper& card) {
+    return card.get();
+}
+
+std::list<CardWrapper>
+AbstractFrontEnd::chooseCardsToKeep(std::list<CardWrapper>& list, unsigned int nbToDiscard) {
     return getBasicIO()->checklist(list, nbToDiscard, nbToDiscard);
 }

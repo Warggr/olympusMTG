@@ -11,9 +11,8 @@ void BinaryWriter::readName(std::string& name) {
     write(name.c_str(), length);
 }
 
-void BinaryWriter::readAll(RulesHolder& rules, card_type type) {
-    (void) type;
-    readMainSpell(rules.cast);
+void BinaryWriter::readAll(RulesHolder& rules, card_type) {
+    readMainSpell(rules.cost, rules.effects);
     char flags = 0;
     if(rules.first_actab) flags += 0x1;
     if(!rules.otherCardOptions.empty()) flags += 0x2;
@@ -35,7 +34,7 @@ void BinaryWriter::read_section_flavor(char *&flavor_text, uint8_t offset_text) 
     }
 }
 
-void BinaryWriter::readEffectH(uint8_t &nb_params, char *&params, std::forward_list<AtomEffect_H> &atoms) {
+void BinaryWriter::readEffectH(uint8_t& nb_params, char *&params, std::forward_list<AtomEffect_H>& atoms) {
     canary('b');
     readNumberOfObjects(nb_params);
     uint nb_atoms = std::distance(atoms.begin(), atoms.end());
@@ -54,10 +53,9 @@ void BinaryWriter::readAtomEffect(effect_type& type, flag_t*& params, uint8_t&, 
     write(reinterpret_cast<char*>(params), nb_params);
 }
 
-void BinaryWriter::readActAb(Mana& mana, WeirdCost*& add_costs, Effect_H* effects,
+void BinaryWriter::readActAb(Cost& cost, Effect_H* effects,
                              bool& tapsymbol, bool& ismanaability, bool& instantspeed) {
-    (void) add_costs;
-    directRead(mana);
+    directRead(cost);
     effects->init(*this);
     char twobools = 0;
     if(tapsymbol) twobools += 0x1;
@@ -70,18 +68,18 @@ void BinaryWriter::read_section_othercasts(fwdlist<CardOption>& node) {
     (void) node; //TODO
 }
 
-void BinaryWriter::readSelector(Identifier &chars, Identifier &requs) {
+void BinaryWriter::readSelector(Identifier& chars, Identifier& requs) {
     (void) chars; (void) requs; //TODO
 }
 
-void BinaryWriter::readModifier(char &i, Modifier &first_effect, Modifier *&other_effects) {
+void BinaryWriter::readModifier(char& i, Modifier& first_effect, Modifier *&other_effects) {
     (void) i; (void) first_effect; (void) other_effects; //TODO
 }
 
-void BinaryWriter::readCosts(Mana &mana, bool &tapsymbol, WeirdCost *&others) {
-    (void) mana; (void) tapsymbol; (void) others; //TODO
+void BinaryWriter::readCosts(Cost& cost, bool& tapsymbol) {
+    (void) cost; (void) tapsymbol; //TODO
 }
 
-void BinaryWriter::readMainSpell(SpellOption &cast) {
-    (void) cast; //TODO
+void BinaryWriter::readMainSpell(Cost& cost, Effect_H*& effect) {
+    (void) cost; (void) effect; //TODO
 }

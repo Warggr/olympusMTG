@@ -1,19 +1,15 @@
 #ifndef OLYMPUS_RULESHOLDER_H
 #define OLYMPUS_RULESHOLDER_H
 
-class PermOption; class StaticAb_H;
-class ReaderVisitor; struct TriggerHolder_H;
+class PermOption; class StaticAb_H; struct TriggerHolder_H; class Effect_H;
 
 #include "8options.h"
+#include "Mana/cost.h"
 #include <forward_list>
 
-struct SpellOption {
-    Mana cost;
-    Effect_H* effects;
-};
-
 struct RulesHolder {
-    SpellOption cast;
+    Cost cost;
+    Effect_H* effects;
     std::forward_list<CardOption> otherCardOptions;
     uint nb_actabs {0};
     PermOption* first_actab {nullptr};

@@ -35,7 +35,7 @@ private:
 	    afterdamage = 0b100, end = 0b110, nonactive = 0b111;
 	CardZone myLibrary, myGraveyard, myExile;
 	std::forward_list<PlayerPreStackElement> prestack;
-	std::list<uptr<Card>> myHand;
+	std::list<CardWrapper> myHand;
 	Player* nextopponent;
     TriggerEvent triggers[1]; //gain/lose life
 public:
@@ -66,6 +66,7 @@ public:
 	void addMana(char color);
 	void putToZone(std::unique_ptr<Card>& x, enum cardzone zone);
 
+	bool pay(Cost cost);
 	void emptyPool();
 
 	bool stateBasedActions();
@@ -86,7 +87,8 @@ public:
     void disp(BasicIO* io) const override;
 	std::string describe() const override;
 
-	const std::list<uptr<Card>>& getHand() const { return myHand; }
+	std::list<CardWrapper>& getHand() { return myHand; }
+	const std::list<CardWrapper>& getHand() const { return myHand; }
 
     friend class OptionManager;
 };

@@ -56,3 +56,9 @@ bool Player::addTriggersToStack(){
 	}
 	return true;
 }
+
+bool Player::pay(Cost cost) {
+    if(not (manapool >= cost.mana)) return false;
+    manapool -= cost.mana;
+    return true;
+}

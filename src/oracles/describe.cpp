@@ -7,7 +7,7 @@
 #include <vector>
 
 std::string PermOption::describe(const std::string& cardname) const {
-    std::string ret = "[" + cost.m2t() + "]";
+    std::string ret = "[" + cost.mana.m2t() + "]";
     if(tapsymbol){
         ret += ", [T]";
     }
@@ -23,7 +23,7 @@ std::string PermOption::describe() const {
 std::string CardOracle::describe() const {
     std::string ret = name;
     if(type.land == 0){
-        ret += "  [" + getCost().m2t() + "]";
+        ret += "  [" + getCost().mana.m2t() + "]";
     }
     return ret;
 }

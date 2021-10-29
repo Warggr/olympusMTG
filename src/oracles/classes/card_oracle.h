@@ -30,9 +30,9 @@ public:
 
     std::string describe() const override;
     void disp(BasicIO* io) const override;
-    std::vector<std::string> allText(int &power, int &toughness, int& frametype) const;
+    std::vector<std::string> allText(int& power, int& toughness, int& frametype) const;
 
-    inline Mana getCost() const { return rules.cast.cost; }
+    inline const Cost& getCost() const { return rules.cost; }
     inline const std::string& getName() const { return name; }
     inline type_t getType() const { return type; }
     void getTriggers(trig_type type, TriggerEvent& trigEv) const;

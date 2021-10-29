@@ -10,7 +10,7 @@
 class CliUI: public AbstractFrontEnd {
     NanoIO io;
     const std::list<Player>* the_players {nullptr};
-    const Player* pl;
+    Player* pl; //you might need to return the player as a Target*
 public:
 //    void create(const char* descr);
 //    void update(const char* descr);
@@ -31,7 +31,7 @@ public:
     bool chooseattackers(Y_Hashtable<Creature>& cowards) override;
     void chooseblockers(Y_Hashtable<Creature>& defenders, StateTN<Creature>& attackers) override;
 
-    void addCards(const std::list<uptr<Card>>&) override;
+    void addCards(const std::list<CardWrapper>&) override;
 
     void disp(fwdlist<uptr<Card>>::const_iterator begin, fwdlist<uptr<Card>>::const_iterator end) override;
 

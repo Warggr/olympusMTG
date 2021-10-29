@@ -12,9 +12,8 @@ void BinaryReader::readName(std::string& name) {
     name = std::string(buffer);
 }
 
-void BinaryReader::readAll(RulesHolder& rules, card_type type) {
-    (void) type;
-    readMainSpell(rules.cast);
+void BinaryReader::readAll(RulesHolder& rules, card_type) {
+    readMainSpell(rules.cost, rules.effects);
     char flags = ifile.get();
     if(flags & 0x1) readArray<PermOption>(rules.nb_actabs, rules.first_actab, false);
     if(flags & 0x2) read_section_othercasts(rules.otherCardOptions);
@@ -23,8 +22,7 @@ void BinaryReader::readAll(RulesHolder& rules, card_type type) {
     if(flags & 0x10) read_section_flavor(rules.flavor_text, 0); //offset_text is irrelevant here
 }
 
-void BinaryReader::read_section_flavor(char *&flavor_text, uint8_t offset_text) {
-    (void) offset_text; //required for compatibility with writers
+void BinaryReader::read_section_flavor(char *&flavor_text, uint8_t) {
     uint textsize; directRead<>(textsize);
     if(textsize != 0) {
         flavor_text = new char[textsize];
@@ -32,7 +30,7 @@ void BinaryReader::read_section_flavor(char *&flavor_text, uint8_t offset_text) 
     }
 }
 
-void BinaryReader::readEffectH(uint8_t &nb_params, char *&params, std::forward_list<AtomEffect_H> &atoms) {
+void BinaryReader::readEffectH(uint8_t& nb_params, char *&params, std::forward_list<AtomEffect_H>& atoms) {
     canary('b');
     readNumberOfObjects(nb_params);
     if(nb_params) params = new char[nb_params];
@@ -54,34 +52,33 @@ void BinaryReader::readAtomEffect(effect_type& type, flag_t*& params, uint8_t& e
     ifile.read(reinterpret_cast<char*>(params), nb_params);
 }
 
-void BinaryReader::readActAb(Mana& mana, WeirdCost*& cost, Effect_H* effects, bool &tapsymbol, bool &ismanaability, bool& instantspeed) {
-    (void) cost; //TODO implement WeirdCost
-    directRead(mana);
+void BinaryReader::readActAb(Cost& cost, Effect_H* effects, bool& tapsymbol, bool& ismanaability, bool& instantspeed) {
+    directRead(cost);
     effects->init(*this);
     char twobools = ifile.get();
     tapsymbol = twobools & 0x1; ismanaability = twobools & 0x2; instantspeed = twobools & 0x4;
 }
 
-void BinaryReader::readMainSpell(SpellOption& cast) {
-    (void) cast; //TODO
+void BinaryReader::readMainSpell(Cost& cost, Effect_H*& effect) {
+    (void) cost; (void) effect; //TODO
 }
 
-void BinaryReader::readSelector(Identifier &chars, Identifier &requs) {
+void BinaryReader::readSelector(Identifier& chars, Identifier& requs) {
     (void) chars; (void) requs; //TODO
 }
 
-void BinaryReader::readModifier(char &i, Modifier &first_effect, Modifier *&other_effects) {
+void BinaryReader::readModifier(char& i, Modifier& first_effect, Modifier *&other_effects) {
     (void) i; (void) first_effect; (void) other_effects; //TODO
 }
 
-void BinaryReader::readCosts(Mana &mana, bool &tapsymbol, WeirdCost *&others) {
-    (void) mana; (void) tapsymbol; (void) others; //TODO
+void BinaryReader::readCosts(Cost& cost, bool& tapsymbol) {
+    (void) cost; (void) tapsymbol; //TODO
 }
 
 void BinaryReader::read_section_othercasts(fwdlist<CardOption>& node) {
     (void) node; //TODO
 }
 
-void BinaryReader::raise_error(const std::string &message) {
+void BinaryReader::raise_error(const std::string& message) {
     (void) message; //TODO raise error
 }

@@ -8,7 +8,7 @@
 #include "boost/format.hpp"
 #include "displayable.h"
 
-class CardOracle; class Target; class Card; class Player;
+class CardOracle; class Target; class Card; class Player; class CardWrapper;
 
 class BasicIO {
 protected:
@@ -29,6 +29,7 @@ protected:
 
     template<typename T> const Displayable* to_disp(const T* t) { return t; }
     template<typename T> const Displayable* to_disp(const uptr<T>& t) { return t.get(); }
+    inline const Card* to_disp(const CardWrapper& card);
     virtual checklistCallbackAction getNextPosition(abstract_iterator_wrapper* iter, uint& position, uint max) = 0;
 public:
     static constexpr int INLINE = 1, INROW = 2, HIGHLIGHT = 4, SELECTED = 8;

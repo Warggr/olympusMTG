@@ -20,7 +20,7 @@ void PlainFileReader::readAll(RulesHolder& rules, card_type type) {
 		while(true){ //loop to read all sections
 			gdebug(DBG_READFILE) << "Expecting section n°" << (int) section_name << "\n";
 			if(ifile.peek() != '<') switch(section_name){
-				case onresolve: readMainSpell(rules.cast); break;
+				case onresolve: readMainSpell(rules.cost, rules.effects); break;
 				case activated: readArray<PermOption>(rules.nb_actabs, rules.first_actab, true); break;
 				case flavor: read_section_flavor(rules.flavor_text, offset_text); break;
 				case triggered: readArray<TriggerHolder_H>(rules.nb_triggers, rules.triggers, true); break;
@@ -86,10 +86,10 @@ void PlainFileReader::read_section_flavor(char*& flavor_text, uint8_t offset_tex
     gdebug(DBG_READFILE) << "Read full flavor: '" << flavor_text + offset_text << "'\n";
 }
 
-void PlainFileReader::readActAb(Mana& mana, WeirdCost*& addcosts, Effect_H* effects,
+void PlainFileReader::readActAb(Cost& cost, Effect_H* effects,
                                 bool& tapsymbol, bool& ismanaability, bool& instantspeed) {
     //assert(effects != nullptr);
-    readCosts(mana, tapsymbol, addcosts);
+    readCosts(cost, tapsymbol);
     instantspeed = true; //Unless specified, actabs are instant-speed
 
     //gdebug(DBG_READFILE) << "Tap symbol:" << tapsymbol <<", cost: " << mana.m2t() << "\n";
@@ -262,6 +262,6 @@ void PlainFileReader::read_section_othercasts(fwdlist<CardOption>& node) {
     (void) node; //TODO
 }
 
-void PlainFileReader::readMainSpell(SpellOption &cast) {
-    (void) cast; //TODO
+void PlainFileReader::readMainSpell(Cost& cost, Effect_H*& effects) {
+    (void) cost; (void) effects; //TODO
 }

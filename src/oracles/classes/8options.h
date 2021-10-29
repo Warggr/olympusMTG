@@ -1,20 +1,29 @@
 #ifndef OLYMPUS_CLASSES_OPTIONS_7_H
 #define OLYMPUS_CLASSES_OPTIONS_7_H
 
-#include "Mana/lib2_mana.h"
+#include "Mana/cost.h"
 #include "1effects.h"
 #include "displayable.h"
 #include <memory>
-class Resolvable; class Player; class Card; class Permanent; class WeirdCost;
+class Resolvable; class Player; class Card; class Permanent;
 
-//OptionAction are the standard format for any action the player can do.
+//Options are the standard format for any action the player can do.
+// This standard only imposes that each Option has a castOpt method,
+// which handles how the option behaves after having been chosen.
+// Notably, Cards are Options. Technically, 'conceding' is an option.
 class Option : public Displayable {
 public:
     virtual ~Option() = default;
-    virtual bool isCastable(bool sorceryspeed) const = 0;
+    virtual bool isCastable(bool sorceryspeed, Player* player) const { (void) sorceryspeed; (void) player; return true; }
     // Whether it is possible to cast it on principle. Returns true by default.
     // Filters out more or less easy restrictions such as "only as a sorcery"
     virtual void castOpt(Player* pl) = 0;
+};
+
+class CostOption: public Option {
+public:
+    virtual bool isCastable(bool sorceryspeed, Player* pl) const override;
+    virtual Cost getCost() = 0;
 };
 
 //There are multiple types of options:
@@ -23,17 +32,9 @@ public:
 // - special actions: playing a land, morphing, "take an action at a later time", "take an action to ignore a rule", suspend, companions, foretell
 // Special actions are so indistinguishable from normal abilities that I will ignore them for now.
 
-class DefaultCardOption: public Option {
-protected:
-    uptr<Card> origin;
-public:
-    bool isCastable(bool sorceryspeed) const override;
-    void castOpt(Player *pl) override;
-};
-
 class CardOption: public Option {
 public:
-    bool isCastable(bool sorceryspeed) const override;
+    bool isCastable(bool sorceryspeed, Player* player) const override;
     void castOpt(Player *pl) override;
     std::string describe() const override;
     std::string describe(const std::string& cardName) const;

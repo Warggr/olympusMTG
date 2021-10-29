@@ -3,16 +3,16 @@
 
 #include "1effects.h"
 #include "8options.h"
+#include "Mana/cost.h"
 
 class PermOption: public Option {
 private:
     bool tapsymbol, ismanaability, instantspeed;
     Permanent* origin;
     Effect_H effects;
-    Mana cost;
-    WeirdCost* additional_costs;
+    Cost cost;
 public:
-    PermOption(): tapsymbol(false), ismanaability(false), cost(0) {};
+    PermOption(): tapsymbol(false), ismanaability(false) {};
     ~PermOption();
     void init(ReaderVisitor& visitor);
 
@@ -25,7 +25,7 @@ public:
     std::string describe(const std::string& cardname) const;
     void disp(BasicIO* io) const override;
 
-    bool isCastable(bool sorceryspeed) const override;
+    bool isCastable(bool sorceryspeed, Player* player) const override;
 };
 
 #endif //OLYMPUS_PERM_OPTION_H

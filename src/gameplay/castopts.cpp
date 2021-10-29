@@ -6,23 +6,23 @@
 #include "resolvables/5resolvables.h"
 #include "resolvables/stack.h"
 
-void DefaultCardOption::castOpt(Player* pl){
+void CardWrapper::castOpt(Player* pl){
     gdebug(DBG_TARGETING) << "CASTING SPELL " << origin->getName() << "\n";
     if(origin->getType().land) {
         pl->resolvePlayland(std::move(origin));
     } else {
-        pl->manapool -= origin->getCost();
+        pl->pay(origin->getCost());
         Stack::god->addToStack(std::make_unique<Spell>(std::move(origin), pl));
     }
 }
 
-bool DefaultCardOption::isCastable(bool sorceryspeed) const {
-    return (sorceryspeed or origin->hasFlash()) and (origin->getController()->manapool >= origin->getCost());
+bool CardWrapper::isCastable(bool sorceryspeed, Player* player) const {
+    return (sorceryspeed or origin->hasFlash()) and (player->manapool >= origin->getCost().mana);
 }
 
-bool PermOption::isCastable(bool sorceryspeed) const {
+bool PermOption::isCastable(bool sorceryspeed, Player* player) const {
     (void) sorceryspeed; //TODO some abilities are only sorcery-speed
-    return origin->getController()->manapool >= cost;
+    return player->manapool >= cost.mana;
 }
 
 void PermOption::straight_cast(Player* pl){
@@ -31,7 +31,7 @@ void PermOption::straight_cast(Player* pl){
 }
 
 void PermOption::castOpt(Player* pl){
-    pl->manapool -= cost;
+    pl->manapool -= cost.mana;
     if(tapsymbol) origin->tap();
     Stack::god->addToStack(std::make_unique<Resolvable>(pl, &effects));
 }

@@ -1,6 +1,6 @@
 #include "localagent.h"
 
-void LocalViewer::onDraw(const std::list<std::unique_ptr<Card>>& cards) {
+void LocalViewer::onDraw(const std::list<CardWrapper>& cards) {
     frontEnd->addCards(cards);
 }
 

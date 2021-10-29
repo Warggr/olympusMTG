@@ -53,7 +53,7 @@ void Player::putToZone(std::unique_ptr<Card>& x, enum cardzone nb_zone){
 }
 
 void Player::draw(int nb_cards) {
-    std::list<uptr<Card>> temporaryZone; //according to Magic rules, these cards are already in your hand.
+    std::list<CardWrapper> temporaryZone; //according to Magic rules, these cards are already in your hand.
     //We just cache them in a temporary zone and assume nothing happens while they're in the process of being drawn.
     for(int i=0; i<nb_cards; i++) {
         uptr<Card> card = myLibrary.pop_front();
@@ -62,7 +62,7 @@ void Player::draw(int nb_cards) {
             //Rule 104.3c: a player who must draw too many cards loses the game the next time a player would receive prio
             return;
         }
-        temporaryZone.push_front(std::move(card));
+        temporaryZone.emplace_front(std::move(card));
     }
     viewer.onDraw(temporaryZone);
     myHand.splice(myHand.end(), temporaryZone);

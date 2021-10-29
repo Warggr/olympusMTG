@@ -11,7 +11,7 @@ public:
     ~LocalViewer() { delete frontEnd; }
     void connectGame(Game* game) override;
     void registerMe(Player* pl) override;
-    void onDraw(const std::list<uptr<Card>>& cards) override;
+    void onDraw(const std::list<CardWrapper>& cards) override;
     void showTop(const std::forward_list<uptr<Card>>& cards, uint nb);
 
     friend class LocalAgent;
@@ -33,7 +33,7 @@ public:
 
     void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) override;
 
-    std::list<std::unique_ptr<Card>> chooseCardsToKeep(std::list<std::unique_ptr<Card>>& list, unsigned nbToDiscard) override;
+    std::list <CardWrapper> chooseCardsToKeep(std::list<CardWrapper>& list, unsigned nbToDiscard) override;
 
     bool keepsHand(const std::forward_list<uptr<Card>>& cards) override;
 

@@ -8,7 +8,7 @@
 #include <list>
 #include <forward_list>
 
-class Target; class Creature; template<typename T> class SpecificTargeter; class Card;
+class Target; class Creature; template<typename T> class SpecificTargeter; class Card; class CardWrapper;
 class Player; class Game;
 class Option; class CardOption; class PermOption;
 template<typename T> class Y_Hashtable; template<typename T> class StateTN;
@@ -89,7 +89,7 @@ public:
     virtual void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) = 0;
 
     virtual bool keepsHand(const fwdlist<uptr<Card>>& cards) = 0;
-    virtual std::list<std::unique_ptr<Card>> chooseCardsToKeep(std::list<std::unique_ptr<Card>>& list, unsigned nbToDiscard) = 0;
+    virtual std::list <CardWrapper> chooseCardsToKeep(std::list<CardWrapper>& list, unsigned nbToDiscard) = 0;
 
     virtual bool chooseAttackers(Y_Hashtable<Creature>& mycreas) = 0;
     virtual void chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature>& attackers) = 0;
@@ -100,7 +100,7 @@ public:
     virtual ~Viewer() = default;
     virtual void connectGame(Game* game) = 0;
 
-    virtual void onDraw(const std::list<uptr<Card>>& cards) = 0;
+    virtual void onDraw(const std::list<CardWrapper>& cards) = 0;
     virtual void registerMe(Player* pl) = 0;
 };
 

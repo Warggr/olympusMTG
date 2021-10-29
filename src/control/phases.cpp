@@ -116,7 +116,7 @@ void Player::drawStartingHand() {
             draw(7);
             auto cardsDiscarded = agent.chooseCardsToKeep(myHand, i);
             for(auto& card: cardsDiscarded) {
-                myLibrary.placeOnBottom(std::move(card));
+                myLibrary.placeOnBottom(card.unwrap());
             }
             return;
         } else {

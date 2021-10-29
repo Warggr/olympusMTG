@@ -30,7 +30,7 @@ public:
 
     void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) override;
 
-    std::list<std::unique_ptr<Card>> chooseCardsToKeep(std::list<std::unique_ptr<Card>>& list, uint nbToDiscard) override;
+    std::list <CardWrapper> chooseCardsToKeep(std::list<CardWrapper>& list, uint nbToDiscard) override;
 
     bool keepsHand(const std::forward_list<uptr<Card>>& cards) override;
 
@@ -46,7 +46,7 @@ public:
     uint chooseAmong(std::vector<PermOption*> opts) override;
 
     void connectGame(Game* game) override;
-    void onDraw(const std::list<std::unique_ptr<Card>> &cards) override;
+    void onDraw(const std::list<CardWrapper> &cards) override;
     void registerMe(Player* pl) override;
 };
 

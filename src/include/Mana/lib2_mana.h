@@ -15,8 +15,8 @@ public:
         static constexpr int GENERIC = 0, FIRST_COLOR = 1, WHITE = 1, BLUE = 2, BLACK = 3, LAST_COLOR = 5, COLORLESS = 6;
     };
 
-	Mana(): mana(0){};
-    Mana(int i): mana(i){};
+	constexpr Mana(): mana(0){};
+    constexpr Mana(int i): mana(i){};
 	explicit Mana(const char* x);
 	std::string m2t() const;
 	bool operator>=(Mana pool) const;
@@ -26,8 +26,7 @@ public:
 	void operator+=(char color);
 	void operator+=(Mana m);
 	colorId::type m2color() const;
-	void disp(int x, int y) const;
-	inline int m2i() const {return mana; };
+	inline int m2i() const { return mana; };
 	inline uint cmc() const { return mana & 0xf; }
 	ExplicitMana m2x() const;
 

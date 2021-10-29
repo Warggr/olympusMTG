@@ -24,10 +24,10 @@ void PlainFileReader::readName(std::string& name) {
     gdebug(DBG_READFILE) << "Read name: '" << name << "'\n";
 }
 
-void PlainFileReader::readManaCost(Mana& mana) {
+void PlainFileReader::readCost(Cost& cost) {
     char tmp[20];
     ifile >> tmp; //should end with ' '
-    mana = Mana(tmp);
+    cost.mana = Mana(tmp);
     pedantic_safepoint(' ', "after mana cost");
-    gdebug(DBG_READFILE) << "Read cost: '" << mana.m2t() << "'\n";
+    gdebug(DBG_READFILE) << "Read cost: '" << cost.mana.m2t() << "'\n";
 }

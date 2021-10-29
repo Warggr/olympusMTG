@@ -17,7 +17,7 @@ void Effect_H::init(ReaderVisitor& visitor) {
 }
 
 void PermOption::init(ReaderVisitor &visitor) {
-    visitor.readActAb(cost, additional_costs, &effects, tapsymbol, ismanaability, instantspeed);
+    visitor.readActAb(cost, &effects, tapsymbol, ismanaability, instantspeed);
 }
 
 void AtomEffect_H::init(ReaderVisitor &reader, char* allassignedparams, uint8_t& nbassignedparams) {
@@ -36,8 +36,8 @@ void CardOracle::init(ReaderVisitor &reader) {
     if(type.land) {
         color = 0; //lands are colorless
     } else {
-        reader.readManaCost(rules.cast.cost);
-        color = rules.cast.cost.m2color();
+        reader.readCost(rules.cost);
+        color = rules.cost.mana.m2color();
     }
 
     //reader.readCardSubtypes(); //TODO implement subtypes

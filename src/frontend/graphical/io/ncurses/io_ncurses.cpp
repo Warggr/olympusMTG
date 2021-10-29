@@ -113,7 +113,7 @@ void NcursesIO::draw_cardback(const Rect& zone, int oncard_number) const {
 void NcursesIO::poster(const CardOracle& card) const {
 	WINDOW* win = winzones[POSTER];
 	wclear(win);
-	char card_color = main_color(card.getCost().m2color());
+	char card_color = main_color(card.getCost().mana.m2color());
 
 	wattron(win, COLOR_PAIR( card_color + 1));
 	wmove(win, 0, 0);
@@ -122,7 +122,7 @@ void NcursesIO::poster(const CardOracle& card) const {
 	for(int i=0; i<RIGHTBAR_Y; i++) wprintw(win, "-");
 	mvwprintw(win, 2, 2, "%s", card.getName().c_str());
 
-	disp_mana(win, card.getCost(), RIGHTBAR_Y-1, 2);
+	disp_mana(win, card.getCost().mana, RIGHTBAR_Y-1, 2);
 	mvwprintw(win, FULLCARD_Z/2, 1, "%s", card.getType().toString().c_str());
 	if(card.getType().land and card.getType().shift){
 		wattron(win, A_ALTCHARSET);

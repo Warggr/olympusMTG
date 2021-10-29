@@ -9,7 +9,7 @@
 #include <list>
 #include <memory>
 
-class Creature; template<typename T> class Y_Hashtable; template<typename T> class StateTN; class Card;
+class Creature; template<typename T> class Y_Hashtable; template<typename T> class StateTN; class Card; class CardWrapper;
 
 /* FrontEnd recreates part of the game state on its own.
  * What it has:
@@ -39,7 +39,7 @@ public:
 
     virtual Target* chooseTarget(char type) = 0;
 
-    std::list<uptr<Card>> chooseCardsToKeep(std::list<uptr<Card>>& list, unsigned nbToDiscard);
+    std::list <CardWrapper> chooseCardsToKeep(std::list<CardWrapper>& list, unsigned nbToDiscard);
 
     virtual bool attackSwitch(int leftY, int rightY, int topZ, int arrowlength) const = 0;
 
@@ -49,7 +49,7 @@ public:
     virtual bool chooseattackers(Y_Hashtable<Creature>& cowards) = 0;
     virtual void chooseblockers(Y_Hashtable<Creature>& defenders, StateTN<Creature>& attackers) = 0;
 
-    virtual void addCards(const std::list<uptr<Card>>& cards) = 0;
+    virtual void addCards(const std::list<CardWrapper>& cards) = 0;
 
     virtual void disp(fwdlist<uptr<Card>>::const_iterator begin, fwdlist<uptr<Card>>::const_iterator end) = 0;
 

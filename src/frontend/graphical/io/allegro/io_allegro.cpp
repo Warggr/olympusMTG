@@ -72,12 +72,12 @@ void AllegroIO::poster(const CardOracle &card) const { draw(card, posterZone, fa
 
 void AllegroIO::draw(const CardOracle& card, const Rect& rect, bool highlight) const {
     (void) highlight; //TODO
-    int card_color = main_color(card.getCost().m2color());
+    int card_color = main_color(card.getCost().mana.m2color());
 
 	al_draw_bitmap(card_template[card_color], rect.y, rect.z, 0);
 	al_draw_text(fonts[0], al_map_rgb(0,0,0), rect.y+29, rect.z+28, 0,
                  card.getName().c_str());
-	disp_mana(card.getCost(), rect.right() - 28, rect.z + 30);
+	disp_mana(card.getCost().mana, rect.right() - 28, rect.z + 30);
 
 	al_draw_text(fonts[0], al_map_rgb(0,0,0), rect.y+29, rect.z+295, 0, card.getType().toString().c_str());
 

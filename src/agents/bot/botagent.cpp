@@ -28,9 +28,9 @@ void BotAgent::splitDamage(int power, std::list<std::pair<uint8_t, SpecificTarge
     (void) power; (void) blockers;
 }
 
-std::list<std::unique_ptr<Card>> BotAgent::chooseCardsToKeep(std::list<std::unique_ptr<Card>>& list, unsigned nbToDiscard) {
+std::list<CardWrapper> BotAgent::chooseCardsToKeep(std::list<CardWrapper>& list, unsigned nbToDiscard) {
     (void) list; (void) nbToDiscard;
-    return std::list<uptr<Card>>();
+    return std::list<CardWrapper>();
 }
 
 bool BotAgent::keepsHand(const std::forward_list<uptr<Card>>& cards) {
@@ -59,7 +59,7 @@ void BotAgent::connectGame(Game* game) {
     (void) game;
 }
 
-void BotAgent::onDraw(const std::list<std::unique_ptr<Card>> &cards) {
+void BotAgent::onDraw(const std::list<CardWrapper> &cards) {
     (void) cards;
 }
 

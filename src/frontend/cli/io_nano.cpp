@@ -88,7 +88,7 @@ bool NanoIO::simpleChoice(const char* optTrue, const char* optFalse) {
 }
 
 void NanoIO::disp(const CardOracle& oracle, int flags) const {
-    cout << "[Describing]: " << oracle.getName() << "\t" << oracle.getCost().m2t();
+    cout << "[Describing]: " << oracle.describe();
     if(!(flags & INLINE)) cout << "\n";
 
     cout << "\t" << oracle.getType().toString() << "\n";

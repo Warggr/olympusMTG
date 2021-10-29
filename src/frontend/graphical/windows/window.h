@@ -58,10 +58,11 @@ public:
 template<typename T>
 class Sprite: public LowestUIElement {
 protected:
-    T* target;
+    const T* target; //It is const just because there's no good reason for the UI to modify it.
+    //However, since the real pointed object is not const, we'll regularly const_cast it when passing it back
 public:
-    Sprite(T* content): target(content) {}
-    Target* getTarget(char requs) const override { if(B_is_a_A(requs, target->targetType())) return target; else return nullptr; }
+    Sprite(const T* content): target(content) {}
+    Target* getTarget(char requs) const override { if(B_is_a_A(requs, target->targetType())) return const_cast<T*>(target); else return nullptr; }
     void fullDisp(AbstractIO *io) const override { io->draw(*target, coords, false); }
 };
 

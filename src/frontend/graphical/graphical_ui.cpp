@@ -16,9 +16,9 @@ void GraphicalUI::registerPlayers(std::list<Player>& players) {
     }
 }
 
-void GraphicalUI::addCards(const std::list<std::unique_ptr<Card>> &cards) {
+void GraphicalUI::addCards(const std::list<CardWrapper> &cards) {
     for(auto& card: cards){
-        screen.rightBar().optionZone().insert(card.get());
+        screen.rightBar().optionZone().insert(Sprite<Card>(card.get()));
     }
 }
 
