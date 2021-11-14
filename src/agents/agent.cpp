@@ -2,11 +2,11 @@
 #include <cassert>
 
 #ifdef MOCK_AGENT
-#include "mock/MockAgent.h"
+#include "mock/mockagent.h"
 #else
 #include "bot/botagent.h"
 #include "local/localagent.h"
-#include "network/networkagent.h"
+#include "agents/network/networkagent.h"
 #endif
 
 uptr<Agent> Agent::factory(playerType desc) {

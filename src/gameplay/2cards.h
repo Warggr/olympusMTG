@@ -18,15 +18,15 @@
 #define new_cardptr std::make_shared<const CardOracle>
 #endif
 
-class Card: public Target {
+class Card {
     Player* owner;
 public:
 	card_ptr oracle;
 
-	explicit Card(light_cardptr orc): Target(orc->name), oracle(orc) { t_type = target_type::card; }
+	explicit Card(light_cardptr orc): oracle(orc) { }
 
     void reveal() const;
-    std::string describe() const override { return oracle->describe(); };
+    std::string describe() const { return oracle->describe(); };
 
 	card_type getType() const { return oracle->getType(); };
 	bool hasFlash() const { return oracle->type.underlying == card_type::sorcery and oracle->type.shift; } //TODO implement flash
@@ -36,31 +36,36 @@ public:
 	void getPermabs(PermOption** pr, int* nb_opts) const { *pr = oracle->rules.first_actab; *nb_opts = oracle->rules.nb_actabs; };
 	void getTriggers(trig_type type, TriggerEvent& trigEv) const { oracle->getTriggers(type, trigEv); };
 	const char* getFlavorText() const { return oracle->rules.flavor_text; }
-    Player* getController() override { return owner; }
-	//getName is provided by being a child of Target
+	std::string getName() { return oracle->getName(); }
 
 	void init(ReaderVisitor& visitor) const {
 	    const_cast<CardOracle*>(oracle.get())->init(visitor);
 	}
-	void disp(BasicIO* io) const override;
+	void disp(BasicIO* io) const;
+
+	friend class CardWrapper;
 };
 
 //Cards aren't Options themselves; an Option must know where it is in order to clean itself up,
 // while a Card does not remember in which zone it is. Cards are rather handled to a CardWrapper, which knows the exact
 // location of the card's uptr.
-class CardWrapper: public Option {
+class CardWrapper: public OptionWrapper, public Option, public Target {
     uptr<Card> origin;
 public:
-    CardWrapper(uptr<Card> origin): origin(std::move(origin)) {};
-    void castOpt(Player *pl) override;
-    bool isCastable(bool sorceryspeed, Player* player) const override;
+    CardWrapper(uptr<Card> origin): Target(origin->oracle->getName()), origin(std::move(origin)) { t_type = target_type::card; };
     Card& operator*() { return *origin; }
     Card* get() { return origin.get(); }
     const Card* get() const { return origin.get(); }
     Card* operator->() { return origin.get(); }
-    uptr<Card> unwrap() { return std::move(origin); };
+    const Card* operator->() const { return origin.get(); }
+    uptr<Card> unwrap() { return std::move(origin); }
     void disp(BasicIO* io) const override { origin->disp(io); }
     std::string describe() const override { return origin->describe(); };
+    Option* chooseOptionAction() override;
+    Player* getController() override { return origin->owner; }
+
+    void castOpt(Player* pl) override;
+    bool isCastable(bool sorceryspeed, Player* player) const override;
 };
 
 #endif //OLYMPUS_CLASSES_CARDS_2_H

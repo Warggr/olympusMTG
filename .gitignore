@@ -1,7 +1,6 @@
 .idea/
 build/
 outputs/
-olympus
 
 olympus.und/
 
@@ -12,5 +11,3 @@ material/*
 
 material/decks/*
 !material/decks/syntax_guide.txt
-
-src/include/.build_types.h

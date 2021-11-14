@@ -23,7 +23,7 @@ TEST_CASE( "Mana library", "[mana]" ) {
     }
 }
 
-TEST_CASE( "Zero mana", "[zero-mana]") {
+TEST_CASE( "Zero mana", "[mana]") {
     Mana mana("3WWUR");
     mana -= mana;
     REQUIRE( mana.cmc() == 0);

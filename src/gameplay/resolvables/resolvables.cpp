@@ -7,7 +7,6 @@
 #include <iostream>
 
 std::string Spell::describe() const { return source->describe(); }
-const std::string& Spell::getName() const { return source->getName(); }
 
 void Resolvable::resolve(){
     if(on_resolve) on_resolve->activate(list_of_targets, ctrl, origin->getTarget());

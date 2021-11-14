@@ -1,7 +1,6 @@
 #ifndef OLYMPUS_HEAD_E_ENUMS_H
 #define OLYMPUS_HEAD_E_ENUMS_H
 
-#include <cstdlib>
 #include <string>
 
 namespace target_type {
@@ -73,7 +72,7 @@ struct card_type {
                 if(land) return permanent_type::land;
                 else return permanent_type::artifact;
             default:
-                exit(1);
+                return permanent_type::creature;
         }
     };
     inline bool isInstant() const { return underlying == sorcery and shift == true; }

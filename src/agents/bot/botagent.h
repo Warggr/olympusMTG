@@ -14,7 +14,7 @@ public:
 
     Target* chooseTarget(char type) override;
 
-    Option * chooseOpt(bool sorcerySpeed, Player* pl) override;
+    Option* chooseOpt(bool sorcerySpeed, Player* pl) override;
 
     void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) override;
 
@@ -31,9 +31,9 @@ public:
 
     Viewer& getViewer() override { return *this; }
 
-    void connectGame(Game *game) override;
+    void connectGame(Game* game) override;
 
-    void onDraw(const std::list<CardWrapper> &cards) override;
+    void onDraw(const std::list<CardWrapper>& cards) override;
     void registerMe(Player* pl) override;
 };
 

@@ -56,7 +56,7 @@ Target* readTarget(const char* str, Command::zone zone, Player* pl) {
         case zone::hand: {
             auto iter = pl->getHand().begin();
             std::advance(iter, pos);
-            return iter->get();
+            return &(*iter);
         }
         default:
             std::cout << "Zone not implemented yet.\n";

@@ -42,12 +42,17 @@ void CardOracle::init(ReaderVisitor &reader) {
 
     //reader.readCardSubtypes(); //TODO implement subtypes
     reader.readAll(rules, type);
-//    casted_id = generate_casted_id();
 }
 
-RulesHolder::~RulesHolder() {
-    delete[] first_actab;
-    delete[] triggers;
-    delete[] statics;
-    delete[] flavor_text;
+namespace target_type {
+    const flag_t tars1[] = { damageable, nonnegative };
+    const flag_t tars2[] = { player, nonnegative };
+    const flag_t tars3[] = { player, number };
+    const flag_t tars4[] = { player, added_mana };
+    const flag_t tars5[] = { permanent };
+    const flag_t tars6[] = { resolvable };
+    const flag_t tars7[] = { permanent, strictpositive };
+    const flag_t tars8[] = { permanent };
+    const flag_t* target_types[] = { tars1, tars2, tars3, tars3, tars4, tars5, tars5, tars6, tars7, tars8 };
+    const int target_numbers[] = { 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1 };
 }

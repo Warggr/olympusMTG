@@ -65,12 +65,10 @@ void Permanent::activate(){
 	}
 }
 
-Permanent::type Permanent::getType() const {
-    return source->getType().toPermType();
-}
-
-Mana Permanent::getManaCost() const { return source->getCost().mana; }
-
 void Planeswalker::activate() {
     //TODO
+}
+
+Option* Permanent::chooseOptionAction() {
+    return options.at(ctrl->getAgent().chooseAmong(options));
 }

@@ -105,3 +105,7 @@ ExplicitMana Mana::m2x() const {
     ret[0] = generic;
     return ret;
 }
+
+bool Mana::operator==(Mana other) const {
+    return other.mana == mana;
+}

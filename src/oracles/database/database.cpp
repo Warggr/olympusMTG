@@ -1,5 +1,5 @@
-#include "oracles/filereader/filereader.h"
-#include "oracles/filereader/binarywriter.h"
+#include "oracles/filereader/plain/filereader.h"
+#include "oracles/filereader/binary/binarywriter.h"
 #include "build_types.h"
 #include "leveldb/db.h"
 #include <fstream>
@@ -19,26 +19,24 @@ void refreshDatabase() {
         exit(1);
     }
 
-    DictHolder* dicts = new DictHolder();
+    DictHolder dicts;
     while(fb.peek() != EOF) {
         char buffer[1024];
         fb.getline(buffer, 1024);
 
         std::istringstream ss {std::string(buffer)};
-        PlainFileReader reader(dicts, ss);
+        PlainFileReader reader(&dicts, ss);
 
         std::string binary;
         std::ostringstream oss(binary);
         BinaryFileWriter writer(oss);
 
-        auto* oracle = new CardOracle(reader);
-        oracle->init(writer);
+        CardOracle oracle(reader);
+        oracle.init(writer);
 
-        status = db->Put(leveldb::WriteOptions(), oracle->getName(), binary);
+        status = db->Put(leveldb::WriteOptions(), oracle.getName(), binary);
         assert(status.ok());
-        delete oracle;
     }
 
-    delete dicts;
     delete db;
 }

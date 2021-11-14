@@ -29,7 +29,7 @@ public:
 
 	Permanent(uptr<Card> source, Player* pl);
 	virtual ~Permanent() = default;
-	virtual std::string describe() const;
+	virtual std::string describe() const override;
     void disp(BasicIO* io) const override;
 
     bool isUntapped() const { return untapped; }

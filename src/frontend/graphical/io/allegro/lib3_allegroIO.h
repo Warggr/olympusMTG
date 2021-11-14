@@ -9,7 +9,7 @@
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_ttf.h>
-#include <headQ_rect.h>
+#include <frontend/headQ_rect.h>
 
 class AllegroIO: public AbstractIO {
 private:
@@ -36,11 +36,6 @@ public:
 	~AllegroIO();
 
 #include "../iomethods.cpp"
-
-    void disp(const CardOracle& oracle, int flags) const override;
-    void disp_inrow(const Displayable* disp, int number, int total, int flags) const override;
-
-    checklistCallbackAction getNextPosition(abstract_iterator_wrapper* iter, uint &position, uint max) override;
 };
 
 inline float AllegroIO::gmouseY() { return mousey; }

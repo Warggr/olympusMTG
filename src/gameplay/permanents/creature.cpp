@@ -19,7 +19,7 @@ void Creature::resolveAttack(Player* nextopponent){
     }
     else{
         for(auto & itb : assigned_bl){
-            (*itb.second)->damage(itb.first, this);
+            itb.second->damage(itb.first, this);
             itb.second->hit(this);
         }
     }

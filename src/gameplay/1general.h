@@ -31,7 +31,7 @@ public:
     void invalidate(){ id_still_correct = false; };
 };
 
-class Target: public GameObject, public Displayable { //Permanents, Players, Cards (not Oracles!), and Resolvables
+class Target: public GameObject, virtual public Displayable { //Permanents, Players, Cards (not Oracles!), and Resolvables
 protected:
 	std::list<AbstractTargeter*> to_target;
 	flag_t t_type{0};

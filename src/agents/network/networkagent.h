@@ -2,29 +2,20 @@
 #define OLYMPUS_AGENT_NETWORK_H
 
 #include "../agent.h"
-#include "network.h"
+#include "network/async.h"
 
-class NetworkAgent: public Agent, public Networker, public Viewer {
-    bool idle; //whether he has been assigned a connection/IP adress yet
-    bool unread; //whether any unread messages are in the buffer
-    long message_length;
+class NetworkAgent: public Agent, public Viewer {
+    AsyncNetworker networker;
     Game* game;
-    std::string name;
-
-    const char* net_receive() override;
 public:
 	NetworkAgent();
 
-    long receive() override;
 	void specificSetup() override;
-    void receiveMessage();
 
-    void setName(const char* name);
-	std::string getName() override { return name; }
+	std::string getName() override { return networker.getName(); }
 	std::string getLogin() override;
 	std::unique_ptr<std::istream> getDeckFile() override;
     //virtual EmptyOption* chooseOpt() override { return nullptr; }
-    void setSock(int sock);
 
 	Target* chooseTarget(char type) override;
 

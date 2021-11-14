@@ -49,7 +49,7 @@ public:
 	}
 	T* getTarget() const { if(valid) return content; else return nullptr; };
 	const std::string& getName() const { return name; };
-	T* operator*() { return content; }
+	T& operator*() { return *content; }
 	T* operator->() { return content; }
 	explicit operator bool() {
 	    return valid;

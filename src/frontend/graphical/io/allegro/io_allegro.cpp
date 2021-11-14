@@ -1,7 +1,7 @@
 #include "lib3_allegroIO.h"
 #include <list>
 #include <iostream>
-#include "headQ_rect.h"
+#include "frontend/headQ_rect.h"
 #include "control/3player.h"
 #include "gameplay/resolvables/5resolvables.h"
 

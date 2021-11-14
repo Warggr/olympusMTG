@@ -13,7 +13,7 @@ private:
     Cost cost;
 public:
     PermOption(): tapsymbol(false), ismanaability(false) {};
-    ~PermOption();
+    ~PermOption() = default;
     void init(ReaderVisitor& visitor);
 
     void castOpt(Player* pl) override;

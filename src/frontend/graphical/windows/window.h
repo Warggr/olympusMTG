@@ -2,7 +2,7 @@
 #define OLYMPUS_WINDOW_H
 
 #include "../io/6abstractIO.h"
-#include "headQ_rect.h"
+#include "frontend/headQ_rect.h"
 #include "gameplay/permanents/4permanents.h"
 #include "gameplay/resolvables/5resolvables.h"
 #include "gameplay/2cards.h"
@@ -62,7 +62,10 @@ protected:
     //However, since the real pointed object is not const, we'll regularly const_cast it when passing it back
 public:
     Sprite(const T* content): target(content) {}
-    Target* getTarget(char requs) const override { if(B_is_a_A(requs, target->targetType())) return const_cast<T*>(target); else return nullptr; }
+    Target* getTarget(char requs) const override {
+        if(B_is_a_A(requs, target->targetType())) return const_cast<T*>(target);
+        else return nullptr;
+    }
     void fullDisp(AbstractIO *io) const override { io->draw(*target, coords, false); }
 };
 

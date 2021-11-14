@@ -1,10 +1,9 @@
 #ifndef OLYMPUS_SERVER_H
 #define OLYMPUS_SERVER_H
 
-#include "agents/agent.h"
+#include "agents/agent.h" //for playerType
 #include <list>
 #include <memory>
-#include <forward_list>
 class Game;
 
 class Server {

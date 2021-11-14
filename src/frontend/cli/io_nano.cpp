@@ -1,7 +1,7 @@
 #include "lib3_cliUI.h"
 #include <list>
 #include <iostream>
-#include "headQ_rect.h"
+#include "frontend/headQ_rect.h"
 #include "oracles/classes/card_oracle.h"
 #include "control/3player.h"
 #include "lib3_nanoIO.h"

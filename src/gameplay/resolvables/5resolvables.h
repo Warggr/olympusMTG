@@ -29,10 +29,9 @@ public:
     Resolvable(Player* ct, const Effect_H* preRes, Target* origin = nullptr);
 	virtual ~Resolvable() = default;
 	virtual void resolve(); //this is what a resolvable is about
-	virtual std::string describe() const { return description; };
+	virtual std::string describe() const override { return description; };
     virtual void disp(BasicIO* io) const override;
 	virtual void counter();
-	const std::string& getName() const override { return description; };
 
     Player* getController() override { return ctrl; }
 };
@@ -45,7 +44,6 @@ public:
 	void resolve() override;
 	void counter() override;
 	std::string describe() const override;
-	const std::string& getName() const override;
 
     void disp(BasicIO* io) const override;
 };

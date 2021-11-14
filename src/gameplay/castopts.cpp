@@ -20,6 +20,10 @@ bool CardWrapper::isCastable(bool sorceryspeed, Player* player) const {
     return (sorceryspeed or origin->hasFlash()) and (player->manapool >= origin->getCost().mana);
 }
 
+Option* CardWrapper::chooseOptionAction() {
+    return this;
+}
+
 bool PermOption::isCastable(bool sorceryspeed, Player* player) const {
     (void) sorceryspeed; //TODO some abilities are only sorcery-speed
     return player->manapool >= cost.mana;
@@ -36,11 +40,8 @@ void PermOption::castOpt(Player* pl){
     Stack::god->addToStack(std::make_unique<Resolvable>(pl, &effects));
 }
 
-std::string CardOption::describe(const std::string& cardName) const {
-    (void) cardName;
-    return std::string(); //TODO
-}
-
-std::string CardOption::describe() const {
-    return std::string(); //TODO
+bool Player::pay(Cost cost) {
+    if(not (manapool >= cost.mana)) return false;
+    manapool -= cost.mana;
+    return true;
 }

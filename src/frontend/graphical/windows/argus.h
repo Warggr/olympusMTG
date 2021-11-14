@@ -88,7 +88,7 @@ struct LeftBar: public TemplateGallery<PolicyWith2Objects<Rectangle, StackWindow
     inline StackWindow& stack() { return policy.object2; }
 };
 
-struct OptionZone: public ListElement<Sprite<Card>> {
+struct OptionZone: public ListElement<Sprite<CardWrapper>> {
     OptionZone();
     void init(const Rect& rect);
 };

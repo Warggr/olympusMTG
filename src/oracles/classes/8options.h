@@ -11,7 +11,7 @@ class Resolvable; class Player; class Card; class Permanent;
 // This standard only imposes that each Option has a castOpt method,
 // which handles how the option behaves after having been chosen.
 // Notably, Cards are Options. Technically, 'conceding' is an option.
-class Option : public Displayable {
+class Option : virtual public Displayable {
 public:
     virtual ~Option() = default;
     virtual bool isCastable(bool sorceryspeed, Player* player) const { (void) sorceryspeed; (void) player; return true; }

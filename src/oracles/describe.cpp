@@ -111,3 +111,18 @@ std::string card_type::toString() const {
     }
     return ret;
 }
+
+std::string CardOption::describe(const std::string& cardName) const {
+    (void) cardName;
+    return std::string(); //TODO
+}
+
+std::string CardOption::describe() const {
+    return std::string(); //TODO
+}
+
+#include "frontend/basicIO.h"
+
+void CardOracle::disp(BasicIO *io) const {
+    io->disp(*this, 0);
+}

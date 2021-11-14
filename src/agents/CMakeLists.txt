@@ -4,11 +4,7 @@ add_subdirectory(local)
 add_subdirectory(mock)
 
 add_library(agents STATIC agent.cpp)
-target_include_directories(agents PUBLIC ${INCLUDES})
-target_link_libraries(agents PRIVATE local_agent)
-target_link_libraries(agents PRIVATE network_agent)
-target_link_libraries(agents PRIVATE bot_agent)
-target_link_libraries(agents PRIVATE pthread)
+target_link_libraries(agents PRIVATE local_agent network_agent bot_agent)
 
 add_library(agents-mock-only STATIC agent.cpp)
 target_include_directories(agents-mock-only PUBLIC ${INCLUDES})

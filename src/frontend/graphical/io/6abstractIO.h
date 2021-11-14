@@ -1,7 +1,7 @@
 #ifndef OLYMPUS_6_ABSTRACT_IO_H
 #define OLYMPUS_6_ABSTRACT_IO_H
 
-#include "headQ_rect.h"
+#include "frontend/headQ_rect.h"
 #include "Mana/lib2_mana.h"
 #include "frontend/basicIO.h"
 #include "build_types.h"
@@ -28,7 +28,7 @@ inline enum framecolor main_color(colorId::type color){
     }
 }
 
-class Permanent; class Card; class Creature; class CardOracle; class Player; class Resolvable;
+class Permanent; class CardWrapper; class Creature; class CardOracle; class Player; class Resolvable;
 
 class AbstractIO : public BasicIO {
 public:
@@ -45,7 +45,7 @@ public:
 #undef maybe_virtual
 #undef maybe_undef
 
-    void draw(const Card& card, const Rect& rect, bool highlight);
+    void draw(const CardWrapper& card, const Rect& rect, bool highlight);
 };
 
 #endif //OLYMPUS_6_ABSTRACT_IO_H

@@ -16,9 +16,9 @@ void GraphicalUI::registerPlayers(std::list<Player>& players) {
     }
 }
 
-void GraphicalUI::addCards(const std::list<CardWrapper> &cards) {
+void GraphicalUI::addCards(const std::list<CardWrapper>& cards) {
     for(auto& card: cards){
-        screen.rightBar().optionZone().insert(Sprite<Card>(card.get()));
+        screen.rightBar().optionZone().insert(Sprite<CardWrapper>(&card));
     }
 }
 
@@ -74,6 +74,10 @@ bool GraphicalUI::attackSwitch(int leftY, int rightY, int topZ, int arrowlength)
 
 void GraphicalUI::disp(fwdlist<uptr<Card>>::const_iterator begin, const fwdlist<uptr<Card>>::const_iterator end) {
     for(auto i = begin; i != end; ++i) {
-        io->draw(**i, Rect(0, 0, 0, 0), false); //TODO
+        io->draw(*(*i)->oracle, Rect(0, 0, 0, 0), false); //TODO
     }
+}
+
+void GraphicalUI::registerMe(Player* pl) {
+    (void) pl;
 }

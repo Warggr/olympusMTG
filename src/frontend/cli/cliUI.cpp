@@ -41,7 +41,7 @@ void CliUI::list(zone::zone zone) {
     switch (zone) {
         case zone::hand: {
             int i = 0;
-            for(const auto& card : pl->getHand()) io.disp_inrow(card.get(), i++, pl->getHand().size(), BasicIO::INLINE);
+            for(const auto& card : pl->getHand()) io.disp_inrow(&card, i++, pl->getHand().size(), BasicIO::INLINE);
         }
         case zone::graveyard:
             break;

@@ -1,56 +1,15 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <unistd.h>
-#include <fstream>
 #include <sstream>
 #include <oracles/filereader/visitor.h>
 #include "networkagent.h"
-#include "networkmanager.h"
 #include "gameplay/2cards.h"
-#include "oracles/filereader/binarywriter.h"
+#include "oracles/filereader/binary/binarywriter.h"
 
-NetworkAgent::NetworkAgent(): idle(true) {
-    NetworkManager::declareAgent(this);
-}
+NetworkAgent::NetworkAgent() = default;
 
 void NetworkAgent::specificSetup() {
-    NetworkManager::listener_mutex.lock();
-    while(idle) { NetworkManager::listen(); }
-    NetworkManager::listener_mutex.unlock();
-}
-
-const char* NetworkAgent::net_receive() {
-    while(!unread) { NetworkManager::listen(); }
-    unread = false;
-    //std::cout << "Server received " << buffer << "\n";
-    return buffer;
-}
-
-long NetworkAgent::receive() {
-    net_receive();
-    return message_length;
-}
-
-void NetworkAgent::receiveMessage() {
-    //Check if it was for closing , and also read the incoming message
-    message_length = read( sockfd , buffer, 1024);
-    buffer[message_length] = 0;
-    if (message_length == 0) { //Somebody disconnected , get his details and print
-        sockaddr_in cli_addr;
-        socklen_t clilen = sizeof(cli_addr);
-        getpeername(sockfd, (sockaddr*) &cli_addr, &clilen);
-        //printf("Host disconnected , ip %s , port %d \n", inet_ntoa(address.sin_addr) , ntohs(address.sin_port));
-
-        //Close the socket
-        close( sockfd );
-        connected = false;
-    }
-    else unread = true;
-}
-
-void NetworkAgent::setName(const char *read_name) {
-    name = std::string(read_name);
-    std::cout << "Read name: " << name << "\n";
+    networker.waitForConnection();
 }
 
 unsigned int parse_number(const char* line, unsigned int& pos) {
@@ -62,11 +21,6 @@ unsigned int parse_number(const char* line, unsigned int& pos) {
         else throw DeckbuildingError("Not a number");
         pos++;
     }
-}
-
-void NetworkAgent::setSock(int sock) {
-    idle = false; connected = true;
-    sockfd = sock;
 }
 
 Target *NetworkAgent::chooseTarget(char type) {
@@ -108,12 +62,12 @@ void NetworkAgent::connectGame(Game* gm) {
 
 void NetworkAgent::onDraw(const std::list<CardWrapper>& cards) {
     char header[2] = { static_cast<char>(CREATE), static_cast<char>(cards.size()) };
-    net_send(header, 2);
+    networker.send(header, 2);
     for(auto& card: cards) {
         std::stringstream oracle_stream;
         BinaryFileWriter oracle_reader(oracle_stream);
         const_cast<CardWrapper&>(card)->init(oracle_reader);
-        net_send(oracle_stream.str());
+        networker.send(oracle_stream.str());
     }
 }
 
@@ -130,7 +84,7 @@ std::string NetworkAgent::getLogin() {
 }
 
 uptr<std::istream> NetworkAgent::getDeckFile() {
-    return receive_file();
+    return networker.receive_file();
 }
 
 void NetworkAgent::registerMe(Player*) {}
