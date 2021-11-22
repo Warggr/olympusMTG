@@ -2,10 +2,9 @@
 #include <list>
 #include <iostream>
 #include "frontend/headQ_rect.h"
-#include "oracles/classes/card_oracle.h"
+#include "classes/card_oracle.h"
 #include "control/3player.h"
 #include "lib3_nanoIO.h"
-
 
 using namespace std;
 

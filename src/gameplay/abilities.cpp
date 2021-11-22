@@ -1,5 +1,5 @@
 #include "gameplay/resolvables/5resolvables.h"
-#include "oracles/classes/1effects.h"
+#include "classes/1effects.h"
 #include "control/3player.h"
 
 void Player::addMana(char c){

@@ -1,11 +1,12 @@
 #include "headI_identifiers.h"
-#include "oracles/classes/5rulesholder.h"
-#include "oracles/filereader/plain/filereader.h"
+#include "classes/5rulesholder.h"
+#include "filereader.h"
+#include "oracles/filereader/plain/Dictionary/dictholder.h"
 #include "build_types.h"
-#include "oracles/classes/1effects.h"
-#include "oracles/classes/2triggers.h"
-#include "oracles/classes/3statics.h"
-#include "oracles/classes/perm_option.h"
+#include "classes/1effects.h"
+#include "classes/2triggers.h"
+#include "classes/3statics.h"
+#include "classes/perm_option.h"
 
 void PlainFileReader::readAll(RulesHolder& rules, card_type type) {
 	check_safepoint('{', "at the beginning of the rules text");

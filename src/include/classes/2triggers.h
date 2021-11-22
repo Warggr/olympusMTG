@@ -1,5 +1,5 @@
-#ifndef OLYMPUS_HEADER_TRIGGERS_10_H
-#define OLYMPUS_HEADER_TRIGGERS_10_H
+#ifndef OLYMPUS_TRIGGERS_H
+#define OLYMPUS_TRIGGERS_H
 //REMINDER: class TriggerEvent is declared in 1general.h header, not here
 
 #include <string>
@@ -34,4 +34,4 @@ and last but not least:
 you control [no artifacts (cf. covetous dragon), a dwarf (cf. goblins of the flarg)]; this will be the most tricky (perhaps see it as a LTB/ETB trigger?)
 */
 
-#endif //OLYMPUS_HEADER_TRIGGERS_10_H
+#endif //OLYMPUS_TRIGGERS_H

@@ -1,5 +1,5 @@
-#include "oracles/classes/card_oracle.h"
-#include "oracles/classes/2triggers.h"
+#include "classes/card_oracle.h"
+#include "classes/2triggers.h"
 #include "control/3player.h"
 
 void TriggerEvent::trigger(Player* pl, Target* origin) const {

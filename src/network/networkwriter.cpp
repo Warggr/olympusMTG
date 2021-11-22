@@ -1,5 +1,6 @@
 #include "networkwriter.h"
 #include "oracles/filereader/binary/binarywriter.h"
+#include "Mana/cost.h"
 
 void BinaryBufferWriter::write(const char *chars, long size) {
     if(ptr + size >= Networker::BUFFER_SIZE) {

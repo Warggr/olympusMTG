@@ -17,7 +17,7 @@ public:
 
 	constexpr Mana(): mana(0){};
     constexpr Mana(int i): mana(i){};
-	explicit Mana(const char* x);
+	Mana(const char* x);
 	std::string m2t() const;
 	bool operator==(Mana other) const;
 	bool operator>=(Mana pool) const;

@@ -3,14 +3,14 @@
 
 #include "../1general.h"
 #include "../optionwrappers.h"
-#include "oracles/classes/1effects.h"
-#include "oracles/classes/3statics.h"
-#include "headI_identifiers.h"
-#include "headE_enums.h"
+#include "classes/1effects.h"
+#include "classes/3statics.h"
+#include "agents/agent.h"
 #include "Mana/lib2_mana.h"
+#include "headE_enums.h"
+#include "headI_identifiers.h"
 #include <memory>
 #include <list>
-#include <agents/agent.h>
 
 class PermOption;
 

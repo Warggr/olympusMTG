@@ -1,6 +1,6 @@
 #include "lib3_cliUI.h"
 #include "lib3_nanoIO.h"
-#include "oracles/classes/perm_option.h"
+#include "classes/perm_option.h"
 #include "gameplay/2cards.h"
 #include "gameplay/permanents/4permanents.h"
 #include "control/3player.h"
@@ -13,7 +13,7 @@ void CliUI::splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter
     (void) power; (void) blockers; //TODO
 }
 
-Target *CliUI::chooseTarget(char type) {
+Target* CliUI::chooseTarget(char type) {
     (void) type; return nullptr;
 }
 
@@ -41,7 +41,7 @@ void CliUI::list(zone::zone zone) {
     switch (zone) {
         case zone::hand: {
             int i = 0;
-            for(const auto& card : pl->getHand()) io.disp_inrow(&card, i++, pl->getHand().size(), BasicIO::INLINE);
+            for(const auto& card : pl->getHand()) io.disp_inrow(card.get(), i++, pl->getHand().size(), BasicIO::INLINE);
         }
         case zone::graveyard:
             break;

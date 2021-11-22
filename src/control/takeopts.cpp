@@ -1,4 +1,4 @@
-#include "oracles/classes/8options.h"
+#include "classes/8options.h"
 #include "3player.h"
 #include "7game.h"
 #include "gameplay/resolvables/stack.h"
@@ -12,23 +12,15 @@
 //When both pass and the stack is empty, Player::choicephase returns.
 
 void Player::choicephase(bool sorceryspeed){
-	//optZone->erase_background(god.myIO);
 	while(true){
-		int i = 0;
-		Player* currentprio = this;
-		Game::god->stateBasedActions(); //"before any local receives priority, state-based actions are done"
-		addTriggersToStack(); nextopponent->addTriggersToStack();
-		while(Stack::god->stackIsEmpty() && i==0){
-			if(!chooseAndUseOpt(sorceryspeed)) {i=1; currentprio = currentprio->nextopponent; }
-		}
-		while(i!=2){
-			Game::god->stateBasedActions();
-			if(currentprio->chooseAndUseOpt(false)) i=0;
-			else{
-				i++;
-				currentprio = currentprio->nextopponent;
-			}
-		} //two passes in a row; resolving first spell
+        Player* lastActive = nullptr;
+        if(chooseAndUseOpt(sorceryspeed)) lastActive = this;
+        Player* currentprio = nextopponent;
+		do{
+			if(currentprio->chooseAndUseOpt(false)) lastActive = currentprio;
+			currentprio = currentprio->nextopponent;
+		} while(not (currentprio == lastActive || (lastActive == nullptr && currentprio == this)));
+		//all player passed; resolving first spell
 		auto toresolve = Stack::god->popFromStack();
 		if(toresolve){
 			gdebug(DBG_TARGETING) << "RESOLVING A SPELL\n";
@@ -39,11 +31,17 @@ void Player::choicephase(bool sorceryspeed){
 }
 
 bool Player::chooseAndUseOpt(bool sorceryspeed){ //AKA "giving priority". Returns false if a pass option was chosen
-	if(!myOptions.hasOptions(sorceryspeed)) return false;
-	Option* choice = agent.chooseOpt(sorceryspeed, this); //chooses opt, pops it and returns it, returns 0 if passing was chosen
-	if(!choice) return false;
-	choice->castOpt(this); //casts the spell and deletes the option
-	return true;
+    Game::god->stateBasedActions(); //"before any player receives priority, state-based actions are done"
+    if(!myOptions.hasOptions(sorceryspeed)) return false;
+
+    bool hasCastAnything = false;
+    while(true){
+        Option* choice = agent.chooseOpt(sorceryspeed, this); //chooses opt, pops it and returns it, returns 0 if passing was chosen
+        if(!choice) return hasCastAnything;
+        else choice->castOpt(this); //casts the spell and deletes the option
+        if(!Stack::god->stackIsEmpty()) sorceryspeed = false;
+        hasCastAnything = true;
+    }
 }
 
 bool Player::addTriggersToStack(){

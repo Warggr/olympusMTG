@@ -1,5 +1,5 @@
-#include "oracles/classes/8options.h"
-#include "oracles/classes/perm_option.h"
+#include "classes/8options.h"
+#include "classes/perm_option.h"
 #include "2cards.h"
 #include "control/3player.h"
 #include <iostream>
@@ -14,6 +14,7 @@ void CardWrapper::castOpt(Player* pl){
         pl->pay(origin->getCost());
         Stack::god->addToStack(std::make_unique<Spell>(std::move(origin), pl));
     }
+    pl->getHand().remove(*this);
 }
 
 bool CardWrapper::isCastable(bool sorceryspeed, Player* player) const {
@@ -39,6 +40,14 @@ void PermOption::castOpt(Player* pl){
     if(tapsymbol) origin->tap();
     Stack::god->addToStack(std::make_unique<Resolvable>(pl, &effects));
 }
+
+bool CardOption::isCastable(bool sorceryspeed, Player* player) const {
+    return Option::isCastable(sorceryspeed, player);
+}
+
+void CardOption::castOpt(Player* ) { /*TODO*/ }
+
+void CardOption::disp(BasicIO*) const { /*TODO*/ }
 
 bool Player::pay(Cost cost) {
     if(not (manapool >= cost.mana)) return false;

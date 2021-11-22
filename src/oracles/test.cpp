@@ -2,5 +2,5 @@
 #include "classes/card_oracle.h"
 
 TEST_CASE("Oracles") {
-    CardOracle oracle(card_type());
+    CardOracle oracle(card_type);
 }

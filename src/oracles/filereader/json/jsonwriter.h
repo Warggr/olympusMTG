@@ -2,7 +2,6 @@
 #define OLYMPUS_BINARYWRITER_H
 
 #include "../visitor.h"
-#include <ostream>
 #include <memory>
 
 class BinaryWriter : public ReaderVisitor {

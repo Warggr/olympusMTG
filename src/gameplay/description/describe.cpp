@@ -1,7 +1,7 @@
 #include "gameplay/resolvables/5resolvables.h"
 #include "gameplay/permanents/4permanents.h"
 #include "headE_enums.h"
-#include "oracles/classes/2triggers.h"
+#include "classes/2triggers.h"
 #include "control/3player.h"
 #include "gameplay/2cards.h"
 #include <boost/format.hpp>

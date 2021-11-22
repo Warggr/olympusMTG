@@ -1,7 +1,7 @@
 #ifndef OLYMPUS_UEOT_H
 #define OLYMPUS_UEOT_H
 
-#include "oracles/classes/3statics.h"
+#include "classes/3statics.h"
 #include <vector>
 
 class Ueot {

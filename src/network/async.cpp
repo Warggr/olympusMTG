@@ -30,6 +30,7 @@ void AsyncNetworker::setName(const char *read_name) {
 }
 
 void AsyncNetworker::waitForConnection() {
+    std::cout << "Waiting for connection...\n";
     NetworkManager::listener_mutex.lock();
     while(!connected) { NetworkManager::listen(); }
     NetworkManager::listener_mutex.unlock();

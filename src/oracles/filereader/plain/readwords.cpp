@@ -1,5 +1,7 @@
 #include "lib1_dict.h"
-#include "oracles/filereader/plain/filereader.h"
+#include "Dictionary/dictholder.h"
+#include "Mana/cost.h"
+#include "filereader.h"
 #include "headE_enums.h"
 #include "build_types.h"
 #include <cstring>

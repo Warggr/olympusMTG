@@ -1,9 +1,9 @@
 #include "headE_enums.h"
-#include "oracles/classes/1effects.h"
-#include "oracles/classes/card_oracle.h"
-#include "oracles/classes/2triggers.h"
-#include "oracles/classes/3statics.h"
-#include "oracles/classes/perm_option.h"
+#include "classes/1effects.h"
+#include "classes/card_oracle.h"
+#include "classes/2triggers.h"
+#include "classes/3statics.h"
+#include "classes/perm_option.h"
 #include <vector>
 
 std::string PermOption::describe(const std::string& cardname) const {
@@ -112,17 +112,16 @@ std::string card_type::toString() const {
     return ret;
 }
 
-std::string CardOption::describe(const std::string& cardName) const {
-    (void) cardName;
-    return std::string(); //TODO
+#include "frontend/basicIO.h"
+
+void CardOracle::disp(BasicIO *io) const {
+    io->disp(*this, 0);
 }
 
 std::string CardOption::describe() const {
     return std::string(); //TODO
 }
 
-#include "frontend/basicIO.h"
-
-void CardOracle::disp(BasicIO *io) const {
-    io->disp(*this, 0);
+std::string CardOption::describe(const std::string&) const {
+    return std::string(); //TODO
 }

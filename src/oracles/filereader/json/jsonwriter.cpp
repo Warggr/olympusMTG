@@ -1,10 +1,9 @@
 #include <cstring>
-#include "binarywriter.h"
-#include "classes/1effects.h"
-#include "classes/2triggers.h"
-#include "classes/3statics.h"
-#include "classes/perm_option.h"
-#include "classes/5rulesholder.h"
+#include "jsonwriter.h"
+#include "oracles/classes/1effects.h"
+#include "oracles/classes/2triggers.h"
+#include "oracles/classes/3statics.h"
+#include "oracles/classes/perm_option.h"
 
 void BinaryWriter::readName(std::string& name) {
     uchar length = name.length() - 1;

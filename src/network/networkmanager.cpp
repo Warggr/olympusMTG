@@ -39,6 +39,7 @@ void NetworkManager::closeInstances() {
 }
 
 void NetworkManager::listen() {
+    std::cout << "Listening\n";
     int max_fd = sockfd;
     fd_set readfds; //set of socket descriptors
     FD_ZERO(&readfds); //clear the socket set

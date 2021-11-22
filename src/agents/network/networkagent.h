@@ -21,7 +21,7 @@ public:
 
     void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) override;
 
-    std::list <CardWrapper> chooseCardsToKeep(std::list<CardWrapper>& list, uint nbToDiscard) override;
+    std::list<CardWrapper> chooseCardsToKeep(std::list<CardWrapper>& list, uint nbToDiscard) override;
 
     bool keepsHand(const std::forward_list<uptr<Card>>& cards) override;
 

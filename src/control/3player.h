@@ -1,7 +1,7 @@
 #ifndef OLYMPUS_CLASSES_PLAYER_3_H
 #define OLYMPUS_CLASSES_PLAYER_3_H
 
-#include "oracles/classes/1effects.h"
+#include "classes/1effects.h"
 #include "gameplay/1general.h"
 #include "gameplay/9modifs.h"
 #include "Mana/lib2_mana.h"
@@ -23,9 +23,9 @@ struct PlayerPreStackElement{
 	};
 };
 
-enum cardzone { library_zn, graveyard_zn, exile_zn };
-
 class Player: public Target, public Damageable {
+public:
+    using hand_type = std::list<CardWrapper>;
 private:
     Agent& agent;
     Viewer& viewer;
@@ -33,9 +33,9 @@ private:
 	unsigned char phase : 3, milledout : 1, zerolife : 1, nb_mainphase : 3, nb_lands_remaining : 3;
 	static constexpr u_char upkeep = 0b0, main = 0b001, afterattack = 0b010, afterblock = 0b011,
 	    afterdamage = 0b100, end = 0b110, nonactive = 0b111;
-	CardZone myLibrary, myGraveyard, myExile;
+	CardZone myLibrary, myGraveyard, myExile, myCommand;
 	std::forward_list<PlayerPreStackElement> prestack;
-	std::list<CardWrapper> myHand;
+	hand_type myHand;
 	Player* nextopponent;
     TriggerEvent triggers[1]; //gain/lose life
 public:
@@ -64,7 +64,7 @@ public:
 	void draw(int nb_cards);
     void drawStartingHand();
 	void addMana(char color);
-	void putToZone(std::unique_ptr<Card>& x, enum cardzone zone);
+	void putToZone(std::unique_ptr<Card>& x, Card::zone zone);
 
 	bool pay(Cost cost);
 	void emptyPool();
@@ -87,8 +87,8 @@ public:
     void disp(BasicIO* io) const override;
 	std::string describe() const override;
 
-	std::list<CardWrapper>& getHand() { return myHand; }
-	const std::list<CardWrapper>& getHand() const { return myHand; }
+	hand_type& getHand() { return myHand; }
+	const hand_type& getHand() const { return myHand; }
 
     friend class OptionManager;
 };

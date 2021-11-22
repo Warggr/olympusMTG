@@ -1,6 +1,6 @@
 set(INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/include" ${INCLUDES})
 
-configure_file(../include/build_types.h ../include/build_types.h)
+configure_file(config/build_types.h config/build_types.h)
 
 target_compile_definitions(project_warnings INTERFACE
         uptr=std::unique_ptr
@@ -14,13 +14,13 @@ function(create_test SUT)
     if(ENABLE_TESTING)
         add_executable(${SUT}-test test.cpp)
         target_include_directories(${SUT}-test PRIVATE ${INCLUDES})
-        target_link_libraries(${SUT}-test PRIVATE ${SUT} Catch2::Catch2WithMain)
+        target_link_libraries(${SUT}-test ${SUT} Catch2::Catch2WithMain)
         target_compile_definitions(${SUT}-test PRIVATE F_TESTS)
         catch_discover_tests(${SUT}-test)
     endif()
 endfunction()
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_BINARY_DIR}/config)
 
 add_subdirectory(agents)
 add_subdirectory(control)

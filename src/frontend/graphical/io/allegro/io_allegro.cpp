@@ -1,9 +1,9 @@
 #include "lib3_allegroIO.h"
-#include <list>
-#include <iostream>
 #include "frontend/headQ_rect.h"
 #include "control/3player.h"
 #include "gameplay/resolvables/5resolvables.h"
+#include <iostream>
+#include <utility>
 
 void al_draw_scaled_bitmap(ALLEGRO_BITMAP* bitmap, int picY, int picZ, int picW, int picH, const Rect& zone, char flags){
 	al_draw_scaled_bitmap(bitmap, picY, picZ, picW, picH, zone.y, zone.z, zone.width, zone.height, flags);
@@ -26,6 +26,11 @@ void AllegroIO::disp(const CardOracle &oracle, int flags) const { disp_inrow(&or
 
 void AllegroIO::disp_inrow(const Displayable* disp, int number, int total, int flags) const {
     (void) disp; (void) number; (void) total; (void) flags; //TODO
+}
+
+void AllegroIO::disp_player(const Player& player, int flags) const {
+    (void) player; (void) flags;
+    //TODO: what happens when you click on an opponent to get more details about him?
 }
 
 void AllegroIO::draw_permanent(const Rect& zone, const std::string& name, char color, bool tapped, bool highlight, bool basicImg) const {
@@ -110,11 +115,17 @@ void AllegroIO::message(const char* text) const {
 	al_draw_text(fonts[0], registeredColors[1], messageY, messageZ, 0, text);
 }
 
+class CouldntInitializeSthException: public std::exception {
+    std::string msg;
+public:
+    CouldntInitializeSthException(std::string msg): msg(std::move(msg)) {};
+    const char* what() const noexcept override { return msg.c_str(); }
+};
+
 void must_init(bool test, const char *description){
     if(test) return;
 
-    std::cout << "couldn't initialize " << description << std::endl;
-    exit(1);
+    throw CouldntInitializeSthException(std::string("couldn't initialize ") + description);
 }
 
 void AllegroIO::harmonize(const Rect& poster, const Rect& message, int){
@@ -192,14 +203,11 @@ AllegroIO::AllegroIO() {
 	al_register_event_source(queue, al_get_mouse_event_source());
     cursor = al_create_mouse_cursor(cursor_img, 0, 0);
     al_set_mouse_cursor(window, cursor);
-	//screenFloor = al_create_bitmap(al_get_display_width(window), al_get_display_height(window));
-	//al_set_target_bitmap(screenFloor);
 }
 
 AllegroIO::~AllegroIO(){
 	al_destroy_font(fonts[0]);
     al_destroy_display(window);
-    //al_destroy_timer(timer);
     al_destroy_event_queue(queue);
 
 	for(auto & i : ManaNumSym) al_destroy_bitmap(i);
@@ -241,11 +249,7 @@ void AllegroIO::print_text(const char* text, char color, int y, int z) const {
 }
 
 void AllegroIO::refresh_display() const {
-//	al_set_target_bitmap(al_get_backbuffer(window));
-//	al_draw_bitmap(screenFloor, 0, 0, 0);
-//	al_draw_bitmap(cursor, mousey, mousez, 0);
 	al_flip_display();
-//	al_set_target_bitmap(screenFloor);
 }
 
 void AllegroIO::fulldisp() const {

@@ -1,32 +1,32 @@
 #ifndef OLYMPUS_BINARYREADER_H
 #define OLYMPUS_BINARYREADER_H
 
+#include <iostream>
 #include "../visitor.h"
-#include <istream>
 
-class BinaryReader : public ReaderVisitor {
-    inline void canary(char canary){
-        if(ifile.get() != canary) throw DeckbuildingError("Canary test failed");
-    }
+class JsonReader : public ReaderVisitor {
+    inline void canary(char){}
     std::istream& ifile;
 public:
-    explicit BinaryReader(std::istream& stream): ifile(stream) {};
+    explicit JsonReader(std::istream& stream): ifile(stream) {};
     void raise_error(const std::string& message) override;
     void readName(std::string& name) override;
-    void readCost(Cost& cost) override { directRead<>(cost); }
-    void readCardType(card_type& type) override { directRead<>(type); }
+    void readCost(Cost& cost) override;
+    void readCardType(card_type& type) override;
     void read_section_flavor(char*& flavor_text, uint8_t offset_text) override;
     void read_section_othercasts(fwdlist<CardOption>& node) override;
 
-    void readAll(RulesHolder& rules, card_type type) override;
-
     template<typename T>
-    void directRead(T& value) {
-        ifile.read(reinterpret_cast<char*>(&value), sizeof value);
+    void directRead(T obj, const char* name) {
+        char begin; std::skipws(ifile); ifile >> begin;
+        if(begin != '{') throw DeckbuildingError("JSON error: does not start with '{'");
+        std::string key;
     }
 
-    void readNumberOfObjects(uint& nb) override { directRead<>(nb); }
-    void readNumberOfObjects(uint8_t& nb) override { directRead<>(nb); }
+    void readAll(RulesHolder& rules, card_type type) override;
+
+    void readNumberOfObjects(uint& nb) override;
+    void readNumberOfObjects(uint8_t& nb) override;
 
     void readEffectH(uint8_t &nb_params, char*& params, std::forward_list<AtomEffect_H>& atoms) override;
     void readTriggerType(trig_type& type) override;

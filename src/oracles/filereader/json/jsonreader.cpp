@@ -1,11 +1,10 @@
-#include "binaryreader.h"
-#include "classes/1effects.h"
-#include "classes/2triggers.h"
-#include "classes/3statics.h"
-#include "classes/perm_option.h"
-#include "classes/5rulesholder.h"
+#include "jsonreader.h"
+#include "oracles/classes/1effects.h"
+#include "oracles/classes/2triggers.h"
+#include "oracles/classes/3statics.h"
+#include "oracles/classes/perm_option.h"
 
-void BinaryReader::readName(std::string& name) {
+void JsonReader::readName(std::string& name) {
     uchar length = ifile.get();
     char* buffer = new char[length + 1];
     ifile.get(buffer, length + 1);
@@ -13,7 +12,7 @@ void BinaryReader::readName(std::string& name) {
     name = std::string(buffer);
 }
 
-void BinaryReader::readAll(RulesHolder& rules, card_type) {
+void JsonReader::readAll(RulesHolder& rules, card_type) {
     readMainSpell(rules.cost, rules.effects);
     char flags = ifile.get();
     if(flags & 0x1) readArray<PermOption>(rules.nb_actabs, rules.first_actab, false);
@@ -23,7 +22,7 @@ void BinaryReader::readAll(RulesHolder& rules, card_type) {
     if(flags & 0x10) read_section_flavor(rules.flavor_text, 0); //offset_text is irrelevant here
 }
 
-void BinaryReader::read_section_flavor(char *&flavor_text, uint8_t) {
+void JsonReader::read_section_flavor(char *&flavor_text, uint8_t) {
     uint textsize; directRead<>(textsize);
     if(textsize != 0) {
         flavor_text = new char[textsize];
@@ -31,7 +30,7 @@ void BinaryReader::read_section_flavor(char *&flavor_text, uint8_t) {
     }
 }
 
-void BinaryReader::readEffectH(uint8_t& nb_params, char *&params, std::forward_list<AtomEffect_H>& atoms) {
+void JsonReader::readEffectH(uint8_t& nb_params, char *&params, std::forward_list<AtomEffect_H>& atoms) {
     canary('b');
     readNumberOfObjects(nb_params);
     if(nb_params) params = new char[nb_params];
@@ -41,11 +40,11 @@ void BinaryReader::readEffectH(uint8_t& nb_params, char *&params, std::forward_l
     canary('y');
 }
 
-void BinaryReader::readTriggerType(trig_type& type) {
+void JsonReader::readTriggerType(trig_type& type) {
     directRead<>(type);
 }
 
-void BinaryReader::readAtomEffect(effect_type& type, flag_t*& params, uint8_t& effect_params, char* param_hashtable) {
+void JsonReader::readAtomEffect(effect_type& type, flag_t*& params, uint8_t& effect_params, char* param_hashtable) {
     (void) effect_params; (void) param_hashtable;
     directRead(type);
     int nb_params = target_type::target_numbers[static_cast<int>(type)];
@@ -53,33 +52,41 @@ void BinaryReader::readAtomEffect(effect_type& type, flag_t*& params, uint8_t& e
     ifile.read(reinterpret_cast<char*>(params), nb_params);
 }
 
-void BinaryReader::readActAb(Cost& cost, Effect_H* effects, bool& tapsymbol, bool& ismanaability, bool& instantspeed) {
+void JsonReader::readActAb(Cost& cost, Effect_H* effects, bool& tapsymbol, bool& ismanaability, bool& instantspeed) {
     directRead(cost);
     effects->init(*this);
     char twobools = ifile.get();
     tapsymbol = twobools & 0x1; ismanaability = twobools & 0x2; instantspeed = twobools & 0x4;
 }
 
-void BinaryReader::readMainSpell(Cost& cost, Effect_H*& effect) {
+void JsonReader::readMainSpell(Cost& cost, Effect_H*& effect) {
     (void) cost; (void) effect; //TODO
 }
 
-void BinaryReader::readSelector(Identifier& chars, Identifier& requs) {
+void JsonReader::readSelector(Identifier& chars, Identifier& requs) {
     (void) chars; (void) requs; //TODO
 }
 
-void BinaryReader::readModifier(char& i, Modifier& first_effect, Modifier *&other_effects) {
+void JsonReader::readModifier(char& i, Modifier& first_effect, Modifier *&other_effects) {
     (void) i; (void) first_effect; (void) other_effects; //TODO
 }
 
-void BinaryReader::readCosts(Cost& cost, bool& tapsymbol) {
+void JsonReader::readCosts(Cost& cost, bool& tapsymbol) {
     (void) cost; (void) tapsymbol; //TODO
 }
 
-void BinaryReader::read_section_othercasts(fwdlist<CardOption>& node) {
+void JsonReader::read_section_othercasts(fwdlist<CardOption>& node) {
     (void) node; //TODO
 }
 
-void BinaryReader::raise_error(const std::string& message) {
+void JsonReader::raise_error(const std::string& message) {
     (void) message; //TODO raise error
 }
+
+void JsonReader::readNumberOfObjects(uint8_t& nb) { directRead<>(nb); }
+
+void JsonReader::readNumberOfObjects(uint& nb) { directRead<>(nb); }
+
+void JsonReader::readCardType(card_type& type) { directRead<>(type); }
+
+void JsonReader::readCost(Cost& cost) { directRead<>(cost); }

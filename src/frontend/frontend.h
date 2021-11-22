@@ -1,7 +1,7 @@
 #ifndef OLYMPUS_FRONTEND_H
 #define OLYMPUS_FRONTEND_H
 
-#include "oracles/classes/card_oracle.h"
+#include "classes/card_oracle.h"
 #include "basicIO.h"
 
 #include <string>

@@ -2,9 +2,10 @@
 #define OLYMPUS_VISITOR_H
 
 #include <forward_list>
-#include <oracles/classes/3statics.h>
-#include "oracles/classes/1effects.h"
-#include "oracles/classes/card_oracle.h"
+#include "headI_identifiers.h"
+
+class CardOption; class Cost; class RulesHolder; class Modifier; class Effect_H;
+class AtomEffect_H;
 
 class ReaderVisitor {
 public:

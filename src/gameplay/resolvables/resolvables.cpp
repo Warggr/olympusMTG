@@ -19,7 +19,7 @@ void Resolvable::resolve(){
 void Spell::resolve(){
     if(on_resolve) on_resolve->activate(list_of_targets, ctrl, this);
     if(source->getType().underlying == card_type::sorcery) {
-        ctrl->putToZone(source, graveyard_zn);
+        ctrl->putToZone(source, Card::graveyard);
     } else {
         ctrl->myboard.insert(std::move(source), ctrl);
     }
@@ -31,7 +31,7 @@ void Resolvable::counter(){
 
 void Spell::counter(){
     gdebug(DBG_TARGETING) << "A Spell called "<< source->getName()<<" is countered! Removing it from stack and deleting it...\n";
-    ctrl->putToZone(source, graveyard_zn);
+    ctrl->putToZone(source, Card::graveyard);
     Stack::god->removeFromStack(this);
 }
 

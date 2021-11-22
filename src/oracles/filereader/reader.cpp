@@ -1,11 +1,9 @@
-
-#include <oracles/classes/card_oracle.h>
-
 #include "visitor.h"
-#include "oracles/classes/1effects.h"
-#include "oracles/classes/2triggers.h"
-#include "oracles/classes/3statics.h"
-#include "oracles/classes/perm_option.h"
+#include "classes/1effects.h"
+#include "classes/2triggers.h"
+#include "classes/3statics.h"
+#include "classes/perm_option.h"
+#include "classes/card_oracle.h"
 
 void StaticAb_H::init(ReaderVisitor& ifile){
     ifile.readSelector(chars, requs); //reads up to ':'

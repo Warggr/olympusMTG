@@ -3,7 +3,7 @@
 #include "gameplay/2cards.h"
 #include "gameplay/resolvables/5resolvables.h"
 #include "control/3player.h"
-#include "oracles/classes/perm_option.h"
+#include "classes/perm_option.h"
 
 void Permanent::disp(BasicIO* io) const {
     io->disp(*source->oracle, 0);

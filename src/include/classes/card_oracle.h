@@ -6,14 +6,14 @@
 #include "headE_enums.h"
 #include "Mana/lib2_mana.h"
 #include <string>
-#include <fstream>
 #include <vector>
 
 using Identifier = int;
 class TriggerEvent;
 class ReaderVisitor;
 
-class CardOracle : public Displayable { //represents an Oracle text. Should never be modified.
+/** represents an Oracle text. Should never be modified; will mostly be handled via a const shared pointer in a Card. */
+class CardOracle : public Displayable {
 public:
     typedef card_type type_t;
 protected:
@@ -32,7 +32,7 @@ public:
     void disp(BasicIO* io) const override;
     std::vector<std::string> allText(int& power, int& toughness, int& frametype) const;
 
-    inline const Cost& getCost() const { return rules.cost; }
+    inline Cost getCost() const { return rules.cost; }
     inline const std::string& getName() const { return name; }
     inline type_t getType() const { return type; }
     void getTriggers(trig_type type, TriggerEvent& trigEv) const;

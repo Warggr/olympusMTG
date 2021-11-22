@@ -38,9 +38,10 @@ Usage parseArgs(int nbargs, char** args) {
 
     if(vm.contains("refresh-database")) ret.refresh_db = true;
 
-    if(vm.contains("help") or nb_players < 2) std::cout << usage << '\n';
+    if(vm.contains("help")) std::cout << usage << '\n';
     else if(vm.contains("version")) printVersion();
     else if(nb_players == 0) { if(!ret.refresh_db) std::cout << usage << '\n'; }
+    else if(nb_players < 2) std::cout << usage << '\n';
     else ret.start_game = true;
     return ret;
 }

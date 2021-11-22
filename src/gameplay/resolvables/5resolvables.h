@@ -1,7 +1,7 @@
 #ifndef OLYMPUS_CLASSES_RESOLVABLE_5_H
 #define OLYMPUS_CLASSES_RESOLVABLE_5_H
 
-#include "oracles/classes/1effects.h"
+#include "classes/1effects.h"
 #include "gameplay/1general.h"
 #include <string>
 #include <forward_list>

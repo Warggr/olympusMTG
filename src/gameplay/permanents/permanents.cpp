@@ -3,8 +3,8 @@
 #include "4permanents.h"
 #include "../1general.h"
 #include "../2cards.h"
-#include "oracles/classes/card_oracle.h"
-#include "oracles/classes/perm_option.h"
+#include "classes/card_oracle.h"
+#include "classes/perm_option.h"
 #include "headE_enums.h"
 
 void Player::resolvePlayland(uptr<Card> source){
@@ -50,12 +50,12 @@ Damageable::Damageable(int lif, Card* source): life(lif){
 }
 
 void Permanent::exile(){
-	ctrl->putToZone(source, exile_zn); //putting source in myExile
+	ctrl->putToZone(source, Card::exile); //putting source in myExile
 	ctrl->myboard.remove(this);
 }
 
 void Permanent::destroy(){
-	ctrl->putToZone(source, graveyard_zn); //putting source in myGraveyard
+	ctrl->putToZone(source, Card::graveyard); //putting source in myGraveyard
 	ctrl->myboard.remove(this);
 }
 

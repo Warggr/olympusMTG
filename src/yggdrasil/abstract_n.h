@@ -1,7 +1,7 @@
 #ifndef OLYMPUS_YGGDRASIL_1_H
 #define OLYMPUS_YGGDRASIL_1_H
 
-#include "oracles/classes/3statics.h"
+#include "classes/3statics.h"
 #include "iterators.h"
 #include "headI_identifiers.h"
 #include <list>

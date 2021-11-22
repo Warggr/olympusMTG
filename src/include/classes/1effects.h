@@ -27,8 +27,9 @@ public:
     std::string describe(const std::string& cardname) const;
 };
 
-class Effect_H { //an Effect_H is a printed instruction such as "X fights Y, and you gain 3 life",
-    // for which targets haven't been chosen. They can be cast into Resolvables by choosing targets.
+/** A printed instruction such as "X fights Y, and you gain 3 life",
+* for which targets haven't been chosen. They can be cast into Resolvables by choosing targets. */
+class Effect_H {
 	std::forward_list<AtomEffect_H> effects;
 	unsigned char nb_parameters;
 	char* parameters;

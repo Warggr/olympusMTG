@@ -20,10 +20,7 @@ int CardZone::drawto(CardZone* target, int nb_cards){
 	if(nb_cards == 0 || cards.empty()) return 0;
 	auto iter = cards.begin();
 	int i;
-	for(i=0; i<nb_cards; i++){
-		iter++;
-		if(iter == cards.end()) break;
-	}
+	for(i=0; i<nb_cards && iter == cards.end(); i++, iter++);
 	size -= i;
 	target->inc_size(i);
 	cards.splice_after(target->cards.before_begin(), target->cards, cards.before_begin(), iter);
@@ -44,16 +41,17 @@ void CardZone::placeOnBottom(std::unique_ptr<Card> c) {
     cards.emplace_after(iter, std::move(c));
 }
 
-void Player::putToZone(std::unique_ptr<Card>& x, enum cardzone nb_zone){
+void Player::putToZone(std::unique_ptr<Card>& x, Card::zone nb_zone){
     switch(nb_zone){
-        case library_zn: myLibrary.takeonecard(std::move(x)); break;
-        case exile_zn: myExile.takeonecard(std::move(x)); break;
-        case graveyard_zn: myGraveyard.takeonecard(std::move(x));
+        case Card::zone::library: myLibrary.takeonecard(std::move(x)); break;
+        case Card::zone::exile: myExile.takeonecard(std::move(x)); break;
+        case Card::zone::graveyard: myGraveyard.takeonecard(std::move(x)); break;
+        case Card::zone::command: myCommand.takeonecard(std::move(x)); break;
     }
 }
 
 void Player::draw(int nb_cards) {
-    std::list<CardWrapper> temporaryZone; //according to Magic rules, these cards are already in your hand.
+    hand_type temporaryZone; //according to Magic rules, these cards are already in your hand.
     //We just cache them in a temporary zone and assume nothing happens while they're in the process of being drawn.
     for(int i=0; i<nb_cards; i++) {
         uptr<Card> card = myLibrary.pop_front();
@@ -62,7 +60,7 @@ void Player::draw(int nb_cards) {
             //Rule 104.3c: a player who must draw too many cards loses the game the next time a player would receive prio
             return;
         }
-        temporaryZone.emplace_front(std::move(card));
+        temporaryZone.emplace_front(std::move(card), this);
     }
     viewer.onDraw(temporaryZone);
     myHand.splice(myHand.end(), temporaryZone);

@@ -1,5 +1,7 @@
 #include "oracles/filereader/plain/filereader.h"
 #include "oracles/filereader/binary/binarywriter.h"
+#include "oracles/filereader/plain/Dictionary/dictholder.h"
+#include "classes/card_oracle.h"
 #include "build_types.h"
 #include "leveldb/db.h"
 #include <fstream>

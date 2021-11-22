@@ -108,8 +108,6 @@ if(ENABLE_TESTING)
     include(Catch)
 endif()
 
-include_directories(${PROJECT_BINARY_DIR}/include)
-
 set(WANTED_DEBUG_FLAGS "DBG_NONE" CACHE STRING "")
 
 set(RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/outputs)

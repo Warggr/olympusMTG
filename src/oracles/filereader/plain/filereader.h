@@ -3,11 +3,11 @@
 
 #include <iostream>
 #include <utility>
-#include "oracles/classes/3statics.h"
 #include "headE_enums.h"
 #include "build_types.h"
 #include "../visitor.h"
-#include "Dictionary/dictholder.h"
+
+class DictHolder;
 
 class PlainFileReader: public ReaderVisitor {
 private:

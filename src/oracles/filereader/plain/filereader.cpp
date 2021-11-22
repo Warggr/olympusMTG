@@ -1,4 +1,5 @@
 #include "filereader.h"
+#include "Mana/cost.h"
 
 #define OLYMPUS_BINARYCOMPAT_VERSION 1
 

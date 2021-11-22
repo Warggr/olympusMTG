@@ -1,7 +1,7 @@
 #ifndef OLYMPUS_DICTHOLDER_H
 #define OLYMPUS_DICTHOLDER_H
 
-#include "oracles/classes/3statics.h"
+#include "classes/3statics.h"
 #include "lib1_dict.h"
 #include "headE_enums.h"
 

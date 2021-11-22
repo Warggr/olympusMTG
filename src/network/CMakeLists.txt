@@ -3,5 +3,5 @@ create_test(network)
 
 add_subdirectory(client)
 if(ENABLE_TESTING)
-    target_link_libraries(network-test PRIVATE pthread)
+    target_link_libraries(network-test pthread)
 endif()
