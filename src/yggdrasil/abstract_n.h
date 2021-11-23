@@ -6,6 +6,8 @@
 #include "headI_identifiers.h"
 #include <list>
 
+/** Base class from which all Yggdrasil classes derive. Contains a list of modifs attached to it.
+ * Requirement: Children must be iterable.*/
 class Yggdrasil_base {
 protected:
     ModifListNode* all_modifs {nullptr};
@@ -26,8 +28,10 @@ public:
     constexpr iterator<Permanent, true> cpend() const { return { nullptr }; }
 
     virtual bool empty() const = 0;
+    virtual unsigned int size() const = 0; //TODO DREAM cache it somewhere
 };
 
+/** Helper class. Do not instantiate, use class Yggdrasil instead. */
 template<typename T>
 class Yggdrasil_N : public Yggdrasil_base {
 public:
@@ -40,12 +44,14 @@ public:
     constexpr iterator<T, true> cend() const { return { nullptr }; }
 };
 
+/** Default Yggdrasil<T> object: has iterators pointing to T */
 template<typename T>
 class Yggdrasil: public Yggdrasil_N<T> {
 public:
     virtual ~Yggdrasil() = default;
 };
 
+/**For Yggdrasil<Permanent> specifically, iterating as a Permanent or as a T are the same */
 template<>
 class Yggdrasil<Permanent>: public Yggdrasil_N<Permanent> {
 public:

@@ -38,15 +38,14 @@ void CliUI::disp(fwdlist<uptr<Card>>::const_iterator begin, const fwdlist<uptr<C
 }
 
 void CliUI::list(zone::zone zone) {
+    int i = 0;
     switch (zone) {
-        case zone::hand: {
-            int i = 0;
+        case zone::hand:
             for(const auto& card : pl->getHand()) io.disp_inrow(card.get(), i++, pl->getHand().size(), BasicIO::INLINE);
-        }
         case zone::graveyard:
             break;
         case zone::battlefield:
-            break;
+            for(const auto& perm : pl->myboard) io.disp_inrow(&perm, i++, pl->myboard.size(), BasicIO::INLINE);
         case zone::stack:
             break;
         case zone::exile:

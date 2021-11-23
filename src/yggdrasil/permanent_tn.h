@@ -5,6 +5,7 @@
 #include "gameplay/permanents/4permanents.h"
 class Player;
 
+/** Abstract class representing any PermanentTN which contains a Permanent of any type */
 class PermanentN {
 public:
     virtual ~PermanentN() = default;
@@ -12,7 +13,7 @@ public:
     virtual const Permanent* getPermanent() const = 0;
 };
 
-//the base class is the PermanentTN. It contains (and owns) a permanent.
+/** the lowest class of Yggdrasil is the PermanentTN. It contains (and owns) a permanent. */
 template <typename T>
 class PermanentTN: public Yggdrasil<T>, public PermanentN {
     T describedObject;
@@ -20,6 +21,7 @@ class PermanentTN: public Yggdrasil<T>, public PermanentN {
 public:
     PermanentTN(std::unique_ptr<Card> source, Player* pl): describedObject(std::move(source), pl) {}
     bool empty() const override { return false; }
+    unsigned int size() const override { return 1; }
     iterator<T, false> begin() override { return { new ConcreteLeaf<T, false>(this, nullptr) }; }
     iterator<T, true> cbegin() const override { return { new ConcreteLeaf<T, true>(this, nullptr) }; }
 

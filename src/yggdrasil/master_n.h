@@ -6,6 +6,7 @@
 
 class BoardN;
 
+/** The highest class in Yggdrasil. Contains every object on the battlefield. */
 class MasterN: public Yggdrasil {
     std::vector<BoardN*> boards;
 public:

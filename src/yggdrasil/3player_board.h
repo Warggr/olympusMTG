@@ -42,6 +42,7 @@ public:
     void remove(Planeswalker* plan);
 
     bool empty() const override { return myartos.empty() && mysuperfriends.empty() && mycreas.empty(); }
+    unsigned int size() const override { return myartos.size() + mysuperfriends.size() + mycreas.size(); }
 
     iterator<Permanent, false> begin() override { return myartos.begin(); }
     iterator<Permanent, true> cbegin() const override { return myartos.cbegin(); }

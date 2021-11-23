@@ -50,7 +50,7 @@ Option* CliUI::chooseOpt(bool sorcerySpeed) {
 }
 
 Target* readTarget(const char* str, Command::zone zone, Player* pl) {
-    int pos = str[0] - '0';
+    int pos = str[0] - '1'; //'1' refers to the object at position 0
     if(0 <= pos and pos <= 10) {
         switch(zone) {
         case zone::hand: {
@@ -63,7 +63,7 @@ Target* readTarget(const char* str, Command::zone zone, Player* pl) {
         }
     }
     std::cout << "Unrecognized target: '" << str << "'\n";
-    return nullptr; //TODO
+    return nullptr;
 }
 
 bool read(const char* str, const char** opts, uint nbopts, uint& ret, uint& j) {

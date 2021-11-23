@@ -59,9 +59,15 @@ public:
     inline bool partlyEmpty(int multiplicity) const {
         return firstNonEmpty(multiplicity) == nullptr;
     }
-    bool empty() const override {
-        return partlyEmpty(ht_size_log+1);
+    inline unsigned int partialSize(int multiplicity) const {
+        unsigned int size = 0;
+        for(int i = 0; i < (1 << (ht_size_log-multiplicity+1)); ++i )
+            for (int j = 0; j < (1 << (multiplicity-1)); ++j )
+                size += ht[(1<<multiplicity)*i + j].size();
+        return size;
     }
+    bool empty() const override { return partlyEmpty(ht_size_log+1); }
+    unsigned int size() const override { return partialSize(1); }
     iterator<T, false> begin() override { return { createStart(nullptr, true) }; }
     iterator<T, true> cbegin() const override { return { createStart(nullptr, true) }; }
     iterator<Permanent, false> pbegin() override {
@@ -102,11 +108,11 @@ public:
     }
 
     void insert(std::unique_ptr<Card> origin, Player* pl) {
-        ht[0].insert(std::move(origin), pl); //TODO check whether the permanent fulfills one or more criteria
+        ht[0].insert(std::move(origin), pl); //TODO FEATURE check whether the permanent fulfills one or more criteria
     }
 
     void remove(T* object) {
-        (void) object; //TODO implement
+        (void) object; //TODO CRITICAL implement
     };
 
 #ifdef F_TESTS
@@ -115,26 +121,5 @@ public:
 #endif
     friend class StateTN<T>;
 };
-
-/*class Y_Dichotomy : public Yggdrasil {
-    Yggdrasil* parts[2] { nullptr };
-public:
-    class iterator : public inner_iterator {
-        Y_Dichotomy* node;
-        char pos : 1;
-    public:
-        iterator(Y_Dichotomy* node, inner_iterator* parent): inner_iterator(parent), node(node), pos(0) {}
-        bool isEnd() const override { return pos == 1; }
-        void advance() override { pos = 1; }
-        Yggdrasil& getPointed() override { return *node->parts[pos]; }
-    };
-
-    Yggdrasil::iterator begin() override {
-        return Yggdrasil::iterator(new iterator(this, nullptr));
-    }
-    inner_iterator* createStart(inner_iterator *parent) override {
-        return parts[0]->createStart(new iterator(this, parent));
-    }
-};*/
 
 #endif //OLYMPUS_YGGDRSAIL_H

@@ -14,6 +14,7 @@ template<class T, bool b> class Leaf;
 
 #define isitconst(T, iconst) typename std::conditional<iconst, const T, T>::type
 
+/** Abstract class from which all iterators derive. */
 template<typename T, bool iconst>
 class iterator_treenode {
 protected:
@@ -100,8 +101,11 @@ public:
     isitconst(PermanentN*, iconst) getPointed() override { return content->getPointed(); }
 };
 
+/** Allows to iterate over an Yggdrasil object. */
 template<typename T, bool iconst>
 class iterator {
+    /** State pattern: under the hood, you're not dealing with one object that moves,
+     * but with a hierarchy of Leaves that get built and destroyed. */
     Leaf<T, iconst>* in;
 public:
     constexpr iterator(Leaf<T, iconst>* in) : in(in) {};
@@ -124,78 +128,5 @@ public:
     }
     typename ConcreteLeaf<T, iconst>::pointed_type* getPointed() const { return in->getPointed(); };
 };
-
-/*template<typename T, bool iconst>
-class iterator {
-    using BasicCont = typename std::conditional<iconst, const PermanentTN<T>, PermanentTN<T>>::type;
-
-    BasicCont* pointed;
-    bool is_primary;
-public:
-    iterator(): pointed(nullptr), is_primary(false){};
-    iterator(BasicCont* pted, bool primary): pointed(pted), is_primary(primary){};
-    bool get_primary(){return is_primary; }
-    //void set_primary(bool prim){ is_primary = prim; }
-    iterator operator++(){
-        pointed = pointed->next;
-        return *this;
-    }
-    iterator operator--(){
-        pointed = pointed->prev;
-        return *this;
-    }
-    iterator operator++(int){ return this->operator++(); }
-    iterator operator--(int){ return this->operator--(); }
-    BasicObj* operator->(){
-        return &(this->operator*());
-    }
-    BasicObj& operator*(){
-        return pointed->describedObject;
-    }
-    inline bool operator==(const iterator& other) const {
-        return (other.pointed == pointed);
-    }
-    inline bool operator!=(const iterator& other) const {
-        return !(other == *this);
-    }
-    BasicCont* get_pointed() const { return pointed; };
-};
-
-template<bool iconst>
-class iterator<Permanent, iconst>: public std::bidirectional_iterator_tag {
-    using BasicObj = typename std::conditional<iconst, const Permanent, Permanent>::type;
-    using BasicCont = typename std::conditional<iconst, const AbPermanentN, AbPermanentN>::type;
-
-    BasicCont* pointed;
-    bool is_primary;
-public:
-    iterator(): pointed(0), is_primary(false){};
-    iterator(BasicCont* pted, bool primary): pointed(pted), is_primary(primary){};
-    bool get_primary(){return is_primary; }
-    //void set_primary(bool prim){is_primary = prim; };
-    iterator operator++() {
-        pointed = pointed->pnext;
-        return *this;
-    }
-    iterator operator--() {
-        pointed = pointed->pprev;
-        return *this;
-    }
-    iterator operator++(int){ return this->operator++(); }
-    iterator operator--(int){ return this->operator--(); }
-    BasicObj* operator->(){
-        return &(this->operator*());  
-    }
-    BasicObj& operator*(){
-        return pointed->get_describedObject(static_cast<BasicObj*>(nullptr));
-    }
-    bool operator==(const iterator& other) const {
-        return (other.pointed == pointed);
-    }
-    bool operator!=(const iterator& other) const {
-        return !(other == *this);
-    }
-    BasicCont* get_pointed() const {return pointed; };
-};*/
 
 #endif //OLYMPUS_HEADER_5_YGGDRASIL_H

@@ -4,6 +4,7 @@
 #include "abstract_n.h"
 #include "hashtable_tn.h"
 
+/** Points towards a subset of children, which it does not really own but which are contained by an Y_Hashtable. */
 template<typename T>
 class StateTN: public Yggdrasil<T> {
     Y_Hashtable<T>* parent;
@@ -31,6 +32,9 @@ public:
     void init(int mult, Y_Hashtable<T>* par) { multiplicity = mult; parent = par; }
     bool empty() const override {
         return parent == nullptr or parent->partlyEmpty(multiplicity);
+    }
+    unsigned int size() const override {
+        return parent == nullptr ? 0 : parent->partialSize(multiplicity);
     }
     iterator<T, false> begin() override { return { createStart(nullptr, true) }; }
     iterator<T, true> cbegin() const override { return { createStart(nullptr, true) }; }

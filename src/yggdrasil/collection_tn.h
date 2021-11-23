@@ -3,6 +3,8 @@
 
 #include "abstract_n.h"
 #include "permanent_tn.h"
+#include <list>
+#include <algorithm>
 
 template<class T> class Y_Hashtable;
 class BoardN; class Player;
@@ -38,6 +40,9 @@ public:
     }
 
     bool empty() const override { for(auto& i : children) if(!i.empty()) return false; return true; }
+    unsigned int size() const override {
+        uint size = 0; for(auto& i : children) size += i.size(); return size; //TODO I'm pretty sure there's an STL algorithm for this
+    }
 
     void remove(T* object) {
         (void) object; //TODO implement
