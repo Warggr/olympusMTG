@@ -15,13 +15,13 @@ protected:
 public:
     template<bool b>
     class myiterator : public inner_iterator<T, b> {
-        unsigned char position, order, multiplicity;
+        char position;
         isitconst(Y_Hashtable*, b) node;
     public:
         explicit myiterator(isitconst(Y_Hashtable*, b) n, inner_iterator<T, b>* parent = nullptr) :
-            inner_iterator<T, b>(parent), position(0), order(1), multiplicity(0), node(n) {};
+            inner_iterator<T, b>(parent), position(0), node(n) {};
         void advance(bool bk) override { if(bk) position++; else position--; }
-        bool isEnd(bool bk) const override { if(bk) return position * order > (1<<node->ht_size_log); else return position + 1 == 0; }
+        bool isEnd(bool bk) const override { if(bk) return position >= (1<<node->ht_size_log); else return position == -1; }
         Leaf<T, b>* down(bool bk) override { return node->createStart(this, bk); }
     };
 

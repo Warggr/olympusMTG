@@ -11,6 +11,7 @@ TEST_CASE("Yggdrasil", "[yggdrasil]") {
     REQUIRE(board.pbegin() == board.pend());
     REQUIRE(board.mycreas.begin() == board.mycreas.end());
     REQUIRE(board.empty());
+    REQUIRE(board.size() == 0);
     REQUIRE(board.cpbegin() == board.cpend());
 
     card_type type; type.underlying = card_type::flagged; type.legendary = 1;
@@ -25,4 +26,5 @@ TEST_CASE("Yggdrasil", "[yggdrasil]") {
     REQUIRE_FALSE(board.begin() == board.end());
     REQUIRE_FALSE(board.pbegin() == board.pend());
     REQUIRE_FALSE(board.cpbegin() == board.cpend());
+    REQUIRE(board.size() == 1);
 }
