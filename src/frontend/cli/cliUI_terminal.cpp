@@ -50,19 +50,27 @@ Option* CliUI::chooseOpt(bool sorcerySpeed) {
 }
 
 Target* readTarget(const char* str, Command::zone zone, Player* pl) {
-    int pos = str[0] - '1'; //'1' refers to the object at position 0
-    if(0 <= pos and pos <= 10) {
-        switch(zone) {
-        case zone::hand: {
-            auto iter = pl->getHand().begin();
-            std::advance(iter, pos);
-            return iter.operator->();
-        }
-        default:
-            std::cout << "Zone not implemented yet.\n";
-        }
+    unsigned int pos = 0;
+    for(unsigned int i = 0; '0' <= str[i] and str[i] <= '9'; i++) {
+        pos = 10 * pos + str[i] - '0';
     }
-    std::cout << "Unrecognized target: '" << str << "'\n";
+    if(pos == 0) { //no recognized character
+        std::cout << "Unrecognized target: '" << str << "'\n";
+        return nullptr;
+    }
+    pos -= 1; //'1' refers to the object at position 0
+
+    switch(zone) {
+    case zone::hand: if(pos < pl->getHand().size()) {
+        auto iter = pl->getHand().begin();
+        std::advance(iter, pos);
+        return iter.operator->();
+    } else {
+        std::cout << "No such card\n";
+    } break;
+    default:
+        std::cout << "Zone not implemented yet.\n";
+    }
     return nullptr;
 }
 
