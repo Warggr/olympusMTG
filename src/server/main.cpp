@@ -72,6 +72,6 @@ int main(int nbargs, char** args) {
 }
 
 void printVersion() {
-    std::cout << "Olympus v" << Olympus_VERSION_MAJOR << "." << Olympus_VERSION_MINOR << "." << Olympus_VERSION_PATCH << '\n';
+    std::cout << "Olympus v" << Olympus_VERSION << '\n';
     std::cout << "Server protocol " << id_server << version_server << '\n';
 }
