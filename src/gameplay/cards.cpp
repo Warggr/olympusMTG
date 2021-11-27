@@ -3,7 +3,7 @@
 #include <random>
 
 void CardZone::shuffle(){
-	std::default_random_engine generator;
+	std::default_random_engine generator(std::chrono::system_clock::now().time_since_epoch().count());
 	std::forward_list<uptr<Card>> newlist;
 	for(int i=0; i<size; i++){
         std::uniform_int_distribution<int> distribution(0, size - i - 1);
