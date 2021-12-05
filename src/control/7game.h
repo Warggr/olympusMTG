@@ -7,31 +7,20 @@
 #include "3player.h"
 #include "gameplay/resolvables/stack.h"
 
-class Agent;
+class Agent; class Player;
 
 class Game{
-private:
-	Player* active_player;
 public:
+    Stack stack;
     std::list<Player> players;
     static Game* god;
-	bool haswon = false;
+    bool haswon = false;
 
-	explicit Game(const std::list<std::unique_ptr<Agent>>& agents);
-	//~Game();
+    explicit Game(const std::list<std::unique_ptr<Agent>>& agents);
 
-	void play(){
-	    Stack stack;
-		while(true){
-			for( Player& player : players ) {
-			    if(player.turn()) return;
-			}
-		}
-	}
+    void play();
 
-	void stateBasedActions();
+    void stateBasedActions();
 };
-
-CardZone parseDeck(const std::vector<OracleDescr>& deck);
 
 #endif //OLYMPUS_CLASSES_GAME_7_H

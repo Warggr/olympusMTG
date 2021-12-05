@@ -1,7 +1,8 @@
+#include "filereader.h"
 #include "control/7game.h"
-#include "oracles/filereader/binary/binaryreader.h"
-#include "oracles/filereader/plain/filereader.h"
-#include "oracles/filereader/plain/Dictionary/dictholder.h"
+#include "binary/binaryreader.h"
+#include "plain/filereader.h"
+#include "plain/Dictionary/dictholder.h"
 #include "leveldb/db.h"
 #include <sstream>
 

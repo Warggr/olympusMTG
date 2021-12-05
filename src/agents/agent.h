@@ -7,6 +7,7 @@
 #include <vector>
 #include <list>
 #include <forward_list>
+#include "oracles/filereader/filereader.h"
 
 class Target; class Creature; template<typename T> class SpecificTargeter; class Card; class CardWrapper; class CardWrapper;
 class Player; class Game;
@@ -39,20 +40,6 @@ enum playerType {
 #define ENABLE_IF_NETWORK(x)
 #endif
 #endif
-};
-
-enum oracle_type { reference, customcard, compiled_customcard };
-
-struct OracleDescr {
-    oracle_type type;
-    unsigned char nb;
-    std::string initializer;
-    OracleDescr(oracle_type type, unsigned char nb, std::string initializer):
-        type(type), nb(nb), initializer(std::move(initializer)) {};
-    OracleDescr(oracle_type type, unsigned char nb, const char* initializer):
-            type(type), nb(nb), initializer(initializer) {};
-
-    friend std::ostream& operator<<( std::ostream& output, const OracleDescr& desc );
 };
 
 class Viewer;
@@ -99,6 +86,7 @@ public:
     virtual ~Viewer() = default;
     virtual void connectGame(Game* game) = 0;
 
+    virtual void message(const char* message) = 0;
     virtual void onDraw(const std::list<CardWrapper>& cards) = 0;
     virtual void registerMe(Player* pl) = 0;
 };

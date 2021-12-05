@@ -1,18 +1,19 @@
 #include "server.h"
 #include "agents/agent.h"
 #include "network/networkmanager.h"
+#include "control/3player.h" //some kind of implicit deletion of Players when creating a list
 #include "control/7game.h"
 #include <thread>
 
 Server* Server::god = nullptr;
 
 Server::Server() {
-    if(god != nullptr) exit(1);
+    assert(god == nullptr);
     god = this;
 }
 
 void Server::launchGame() {
-    if(currentGame != nullptr) return;
+    assert(currentGame == nullptr);
     currentGame = std::make_unique<Game>(players);
     std::cout << "Your game was launched!\n";
     currentGame->play();
@@ -36,5 +37,5 @@ void Server::addPlayers(const std::list<playerType>& types) {
 }
 
 Server::~Server() {
-    NetworkManager::closeInstances();
+    ENABLE_IF_NETWORK(NetworkManager::closeInstances();)
 }

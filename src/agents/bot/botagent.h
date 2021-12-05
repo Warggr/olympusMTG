@@ -35,6 +35,7 @@ public:
 
     void onDraw(const std::list<CardWrapper>& cards) override;
     void registerMe(Player* pl) override;
+    void message(const char*) override {};
 };
 
 #endif //OLYMPUS_BOTAGENT_H

@@ -9,7 +9,7 @@ class Game;
 class Server {
 	std::unique_ptr<Game> currentGame;
 	std::list<std::unique_ptr<Agent>> players;
-	//std::list<Watcher> spectators;
+	std::list<Viewer*> spectators;
 public:
     static Server* god;
 	Server();
@@ -18,6 +18,8 @@ public:
 	void addPlayer(playerType type);
 	void addPlayers(const std::list<playerType>& types);
 	void launchGame();
+
+	const std::list<uptr<Agent>>& getAgents() { return players; }
 };
 
 void refreshDatabase();
