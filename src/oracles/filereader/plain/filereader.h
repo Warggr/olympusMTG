@@ -1,5 +1,5 @@
-#ifndef OLYMPUS_FILEREADER_H
-#define OLYMPUS_FILEREADER_H
+#ifndef OLYMPUS_PLAIN_FILEREADER_H
+#define OLYMPUS_PLAIN_FILEREADER_H
 
 #include <iostream>
 #include <utility>
@@ -57,4 +57,4 @@ public:
 #define pedantic_safepoint(a, b) ifile.get()
 #endif
 
-#endif //OLYMPUS_FILEREADER_H
+#endif //OLYMPUS_PLAIN_FILEREADER_H

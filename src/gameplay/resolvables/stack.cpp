@@ -2,7 +2,7 @@
 #include "5resolvables.h"
 #include <cassert>
 
-Stack* Stack::god;
+Stack* Stack::god = nullptr;
 
 std::unique_ptr<Resolvable> Stack::popFromStack(){
     if(stack.empty()) return nullptr;

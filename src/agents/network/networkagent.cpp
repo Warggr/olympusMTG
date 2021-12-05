@@ -88,3 +88,8 @@ uptr<std::istream> NetworkAgent::getDeckFile() {
 }
 
 void NetworkAgent::registerMe(Player*) {}
+
+void NetworkAgent::message(const char* message) {
+    uint i; for(i=0; message[i] != 0; ++i);
+    networker.send(message, i);
+}

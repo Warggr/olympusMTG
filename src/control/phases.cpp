@@ -72,6 +72,14 @@ void Game::stateBasedActions(){
 	}
 }
 
+void Game::play() {
+    while(true){
+        for( Player& player : players ) {
+            if(player.turn()) return;
+        }
+    }
+}
+
 bool Player::stateBasedActions(){
 	if(life <= 0 or milledout) return true;
 	for(auto iter = myboard.mycreas.begin(); iter != myboard.mycreas.end(); iter = iter){

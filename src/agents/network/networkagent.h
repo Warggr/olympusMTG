@@ -39,6 +39,7 @@ public:
     void connectGame(Game* game) override;
     void onDraw(const std::list<CardWrapper> &cards) override;
     void registerMe(Player* pl) override;
+    void message(const char *message) override;
 };
 
 #endif //OLYMPUS_AGENT_NETWORK_H
