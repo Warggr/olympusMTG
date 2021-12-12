@@ -11,7 +11,7 @@ struct Context {
     Player* pl;
     unsigned char who : 2;
     constexpr static char const* descriptions[] = {"none", "opponent", "you", "all"};
-    Context(Player* pl): where(zone::battlefield), what(nullptr), pl(pl), who(0b10) { }
+    Context(Player* pl): where(zone::hand), what(nullptr), pl(pl), who(0b10) { }
     inline std::string prompt() const {
         return (boost::format("@%s:%s>")
                 % Context::descriptions[who]

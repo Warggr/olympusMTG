@@ -43,7 +43,6 @@ void CliUI::list(zone::zone zone) {
     switch (zone) {
         case zone::hand:
             for(const auto& card : pl->getHand()) io.disp_inrow(card.get(), i++, pl->getHand().size(), BasicIO::INLINE);
-        case zone::graveyard:
             break;
         case zone::battlefield:
             for(const auto& perm : pl->myboard) io.disp_inrow(&perm, i++, pl->myboard.size(), BasicIO::INLINE);
@@ -52,9 +51,11 @@ void CliUI::list(zone::zone zone) {
             for(const auto& x : *Stack::god) io.disp_inrow(x.get(), i++, Stack::god->size(), BasicIO::INLINE);
             break;
         case zone::exile:
-            break;
         case zone::commandzone:
-            break;
+        case zone::graveyard:
+            Player::myzone zn = zone == zone::exile ? Player::exile : zone == zone::commandzone ? Player::command : Player::graveyard;
+            for(const auto& card : pl->getZone(zn).getCards())
+                io.disp_inrow(card.get(), i++, pl->getZone(zn).getSize(), BasicIO::INLINE );
     }
 }
 

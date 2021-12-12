@@ -7,7 +7,7 @@
 
 class CardZone {
 private:
-    int size;
+    uint size;
     std::forward_list<std::unique_ptr<Card>> cards;
 
     inline void inc_size(int i){ size += i; };
@@ -28,7 +28,8 @@ public:
     inline bool empty(){ return cards.empty(); }
     void revealTopCards(int nb_cards);
 
-    const std::forward_list<uptr<Card>>& getCards() { return cards; }
+    const std::forward_list<uptr<Card>>& getCards() const { return cards; }
+    uint getSize() const { return size; }
 
 //    std::string describe() const; //TODO
 };

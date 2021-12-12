@@ -50,12 +50,12 @@ Damageable::Damageable(int lif, Card* source): life(lif){
 }
 
 void Permanent::exile(){
-	ctrl->putToZone(source, Card::exile); //putting source in myExile
+	ctrl->putToZone(source, Player::exile); //putting source in myExile
 	ctrl->myboard.remove(this);
 }
 
 void Permanent::destroy(){
-	ctrl->putToZone(source, Card::graveyard); //putting source in myGraveyard
+	ctrl->putToZone(source, Player::graveyard); //putting source in myGraveyard
 	ctrl->myboard.remove(this);
 }
 

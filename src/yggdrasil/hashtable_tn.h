@@ -44,6 +44,7 @@ public:
                 new_ht[i * (1 << (multiplicity + 1)) + j] = std::move(ht[i * (1 << (multiplicity + 1)) + j]);
                 new_ht[i * (1 << (multiplicity + 1)) + j].merge(ht[(2*i + 1) * (1 << multiplicity) + j]);
             }
+        ht_size_log--;
         delete[] ht;
         ht = new_ht;
     }

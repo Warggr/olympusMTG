@@ -5,7 +5,7 @@
 void CardZone::shuffle(){
 	std::default_random_engine generator(std::chrono::system_clock::now().time_since_epoch().count());
 	std::forward_list<uptr<Card>> newlist;
-	for(int i=0; i<size; i++){
+	for(uint i=0; i<size; i++){
         std::uniform_int_distribution<int> distribution(0, size - i - 1);
 		int r = distribution(generator) % (size-i);
 		
@@ -41,20 +41,15 @@ void CardZone::placeOnBottom(std::unique_ptr<Card> c) {
     cards.emplace_after(iter, std::move(c));
 }
 
-void Player::putToZone(std::unique_ptr<Card>& x, Card::zone nb_zone){
-    switch(nb_zone){
-        case Card::zone::library: myLibrary.takeonecard(std::move(x)); break;
-        case Card::zone::exile: myExile.takeonecard(std::move(x)); break;
-        case Card::zone::graveyard: myGraveyard.takeonecard(std::move(x)); break;
-        case Card::zone::command: myCommand.takeonecard(std::move(x)); break;
-    }
+void Player::putToZone(std::unique_ptr<Card>& x, myzone nb_zone){
+    myZones[nb_zone].takeonecard(std::move(x));
 }
 
 void Player::draw(int nb_cards) {
     hand_type temporaryZone; //according to Magic rules, these cards are already in your hand.
     //We just cache them in a temporary zone and assume nothing happens while they're in the process of being drawn.
     for(int i=0; i<nb_cards; i++) {
-        uptr<Card> card = myLibrary.pop_front();
+        uptr<Card> card = myZones[library].pop_front();
         if(!card){
             milledout = 1;
             //Rule 104.3c: a player who must draw too many cards loses the game the next time a player would receive prio

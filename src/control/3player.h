@@ -33,12 +33,14 @@ private:
 	unsigned char phase : 3, milledout : 1, zerolife : 1, nb_mainphase : 3, nb_lands_remaining : 3;
 	static constexpr u_char upkeep = 0b0, main = 0b001, afterattack = 0b010, afterblock = 0b011,
 	    afterdamage = 0b100, end = 0b110, nonactive = 0b111;
-	CardZone myLibrary, myGraveyard, myExile, myCommand;
+	CardZone myZones[4];
 	std::forward_list<PlayerPreStackElement> prestack;
 	hand_type myHand;
 	Player* nextopponent;
     TriggerEvent triggers[1]; //gain/lose life
 public:
+    enum myzone { library, graveyard, exile, command };
+#define myLibrary myZones[Player::myzone::library]
 	static const std::forward_list<const Phase*> defaultPhaseOrder;
 	//this will be copied and used as a template at the beginning of each turn
 
@@ -64,7 +66,7 @@ public:
 	void draw(int nb_cards);
     void drawStartingHand();
 	void addMana(char color);
-	void putToZone(std::unique_ptr<Card>& x, Card::zone zone);
+	void putToZone(std::unique_ptr<Card>& x, myzone nb_zone);
 
 	bool pay(Cost cost);
 	void emptyPool();
@@ -89,6 +91,7 @@ public:
 
 	hand_type& getHand() { return myHand; }
 	const hand_type& getHand() const { return myHand; }
+	const CardZone& getZone(myzone zone) const { return myZones[zone]; }
 
     friend class OptionManager;
 };
