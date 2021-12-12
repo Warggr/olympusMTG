@@ -41,7 +41,7 @@ Resolvable::Resolvable(Player* ct, const Effect_H* tocast, Target* org): Target(
 	//Technically, Resolvables are put on the stack, then targets are chosen.
 	// Olympus decided that objects with no targets chosen were PreRes
 	//and thus not on the stack. However, it should be displayed somewhere.
-	origin = std::make_unique<Targeter>(org);
+	if(org) origin = std::make_unique<Targeter>(org);
 	target_flags = target_type::resolvable;
 	if(tocast){
 		nb_targets = tocast->getNbParams();

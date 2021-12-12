@@ -3,6 +3,7 @@
 #include "classes/perm_option.h"
 #include "gameplay/2cards.h"
 #include "gameplay/permanents/4permanents.h"
+#include "gameplay/resolvables/stack.h"
 #include "control/3player.h"
 
 void CliUI::addCards(const std::list<CardWrapper>&) {}
@@ -46,7 +47,9 @@ void CliUI::list(zone::zone zone) {
             break;
         case zone::battlefield:
             for(const auto& perm : pl->myboard) io.disp_inrow(&perm, i++, pl->myboard.size(), BasicIO::INLINE);
+            break;
         case zone::stack:
+            for(const auto& x : *Stack::god) io.disp_inrow(x.get(), i++, Stack::god->size(), BasicIO::INLINE);
             break;
         case zone::exile:
             break;

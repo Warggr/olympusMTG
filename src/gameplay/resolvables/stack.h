@@ -6,7 +6,8 @@
 #include <forward_list>
 
 class Stack {
-    std::forward_list<std::unique_ptr<Resolvable>> stack;
+    using stack_t = std::forward_list<std::unique_ptr<Resolvable>>;
+    stack_t stack;
 public:
     static Stack* god;
     Stack() { god = this; }
@@ -15,6 +16,9 @@ public:
     std::unique_ptr<Resolvable> popFromStack();
     bool stackIsEmpty(){return stack.empty(); };
     void removeFromStack(Resolvable* rs);
+    stack_t::const_iterator begin() const { return stack.begin(); }
+    stack_t::const_iterator end() const { return stack.end(); }
+    uint size() const { return std::distance(stack.begin(), stack.end()); }
 
 //    Resolvable* iterateStack(float zImposed, DirectioL& direction);
 //    void disp_stack() const;

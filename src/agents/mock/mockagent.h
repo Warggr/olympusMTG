@@ -3,7 +3,7 @@
 
 #include "../agent.h"
 #include "gameplay/2cards.h"
-#include "oracles/classes/8options.h"
+#include "classes/8options.h"
 #include <fstream>
 
 class MockAgent: public Agent, public Viewer {
