@@ -78,11 +78,15 @@ public:
 
 template<class T, bool iconst>
 class AdapterLeaf: public Leaf<Permanent, iconst> {
+    AdapterLeaf(ConcreteLeaf<T, iconst>* content, inner_iterator<Permanent, iconst>* parent):
+            Leaf<Permanent, iconst>(parent), content(content) {};
+    //we don't want Adapters pointing to nullptrs to be created -> use a factory pattern
 protected:
     ConcreteLeaf<T, iconst>* content;
 public:
-    AdapterLeaf(ConcreteLeaf<T, iconst>* content, inner_iterator<Permanent, iconst>* parent):
-        Leaf<Permanent, iconst>(parent), content(content) {};
+    inline static AdapterLeaf* create(ConcreteLeaf<T, iconst>* content, inner_iterator<Permanent, iconst>* parent) {
+        return content ? new AdapterLeaf(content, parent) : nullptr;
+    }
     ~AdapterLeaf() { delete content; }
     Leaf<Permanent, iconst>* next(bool bk) override {
         content = static_cast<ConcreteLeaf<T, iconst>*>(content->next(bk));

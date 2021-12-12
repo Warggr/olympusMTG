@@ -71,10 +71,10 @@ public:
     iterator<T, false> begin() override { return { createStart(nullptr, true) }; }
     iterator<T, true> cbegin() const override { return { createStart(nullptr, true) }; }
     iterator<Permanent, false> pbegin() override {
-        return { new AdapterLeaf<T, false>( createStart(nullptr, true), nullptr) };
+        return { AdapterLeaf<T, false>::create( createStart(nullptr, true), nullptr) };
     }
     iterator<Permanent, true> cpbegin() const override {
-        return { new AdapterLeaf<T, true>( createStart(nullptr, true), nullptr) };
+        return { AdapterLeaf<T, true>::create( createStart(nullptr, true), nullptr) };
     }
     ConcreteLeaf<T, false>* createStart(inner_iterator<T, false>* iter, bool bk) override {
         if(bk) {
@@ -101,10 +101,10 @@ public:
         return nullptr;
     }
     Leaf<Permanent, false>* pcreateStart(inner_iterator<Permanent, false>* iter, bool bk) override {
-        return new AdapterLeaf<T, false>(createStart(nullptr, bk), iter);
+        return AdapterLeaf<T, false>::create(createStart(nullptr, bk), iter);
     }
     Leaf<Permanent, true>* pcreateStart(inner_iterator<Permanent, true>* iter, bool bk) const override {
-        return new AdapterLeaf<T, true>(createStart(nullptr, bk), iter);
+        return AdapterLeaf<T, true>::create(createStart(nullptr, bk), iter);
     }
 
     void insert(std::unique_ptr<Card> origin, Player* pl) {

@@ -44,19 +44,27 @@ public:
     bool empty() const override { return myartos.empty() && mysuperfriends.empty() && mycreas.empty(); }
     unsigned int size() const override { return myartos.size() + mysuperfriends.size() + mycreas.size(); }
 
-    iterator<Permanent, false> begin() override { return myartos.begin(); }
-    iterator<Permanent, true> cbegin() const override { return myartos.cbegin(); }
+    iterator<Permanent, false> begin() override { return { createStart(nullptr, true) }; }
+    iterator<Permanent, true> cbegin() const override { return { createStart(nullptr, true) }; }
 
     ConcreteLeaf<Permanent, false>* createStart(inner_iterator<Permanent, false>* parent, bool bk) override {
         Leaf<Permanent, false>* ret = myartos.createStart(new myiterator<false>(this, parent), bk);
-        if(!ret) ret = new AdapterLeaf<Creature, false>(mycreas.createStart(nullptr, bk), parent);
-        if(!ret) ret = new AdapterLeaf<Planeswalker, false>(mysuperfriends.createStart(nullptr, bk), parent);
+        if(!ret) ret = AdapterLeaf<Creature, false>::create(
+                mycreas.createStart(nullptr, bk),
+                new myiterator<false>(this, parent));
+        if(!ret) ret = AdapterLeaf<Planeswalker, false>::create(
+                mysuperfriends.createStart(nullptr, bk),
+                new myiterator<false>(this, parent));
         return static_cast<ConcreteLeaf<Permanent, false>*>(ret); //we're gonna downcast this again in pcreatestart
     }
     ConcreteLeaf<Permanent, true>* createStart(inner_iterator<Permanent, true>* parent, bool bk) const override {
         Leaf<Permanent, true>* ret = myartos.createStart(new myiterator<true>(this, parent), bk);
-        if(!ret) ret = new AdapterLeaf<Creature, true>(mycreas.createStart(nullptr, bk), parent);
-        if(!ret) ret = new AdapterLeaf<Planeswalker, true>(mysuperfriends.createStart(nullptr, bk), parent);
+        if(!ret) ret = AdapterLeaf<Creature, true>::create(
+                mycreas.createStart(nullptr, bk),
+                new myiterator<true>(this, parent));
+        if(!ret) ret = AdapterLeaf<Planeswalker, true>::create(
+                mysuperfriends.createStart(nullptr, bk),
+                new myiterator<true>(this, parent));
         return static_cast<ConcreteLeaf<Permanent, true>*>(ret); //we're gonna downcast this again in pcreatestart
     }
 };

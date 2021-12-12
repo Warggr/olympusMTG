@@ -32,16 +32,16 @@ public:
         return new ConcreteLeaf<T, true>(this, parent);
     }
     Leaf<Permanent, false>* pcreateStart(inner_iterator<Permanent, false>* parent, bool) override {
-        return new AdapterLeaf<T, false>( new ConcreteLeaf<T, false>(this, nullptr), parent);
+        return AdapterLeaf<T, false>::create( new ConcreteLeaf<T, false>(this, nullptr), parent);
     }
     Leaf<Permanent, true>* pcreateStart(inner_iterator<Permanent, true>* parent, bool) const override {
-        return new AdapterLeaf<T, true>( new ConcreteLeaf<T, true>(this, nullptr), parent);
+        return AdapterLeaf<T, true>::create( new ConcreteLeaf<T, true>(this, nullptr), parent);
     }
     iterator<Permanent, false> pbegin() override {
-        return { new AdapterLeaf<T, false>( new ConcreteLeaf<T, false>(this, nullptr), nullptr) };
+        return { AdapterLeaf<T, false>::create( new ConcreteLeaf<T, false>(this, nullptr), nullptr) };
     }
     iterator<Permanent, true> cpbegin() const override {
-        return { new AdapterLeaf<T, true>(new ConcreteLeaf<T, true>(this, nullptr), nullptr) };
+        return { AdapterLeaf<T, true>::create(new ConcreteLeaf<T, true>(this, nullptr), nullptr) };
     }
     Permanent* getPermanent() override { return &describedObject; }
     const Permanent* getPermanent() const override { return &describedObject; }

@@ -63,10 +63,10 @@ public:
     iterator<T, false> begin() override { return { createStart(nullptr, true) }; }
     iterator<T, true> cbegin() const override { return { createStart(nullptr, true) }; }
     iterator<Permanent, false> pbegin() override {
-        return { new AdapterLeaf<T, false>( createStart(nullptr, true), nullptr) };
+        return { AdapterLeaf<T, false>::create( createStart(nullptr, true), nullptr) };
     }
     iterator<Permanent, true> cpbegin() const override {
-        return { new AdapterLeaf<T, true>( createStart(nullptr, true), nullptr) };
+        return { AdapterLeaf<T, true>::create( createStart(nullptr, true), nullptr) };
     }
     ConcreteLeaf<T, false>* createStart(inner_iterator<T, false>* iter, bool bk) override {
         return children.empty() ? nullptr :
@@ -79,10 +79,10 @@ public:
         (--(children.end()))->createStart(new myiterator<true>(this, iter), false);
     }
     Leaf<Permanent, false>* pcreateStart(inner_iterator<Permanent, false>* iter, bool bk) override {
-        return new AdapterLeaf<T, false>(createStart(nullptr, bk), iter);
+        return AdapterLeaf<T, false>::create(createStart(nullptr, bk), iter);
     }
     Leaf<Permanent, true>* pcreateStart(inner_iterator<Permanent, true>* iter, bool bk) const override {
-        return new AdapterLeaf<T, true>(createStart(nullptr, bk), iter);
+        return AdapterLeaf<T, true>::create(createStart(nullptr, bk), iter);
     }
 #ifdef F_TESTS
     const std::list<PermanentTN<T>>& getChildren() const { return children; }

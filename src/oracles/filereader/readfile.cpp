@@ -1,5 +1,4 @@
 #include "filereader.h"
-#include "control/7game.h"
 #include "binary/binaryreader.h"
 #include "plain/filereader.h"
 #include "plain/Dictionary/dictholder.h"
