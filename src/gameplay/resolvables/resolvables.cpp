@@ -63,4 +63,13 @@ Resolvable::Resolvable(Player* ct, const Effect_H* tocast, Target* org): Target(
 	}
 }
 
+colorId::type Resolvable::getColor() const {
+    if(origin) return origin->colorIdentity;
+    else return 0; //TODO FEATURE: when a Source dies, its characteristics (color, MV, etc.) is remembered by Resolvables
+}
+
+colorId::type Spell::getColor() const {
+    return source->getColor();
+}
+
 //void PermOption::check_and_pop(int n_of_zone, Player* pl){} //should check whether requirements are still filled. Not implemented yet.

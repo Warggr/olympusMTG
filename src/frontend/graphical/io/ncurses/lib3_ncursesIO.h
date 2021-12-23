@@ -23,20 +23,20 @@ public:
 	NcursesIO();
 	~NcursesIO();
 
-#include "frontend/graphical/io/iomethods.cpp"
+#include "../iomethods.cpp"
 };
 
-float NcursesIO::gmouseY() { return mousey; }
-float NcursesIO::gmouseZ() {return mousez; }
-bool NcursesIO::gmouseActive(){ return false; } //TODO
+inline float NcursesIO::gmouseY() { return mousey; }
+inline float NcursesIO::gmouseZ() {return mousez; }
+inline bool NcursesIO::gmouseActive(){ return false; } //TODO
 
-void NcursesIO::draw_boxed_text(const std::string& text, char color, char backgr_color, int left, int top, int width) const {
+inline void NcursesIO::draw_boxed_text(const std::string& text, char color, char backgr_color, int left, int top, int width) const {
     draw_boxed_text(text.c_str(), color, backgr_color, left, top, width);
 }
 
-void NcursesIO::message(const std::string& text) const { message(text.c_str()); }
+inline void NcursesIO::message(const std::string& text) const { message(text.c_str()); }
 
-void NcursesIO::print_text(const std::string& text, char color, int x, int y) const {
+inline void NcursesIO::print_text(const std::string& text, char color, int x, int y) const {
     print_text(text.c_str(), color, x, y);
 }
 

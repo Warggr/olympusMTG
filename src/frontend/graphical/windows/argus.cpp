@@ -43,11 +43,11 @@ void RightBar::init(const Rect& rect) {
     child.height -= (3+LOGLEN) * Screen::linesize;
     optionZone().init(child);
 
-    child.shift(0, rect.height);
+    child.shift(0, child.height);
     child.height = 3*Screen::linesize;
     messageZone().coords = child;
 
-    child.shift(0, rect.height);
+    child.shift(0, child.height);
     child.height = LOGLEN*Screen::linesize;
     logbookZone().coords = child;
 }

@@ -1,5 +1,6 @@
 #include "lib3_ncursesIO.h"
 #include "control/3player.h"
+#include "gameplay/resolvables/5resolvables.h"
 
 void disp_mana(WINDOW* win, Mana mana, int endy, int topz);
 
@@ -111,43 +112,7 @@ void NcursesIO::draw_cardback(const Rect& zone, int oncard_number) const {
 }
 
 void NcursesIO::poster(const CardOracle& card) const {
-	WINDOW* win = winzones[POSTER];
-	wclear(win);
-	char card_color = main_color(card.getCost().mana.m2color());
-
-	wattron(win, COLOR_PAIR( card_color + 1));
-	wmove(win, 0, 0);
-	for(int i=0; i<RIGHTBAR_Y; i++) wprintw(win, "-");
-	wmove(win, FULLCARD_Z -1, 0);
-	for(int i=0; i<RIGHTBAR_Y; i++) wprintw(win, "-");
-	mvwprintw(win, 2, 2, "%s", card.getName().c_str());
-
-	disp_mana(win, card.getCost().mana, RIGHTBAR_Y-1, 2);
-	mvwprintw(win, FULLCARD_Z/2, 1, "%s", card.getType().toString().c_str());
-	if(card.getType().land and card.getType().shift){
-		wattron(win, A_ALTCHARSET);
-		for(int i=0; i<3; i++){
-			mvwprintw(win, FULLCARD_Z/2 + 3 + i, RIGHTBAR_Y/2-1, "%s", manasymbols + card_color*12 + i*4);
-		}
-		wattroff(win, A_ALTCHARSET);
-	}
-	int i = 0;
-	int frametype, power, toughness;
-	for(auto& line : card.allText(power, toughness, frametype)){
-		mvwprintw(win, i + FULLCARD_Z/2 + 1, 0, "%s", line.c_str());
-		++i;
-		if(i + FULLCARD_Z/2 + 1 == FULLCARD_Z -2) break;
-	}
-	if(frametype == 1){
-		char x[10]; sprintf(x, "(%d/%d)", power, toughness);
-		mvwprintw(win, FULLCARD_Z-1, RIGHTBAR_Y - 5, "%s", x);
-	}
-	else if(frametype == 2){
-		char x[5]; sprintf(x, "\\%d/", power);
-		mvwprintw(win, FULLCARD_Z-1, RIGHTBAR_Y - 4, "%s", x);
-	}
-	wattroff(win, COLOR_PAIR(card_color+1));
-	wrefresh(win);
+	draw(card, Rect(0, 0, POSTER, RIGHTBAR_Y, FULLCARD_Z), true);
 }
 
 void disp_mana(WINDOW* win, Mana mana, int endy, int topz){
@@ -169,8 +134,6 @@ DirectioL NcursesIO::get_direction_key() {
 			case 10: return BACK; //SPACE
 			case KEY_RIGHT: return RIGHT;
 			case KEY_LEFT: return LEFT;
-			// case ALLEGRO_EVENT_DISPLAY_CLOSE:
-			// 	god.call_ragnarok();
 			case KEY_MOUSE:
 				MEVENT event;
 				if(getmouse(&event) == OK){
@@ -250,4 +213,90 @@ NcursesIO::~NcursesIO(){
 		delete[] winzones;
 	}
 	endwin();
+}
+
+void NcursesIO::disp_inrow(const Displayable* disp, int number, int total, int flags) const {
+    (void) disp; (void) number; (void) total; (void) flags; //TODO
+}
+
+void NcursesIO::disp_player(const Player& player, int flags) const {
+    (void) player; (void) flags;
+    //TODO IMPLEM: what happens when you click on an opponent to get more details about him?
+}
+
+std::string NcursesIO::getTextInput(const char* question) {
+    message(question);
+    char buffer[1024];
+    mvwscanw(message_zone, 0, 1, "%s", buffer);
+    return std::string(buffer);
+}
+
+bool NcursesIO::simpleChoice(const char* optTrue, const char* optFalse) {
+    message(optTrue);
+    message(optFalse);
+    char buffer;
+    mvwscanw(message_zone, 0, 1, "%c", &buffer);
+    if(buffer == 'y' || buffer == '1') return true;
+    return false;
+}
+
+void NcursesIO::setMenuScene() {
+    //TODO IMPLEM menu scene
+}
+
+void NcursesIO::setGameScene() {
+    //TODO IMPLEM game scene
+}
+
+void NcursesIO::draw(const CardOracle& card, const Rect& zone, bool highlight) const {
+    WINDOW* win = winzones[zone.zone];
+    wclear(win);
+    auto card_color = main_color(card.getCost().mana.m2color());
+
+    wattron(win, COLOR_PAIR( card_color + 1));
+    if(highlight) wattron(win, HIGHLIGHT);
+    wmove(win, zone.z, zone.y);
+    for(int i=zone.y; i<zone.right(); i++) wprintw(win, "-");
+    wmove(win, zone.height-1, 0);
+    for(int i=zone.y; i<zone.right(); i++) wprintw(win, "-");
+    mvwprintw(win, zone.z+2, zone.y+2, "%s", card.getName().c_str());
+
+    disp_mana(win, card.getCost().mana, zone.right()-1, zone.z+2);
+    mvwprintw(win, zone.z + zone.height/2, zone.z+1, "%s", card.getType().toString().c_str());
+    if(card.getType().land and card.getType().shift){
+        wattron(win, A_ALTCHARSET);
+        for(int i=0; i<3; i++){
+            mvwprintw(win, zone.z + 3*zone.height/4 - 1 + i, zone.y + zone.width/2-1, "%s", manasymbols + card_color*12 + i*4);
+        }
+        wattroff(win, A_ALTCHARSET);
+    }
+    int i = 0;
+    int frametype, power, toughness;
+    for(auto& line : card.allText(power, toughness, frametype)){
+        mvwprintw(win, i + zone.z + zone.height/2 + 1, zone.y, "%s", line.c_str());
+        ++i;
+        if(i + zone.z + zone.height/2 + 1 == zone.bottom()-2) break;
+    }
+    if(frametype == 1){
+        char x[10]; sprintf(x, "(%d/%d)", power, toughness);
+        mvwprintw(win, zone.bottom()-1, zone.right()-5, "%s", x);
+    }
+    else if(frametype == 2){
+        char x[5]; sprintf(x, "\\%d/", power);
+        mvwprintw(win, zone.bottom()-1, zone.right()-4, "%s", x);
+    }
+    wattroff(win, COLOR_PAIR(card_color+1));
+    wattroff(win, HIGHLIGHT);
+    wrefresh(win);
+}
+
+void NcursesIO::draw(const Resolvable& resolvable, const Rect& zone, bool highlight) const {
+    if(highlight) wattron(winzones[zone.zone], HIGHLIGHT);
+    draw_full_rectangle(main_color(resolvable.getColor()), zone);
+    draw_boxed_text(resolvable.describe(), BLACK, main_color(resolvable.getColor()), zone.y, zone.z, zone.width);
+    wattroff(winzones[zone.zone], HIGHLIGHT);
+}
+
+void NcursesIO::draw(const Permanent& perm, const Rect& zone, bool highlight) const {
+    draw_permanent(zone, perm.getName(), main_color(perm.getManaCost().m2color()), !perm.isUntapped(), highlight, true);
 }

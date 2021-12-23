@@ -22,7 +22,7 @@ class LocalAgent: public Agent {
     LocalViewer viewer;
 public:
     LocalAgent() = default;
-    void specificSetup() override {};
+    void specificSetup() override { viewer.frontEnd->focus(); };
     std::string getName() override;
     std::string getLogin() override;
 

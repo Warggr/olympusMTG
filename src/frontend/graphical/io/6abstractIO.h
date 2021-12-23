@@ -2,6 +2,7 @@
 #define OLYMPUS_6_ABSTRACT_IO_H
 
 #include "frontend/headQ_rect.h"
+#include "frontend/basicIO.h"
 #include "Mana/lib2_mana.h"
 #include "frontend/basicIO.h"
 #include "build_types.h"
@@ -45,7 +46,10 @@ public:
 #undef maybe_virtual
 #undef maybe_undef
 
+    void disp(const CardOracle&, int) const;
+    checklistCallbackAction getNextPosition(abstract_iterator_wrapper*, uint&, uint);
     void draw(const CardWrapper& card, const Rect& rect, bool highlight);
+    virtual void focus() {};
 };
 
 #endif //OLYMPUS_6_ABSTRACT_IO_H

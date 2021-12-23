@@ -53,6 +53,8 @@ public:
     virtual void disp(fwdlist<uptr<Card>>::const_iterator begin, fwdlist<uptr<Card>>::const_iterator end) = 0;
 
     virtual BasicIO* getBasicIO() = 0;
+
+    virtual void focus() {}; //AllegroIO needs to set something when it's called from a new thread
 };
 
 #endif //OLYMPUS_FRONTEND_H

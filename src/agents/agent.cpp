@@ -19,7 +19,7 @@ uptr<Agent> Agent::factory(playerType desc) {
     exit(1); //Shouldn't happen, dunno why GCC doesn't see this
 }
 
-#include <iostream>
+//#include <iostream>
 std::vector<OracleDescr> Agent::getDeck() {
     std::vector<OracleDescr> ret;
     auto fb = getDeckFile();

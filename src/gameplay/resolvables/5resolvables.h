@@ -29,6 +29,7 @@ public:
     Resolvable(Player* ct, const Effect_H* preRes, Target* origin = nullptr);
 	virtual ~Resolvable() = default;
 	virtual void resolve(); //this is what a resolvable is about
+	virtual colorId::type getColor() const;
 	virtual std::string describe() const override { return description; };
     virtual void disp(BasicIO* io) const override;
 	virtual void counter();
@@ -43,6 +44,7 @@ public:
 	Spell(std::unique_ptr<Card> src, Player* ct);
 	void resolve() override;
 	void counter() override;
+	colorId::type getColor() const override;
 	std::string describe() const override;
 
     void disp(BasicIO* io) const override;

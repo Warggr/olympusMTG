@@ -22,15 +22,13 @@ void AllegroIO::disp_mana(Mana mana, int endy, int topz) const {
 	}
 }
 
-void AllegroIO::disp(const CardOracle &oracle, int flags) const { disp_inrow(&oracle, 1, 1, flags); }
-
 void AllegroIO::disp_inrow(const Displayable* disp, int number, int total, int flags) const {
     (void) disp; (void) number; (void) total; (void) flags; //TODO
 }
 
 void AllegroIO::disp_player(const Player& player, int flags) const {
     (void) player; (void) flags;
-    //TODO: what happens when you click on an opponent to get more details about him?
+    //TODO IMPLEM: what happens when you click on an opponent to get more details about him?
 }
 
 void AllegroIO::draw_permanent(const Rect& zone, const std::string& name, char color, bool tapped, bool highlight, bool basicImg) const {
@@ -111,8 +109,8 @@ void AllegroIO::draw(const CardOracle& card, const Rect& rect, bool highlight) c
 }
 
 void AllegroIO::message(const char* text) const {
-	al_draw_filled_rectangle(messageY, messageZ, messageY+500, messageZ+25, registeredColors[0]);
-	al_draw_text(fonts[0], registeredColors[1], messageY, messageZ, 0, text);
+    al_draw_filled_rectangle(messageY, messageZ, screenY, messageZ+25, registeredColors[0]);
+	al_draw_text(fonts[0], registeredColors[1], messageY, messageZ,0, text);
 }
 
 class CouldntInitializeSthException: public std::exception {
@@ -178,7 +176,8 @@ AllegroIO::AllegroIO() {
     al_set_target_bitmap(wallpaper);
     al_draw_scaled_bitmap(wallpaper_full, 0, 0, al_get_bitmap_width(wallpaper_full), al_get_bitmap_height(wallpaper_full),
                           0, 0, screenY, screenZ, 0);
-    al_set_target_bitmap(al_get_backbuffer(window));
+    screen = al_get_backbuffer(window);
+    al_set_target_bitmap(screen);
     al_destroy_bitmap(wallpaper_full);
 	tapsymbol = al_load_bitmap("../material/images/tapsymbol.png");
 	basiclands = al_load_bitmap("../material/images/basic_lands.jpg");
@@ -252,9 +251,9 @@ void AllegroIO::refresh_display() const {
 	al_flip_display();
 }
 
-void AllegroIO::fulldisp() const {
+/*void AllegroIO::fulldisp() const {
 	al_draw_bitmap(wallpaper, 0, 0, 0);
-}
+}*/
 
 void AllegroIO::setMenuScene() {
     al_draw_bitmap(wallpaper, 0, 0, 0);
@@ -263,4 +262,8 @@ void AllegroIO::setMenuScene() {
 
 void AllegroIO::setGameScene() {
 
+}
+
+void AllegroIO::focus() {
+    al_set_target_bitmap(screen);
 }

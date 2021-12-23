@@ -110,20 +110,3 @@ int AllegroIO::getInt(int lowerBound, int upperBound){
         if(ret > upperBound) ret = upperBound;
     }
 }
-
-BasicIO::checklistCallbackAction AllegroIO::getNextPosition(BasicIO::abstract_iterator_wrapper* iter, uint &position, uint max) {
-    while(true) {
-        DirectioL dir = get_direction_key();
-        switch(dir) {
-        case UP: case DOWN: return change;
-        case ENTER: case BACK: return commit;
-        case LEFT: if(position != 0) {
-                --position; iter->operator--();
-            } break;
-        case RIGHT: if(position != max) {
-                ++position; iter->operator++();
-            } break;
-        default: break;
-        }
-    }
-}

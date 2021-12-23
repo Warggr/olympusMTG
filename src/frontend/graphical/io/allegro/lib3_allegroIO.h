@@ -20,7 +20,7 @@ private:
 	//ALLEGRO_TIMER* timer;
 	ALLEGRO_EVENT_QUEUE* queue;
 	ALLEGRO_DISPLAY* window;
-	//ALLEGRO_BITMAP* screenFloor;
+	ALLEGRO_BITMAP* screen;
 	ALLEGRO_BITMAP* ManaNumSym[16], * ManaColorSym[5], * card_template[7], * watermarks[7], * pt_box[7];
 	ALLEGRO_BITMAP* wallpaper, * card_back, * tapsymbol, * basiclands, * loyalty, * cursor_img;
 	ALLEGRO_MOUSE_CURSOR* cursor;
@@ -36,6 +36,8 @@ public:
 	~AllegroIO();
 
 #include "../iomethods.cpp"
+
+	void focus() override;
 };
 
 inline float AllegroIO::gmouseY() { return mousey; }

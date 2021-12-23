@@ -14,7 +14,7 @@ METHOD(void, declare_window(int& leftY, int& topz, int width, int height));
 METHOD(void, setMenuScene());
 METHOD(void, setGameScene());
 
-METHOD(void, fulldisp() const);
+//METHOD(void, fulldisp() const);
 METHOD(void, erase_surface(const Rect& rectangle) const);
 METHOD(void, draw_rectangle(char color, const Rect& rect, int linewidth) const);
 METHOD(void, draw_full_rectangle(char color, const Rect& rectangle) const);
@@ -42,9 +42,6 @@ METHOD(DirectioL, get_direction_key());
 METHOD(std::string, getTextInput(const char* question));
 METHOD(bool, simpleChoice(const char* optTrue, const char* optFalse));
 
-METHOD(checklistCallbackAction, getNextPosition(abstract_iterator_wrapper*, uint&, uint));
-
-METHOD(void, disp(const CardOracle&, int) const);
 METHOD(void, disp_inrow(const Displayable*, int, int, int) const);
 
 METHOD(float, gmouseY());

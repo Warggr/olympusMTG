@@ -30,6 +30,8 @@ struct GraphicalUI: public AbstractFrontEnd {
    void disp(fwdlist<uptr<Card>>::const_iterator begin, fwdlist<uptr<Card>>::const_iterator end) override;
 
    BasicIO* getBasicIO() override { return io; }
+
+   void focus() override { io->focus(); };
 };
 
 namespace AbstractUI {

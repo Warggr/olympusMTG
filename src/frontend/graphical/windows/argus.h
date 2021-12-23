@@ -97,7 +97,7 @@ struct RightBar: public TemplateGallery<PolicyWith3Objects<OptionZone, Rectangle
     void init(const Rect& rect);
     inline OptionZone& optionZone() { return policy.object1; }
     inline Rectangle& messageZone() { return policy.object2; }
-    inline Rectangle& logbookZone() { return policy.object2; }
+    inline Rectangle& logbookZone() { return policy.object3; }
 };
 
 class Screen: public TemplateGallery<PolicyWith3Objects<LeftBar, Board, RightBar, UIElement::horizontal>> {
