@@ -6,7 +6,7 @@ AsyncNetworker::AsyncNetworker() {
     NetworkManager::declareAgent(this);
 }
 
-const char* AsyncNetworker::getMessage() {
+const char* AsyncNetworker::receiveMessage() {
     while(!unread) { NetworkManager::listen(); }
     unread = false;
     //std::cout << "Server received " << buffer << "\n";

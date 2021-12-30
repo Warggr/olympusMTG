@@ -1,5 +1,6 @@
 #include "OlympusClient.h"
 #include <iostream>
+#include <fstream>
 #include <thread>
 #include <boost/program_options.hpp>
 
@@ -40,7 +41,7 @@ void OlympusClient::init(const po::variables_map& vm) {
     else
         file = agent.getDeckFile(); //...we ask the player for his deck
     net_thread.join();
-    network.send_file(*file); //once both are done, we send the file
+    network.sendFile(*file); //once both are done, we send the file
 }
 
 int main(int argc, char** argv) {

@@ -3,10 +3,12 @@
 
 #include "../agent.h"
 #include "network/async.h"
+#include <map>
 
 class NetworkAgent: public Agent, public Viewer {
     AsyncNetworker networker;
     Game* game;
+    std::map<CardOracle*, bool> alreadyKnownCards;
 public:
 	NetworkAgent();
 

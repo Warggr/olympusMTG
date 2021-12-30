@@ -38,8 +38,20 @@ std::list<CardWrapper> NetworkAgent::chooseCardsToKeep(std::list<CardWrapper> &l
 }
 
 bool NetworkAgent::keepsHand(const fwdlist<uptr<Card>>& cards) {
-    (void) cards;
-    return false; //TODO implement
+    long size = std::distance(cards.begin(), cards.end());
+    char header[2] = { static_cast<char>(CREATE), static_cast<char>(size) };
+    Sender sender = networker.getSender();
+    sender.add_chunk(header, 2);
+    for(auto& card : cards){
+        std::stringstream oracle_stream;
+        BinaryFileWriter oracle_reader(oracle_stream);
+        card->init(oracle_reader);
+        sender.add_chunk(oracle_stream.str());
+    }
+    sender.close();
+    const char* answer = networker.receiveMessage();
+    assert(answer[0] == 'H' and answer[1] == 'K');
+    return (answer[2] == 1);
 }
 
 Option * NetworkAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
@@ -62,13 +74,15 @@ void NetworkAgent::connectGame(Game* gm) {
 
 void NetworkAgent::onDraw(const std::list<CardWrapper>& cards) {
     char header[2] = { static_cast<char>(CREATE), static_cast<char>(cards.size()) };
-    networker.send(header, 2);
+    Sender sender = networker.getSender();
+    sender.add_chunk(header, 2);
     for(auto& card: cards) {
         std::stringstream oracle_stream;
         BinaryFileWriter oracle_reader(oracle_stream);
         const_cast<CardWrapper&>(card)->init(oracle_reader);
-        networker.send(oracle_stream.str());
+        sender.add_chunk(oracle_stream.str());
     }
+    sender.close();
 }
 
 uint NetworkAgent::chooseAmong(std::vector<CardOption*> opts) {
@@ -84,7 +98,7 @@ std::string NetworkAgent::getLogin() {
 }
 
 uptr<std::istream> NetworkAgent::getDeckFile() {
-    return networker.receive_file();
+    return networker.receiveFile();
 }
 
 void NetworkAgent::registerMe(Player*) {}

@@ -11,7 +11,7 @@ class AsyncNetworker: public Networker {
 public:
     AsyncNetworker();
     void waitForConnection();
-    const char* getMessage() override;
+    const char* receiveMessage() override;
 
     void setName(const char* name);
     const std::string& getName() { return name; }

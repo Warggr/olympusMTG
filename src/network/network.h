@@ -12,12 +12,30 @@ enum operations { CREATE, UPDATE, DELETE };
 
 class NetworkError: public std::exception {};
 
+class Sender {
+private:
+    static constexpr unsigned int BUFFER_SIZE = 100;
+    int sockfd;
+    unsigned int writehead;
+    char buffer[BUFFER_SIZE]{};
+    inline void send_chunks();
+public:
+    static constexpr char MORE_PACKETS = '\n', END_OF_FILE = '\1';
+    static_assert(MORE_PACKETS != END_OF_FILE);
+
+    Sender(int sockfd): sockfd(sockfd), writehead(0) {};
+    void add_chunk(const char* msg, unsigned int len);
+    void add_chunk(const std::string& msg){ add_chunk(msg.c_str(), msg.size()); }
+    void add_chunk(std::istream& ifile);
+    void close();
+};
+
 class Networker {
 protected:
     static constexpr int BUFFER_SIZE = 100;
     char buffer[BUFFER_SIZE]{};
     int sockfd {-1};
-    bool connected; //whether he is currently connected to that IP adress
+    bool connected; //whether he is currently connected to that IP address
 
     long read(); //Check if it was for closing , and also read the incoming message
 public:
@@ -28,14 +46,15 @@ public:
 
     void contact(const char* hostIp);
 
-    void send(const std::string& message) const { send(message.c_str(), message.size()); }
-    void send(const char* message, unsigned long size) const;
-    void send_file(std::istream& file);
-    uptr<std::istream> receive_file();
+    static long send(const char* message, unsigned long size, int fd);
+    long send(const std::string& message) const { return send(message.c_str(), message.size(), sockfd); }
+    long send(const char* message, unsigned long size) const { return send(message, size, sockfd); }
+    void sendFile(std::istream& file);
+    virtual const char* receiveMessage(); //reads a C-style string from the network
+    uptr<std::istream> receiveFile();
     int getSock() const { return sockfd; }
     bool isConnected() const { return connected; }
-
-    virtual const char* getMessage(); //reads a C-style string from the network
+    inline Sender getSender() const { return Sender(sockfd); }
 
     friend class BinaryBufferWriter;
 };

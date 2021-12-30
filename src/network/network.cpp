@@ -13,61 +13,82 @@ const char* id_client = "OLYMPUS-CLI-V ";
 const char* version_server = "1" ;
 const char* version_client = "1";
 
-void Networker::send_file(std::istream& file) {
-    //std::cout << "Start send_file function\n";
-    char outgoing_buffer[BUFFER_SIZE];
-    int writehead = 0; //points to the 1st location in memory that should be written to
+void Sender::send_chunks() {
+    Networker::send(buffer, writehead, sockfd);
+    writehead = 0;
+}
+
+void Sender::add_chunk(std::istream& ifile) {
+    ifile.getline(buffer + writehead, BUFFER_SIZE - writehead);
+    //Writes max. BS - wh chars from position wh until position BUFFER_SIZE - 1.
+    //Puts a \0 at the end of the extracted characters instead of \n.
+    //When less than one line is extracted, the FAIL bit is set
+    std::cout << "Attempting to read " << BUFFER_SIZE - writehead << " chars, only "
+              << ifile.gcount() << " read, '" << buffer + writehead
+              << "', fail=" << ifile.fail() << ", eof=" << ifile.eof() << '\n';
+
+    if(ifile.eof()) return;
+    if(ifile.fail()) {
+        if(writehead == 0){
+            //std::cout << "Error: Buffer is too small to send one line.\n";
+            exit(1);
+        }
+        Networker::send(buffer, writehead, sockfd);
+
+        //the last BUFFER_SIZE - start bits could not be transmitted and are copied to start of buffer
+        for (uint i = writehead; i < BUFFER_SIZE; i++)
+            buffer[i - writehead] = buffer[i];
+        //start points right after these bits
+        writehead = BUFFER_SIZE - writehead;
+        ifile.clear(); //reset the "fail" bit
+
+        ifile.getline(buffer + writehead, BUFFER_SIZE - writehead);
+        writehead += ifile.gcount(); //points after the characters and the \0
+        buffer[writehead-1] = MORE_PACKETS;
+        if(ifile.fail()) {
+            //std::cout << "Error: Buffer is too small to send one line.\n";
+            exit(1);
+        }
+    } else {
+        writehead += ifile.gcount();
+        buffer[writehead-1] = MORE_PACKETS;
+    }
+}
+
+void Sender::add_chunk(const char* msg, unsigned int len) {
+    if(len > BUFFER_SIZE - writehead - 1) send_chunks();
+    if(len > BUFFER_SIZE - 1) exit(1);
+    for(uint i = 0; i<len+1; i++) buffer[writehead + i] = msg[i];
+    writehead += len + 1;
+    buffer[writehead-1] = MORE_PACKETS;
+}
+
+void Sender::close() {
+    std::cout << "Writing 1 to [" << writehead - 1 << "]\n";
+    buffer[writehead-1] = END_OF_FILE;
+    send_chunks();
+}
+
+void Networker::sendFile(std::istream& file) {
+    Sender sender(sockfd);
     while(true) { //sending all segments
-        file.getline(outgoing_buffer + writehead, BUFFER_SIZE - writehead);
-        std::cout << "Attempting to read " << BUFFER_SIZE - writehead << " chars, only "
-        << file.gcount() << " read, '" << outgoing_buffer + writehead
-        << "', fail=" << file.fail() << ", eof=" << file.eof() << '\n';
-        //Puts a \0 at the end of the extracted characters instead of \n.
-        //Will be overwritten by the next line.
-        //When less than one line is extracted, the FAIL bit is set
+        sender.add_chunk(file);
 
-        if (file.eof()) { //file completely transmitted
-            for(int i=0; i<writehead + file.gcount() + 1; i++) {
-                if(i % 5 == 0) std::cout <<  "[" << i << "]:";
-                std::cout << (outgoing_buffer[i] == 0 ? '_' : outgoing_buffer[i]);
-            }
-            send(outgoing_buffer, writehead + file.gcount() + 1); //This time, also send the \0
-            //std::cout << "Send last segment with size " << start+1 << "\n";
+        if(file.eof()) { //file completely transmitted
+            sender.close();
             return;
-        } else if (file.fail()) { //if we don't have space left
-            if(writehead == 0){
-                //std::cout << "Error: Buffer is too small to send one line.\n";
-                exit(1);
-            }
-            for(int i=0; i<writehead; i++) {
-                if(i % 5 == 0) std::cout <<  "[" << i << "]:";
-                std::cout << (outgoing_buffer[i] == 0 ? '_' : outgoing_buffer[i]);
-            }
-            std::cout << "\n";
-            send(outgoing_buffer, writehead);
-
-            //the last BUFFER_SIZE - start bits could not be transmitted and are copied to start of buffer
-            for (int i = writehead; i < BUFFER_SIZE; i++)
-                outgoing_buffer[i - writehead] = outgoing_buffer[i];
-            //start points right after these bits
-            writehead = BUFFER_SIZE - writehead;
-            file.clear(); //reset the "fail" bit
-
-            file.getline(outgoing_buffer + writehead, BUFFER_SIZE - writehead);
-            writehead += file.gcount();
-            if(file.fail()) {
-                //std::cout << "Error: Buffer is too small to send one line.\n";
-                exit(1);
-            }
-        } else {
-            writehead += file.gcount();
-            outgoing_buffer[writehead-1] = '\n';
         }
     }
 }
 
-const char* Networker::getMessage() {
+const char* Networker::receiveMessage() {
     long n = ::read(sockfd, buffer, BUFFER_SIZE);
+    std::cout << "----GOT MESSAGE----\n";
+    for(int i=0; i<n; i++) {
+        if(i % 5 == 0) std::cout <<  "[" << i << "]:";
+        std::cout << (buffer[i] == 0 ? '_' : buffer[i]);
+    }
+    std::cout << "\n----END (" << n << "characters)----\n";
     if(n < 0) throw NetworkError();
     buffer[n] = 0;
     return buffer;
@@ -77,39 +98,43 @@ Networker::~Networker() {
     if(connected) close(sockfd);
 }
 
-void Networker::send(const char* message, unsigned long length) const {
+long Networker::send(const char* message, unsigned long length, int sockfd) {
     long n = write(sockfd, message, length);
+    std::cout << "----SENDING----\n";
+    for(unsigned int i=0; i<length+2; i++){
+        if(i % 10 == 0) std::cout <<  "[" << i << "]:";
+        std::cout << (message[i] == 0 ? '_' : message[i]);
+    }
+    std::cout << "\n----END (" << length << "characters)----\n";
     if(n < 0) throw NetworkError();
+    return n;
 }
 
-uptr<std::istream> Networker::receive_file() {
+uptr<std::istream> Networker::receiveFile() {
     auto ret = std::make_unique<std::stringstream>();
     while(true) { //read all segments
-        long segment_length = ::read( sockfd , buffer, BUFFER_SIZE);
-        if(segment_length == -1){
-            std::cout << "read failed: " << std::strerror(errno) << '\n';
-            exit(1);
-        }
-        else if(segment_length == 0) {
-            std::cout << "Zero-length packet received?\n";
-            continue;
-        }
-        for(int i=0; i<segment_length; i++) {
-            if(i % 5 == 0) std::cout <<  "[" << i << "]:";
-            std::cout << (buffer[i] == 0 ? '_' : buffer[i]);
-        }
-        assert(buffer[segment_length-1] == '\0' or buffer[segment_length-1] == '\n');
-        std::cout << "\n";
-        ret->write(buffer, segment_length - 1); //ignoring the last \0
-        if(buffer[segment_length-1] == '\n') {
+        long n = read();
+        ret->write(buffer, n-1); //not including the 0 or the 1
+        if(buffer[n-1] == Sender::END_OF_FILE) {
             return ret;
         }
     }
 }
 
 long Networker::read() {
-    long message_length = ::read(sockfd, buffer, BUFFER_SIZE);
+    std::cout << "Waiting...\n";
+    long message_length = ::read(sockfd, buffer, BUFFER_SIZE-1);
+    if(message_length == -1){
+        std::cout << "read failed: " << std::strerror(errno) << '\n';
+        exit(1);
+    }
     buffer[message_length] = 0;
+    std::cout << "----RECEIVED READ----\n";
+    for(int i=0; i<message_length; i++) {
+        if(i % 10 == 0) std::cout <<  "[" << i << "]:";
+        std::cout << (buffer[i] == 0 ? '_' : buffer[i] == 1 ? '#' : buffer[i]);
+    }
+    std::cout << "\n----END READ (" << message_length << "characters)----\n";
     if (message_length == 0) { //Somebody disconnected , get his details and print
         sockaddr_in cli_addr;
         socklen_t clilen = sizeof(cli_addr);

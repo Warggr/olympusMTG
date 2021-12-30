@@ -67,5 +67,6 @@ int main(int nbargs, char** args) {
 
 void printVersion() {
     std::cout << "Olympus v" << Olympus_VERSION << '\n';
+    std::cout << "Built " << __DATE__ << ", " << __TIME__ << '\n';
     std::cout << "Server protocol " << id_server << version_server << '\n';
 }

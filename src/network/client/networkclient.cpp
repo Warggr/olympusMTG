@@ -7,7 +7,7 @@ void NetworkClient::init(const char* hostIp, const char* playerName) {
 
     send(std::string(id_client) + version_client + playerName);
 
-    const char* first_msg = getMessage();
+    const char* first_msg = receiveMessage();
     int i;
     for(i=0; id_server[i] != 0; i++) if(id_server[i] != first_msg[i]) {
         throw NetworkError();

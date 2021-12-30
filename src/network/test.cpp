@@ -15,9 +15,9 @@ TEST_CASE("Network", "[network]") {
     std::string message = "Hello, world!";
 
     client.send(message);
-    REQUIRE(server.getMessage() == message);
+    REQUIRE(server.receiveMessage() == message);
 
     message = "Hi, World!";
     server.send(message);
-    REQUIRE(client.getMessage() == message);
+    REQUIRE(client.receiveMessage() == message);
 }
