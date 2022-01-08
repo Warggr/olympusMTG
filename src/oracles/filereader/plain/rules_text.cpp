@@ -9,28 +9,27 @@
 #include "classes/perm_option.h"
 
 void PlainFileReader::readAll(RulesHolder& rules, card_type type) {
-	check_safepoint('{', "at the beginning of the rules text");
+	checkSafepoint('{', "at the beginning of the rules text");
 	uint8_t offset_text = defaultOffsetFor(type);
 	if(ifile.peek() == '}'){
 	    ifile.get();
-	}
-	else{
-        check_safepoint(' ', "after opening {");
+	} else {
+        checkSafepoint(' ', "after opening {");
 		enum section_types{ onresolve, altcosts, activated, triggered , flavor, astatic };
 		section_types section_name = (type.underlying == card_type::sorcery) ? onresolve : activated;
 		while(true){ //loop to read all sections
 			gdebug(DBG_READFILE) << "Expecting section n°" << (int) section_name << "\n";
 			if(ifile.peek() != '<') switch(section_name){
 				case onresolve: readMainSpell(rules.cost, rules.effects); break;
-				case activated: readArray<PermOption>(rules.nb_actabs, rules.first_actab, true); break;
-				case flavor: read_section_flavor(rules.flavor_text, offset_text); break;
-				case triggered: readArray<TriggerHolder_H>(rules.nb_triggers, rules.triggers, true); break;
-				case astatic: readArray<StaticAb_H>(rules.nb_statics, rules.statics, true); break;
-				case altcosts: read_section_othercasts(rules.otherCardOptions); break;
+				case activated: readArray<PermOption>(rules.nb_actabs, rules.first_actab); break;
+				case flavor: readSectionFlavor(rules.flavor_text, offset_text); break;
+				case triggered: readArray<TriggerHolder_H>(rules.nb_triggers, rules.triggers); break;
+				case astatic: readArray<StaticAb_H>(rules.nb_statics, rules.statics); break;
+				case altcosts: readSectionOthercasts(rules.otherCardOptions); break;
 			}
 			if(ifile.peek() == '}') break;
 			else{
-			    check_safepoint('<', "before section name");
+			    checkSafepoint('<', "before section name");
                 switch(ifile.get()){
                     case 'o': section_name = onresolve; break;
                     case 'a': section_name = activated; break;
@@ -38,13 +37,13 @@ void PlainFileReader::readAll(RulesHolder& rules, card_type type) {
                     case 't': section_name = triggered; break;
                     case 's': section_name = astatic; break;
                     case 'z': section_name = altcosts; break;
-                    default: raise_error("unrecognized section type (o, a, x, t, s)"); return;
+                    default: raiseError("unrecognized section type (o, a, x, t, s)"); return;
                 }
-                check_safepoint('>', "after declaring another section");
+                checkSafepoint('>', "after declaring another section");
 			}
 		}
 	}
-    check_safepoint('}', "after rules text");
+    checkSafepoint('}', "after rules text");
 	if(offset_text != 0){
 		if(!rules.flavor_text){
 			rules.flavor_text = new char [offset_text+1];
@@ -53,24 +52,24 @@ void PlainFileReader::readAll(RulesHolder& rules, card_type type) {
 		if(type.underlying == card_type::creature){ //getting power and toughness
 			int power, toughness;
 			ifile >> power;
-			check_safepoint('/', "between power and toughness");
+			checkSafepoint('/', "between power and toughness");
 			ifile >> toughness;
 			rules.flavor_text[0] = (char) power;
 			rules.flavor_text[1] = (char) toughness;
 		}
 		else if(type.underlying == card_type::planeswalker){ //getting loyalty
 			int loyalty;
-			check_safepoint(' ', "just before loyalty");
-			check_safepoint('\\', "just before loyalty number");
+			checkSafepoint(' ', "just before loyalty");
+			checkSafepoint('\\', "just before loyalty number");
 			ifile >> loyalty;
 			rules.flavor_text[0] = (char) loyalty;
-			check_safepoint('/', "just after loyalty number");
+			checkSafepoint('/', "just after loyalty number");
 		}
 	}
 }
 
-void PlainFileReader::read_section_flavor(char*& flavor_text, uint8_t offset_text){
-    if(flavor_text != nullptr) raise_error("Flavor text of this spell declared multiple times");
+void PlainFileReader::readSectionFlavor(char*& flavor_text, uint8_t offset_text){
+    if(flavor_text != nullptr) raiseError("Flavor text of this spell declared multiple times");
 	int len = 0;
 	char a;
 	while((a = ifile.get())){
@@ -95,59 +94,61 @@ void PlainFileReader::readActAb(Cost& cost, Effect_H* effects,
 
     //gdebug(DBG_READFILE) << "Tap symbol:" << tapsymbol <<", cost: " << mana.m2t() << "\n";
     ismanaability = (ifile.get() == ':'); //reading either : or ' '
-    effects->init(*this);
+    ::visit<true>(*effects, *this);
 }
 
-void PlainFileReader::readTriggerType(trig_type& type){
+void PlainFileReader::visit(const char*, trig_type& type){
     char trigtype_tmp[20];
     ifile.get(trigtype_tmp, 20, ':');
     ifile.get(); //getting ':'
     ifile.get(); //getting ' ' or ':'
     auto iter = dicts->dict_trigtypes.find(trigtype_tmp);
     if(iter == dicts->dict_trigtypes.not_found){
-        raise_error(std::string("trigger ") + trigtype_tmp + " does not exist");
+        raiseError(std::string("trigger ") + trigtype_tmp + " does not exist");
     }
     type = *iter;
 }
 
-void PlainFileReader::readEffectH(uint8_t &nb_params, char *&params, std::forward_list<AtomEffect_H>& atoms) {
+void PlainFileReader::readEffect(std::forward_list<AtomEffect_H>& effects, uint8_t& nbparams, char*& param_hashtable) {
 	char allassignedvariables[256] = {0};
 	uint8_t nbassignedparams = 0;
-	while(state == go_on){
-		atoms.emplace_front(*this, allassignedvariables, nbassignedparams);
+	while(state == go_on){ //TODO OPTI optimize this
+        effect_type type; flag_t* params = nullptr;
+        readAtomEffect(type, params, nbassignedparams, allassignedvariables);
+		effects.emplace_front(type, params);
 	}
     state = go_on;
 
-	params = new char[nbassignedparams];
-	nb_params = nbassignedparams;
+	param_hashtable = new char[nbassignedparams];
+	nbparams = nbassignedparams;
 
     //putting all parameters from the hashtable 'allassignedvariables' into the array 'parameters'
 	for(uint i = 0; i < 256; i++) {
 		if(allassignedvariables[i] != 0){
 			char value = (i&0xf0) + ((allassignedvariables[i]&0xf0) >> 4);
 			char index = allassignedvariables[i]&0x0f;
-			params[index - 1] = value;
+			param_hashtable[index - 1] = value;
 		}
 	}
 }
 
 void PlainFileReader::readModifier(char& nbEffects, Modifier& firstEffect, Modifier*& otherEffects) {
-	check_safepoint(' ', "just after : of selector");
+	checkSafepoint(' ', "just after : of selector");
 	char tmp[20]; int i = 0; nbEffects = 0;
 	Modifier::type tmp_effect[20];
 	bool end_of_effects = false;
 	while(!end_of_effects){
 	    nbEffects++;
-	    if(nbEffects > 20) raise_error("Can't handle more than 20 static effects");
+	    if(nbEffects > 20) raiseError("Can't handle more than 20 static effects");
         while(true){
             tmp[i++] = ifile.get();
             if(tmp[i-1] == '.' || tmp[i-1] == ','){ if(tmp[i-1] == '.') end_of_effects = true; tmp[i] = '\0'; break;}
-            if(i >= 20) raise_error("waiting for '.' just after static effect");
+            if(i >= 20) raiseError("waiting for '.' just after static effect");
         }
-        check_safepoint(' ', "after . or , in statics");
+        checkSafepoint(' ', "after . or , in statics");
         auto result = dicts->dict_static_types.find(tmp);
         if(result == dicts->dict_static_types.not_found)
-            raise_error(std::string("static ") + tmp + " does not exist");
+            raiseError(std::string("static ") + tmp + " does not exist");
         else
             tmp_effect[i] = *result;
 	}
@@ -165,15 +166,15 @@ bool PlainFileReader::read_one_criterion(Identifier& chars, Identifier& requs){ 
     bool ret = false;
     char tmp[30];
     ifile.get(tmp, 30, '=');
-    check_safepoint('=', "when delaring selectors");
+    checkSafepoint('=', "when delaring selectors");
     auto seltype = dicts->dict_selectors.find(tmp);
-    if(seltype == dicts->dict_selectors.not_found) raise_error(std::string("selector type ") + tmp + " does not exist");
+    if(seltype == dicts->dict_selectors.not_found) raiseError(std::string("selector type ") + tmp + " does not exist");
     int i = 0;
     while(true){
         tmp[i] = ifile.get();
         if(tmp[i] == ' ') break;
         else if(tmp[i] == ')'){ ret = true; tmp[i] = ' '; break; }
-        ++i; if(i > 30) raise_error("Selector value longer than 30, are you sure you didn't forget something?");
+        ++i; if(i > 30) raiseError("Selector value longer than 30, are you sure you didn't forget something?");
     }
     switch (*seltype) {
         case types: {
@@ -205,26 +206,26 @@ bool PlainFileReader::read_one_criterion(Identifier& chars, Identifier& requs){ 
             requs = requs | rid_controller;
             break; }
         default:
-            raise_error("Ability implemented but does not have a dictionary");
+            raiseError("Ability implemented but does not have a dictionary");
     }
     if (!ret) consumeWhitespace();
     return ret;
 }
 
 //reads from '(' up to ':'
-void PlainFileReader::read_selector(Identifier& chars, Identifier& requs){
+void PlainFileReader::readSelector(Identifier& chars, Identifier& requs){
     chars = 0; requs = 0;
     int nchars = 0, nrequs = 0;
-    check_safepoint('(', "to declare a selector");
+    checkSafepoint('(', "to declare a selector");
     while(true) {
         bool stopped = read_one_criterion(nchars, nrequs);
         chars = chars | nchars; requs = requs & nrequs; //TODO check for incompatible requirements
         if (stopped) {
-            check_safepoint(':', "after selector parentheses");
+            checkSafepoint(':', "after selector parentheses");
             return;
         } else {
-            check_safepoint('&', "between selectors");
-            check_safepoint(' ', "between selectors");
+            checkSafepoint('&', "between selectors");
+            checkSafepoint(' ', "between selectors");
         }
     }
 }
@@ -250,16 +251,12 @@ void PlainFileReader::readAtomEffect(effect_type& type, flag_t*& params, uint8_t
         params[i] = readAbilityParameter(param_hashtable, effect_params, target_type::target_types[(int)type][i]);
     }
     char a = ifile.get();
-    if(a != ';' && a != '.') raise_error(std::string("after atomic effect: expected ; or ., got ") + a);
+    if(a != ';' && a != '.') raiseError(std::string("after atomic effect: expected ; or ., got ") + a);
     if(a == '.') state = breakout;
-    check_safepoint(' ', "after ; or .");
+    checkSafepoint(' ', "after ; or .");
 }
 
-void PlainFileReader::readSelector(Identifier &chars, Identifier &requs) {
-    (void) chars; (void) requs; //TODO
-}
-
-void PlainFileReader::read_section_othercasts(fwdlist<CardOption>& node) {
+void PlainFileReader::readSectionOthercasts(fwdlist<CardOption>& node) {
     (void) node; //TODO
 }
 

@@ -3,6 +3,7 @@
 
 #include "5rulesholder.h"
 #include "displayable.h"
+#include "serializable.h"
 #include "headE_enums.h"
 #include "Mana/lib2_mana.h"
 #include <string>
@@ -10,7 +11,6 @@
 
 using Identifier = int;
 class TriggerEvent;
-class ReaderVisitor;
 
 /** represents an Oracle text. Should never be modified; will mostly be handled via a const shared pointer in a Card. */
 class CardOracle : public Displayable {
@@ -25,8 +25,7 @@ public:
 #ifdef F_TESTS
     CardOracle(type_t type): name("Test card"), type(type) {}
 #endif
-    explicit CardOracle(ReaderVisitor& reader) { init(reader); }
-    void init(ReaderVisitor& reader);
+    explicit CardOracle(ReaderVisitor& reader);
 
     std::string describe() const override;
     void disp(BasicIO* io) const override;
@@ -39,6 +38,7 @@ public:
 
     friend class Card;
     friend class AbstractIO;
+    template<bool read> friend void visit(ConstHost<CardOracle, read>&, Visitor<read>&);
 };
 
 #endif //OLYMPUS_2_CARDS_H

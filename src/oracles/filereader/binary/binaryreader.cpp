@@ -1,11 +1,12 @@
 #include "binaryreader.h"
+#include "../visit.hpp"
 #include "classes/1effects.h"
 #include "classes/2triggers.h"
 #include "classes/3statics.h"
 #include "classes/perm_option.h"
 #include "classes/5rulesholder.h"
 
-void BinaryReader::readName(std::string& name) {
+void BinaryReader::visit(const char*, std::string& name) {
     uchar length = ifile.get();
     char* buffer = new char[length + 1];
     ifile.get(buffer, length + 1);
@@ -16,14 +17,14 @@ void BinaryReader::readName(std::string& name) {
 void BinaryReader::readAll(RulesHolder& rules, card_type) {
     readMainSpell(rules.cost, rules.effects);
     char flags = ifile.get();
-    if(flags & 0x1) readArray<PermOption>(rules.nb_actabs, rules.first_actab, false);
-    if(flags & 0x2) read_section_othercasts(rules.otherCardOptions);
-    if(flags & 0x4) readArray<StaticAb_H>(rules.nb_statics, rules.statics, false);
-    if(flags & 0x8) readArray<TriggerHolder_H>(rules.nb_triggers, rules.triggers, false);
-    if(flags & 0x10) read_section_flavor(rules.flavor_text, 0); //offset_text is irrelevant here
+    if(flags & 0x1) readArray<PermOption>(rules.nb_actabs, rules.first_actab);
+    if(flags & 0x2) readSectionOthercasts(rules.otherCardOptions);
+    if(flags & 0x4) readArray<StaticAb_H>(rules.nb_statics, rules.statics);
+    if(flags & 0x8) readArray<TriggerHolder_H>(rules.nb_triggers, rules.triggers);
+    if(flags & 0x10) readSectionFlavor(rules.flavor_text, 0); //offset_text is irrelevant here
 }
 
-void BinaryReader::read_section_flavor(char *&flavor_text, uint8_t) {
+void BinaryReader::readSectionFlavor(char *&flavor_text, uint8_t) {
     uint textsize; directRead<>(textsize);
     if(textsize != 0) {
         flavor_text = new char[textsize];
@@ -31,7 +32,7 @@ void BinaryReader::read_section_flavor(char *&flavor_text, uint8_t) {
     }
 }
 
-void BinaryReader::readEffectH(uint8_t& nb_params, char *&params, std::forward_list<AtomEffect_H>& atoms) {
+/*void BinaryReader::readEffectH(uint8_t& nb_params, char *&params, std::forward_list<AtomEffect_H>& atoms) {
     canary('b');
     readNumberOfObjects(nb_params);
     if(nb_params) params = new char[nb_params];
@@ -39,14 +40,9 @@ void BinaryReader::readEffectH(uint8_t& nb_params, char *&params, std::forward_l
     uint nb_atoms; readNumberOfObjects(nb_atoms);
     for(uint i=0; i<nb_atoms; i++) atoms.emplace_front(*this, params, nb_params);
     canary('y');
-}
+}*/
 
-void BinaryReader::readTriggerType(trig_type& type) {
-    directRead<>(type);
-}
-
-void BinaryReader::readAtomEffect(effect_type& type, flag_t*& params, uint8_t& effect_params, char* param_hashtable) {
-    (void) effect_params; (void) param_hashtable;
+void BinaryReader::readAtomEffect(effect_type& type, flag_t*& params) {
     directRead(type);
     int nb_params = target_type::target_numbers[static_cast<int>(type)];
     params = new flag_t[nb_params];
@@ -55,7 +51,7 @@ void BinaryReader::readAtomEffect(effect_type& type, flag_t*& params, uint8_t& e
 
 void BinaryReader::readActAb(Cost& cost, Effect_H* effects, bool& tapsymbol, bool& ismanaability, bool& instantspeed) {
     directRead(cost);
-    effects->init(*this);
+    ::visit<true>(*effects, *this);
     char twobools = ifile.get();
     tapsymbol = twobools & 0x1; ismanaability = twobools & 0x2; instantspeed = twobools & 0x4;
 }
@@ -76,10 +72,31 @@ void BinaryReader::readCosts(Cost& cost, bool& tapsymbol) {
     (void) cost; (void) tapsymbol; //TODO
 }
 
-void BinaryReader::read_section_othercasts(fwdlist<CardOption>& node) {
+void BinaryReader::readSectionOthercasts(fwdlist<CardOption>& node) {
     (void) node; //TODO
 }
 
-void BinaryReader::raise_error(const std::string& message) {
+void BinaryReader::raiseError(const std::string& message) {
     (void) message; //TODO raise error
+}
+
+void BinaryReader::visit(const char*, Cost& cost) {
+    directRead<>(cost);
+}
+
+/*void BinaryReader::visit(const char*, Effect_H*& effect) {
+    effect = new Effect_H(*this);
+}*/
+
+void BinaryReader::readEffect(std::forward_list<AtomEffect_H>& effects, uint8_t& nbparams, char*& param_hashtable) {
+    nbparams = ifile.get();
+    param_hashtable = new char[nbparams];
+    ifile.read(param_hashtable, nbparams);
+
+    unsigned char nb_effects; directRead(nb_effects);
+    for(int i = 0; i<nb_effects; i++) {
+        effect_type type; flag_t* params; //TODO OPTI optimize
+        readAtomEffect(type, params);
+        effects.emplace_front(type, params);
+    }
 }

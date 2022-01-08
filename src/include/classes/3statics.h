@@ -1,12 +1,13 @@
 #ifndef OLYMPUS_CLASSES_11_STATICS_H
 #define OLYMPUS_CLASSES_11_STATICS_H
 
+#include "serializable.h"
+
 struct Modifier {
     enum type { pt, keyword } myType;
 };
 
 using Identifier = int;
-class ReaderVisitor;
 
 class StaticAb_H {
     Identifier chars, requs;
@@ -15,8 +16,9 @@ class StaticAb_H {
     Modifier* other_effects; //0 +1/+1 - 1 +1/+0 - 2 +0/+1
 public:
     StaticAb_H() = default;
-    void init(ReaderVisitor& myfile);
     ~StaticAb_H() { delete[] other_effects; }
+
+    template<bool read> friend void visit(ConstHost<StaticAb_H, read>&, Visitor<read>&);
 };
 
 struct ModifListNode{

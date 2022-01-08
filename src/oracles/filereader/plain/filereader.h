@@ -5,34 +5,49 @@
 #include <utility>
 #include "headE_enums.h"
 #include "build_types.h"
-#include "../visitor.h"
+#include "classes/serializable.h"
+#include "../reader.h"
+#include "../visit.hpp"
 
 class DictHolder;
 
 class PlainFileReader: public ReaderVisitor {
 private:
     DictHolder* dicts;
-    std::istream& ifile;
     enum State { go_on, invalid, breakout, end_reached } state;
 
-    void read_section_flavor(char*& flavor_text, uint8_t offset_text) override;
-    void read_section_othercasts(fwdlist<CardOption>& node) override;
+    void readSectionFlavor(char*& flavor_text, uint8_t offset_text) override;
+    void readSectionOthercasts(fwdlist<CardOption>& node) override;
     void readCosts(Cost& cost, bool& tapsymbol) override;
-
     uint nb_phrases(); //Reads how many phrases there are, separated by . and ended by '<' or '}'
-    void readNumberOfObjects(uint& nb) override { nb = nb_phrases(); }
-    void readNumberOfObjects(uint8_t& nb) override { nb = nb_phrases(); }
+    template<typename T>
+    void readArray(uint& nb_objects, T*& objects) {
+        nb_objects = nb_phrases();
+        objects = new T[nb_objects];
+        for(uint i=0; i<nb_objects; i++) {
+            ::visit<true>(objects[i], *this);
+        }
+    }
 
-    void check_safepoint(char expected, const char* error_msg);
-    void raise_error(const std::string& message) override;
+/*    void readNumberOfObjects(uint& nb) override { nb = nb_phrases(); }
+    void readNumberOfObjects(uint8_t& nb) override { nb = nb_phrases(); }*/
+
+    void checkSafepoint(char expected, const char* error_msg);
+    void raiseError(const std::string& message) override;
     inline void consumeWhitespace() { while(ifile.peek() == ' ') ifile.get(); }
+    void readAtomEffect(effect_type& type, flag_t*& params, uint8_t& nbparams, char* param_hashtable);
 public:
-    PlainFileReader(DictHolder* dicts, std::istream& istream): dicts(dicts), ifile(istream), state(go_on) {};
+    PlainFileReader(DictHolder* dicts, std::istream& istream): ReaderVisitor(istream), dicts(dicts), state(go_on) {};
 
-    void readName(std::string& name) override;
-    void readCost(Cost& cost) override;
-    void readCardType(card_type& type) override;
+    void visit(const char*, std::string& name) override;
+    void visit(const char*, Cost& cost) override;
+    void visit(const char*, card_type& type) override;
+    void visit(const char*, trig_type& type) override;
+    void visit(const char*, char& value) override;
+    void visit(const char*, Mana& mana) override;
+    void visit(const char*, bool& b) override;
     void readAll(RulesHolder& rules, card_type type) override;
+    void readEffect(std::forward_list<AtomEffect_H>& effects, uint8_t &nbparams, char*& param_hashtable) override;
 
     effect_type readAbilityType();
     short int readNumber(char a, bool can_be_zero, bool can_be_negative);
@@ -40,14 +55,9 @@ public:
 
     void readModifier(char& nbEffects, Modifier& firstEffect, Modifier*& otherEffects) override;
     bool read_one_criterion(Identifier& chars, Identifier& requs);
-    void read_selector(Identifier& chars, Identifier& requs);
+    void readSelector(Identifier& chars, Identifier& requs) override;
 
     void readActAb(Cost& cost, Effect_H* effects, bool& tapsymbol, bool& ismanaability, bool& instantspeed) override;
-    void readEffectH(uint8_t& nb_params, char*& params, std::forward_list<AtomEffect_H>& atoms) override;
-    void readAtomEffect(effect_type& type, flag_t*& params, uint8_t& nbparams, char* param_hashtable) override;
-
-    void readTriggerType(trig_type& type) override;
-    void readSelector(Identifier& chars, Identifier& requs) override;
     void readMainSpell(Cost& cost, Effect_H*& effect) override;
 };
 

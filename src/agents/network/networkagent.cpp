@@ -44,8 +44,8 @@ bool NetworkAgent::keepsHand(const fwdlist<uptr<Card>>& cards) {
     sender.add_chunk(header, 2);
     for(auto& card : cards){
         std::stringstream oracle_stream;
-        BinaryFileWriter oracle_reader(oracle_stream);
-        card->init(oracle_reader);
+        BinaryWriter oracle_reader(oracle_stream);
+        card->write(oracle_reader);
         sender.add_chunk(oracle_stream.str());
     }
     sender.close();
@@ -78,8 +78,8 @@ void NetworkAgent::onDraw(const std::list<CardWrapper>& cards) {
     sender.add_chunk(header, 2);
     for(auto& card: cards) {
         std::stringstream oracle_stream;
-        BinaryFileWriter oracle_reader(oracle_stream);
-        const_cast<CardWrapper&>(card)->init(oracle_reader);
+        BinaryWriter oracle_reader(oracle_stream);
+        card->write(oracle_reader);
         sender.add_chunk(oracle_stream.str());
     }
     sender.close();

@@ -17,7 +17,3 @@ void BinaryBufferWriter::write(const char *chars, long size) {
     for(int i=0; i<size; i++) buffer[ptr + i] = chars[i];
     ptr += size;
 }
-
-void BinaryBufferWriter::canary(char canary) {
-    (void) canary; //As of now, does nothing, because we want to keep the data size as small as possible
-}

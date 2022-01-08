@@ -34,7 +34,7 @@ CardZone parseDeck(const std::vector<OracleDescr>& deck) {
                 buffer[i-1] = 0;
                 leveldb::Status status = ondisk_cards->Get(leveldb::ReadOptions(), std::string(buffer), &str);
                 if (!status.ok()) {
-                    throw DeckbuildingError("No card called '" + std::string(buffer) + "' in the database");
+                    throw DeckbuildingError("No card named '" + std::string(buffer) + "' in the database");
                 }
             } [[fallthrough]];
             case compiled_customcard: {

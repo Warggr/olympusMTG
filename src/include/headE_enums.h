@@ -26,7 +26,7 @@ namespace colorId {
         bool operator==(const type& other) const { return other.fields == fields; }
     };
 
-    static constexpr type white{1 << 0}, blue{1 << 1}, black{1 << 2}, red{1 << 3}, green{1 << 4};
+    static constexpr type white{1 << 0}, blue{1 << 1}, black{1 << 2}, red{1 << 3}, green{1 << 4}, colorless {0};
 }
 
 enum class object_type { player, permanent, resolvable, card };

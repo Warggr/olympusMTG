@@ -2,22 +2,28 @@
 #define OLYMPUS_BINARYREADER_H
 
 #include <iostream>
-#include "../visitor.h"
+#include "../reader.h"
 
 class JsonReader : public ReaderVisitor {
     inline void canary(char){}
-    std::istream& ifile;
 public:
-    explicit JsonReader(std::istream& stream): ifile(stream) {};
+    explicit JsonReader(std::istream& stream): ReaderVisitor(stream) {};
     void raise_error(const std::string& message) override;
     void readName(std::string& name) override;
     void readCost(Cost& cost) override;
     void readCardType(card_type& type) override;
-    void read_section_flavor(char*& flavor_text, uint8_t offset_text) override;
-    void read_section_othercasts(fwdlist<CardOption>& node) override;
+    void readSectionFlavor(char*& flavor_text, uint8_t offset_text) override;
+    void readSectionOthercasts(fwdlist<CardOption>& node) override;
 
     template<typename T>
     void directRead(T obj, const char* name) {
+        char begin; std::skipws(ifile); ifile >> begin;
+        if(begin != '{') throw DeckbuildingError("JSON error: does not start with '{'");
+        std::string key;
+    }
+
+    template<>
+    void directRead(int obj, const char* name) {
         char begin; std::skipws(ifile); ifile >> begin;
         if(begin != '{') throw DeckbuildingError("JSON error: does not start with '{'");
         std::string key;

@@ -43,9 +43,7 @@ public:
 	const char* getFlavorText() const { return oracle->rules.flavor_text; }
 	std::string getName() const { return oracle->getName(); }
 
-	void init(ReaderVisitor& visitor) const {
-	    const_cast<CardOracle*>(oracle.get())->init(visitor);
-	}
+	void write(WriterVisitor& writer) const;
 	void disp(BasicIO* io) const override;
 
 	friend class CardWrapper;

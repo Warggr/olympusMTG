@@ -1,8 +1,9 @@
 #include "jsonreader.h"
-#include "oracles/classes/1effects.h"
-#include "oracles/classes/2triggers.h"
-#include "oracles/classes/3statics.h"
-#include "oracles/classes/perm_option.h"
+#include "classes/1effects.h"
+#include "classes/2triggers.h"
+#include "classes/3statics.h"
+#include "classes/perm_option.h"
+#include "classes/5rulesholder.h"
 
 void JsonReader::readName(std::string& name) {
     uchar length = ifile.get();
@@ -16,13 +17,13 @@ void JsonReader::readAll(RulesHolder& rules, card_type) {
     readMainSpell(rules.cost, rules.effects);
     char flags = ifile.get();
     if(flags & 0x1) readArray<PermOption>(rules.nb_actabs, rules.first_actab, false);
-    if(flags & 0x2) read_section_othercasts(rules.otherCardOptions);
+    if(flags & 0x2) readSectionOthercasts(rules.otherCardOptions);
     if(flags & 0x4) readArray<StaticAb_H>(rules.nb_statics, rules.statics, false);
     if(flags & 0x8) readArray<TriggerHolder_H>(rules.nb_triggers, rules.triggers, false);
-    if(flags & 0x10) read_section_flavor(rules.flavor_text, 0); //offset_text is irrelevant here
+    if(flags & 0x10) readSectionFlavor(rules.flavor_text, 0); //offset_text is irrelevant here
 }
 
-void JsonReader::read_section_flavor(char *&flavor_text, uint8_t) {
+void JsonReader::readSectionFlavor(char *&flavor_text, uint8_t) {
     uint textsize; directRead<>(textsize);
     if(textsize != 0) {
         flavor_text = new char[textsize];

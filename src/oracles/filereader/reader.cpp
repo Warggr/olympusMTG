@@ -1,46 +1,28 @@
-#include "visitor.h"
-#include "classes/1effects.h"
-#include "classes/2triggers.h"
-#include "classes/3statics.h"
-#include "classes/perm_option.h"
+#include "reader.h"
+#include "gameplay/2cards.h"
 #include "classes/card_oracle.h"
+#include "headE_enums.h"
+#include "visit.hpp"
+#include "reader.h"
+#include "writer.h"
 
-void StaticAb_H::init(ReaderVisitor& ifile){
-    ifile.readSelector(chars, requs); //reads up to ':'
-    ifile.readModifier(nb_effects, first_effect, other_effects); //reads from ' ...' to '}' or '.'
+/*
+#define HALF_INSTANCIATE(type, b) template void visit<type, b>(ConstHost<type, b>&, Visitor<b>&)
+#define INSTANCIATE(type) class type; HALF_INSTANCIATE(type, true); HALF_INSTANCIATE(type, false);
+
+INSTANCIATE(CardOracle)
+*/
+CardOracle::CardOracle(ReaderVisitor& reader) {
+    visit<true>(*this, reader);
+    if(type.land) color = colorId::colorless;
+    else color = rules.cost.mana.m2color();
 }
 
-void Effect_H::init(ReaderVisitor& visitor) {
-    visitor.readEffectH(nb_parameters, parameters, effects);
+void Card::write(WriterVisitor& writer) const {
+    visit<false>(*oracle, writer);
 }
 
-void PermOption::init(ReaderVisitor &visitor) {
-    visitor.readActAb(cost, &effects, tapsymbol, ismanaability, instantspeed);
-}
-
-void AtomEffect_H::init(ReaderVisitor &reader, char* allassignedparams, uint8_t& nbassignedparams) {
-    reader.readAtomEffect(type, params, nbassignedparams, allassignedparams);
-}
-
-void TriggerHolder_H::init(ReaderVisitor &visitor) {
-    visitor.readTriggerType(type);
-    effects->init(visitor);
-}
-
-void CardOracle::init(ReaderVisitor &reader) {
-    reader.readName(name);
-    reader.readCardType(type);
-
-    if(type.land) {
-        color = 0; //lands are colorless
-    } else {
-        reader.readCost(rules.cost);
-        color = rules.cost.mana.m2color();
-    }
-
-    //reader.readCardSubtypes(); //TODO implement subtypes
-    reader.readAll(rules, type);
-}
+Effect_H::Effect_H(ReaderVisitor& reader){ visit<true>(*this, reader); }
 
 namespace target_type {
     const flag_t tars1[] = { damageable, nonnegative };
@@ -54,3 +36,5 @@ namespace target_type {
     const flag_t* target_types[] = { tars1, tars2, tars3, tars3, tars4, tars5, tars5, tars6, tars7, tars8 };
     const int target_numbers[] = { 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1 };
 }
+
+void ReaderVisitor::readSubtypes() { }

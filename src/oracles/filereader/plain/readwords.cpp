@@ -60,7 +60,7 @@ inline mtg::manatype read_mana_to_add(char a){
 }
 
 flag_t PlainFileReader::readAbilityParameter(char* allassignedvariables, uint8_t& nbassignedparams, flag_t type){ //reads only the parameter itself.
-	check_safepoint(' ', "before a parameter");
+	checkSafepoint(' ', "before a parameter");
 	char a = ifile.peek();
 	gdebug(DBG_READFILE) << "Read parameter starting with " << a << "\n";
 	if(type == target_type::added_mana){ ifile.get(); return (flag_t) read_mana_to_add(a); }
@@ -119,7 +119,7 @@ flag_t PlainFileReader::readAbilityParameter(char* allassignedvariables, uint8_t
 	}
 }
 
-void PlainFileReader::readCardType(card_type& type) {
+void PlainFileReader::visit(const char*, card_type& type) {
     char a = ifile.get();
     if(a == 'L') { type.legendary = 1; a = ifile.get(); }
     if(a == 'W') { type.snow = 1; a = ifile.get(); }
@@ -134,9 +134,9 @@ void PlainFileReader::readCardType(card_type& type) {
         case 'C': type.underlying = card_type::creature; break;
         case 'S': type.underlying = card_type::sorcery; break;
         default:
-            raise_error(std::string("while reading decks: ") + a + " is not a card type");
+            raiseError(std::string("while reading decks: ") + a + " is not a card type");
     }
-    check_safepoint(' ', "after card types");
+    checkSafepoint(' ', "after card types");
 }
 
 void PlainFileReader::readCosts(Cost& cost, bool& tapsymbol) {
@@ -147,7 +147,7 @@ void PlainFileReader::readCosts(Cost& cost, bool& tapsymbol) {
             copy[j] = ifile.get();
             if(copy[j] == ',' || copy[j] == ':') break; //reading one cost
         }
-        if(j==30) raise_error("Error: cost is longer than 30 symbols; are you sure you are declaring the cost of an activated ability?");
+        if(j==30) raiseError("Error: cost is longer than 30 symbols; are you sure you are declaring the cost of an activated ability?");
         if(copy[0] == 'T') {
             tapsymbol = true;
         } else {

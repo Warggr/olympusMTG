@@ -1,6 +1,7 @@
 #include "oracles/filereader/plain/filereader.h"
 #include "oracles/filereader/binary/binarywriter.h"
 #include "oracles/filereader/plain/Dictionary/dictholder.h"
+#include "oracles/filereader/visit.hpp"
 #include "classes/card_oracle.h"
 #include "build_types.h"
 #include "leveldb/db.h"
@@ -31,10 +32,10 @@ void refreshDatabase() {
 
         std::string binary;
         std::ostringstream oss(binary);
-        BinaryFileWriter writer(oss);
+        BinaryWriter writer(oss);
 
         CardOracle oracle(reader);
-        oracle.init(writer);
+        visit<false>(oracle, writer);
 
         status = db->Put(leveldb::WriteOptions(), oracle.getName(), binary);
         assert(status.ok());

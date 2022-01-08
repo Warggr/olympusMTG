@@ -14,7 +14,6 @@ private:
 public:
     PermOption(): tapsymbol(false), ismanaability(false) {};
     ~PermOption() = default;
-    void init(ReaderVisitor& visitor);
 
     void castOpt(Player* pl) override;
     void straight_cast(Player* pl);
@@ -26,6 +25,8 @@ public:
     void disp(BasicIO* io) const override;
 
     bool isCastable(bool sorceryspeed, Player* player) const override;
+
+    template<bool read> friend void visit(ConstHost<PermOption, read>&, Visitor<read>&);
 };
 
 #endif //OLYMPUS_PERM_OPTION_H

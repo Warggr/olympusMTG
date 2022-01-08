@@ -3,13 +3,13 @@
 //REMINDER: class TriggerEvent is declared in 1general.h header, not here
 
 #include <string>
-class Effect_H; class Player; class Target; class ReaderVisitor;
+#include "serializable.h"
+class Effect_H; class Player; class Target;
 
 struct TriggerHolder_H {
     trig_type type;
     Effect_H* effects;
 
-    void init(ReaderVisitor& visitor);
     ~TriggerHolder_H() { delete effects; }
 
     std::string describe(const std::string& name) const;

@@ -1,36 +1,41 @@
 #ifndef OLYMPUS_BINARYREADER_H
 #define OLYMPUS_BINARYREADER_H
 
-#include "../visitor.h"
-#include <istream>
+#include "../reader.h"
+#include "../visit.hpp"
+#include "classes/serializable.h"
 
 class BinaryReader : public ReaderVisitor {
-    inline void canary(char canary){
-        if(ifile.get() != canary) throw DeckbuildingError("Canary test failed");
-    }
-    std::istream& ifile;
-public:
-    explicit BinaryReader(std::istream& stream): ifile(stream) {};
-    void raise_error(const std::string& message) override;
-    void readName(std::string& name) override;
-    void readCost(Cost& cost) override { directRead<>(cost); }
-    void readCardType(card_type& type) override { directRead<>(type); }
-    void read_section_flavor(char*& flavor_text, uint8_t offset_text) override;
-    void read_section_othercasts(fwdlist<CardOption>& node) override;
-
-    void readAll(RulesHolder& rules, card_type type) override;
-
     template<typename T>
     void directRead(T& value) {
         ifile.read(reinterpret_cast<char*>(&value), sizeof value);
     }
+    template<typename T>
+    void readArray(uint& nb_objects, T*& objects) {
+        directRead(nb_objects);
+        if(nb_objects != 0) objects = new T[nb_objects];
+        for(uint i=0; i<nb_objects; i++) {
+            ::visit<true>(objects[i],* this);
+        }
+    }
+protected:
+    void raiseError(const std::string& message) override;
+    void readAtomEffect(effect_type& type, flag_t*& params);
+public:
+    explicit BinaryReader(std::istream& stream): ReaderVisitor(stream) {};
+    void visit(const char* key, std::string& name) override;
+    void visit(const char*, Cost& cost) override;
+    void visit(const char*, card_type& type) override { directRead<>(type); }
+    void visit(const char*, trig_type& type) override { directRead<>(type); }
+    void visit(const char*, bool& b) override { directRead(b); }
+    void visit(const char*, Mana& mana) override { directRead(mana); }
+    void visit(const char*, char& value) override { directRead(value); }
+    void readSectionFlavor(char*& flavor_text, uint8_t offset_text) override;
+    void readSectionOthercasts(fwdlist<CardOption>& node) override;
 
-    void readNumberOfObjects(uint& nb) override { directRead<>(nb); }
-    void readNumberOfObjects(uint8_t& nb) override { directRead<>(nb); }
+    void readAll(RulesHolder& rules, card_type type) override;
+    void readEffect(std::forward_list<AtomEffect_H>& effects, uint8_t& nbparams, char*& param_hashtable) override;
 
-    void readEffectH(uint8_t &nb_params, char*& params, std::forward_list<AtomEffect_H>& atoms) override;
-    void readTriggerType(trig_type& type) override;
-    void readAtomEffect(effect_type& type, flag_t*& params, uint8_t& nbparams, char* param_hashtable) override;
     void readActAb(Cost& cost, Effect_H* effects, bool &tapsymbol, bool &ismanaability, bool& instantspeed) override;
 
     void readMainSpell(Cost& cost, Effect_H*& effect) override;

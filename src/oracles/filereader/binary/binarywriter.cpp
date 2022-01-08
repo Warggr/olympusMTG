@@ -5,14 +5,15 @@
 #include "classes/3statics.h"
 #include "classes/perm_option.h"
 #include "classes/5rulesholder.h"
+#include "../visit.hpp"
 
-void BinaryWriter::readName(std::string& name) {
-    uchar length = name.length() - 1;
-    directRead(length);
-    write(name.c_str(), length);
+void BinaryWriter::visit(const char*, const std::string& str) {
+    uchar length = str.length();
+    directWrite(length);
+    ofile.write(str.c_str(), str.length());
 }
 
-void BinaryWriter::readAll(RulesHolder& rules, card_type) {
+void BinaryWriter::readAll(const RulesHolder& rules, const card_type&) {
     readMainSpell(rules.cost, rules.effects);
     char flags = 0;
     if(rules.first_actab) flags += 0x1;
@@ -20,67 +21,81 @@ void BinaryWriter::readAll(RulesHolder& rules, card_type) {
     if(rules.statics) flags += 0x4;
     if(rules.triggers) flags += 0x8;
     if(rules.flavor_text) flags += 0x10;
-    if(flags & 0x1) readArray<PermOption>(rules.nb_actabs, rules.first_actab, true);
-    if(flags & 0x2) read_section_othercasts(rules.otherCardOptions);
-    if(flags & 0x4) readArray<StaticAb_H>(rules.nb_statics, rules.statics, true);
-    if(flags & 0x8) readArray<TriggerHolder_H>(rules.nb_triggers, rules.triggers, true);
-    if(flags & 0x10) read_section_flavor(rules.flavor_text, 0); //offset_text is irrelevant here
+    ofile << flags;
+    if(flags & 0x1) readArray<PermOption>(rules.nb_actabs, rules.first_actab);
+    if(flags & 0x2) readSectionOthercasts(rules.otherCardOptions);
+    if(flags & 0x4) readArray<StaticAb_H>(rules.nb_statics, rules.statics);
+    if(flags & 0x8) readArray<TriggerHolder_H>(rules.nb_triggers, rules.triggers);
+    if(flags & 0x10) readSectionFlavor(rules.flavor_text, 0); //offset_text is irrelevant here
 }
 
-void BinaryWriter::read_section_flavor(char *&flavor_text, uint8_t offset_text) {
+void BinaryWriter::readSectionFlavor(const char* flavor_text, uint8_t offset_text) {
     uint textsize = offset_text + strlen(flavor_text + offset_text);
-    directRead<>(textsize);
+    directWrite<>(textsize);
     if(textsize != 0) {
-        write(flavor_text, textsize);
+        ofile.write(flavor_text, textsize);
     }
 }
 
-void BinaryWriter::readEffectH(uint8_t& nb_params, char *&params, std::forward_list<AtomEffect_H>& atoms) {
+/*void BinaryWriter::readEffectH(uint8_t& nb_params, char *&params, std::forward_list<AtomEffect_H>& atoms) {
     canary('b');
     readNumberOfObjects(nb_params);
     uint nb_atoms = std::distance(atoms.begin(), atoms.end());
     readNumberOfObjects(nb_atoms);
     for(auto atom : atoms) atom.init(*this, params, nb_params);
     canary('y');
-}
+}*/
 
-void BinaryWriter::readTriggerType(trig_type& type) {
-    directRead<>(type);
-}
-
-void BinaryWriter::readAtomEffect(effect_type& type, flag_t*& params, uint8_t&, char*) {
-    directRead(type);
+void BinaryWriter::readAtomEffect(effect_type type, const flag_t* params) {
+    directWrite(type);
     int nb_params = target_type::target_numbers[static_cast<int>(type)];
-    write(reinterpret_cast<char*>(params), nb_params);
+    ofile.write(reinterpret_cast<const char*>(params), nb_params);
 }
 
-void BinaryWriter::readActAb(Cost& cost, Effect_H* effects,
-                             bool& tapsymbol, bool& ismanaability, bool& instantspeed) {
-    directRead(cost);
-    effects->init(*this);
+void BinaryWriter::readActAb(const Cost& cost, const Effect_H* effects,
+                             bool tapsymbol, bool ismanaability, bool instantspeed) {
+    directWrite(cost);
+    ::visit<false>(*effects, *this);
     char twobools = 0;
     if(tapsymbol) twobools += 0x1;
     if(ismanaability) twobools += 0x2;
     if(instantspeed) twobools += 0x4;
-    directRead(twobools);
+    directWrite(twobools);
 }
 
-void BinaryWriter::read_section_othercasts(fwdlist<CardOption>& node) {
+void BinaryWriter::readSectionOthercasts(const fwdlist<CardOption>& node) {
     (void) node; //TODO
 }
 
-void BinaryWriter::readSelector(Identifier& chars, Identifier& requs) {
+void BinaryWriter::readSelector(Identifier chars, Identifier requs) {
     (void) chars; (void) requs; //TODO
 }
 
-void BinaryWriter::readModifier(char& i, Modifier& first_effect, Modifier *&other_effects) {
+void BinaryWriter::readModifier(char i, const Modifier& first_effect, const Modifier* other_effects) {
     (void) i; (void) first_effect; (void) other_effects; //TODO
 }
 
-void BinaryWriter::readCosts(Cost& cost, bool& tapsymbol) {
+void BinaryWriter::readCosts(const Cost& cost, bool tapsymbol) {
     (void) cost; (void) tapsymbol; //TODO
 }
 
-void BinaryWriter::readMainSpell(Cost& cost, Effect_H*& effect) {
+void BinaryWriter::readMainSpell(const Cost& cost, const Effect_H* effect) {
     (void) cost; (void) effect; //TODO
+}
+
+void BinaryWriter::visit(const char*, const Cost& cost) {
+    directWrite<>(cost);
+}
+
+void BinaryWriter::visit(const char*, Mana mana) { directWrite(mana); }
+
+void BinaryWriter::readEffect(const std::forward_list<AtomEffect_H>& effects, uint8_t nbparams, const char* param_hashtable) {
+    directWrite(nbparams);
+    ofile.write(param_hashtable, nbparams);
+
+    unsigned char x = std::distance(effects.begin(), effects.end());
+    directWrite(x);
+    for(auto& eff : effects) {
+        readAtomEffect(eff.getType(), eff.getParams());
+    }
 }
