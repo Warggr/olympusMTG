@@ -5,7 +5,6 @@ add_subdirectory(description)
 add_library(gameplay STATIC
         abilities.cpp cards.cpp castopts.cpp modifiers.cpp triggers.cpp ueot.cpp)
 
-target_link_libraries(gameplay PUBLIC permanents resolvables yggdrasil oracles Mana)
-target_link_libraries(gameplay PRIVATE project_warnings)
+target_link_libraries(gameplay PUBLIC gameplay_description permanents resolvables yggdrasil oracles Mana)
 
 create_test(gameplay)

@@ -16,29 +16,25 @@ template<typename T> class Y_Hashtable; template<typename T> class StateTN;
 
 enum playerType {
 #ifdef MOCK_AGENT
-#undef ENABLE_IF_MOCK
-#define ENABLE_IF_MOCK(x) x
+    #define ENABLE_IF_MOCK(x) x
+    #define ENABLE_IF_LOCAL(x)
+    #define ENABLE_IF_BOT(x)
+    #define ENABLE_IF_NETWORK(x)
     MOCK,
 #else
-#define ENABLE_IF_MOCK(x)
-#ifndef NO_LOCAL_AGENT
-#define ENABLE_IF_LOCAL(x) x
-    LOCAL,
-#else
-#define ENABLE_IF_LOCAL(x)
-#endif
-#ifndef NO_BOT_AGENT
-#define ENABLE_IF_BOT(x) x
-    BOT,
-#else
-#define ENABLE_IF_BOT(x)
-#endif
-#ifndef NO_NETWORK_AGENT
-#define ENABLE_IF_NETWORK(x) x
-    NETWORK,
-#else
-#define ENABLE_IF_NETWORK(x)
-#endif
+    #define ENABLE_IF_MOCK(x)
+    #ifndef ENABLE_IF_LOCAL
+        #define ENABLE_IF_LOCAL(x) x
+        LOCAL,
+    #endif
+    #ifndef ENABLE_IF_BOT
+        #define ENABLE_IF_BOT(x) x
+        BOT,
+    #endif
+    #ifndef ENABLE_IF_NETWORK
+        #define ENABLE_IF_NETWORK(x) x
+        NETWORK,
+    #endif
 #endif
 };
 

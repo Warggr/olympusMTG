@@ -25,8 +25,3 @@ void Creature::resolveAttack(Player* nextopponent){
     }
     assigned_bl.clear();
 }
-
-void Creature::addBlocker(Creature* bl){
-    is_block = true;
-    assigned_bl.emplace_front(std::pair<uint8_t, SpecificTargeter<Creature>>(0, bl));
-}

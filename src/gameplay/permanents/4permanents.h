@@ -70,8 +70,12 @@ public:
 
 //	void damage(int nb_damage, Target* origin = 0) override;
 	void hit(Damageable* tgt);
-	void addBlocker(Creature* bl);
-	void setBlocking(){is_block = true; };
+	void addBlocker(Creature* bl) { //inlined for linking reasons
+	    is_block = true;
+        assigned_bl.emplace_front(std::pair<uint8_t, SpecificTargeter<Creature>>(0, bl));
+    }
+
+    void setBlocking(){is_block = true; };
 	void resolveAttack(Player* nextopponent);
 	int getPower() const {if(pt_switched) return set_power + added_power; else return set_toughness + added_toughness; };
 	int getToughness() const {if(pt_switched) return set_toughness + added_toughness; else return set_power + added_power; };

@@ -10,10 +10,12 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 
 message(STATUS "Choosing ${UIType} as an UI type")
 
+add_library(BaseFrontEnd OBJECT disp.cpp)
+
 add_subdirectory(graphical)
 add_subdirectory(cli)
 
-add_library(FrontEnd STATIC frontend.cpp disp.cpp)
+add_library(FrontEnd STATIC frontend.cpp)
 
 target_link_libraries(FrontEnd PRIVATE CLI GUI)
 target_include_directories(FrontEnd PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/include)

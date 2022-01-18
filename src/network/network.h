@@ -14,7 +14,7 @@ class NetworkError: public std::exception {};
 
 class Sender {
 private:
-    static constexpr unsigned int BUFFER_SIZE = 100;
+    static constexpr unsigned int BUFFER_SIZE = 1000;
     int sockfd;
     unsigned int writehead;
     char buffer[BUFFER_SIZE]{};
@@ -32,7 +32,7 @@ public:
 
 class Networker {
 protected:
-    static constexpr int BUFFER_SIZE = 100;
+    static constexpr int BUFFER_SIZE = 1000;
     char buffer[BUFFER_SIZE]{};
     int sockfd {-1};
     bool connected; //whether he is currently connected to that IP address
