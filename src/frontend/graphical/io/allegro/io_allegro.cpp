@@ -43,8 +43,8 @@ void AllegroIO::draw_permanent(const Rect& zone, const std::string& name, char c
 }
 
 void AllegroIO::getResolution(int& y, int& z, int& linesize) const {
-	y = screenY;
-	z = screenZ;
+	y = al_get_display_width(window);
+	z = al_get_display_height(window);
 	linesize = 20;
 }
 
@@ -240,7 +240,7 @@ void AllegroIO::draw_full_rectangle(char color, const Rect& zone) const {
 }
 
 void AllegroIO::draw_rectangle(char color, const Rect& zone, int linewidth) const {
-	al_draw_rectangle(zone.z, zone.y, zone.bottom(), zone.right(), registeredColors[(int) color], linewidth);
+	al_draw_rectangle(zone.y, zone.z, zone.right(), zone.bottom(), registeredColors[(int) color], linewidth);
 }
 
 void AllegroIO::print_text(const char* text, char color, int y, int z) const {

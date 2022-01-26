@@ -13,7 +13,7 @@ struct ContainerPolicy {
 
     void insert(const T& t) { subWins.push_back(t); }
 
-    void init(const Rect&) {};
+    void setCoords(const Rect&) {};
 
     iterator begin() { return subWins.begin(); }
     iterator end() { return subWins.end(); }
@@ -34,7 +34,7 @@ struct PolicyWith2Objects {
     Class1 object1;
     Class2 object2;
 
-    void init(const Rect&) {};
+    void setCoords(const Rect&) {};
 
     struct iterator {
         PolicyWith2Objects* owner;
@@ -68,7 +68,7 @@ struct PolicyWith3Objects {
     Class2 object2;
     Class3 object3;
 
-    void init(const Rect&) {};
+    void setCoords(const Rect&) {};
 
     struct iterator {
         PolicyWith3Objects* owner;

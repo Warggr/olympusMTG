@@ -7,7 +7,7 @@
 #define METHOD(type, x) maybe_virtual type x maybe_undef
 #endif
 
-METHOD(void, getResolution(int& posterYSize, int& posterZSize, int& linesize) const);
+METHOD(void, getResolution(int& screenWidth, int& screenHeight, int& linesize) const);
 METHOD(void, harmonize(const Rect& poster, const Rect& message, int nb_winzones));
 METHOD(void, declare_window(int& leftY, int& topz, int width, int height));
 

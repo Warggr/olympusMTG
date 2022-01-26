@@ -23,15 +23,15 @@ struct GraphicalUI: public AbstractFrontEnd {
     void chooseblockers(Y_Hashtable<Creature>& defenders, StateTN<Creature>& attackers) override;
     Creature* blockerSwitch(const Creature& blocker, int blockerIndex, StateTN<Creature>& attackers);
 
-   Target* chooseTarget(char type) override;
+    Target* chooseTarget(char type) override;
 
-   bool attackSwitch(int leftY, int rightY, int topZ, int arrowlength) const override;
+    bool attackSwitch(int leftY, int rightY, int topZ, int arrowlength) const override;
 
-   void disp(fwdlist<uptr<Card>>::const_iterator begin, fwdlist<uptr<Card>>::const_iterator end) override;
+    void disp(fwdlist<uptr<Card>>::const_iterator begin, fwdlist<uptr<Card>>::const_iterator end) override;
 
-   BasicIO* getBasicIO() override { return io; }
+    BasicIO* getBasicIO() override { return io; }
 
-   void focus() override { io->focus(); };
+    void focus() override { io->focus(); };
 };
 
 namespace AbstractUI {

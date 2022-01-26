@@ -1,12 +1,15 @@
 #include "lib3_graphicalUI.h"
+#include "windows/window.h"
 
 GraphicalUI::GraphicalUI() : io(AbstractIO::factory()) {
     io->setMenuScene();
+    UIElement::io = io;
+
     int screenW, screenH;
     io->getResolution(screenW, screenH, Screen::linesize);
     screen.initScreen(screenW, screenH);
 
-    io->harmonize(screen.leftBar().poster().coords, screen.rightBar().messageZone().coords, 16); //nb windows
+    io->harmonize(screen.leftBar().poster().getCoords(), screen.rightBar().messageZone().getCoords(), 16); //nb windows
 }
 
 void GraphicalUI::registerPlayers(std::list<Player>& players) {
@@ -73,8 +76,11 @@ bool GraphicalUI::attackSwitch(int leftY, int rightY, int topZ, int arrowlength)
 }
 
 void GraphicalUI::disp(fwdlist<uptr<Card>>::const_iterator begin, const fwdlist<uptr<Card>>::const_iterator end) {
+    Rect rect(0, 0, 375, 523); //TODO IMPLEM put actual IO-independant coordinates
     for(auto i = begin; i != end; ++i) {
-        io->draw(*(*i)->oracle, Rect(0, 0, 0, 0), false); //TODO
+        io->draw(*(*i)->oracle, rect, false);
+        rect.shift(380, 0);
+        if(rect.right() > screen.getCoords().right()) break;
     }
 }
 

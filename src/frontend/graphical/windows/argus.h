@@ -14,7 +14,7 @@ struct PlayerHeader: public Sprite<Player> {
     PlayerHeader(): Sprite<Player>(nullptr) {}
     inline void setPlayer(Player* player) { std::cout << "Set target to " << player << "\n"; target = player; }
     void fullDisp(AbstractIO* io) const override {
-        io->draw(*target, coords, false);
+        io->draw(*target, getCoords(), false);
     }
 };
 
@@ -22,7 +22,7 @@ template<typename T>
 struct BoardRow: public ListElement<Sprite<T>> {
     static constexpr bool orientation = UIElement::horizontal;
 
-    void init(const Rect& rect) {
+    void setCoords(const Rect& rect) {
         this->element_size = rect.height; this->offset = 0.2 * rect.height;
     }
 };
@@ -69,32 +69,31 @@ struct PlayerSide : public TemplateGallery<PolicyWith2Objects<PlayerHeader, Boar
     PlayerSide() {
         std::cout << "Create PlayerSide\n";
     }
-    void init(const Rect& rect);
+    void setCoords(const Rect& rect);
     inline PlayerHeader& header() { return policy.object1; }
     inline BoardSide& board() { return policy.object2; }
 };
 
 struct Board : public TemplateGallery<ContainerPolicy<std::array<PlayerSide, 2>, PlayerSide>> {
     Board(): TemplateGallery<ContainerPolicy<std::array<PlayerSide, 2>, PlayerSide>>(vertical) {};
-    void init(const Rect& rect);
+    void setCoords(const Rect& rect);
     inline std::array<PlayerSide, 2>& players() { return policy.subWins; }
 };
 
 struct StackWindow: public VectorElement<Sprite<Resolvable>> {};
 
 struct LeftBar: public TemplateGallery<PolicyWith2Objects<Rectangle, StackWindow, UIElement::vertical>> {
-    void init(const Rect& rect);
+    void setCoords(const Rect& rect);
     inline Rectangle& poster() { return policy.object1; }
     inline StackWindow& stack() { return policy.object2; }
 };
 
 struct OptionZone: public ListElement<Sprite<CardWrapper>> {
     OptionZone();
-    void init(const Rect& rect);
 };
 
 struct RightBar: public TemplateGallery<PolicyWith3Objects<OptionZone, Rectangle, Rectangle, UIElement::vertical>> {
-    void init(const Rect& rect);
+    void setCoords(const Rect& rect);
     inline OptionZone& optionZone() { return policy.object1; }
     inline Rectangle& messageZone() { return policy.object2; }
     inline Rectangle& logbookZone() { return policy.object3; }

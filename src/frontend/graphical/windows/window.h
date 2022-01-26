@@ -7,26 +7,36 @@
 #include "gameplay/resolvables/5resolvables.h"
 #include "gameplay/2cards.h"
 #include "control/3player.h"
+#include <iostream>
 class Target; class AbstractIO;
 
-/* The UI is a mapping from positions (VIEWS) to game objects (MODEL); from UIElements to Containers.
- * While game objects are agent-agnostic, UI / VIEW is part of the agent; for example, a BotAgent needs no UI.
+/** The UI is a mapping from positions (VIEWS) to game objects (MODEL); from UIElements to Containers.
+ * UI / VIEW is part of the agent; for example, a BotAgent needs no UI. Therefore, UI elements and on-screen positions can't be part of the game object,
+ * since game objects are agent-agnostic.
  * We will use a pull-based observer for individual objects (PermanentTN -> Sprite), and a push variant for list objects. */
 
 class UIElement {
+    Rect _coords;
 public:
-    Rect coords;
     bool isWindow;
 
     static DirectioL direction;
     static AbstractIO* io;
     static constexpr bool vertical = true, horizontal = false;
+
     UIElement() = default;
     virtual ~UIElement() = default;
     virtual Target* iterate(char requs, bool needstarget) = 0;
 
     virtual void fullDisp(AbstractIO* io) const = 0;
     virtual void eraseBackground() const;
+
+    void setCoords(const Rect& coords) {
+        _coords = coords;
+        io->draw_rectangle(AbstractIO::HIGH1, coords, 4);
+        std::cout << coords.y << ',' << coords.z << ',' << coords.width << 'x' << coords.height << '\n';
+    }
+    const Rect& getCoords() const { return _coords; }
 };
 
 class LowestUIElement : public UIElement {
@@ -66,14 +76,14 @@ public:
         if(B_is_a_A(requs, target->targetType())) return const_cast<T*>(target);
         else return nullptr;
     }
-    void fullDisp(AbstractIO *io) const override { io->draw(*target, coords, false); }
+    void fullDisp(AbstractIO *io) const override { io->draw(*target, getCoords(), false); }
 };
 
 class Rectangle: public LowestUIElement {
 public:
     Target* getTarget(char) const override { return nullptr; }
     void fullDisp(AbstractIO*) const override {}; // a Rectangle is empty, fullDisp does nothing
-    void init(const Rect& rect) { coords = rect; }
+    void init(const Rect& rect) { setCoords(rect); }
 };
 
 template<typename Gallery>
@@ -113,22 +123,22 @@ struct TemplateGallery: public UIElement {
         }
     }
     Rect getCoordinates(int* yOffset, int* zOffset) const {
-        Rect rect = coords;
+        Rect rect = getCoords();
         if(orientation == vertical) { *yOffset = 0; *zOffset = offset; rect.height = element_size; }
         else { *yOffset = offset; *zOffset = 0; rect.width = element_size; }
         return rect;
     }
     Rect getCoordinates(int index) const {
-        Rect rect = coords;
+        Rect rect = getCoords();
         if(orientation == vertical) { rect.height = element_size; rect.z = index * (element_size + offset); }
         else { rect.width = element_size; rect.y = index * (element_size + offset); }
         return rect;
     }
     void getCoordinates(int pos, int* y, int* z) const {
         if(orientation == horizontal) {
-            *y = coords.y + pos * (element_size + offset); *z = coords.z;
+            *y = getCoords().y + pos * (element_size + offset); *z = getCoords().z;
         } else {
-            *z = coords.z + pos * (element_size + offset); *y = coords.y;
+            *z = getCoords().z + pos * (element_size + offset); *y = getCoords().y;
         }
     }
 };
