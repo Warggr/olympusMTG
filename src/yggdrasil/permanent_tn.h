@@ -48,6 +48,11 @@ public:
     T* getObject() { return &describedObject; }
     const T* getObject() const { return &describedObject; }
 
+    void disp(unsigned int indent, logging::record_ostream& strm) const override {
+        for(uint i=0; i<indent; i++) strm << ' ';
+        strm << "---Permanent @" << this << " containing " << describedObject.describe() << '\n';
+    }
+
     friend class Leaf<T, true>; friend class Leaf<T, false>;
 };
 

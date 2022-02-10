@@ -3,6 +3,15 @@
 
 #include <condition_variable>
 #include <iterator>
+#include <boost/log/core.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/sources/logger.hpp>
+#include <boost/log/sources/basic_logger.hpp>
+#include <boost/log/sources/global_logger_storage.hpp>
+#include <boost/log/sources/record_ostream.hpp>
+namespace src = boost::log::sources;
+namespace logging = boost::log;
+BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(dbg_yggdrasil, src::logger)
 
 template<typename T> class PermanentTN;
 class PermanentN;
@@ -23,6 +32,7 @@ public:
     constexpr iterator_treenode(iterator_treenode* parent): parent(parent) {};
     virtual ~iterator_treenode() = default;
     virtual Leaf<T, iconst>* next(bool bk) = 0;
+    virtual void present(unsigned int indent, logging::record_ostream& strm) const = 0;
 };
 
 template<typename T, bool iconst>
@@ -74,6 +84,11 @@ public:
         return a != nullptr and a->pted == pted;
     }
     pointed_type* getPointed() override { return pted; };
+    void present(unsigned int indent, logging::record_ostream& strm) const override {
+        if(iterator_treenode<T, b>::parent) iterator_treenode<T, b>::parent->present(indent + 1, strm);
+        for(uint i = 0; i<indent; i++) strm << '>';
+        strm << "ConcreteLeaf pointing to " << pted->getPermanent()->describe() << '\n';
+    }
 };
 
 template<class T, bool iconst>
@@ -103,6 +118,13 @@ public:
     }
 
     isitconst(PermanentN*, iconst) getPointed() override { return content->getPointed(); }
+    void present(unsigned int indent, logging::record_ostream& strm) const override {
+        if(this->parent) this->parent->present(indent + 1, strm);
+        for(uint i = 0; i<indent; i++) strm << '>';
+        strm << "AdapterLeaf adapting (\n";
+        content->present(0, strm);
+        strm << ')' << '\n';
+    }
 };
 
 /** Allows to iterate over an Yggdrasil object. */
@@ -112,7 +134,7 @@ class iterator {
      * but with a hierarchy of Leaves that get built and destroyed. */
     Leaf<T, iconst>* in;
 public:
-    constexpr iterator(Leaf<T, iconst>* in) : in(in) {};
+    constexpr iterator(Leaf<T, iconst>* in) : in(in) { }
     iterator operator--() { in = in->next(false); return *this; }
     iterator operator++() { in = in->next(true); return *this; }
     bool operator==(const iterator& other) const { return in == other.in or *in == *other.in; }
@@ -131,6 +153,17 @@ public:
         return *(operator->());
     }
     typename ConcreteLeaf<T, iconst>::pointed_type* getPointed() const { return in->getPointed(); };
+    void present() {
+        src::logger& lg = dbg_yggdrasil::get();
+        logging::record rec = lg.open_record();
+        logging::record_ostream strm(rec);
+
+        if(!in) strm << "(iterator END)\n";
+        else in->present(0, strm);
+
+        strm.flush();
+        lg.push_record(boost::move(rec));
+    }
 };
 
 #endif //OLYMPUS_HEADER_5_YGGDRASIL_H

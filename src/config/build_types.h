@@ -1,7 +1,9 @@
 #ifndef OLYMPUS_BUILD_TYPES_H
 #define OLYMPUS_BUILD_TYPES_H
 
+#ifndef WANTED_DEBUG_FLAGS
 #define WANTED_DEBUG_FLAGS @WANTED_DEBUG_FLAGS@
+#endif
 
 #define gdebug(x) if((x) & WANTED_DEBUG_FLAGS) std::cerr
 
@@ -20,5 +22,6 @@
 #define DBG_TARGETING 0x8
 #define DBG_RAGNAROK 0x10
 #define DBG_IOUI 0x20
+#define DBG_YGGDRASIL 0x40
 
 #endif //OLYMPUS_BUILD_TYPES_H

@@ -6,6 +6,9 @@
 class BoardN; class Player; class Card;
 template<typename T> class StateTN;
 
+#define BLOCKSIZE (1 << (multiplicity - 1))
+#define PATTERNSIZE (1 << multiplicity)
+
 template<typename T>
 class Y_Hashtable : public Yggdrasil<T> {
 protected:
@@ -13,6 +16,9 @@ protected:
     int ht_size_log;
     CollectionTN<T>* ht;
 public:
+    inline CollectionTN<T>& getChild(int block, int i, int multiplicity) const { return ht[ block * PATTERNSIZE + i ]; }
+    inline int nbBlocks(int multiplicity) const { return 1 << (ht_size_log - multiplicity); }
+
     template<bool b>
     class myiterator : public inner_iterator<T, b> {
         char position;
@@ -23,6 +29,11 @@ public:
         void advance(bool bk) override { if(bk) position++; else position--; }
         bool isEnd(bool bk) const override { if(bk) return position >= (1<<node->ht_size_log); else return position == -1; }
         Leaf<T, b>* down(bool bk) override { return node->createStart(this, bk); }
+        void present(uint indent, logging::record_ostream& strm) const override {
+            if(iterator_treenode<T, b>::parent) iterator_treenode<T, b>::parent->present(indent + 1, strm);
+            for(uint i = 0; i<indent; i++) strm << '>';
+            strm << "Hashtable @" << node << " at pos " << static_cast<int>(position) << '\n';
+        }
     };
 
     Y_Hashtable(BoardN* parent): parent(parent), ht_size_log(0), ht(new CollectionTN<T>[1])  { ht->setParent(this); }
@@ -38,20 +49,21 @@ public:
         newState->init(ht_size_log, this);
     }
     void refold(int multiplicity) {
+        //TODO IMPL be able to refold a fold that's not the last one
         auto* new_ht = new CollectionTN<T>[(1 << (ht_size_log-1))];
-        for(int i = 0; i < (1 << (ht_size_log - multiplicity - 1)); ++i )
-            for (int j = 0; j < (1 << multiplicity); ++j ) {
-                new_ht[i * (1 << (multiplicity + 1)) + j] = std::move(ht[i * (1 << (multiplicity + 1)) + j]);
-                new_ht[i * (1 << (multiplicity + 1)) + j].merge(ht[(2*i + 1) * (1 << multiplicity) + j]);
+        for(int blk = 0; blk < nbBlocks(ht_size_log); ++blk )
+            for (int i = 0; i < BLOCKSIZE; ++i ) {
+                new_ht[blk * PATTERNSIZE + i] = std::move(ht[blk * PATTERNSIZE + i]);
+                new_ht[blk * PATTERNSIZE + i].merge(ht[blk * PATTERNSIZE + BLOCKSIZE + i]);
             }
         ht_size_log--;
         delete[] ht;
         ht = new_ht;
     }
     inline CollectionTN<T>* firstNonEmpty(int multiplicity) {
-        for(int i = 0; i < (1 << (ht_size_log-multiplicity+1)); ++i )
-            for (int j = 0; j < (1 << (multiplicity-1)); ++j )
-                if (!ht[(1<<multiplicity)*i + j].empty()) return ht + (1<<multiplicity)*i + j;
+        for(int blk = 0; blk < nbBlocks(ht_size_log); ++blk )
+            for (int i = 0; i < BLOCKSIZE; ++i )
+                if (!ht[blk * PATTERNSIZE + i].empty()) return &(ht[blk * PATTERNSIZE + i]);
         return nullptr;
     }
     inline const CollectionTN<T>* firstNonEmpty(int multiplicity) const {
@@ -62,9 +74,9 @@ public:
     }
     inline unsigned int partialSize(int multiplicity) const {
         unsigned int size = 0;
-        for(int i = 0; i < (1 << (ht_size_log-multiplicity+1)); ++i )
-            for (int j = 0; j < (1 << (multiplicity-1)); ++j )
-                size += ht[(1<<multiplicity)*i + j].size();
+        for(int blk = 0; blk < nbBlocks(ht_size_log); ++blk )
+            for (int i = 0; i < BLOCKSIZE; ++i )
+                size += ht[blk*PATTERNSIZE + i].size();
         return size;
     }
     bool empty() const override { return partlyEmpty(ht_size_log+1); }
@@ -72,6 +84,7 @@ public:
     iterator<T, false> begin() override { return { createStart(nullptr, true) }; }
     iterator<T, true> cbegin() const override { return { createStart(nullptr, true) }; }
     iterator<Permanent, false> pbegin() override {
+        //TODO OPTIMIZE for Permanents, these shouldn't override
         return { AdapterLeaf<T, false>::create( createStart(nullptr, true), nullptr) };
     }
     iterator<Permanent, true> cpbegin() const override {
@@ -116,11 +129,16 @@ public:
         (void) object; //TODO CRITICAL implement
     };
 
+    void disp(unsigned int indent, logging::record_ostream& strm) const override {
+        for(uint i=0; i<indent; i++) strm << ' ';
+        strm << "---Hashtable @" << this << " of size " << (1 << ht_size_log) << '\n';
+        for(int i=0; i<(1 << ht_size_log); i++) ht[i].disp(indent + 1, strm);
+    };
+
 #ifdef F_TESTS
     int getSize() const { return ht_size_log; }
     const CollectionTN<T>* getObject(int index) const { return &ht[index]; }
 #endif
-    friend class StateTN<T>;
 };
 
 #endif //OLYMPUS_YGGDRSAIL_H

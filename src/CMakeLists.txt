@@ -1,5 +1,7 @@
 set(INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/include" ${INCLUDES})
 
+find_package( Boost 1.40 COMPONENTS log REQUIRED )
+
 configure_file(config/build_types.h config/build_types.h)
 
 target_compile_definitions(project_warnings INTERFACE
@@ -8,7 +10,7 @@ target_compile_definitions(project_warnings INTERFACE
         flag_t=unsigned\ char
         fwdlist=std::forward_list)
 
-link_libraries(project_options project_warnings)
+link_libraries(project_options project_warnings ${Boost_LIBRARIES})
 
 function(create_test SUT)
     if(ENABLE_TESTING)

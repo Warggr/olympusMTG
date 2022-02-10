@@ -29,6 +29,7 @@ public:
 
     virtual bool empty() const = 0;
     virtual unsigned int size() const = 0; //TODO DREAM cache it somewhere
+    virtual void disp(unsigned int indent, logging::record_ostream& strm) const = 0;
 };
 
 /** Helper class. Do not instantiate, use class Yggdrasil instead. */

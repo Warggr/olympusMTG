@@ -5,6 +5,7 @@
 #include "permanent_tn.h"
 #include <list>
 #include <algorithm>
+#include <iostream>
 
 template<class T> class Y_Hashtable;
 class BoardN; class Player;
@@ -29,6 +30,11 @@ public:
         Leaf<T, iconst>* down(bool bk) override {
             return it->createStart(this, bk);
         }
+        void present(uint indent, logging::record_ostream& strm) const override {
+            if(iterator_treenode<T, iconst>::parent) iterator_treenode<T, iconst>::parent->present(indent + 1, strm);
+            for(uint i = 0; i<indent; i++) strm << '>';
+            strm << "Collection @" << node << " at pos <somewhere in list> \n";
+        }
     };
 
     explicit CollectionTN(Y_Hashtable<T>* parent = nullptr): parent(parent) {}
@@ -41,25 +47,17 @@ public:
 
     bool empty() const override { for(auto& i : children) if(!i.empty()) return false; return true; }
     unsigned int size() const override {
-        uint size = 0; for(auto& i : children) size += i.size(); return size; //TODO I'm pretty sure there's an STL algorithm for this
+        uint size = 0; for(auto& i : children) size += i.size(); return size;
     }
 
     void remove(T* object) {
-        (void) object; //TODO implement
+        (void) object; //TODO CRITICAL implement
     };
 
     void merge(CollectionTN& other) {
         children.splice(children.end(), other.children);
     }
 
-    /*void slice_in_two(Criterion crit, CollectionTN<T>* fulfilled, CollectionTN<T>* not_fulfilled) {
-        for(auto i = children.begin(); i != children.end(); ++i) {
-            if(i->fulfills(crit)) {
-                not_fulfilled->objs.splice(not_fulfilled->objs.begin(), children, i);
-            }
-        }
-        fulfilled->objs = std::move(children);
-    }*/
     iterator<T, false> begin() override { return { createStart(nullptr, true) }; }
     iterator<T, true> cbegin() const override { return { createStart(nullptr, true) }; }
     iterator<Permanent, false> pbegin() override {
@@ -84,6 +82,13 @@ public:
     Leaf<Permanent, true>* pcreateStart(inner_iterator<Permanent, true>* iter, bool bk) const override {
         return AdapterLeaf<T, true>::create(createStart(nullptr, bk), iter);
     }
+
+    void disp(unsigned int indent, logging::record_ostream& strm) const override {
+        for(uint i=0; i<indent; i++) strm << ' ';
+        strm << "---Collection @" << this << '\n';
+        for(const auto& i : children) i.disp(indent + 1, strm);
+    };
+
 #ifdef F_TESTS
     const std::list<PermanentTN<T>>& getChildren() const { return children; }
 #endif
