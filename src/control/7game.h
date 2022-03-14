@@ -3,7 +3,6 @@
 
 #include <memory>
 #include <list>
-#include <forward_list>
 #include "3player.h"
 #include "gameplay/resolvables/stack.h"
 

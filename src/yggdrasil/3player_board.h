@@ -13,7 +13,7 @@ public:
     template<bool b>
     class myiterator: public inner_iterator<Permanent, b> {
         isitconst(BoardN, b)* par;
-        char pos : 2;
+        unsigned char pos : 2;
     public:
         myiterator(isitconst(BoardN, b)* par, inner_iterator<Permanent, b>* parent = nullptr, char starting_pos = 0):
             inner_iterator<Permanent, b>(parent), par(par), pos(starting_pos) {};

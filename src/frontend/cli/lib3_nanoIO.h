@@ -32,8 +32,6 @@ public:
 
     void poster(const CardOracle& card) const { disp(card, HIGHLIGHT); }
 
-    bool attackSwitch(int leftY, int rightY, int topZ, int arrowlength);
-
     template<class Container> uint chooseAmong(Container container) {
         if(container.size() == 1) return 0;
         message("Choose among these:\n");

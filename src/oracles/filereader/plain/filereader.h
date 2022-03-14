@@ -2,9 +2,9 @@
 #define OLYMPUS_PLAIN_FILEREADER_H
 
 #include <iostream>
-#include <utility>
+#include "logging.h"
 #include "headE_enums.h"
-#include "build_types.h"
+#include "build_types.h" //for pedantic_safepoint
 #include "classes/serializable.h"
 #include "../reader.h"
 #include "../visit.hpp"

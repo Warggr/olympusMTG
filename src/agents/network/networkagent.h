@@ -29,7 +29,7 @@ public:
 
     Option* chooseOpt(bool sorcerySpeed, Player* pl) override;
 
-    bool chooseAttackers(Y_Hashtable<Creature>& mycreas) override;
+    void chooseAttackers(StateTN<Creature>& mycreas) override;
 
     void chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature>& attackers) override;
 

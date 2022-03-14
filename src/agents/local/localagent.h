@@ -38,7 +38,7 @@ public:
 
     bool keepsHand(const std::forward_list<uptr<Card>>& cards) override;
 
-    bool chooseAttackers(Y_Hashtable<Creature>& mycreas) override;
+    void chooseAttackers(StateTN<Creature>& attackers) override;
 
     void chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature>& attackers) override;
 

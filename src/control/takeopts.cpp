@@ -2,7 +2,6 @@
 #include "3player.h"
 #include "7game.h"
 #include "gameplay/resolvables/stack.h"
-#include <iostream>
 
 //Player calls choicephase.
 //Player::choicephase calls choose_and_use_opt. Calls check_and_pop. Popped option is returned and cast (aka added to stack, or land put in play)

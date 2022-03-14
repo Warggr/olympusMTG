@@ -5,7 +5,7 @@ void AbstractIO::draw(const CardWrapper& card, const Rect& rect, bool highlight)
     draw(*card->oracle, rect, highlight);
 }
 
-BasicIO::checklistCallbackAction AbstractIO::getNextPosition(BasicIO::abstract_iterator_wrapper* iter, uint &position, uint max) {
+BasicIO::checklistCallbackAction AbstractIO::getNextPosition(abstract_iterator_wrapper* iter, uint &position, uint max) {
     while(true) {
         DirectioL dir = get_direction_key();
         switch(dir) {

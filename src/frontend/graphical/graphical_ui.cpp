@@ -35,19 +35,16 @@ Target* GraphicalUI::chooseTarget(char type) {
     return screen.iterate(type, true);
 }
 
-bool GraphicalUI::chooseattackers(Y_Hashtable<Creature>& cowards) {
-    bool ret = false;
+/*void GraphicalUI::chooseattackers(StateTN<Creature>& attackers) {
     int yOffset, zOffset;
     Rect rect = screen.board().players()[0].board().getCoordinates(&yOffset, &zOffset);
-    for(auto& i : cowards) {
+    for(auto& i : attackers) {
         bool attacks = io->attackSwitch(rect.y, rect.right(), rect.z, 15);
         if(attacks) {
-            ret = true;
             (void) i;//TODO actually make the creature attack
         }
     }
-    return ret;
-}
+}*/
 
 void GraphicalUI::chooseblockers(Y_Hashtable<Creature>& defenders, StateTN<Creature>& attackers) {
     int i = 0;
@@ -66,10 +63,6 @@ Creature* GraphicalUI::blockerSwitch(const Creature& blocker, int blockerIndex, 
 Option* GraphicalUI::chooseOpt(bool sorcerySpeed) {
     (void) sorcerySpeed;
     return nullptr; //TODO
-}
-
-bool GraphicalUI::attackSwitch(int leftY, int rightY, int topZ, int arrowlength) const {
-    return io->attackSwitch(leftY, rightY, topZ, arrowlength);
 }
 
 void GraphicalUI::disp(fwdlist<uptr<Card>>::const_iterator begin, const fwdlist<uptr<Card>>::const_iterator end) {

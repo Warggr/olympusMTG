@@ -3,7 +3,3 @@
 
 
 using namespace std;
-
-bool NanoIO::attackSwitch(int, int, int, int) {
-	return simpleChoice("Attack", nullptr);
-}

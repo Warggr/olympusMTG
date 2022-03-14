@@ -3,21 +3,14 @@
 
 #include <condition_variable>
 #include <iterator>
-#include <boost/log/core.hpp>
-#include <boost/log/expressions.hpp>
-#include <boost/log/sources/logger.hpp>
-#include <boost/log/sources/basic_logger.hpp>
-#include <boost/log/sources/global_logger_storage.hpp>
-#include <boost/log/sources/record_ostream.hpp>
-namespace src = boost::log::sources;
-namespace logging = boost::log;
-BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(dbg_yggdrasil, src::logger)
+#include "logging.h"
 
 template<typename T> class PermanentTN;
 class PermanentN;
 template<typename T> class Yggdrasil_N;
 class Yggdrasil_base;
 class Permanent;
+template<class T, bool b> class iterator;
 template<class T, bool b> class AdapterLeaf;
 template<class T, bool b> class Leaf;
 
@@ -33,6 +26,7 @@ public:
     virtual ~iterator_treenode() = default;
     virtual Leaf<T, iconst>* next(bool bk) = 0;
     virtual void present(unsigned int indent, logging::record_ostream& strm) const = 0;
+    friend class iterator<T, iconst>;
 };
 
 template<typename T, bool iconst>
@@ -154,15 +148,20 @@ public:
     }
     typename ConcreteLeaf<T, iconst>::pointed_type* getPointed() const { return in->getPointed(); };
     void present() {
-        src::logger& lg = dbg_yggdrasil::get();
-        logging::record rec = lg.open_record();
-        logging::record_ostream strm(rec);
+        OPEN_LOG_AS(DBG_YGGDRASIL, strm);
 
         if(!in) strm << "(iterator END)\n";
         else in->present(0, strm);
 
-        strm.flush();
-        lg.push_record(boost::move(rec));
+        CLOSE_LOG(strm);
+    }
+    template<typename Container>
+    typename Container::myiterator<iconst>* findFor(const Container* cont) const {
+        for(iterator_treenode<T, iconst>* iter = in; iter != nullptr; iter = iter->parent) {
+            auto myiter = dynamic_cast<typename Container::myiterator<iconst>*>(iter);
+            if(myiter != nullptr and myiter->getPted() == cont) return myiter;
+        }
+        return nullptr;
     }
 };
 

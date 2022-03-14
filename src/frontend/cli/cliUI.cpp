@@ -5,12 +5,11 @@
 #include "gameplay/permanents/4permanents.h"
 #include "gameplay/resolvables/stack.h"
 #include "control/3player.h"
+#include "yggdrasil/iterators.h"
 
 void CliUI::addCards(const std::list<CardWrapper>&) {}
 
-void CliUI::registerPlayers(std::list<Player> &players) { the_players = &players; }
-
-void CliUI::splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>> &blockers) {
+void CliUI::splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) {
     (void) power; (void) blockers; //TODO
 }
 
@@ -18,17 +17,7 @@ Target* CliUI::chooseTarget(char type) {
     (void) type; return nullptr;
 }
 
-bool CliUI::attackSwitch(int leftY, int rightY, int topZ, int arrowlength) const {
-    (void) leftY; (void) rightY; (void) topZ; (void) arrowlength;
-    return false;
-}
-
-bool CliUI::chooseattackers(Y_Hashtable<Creature> &cowards) {
-    (void) cowards;
-    return false;
-}
-
-void CliUI::chooseblockers(Y_Hashtable<Creature> &defenders, StateTN<Creature> &attackers) {
+void CliUI::chooseblockers(Y_Hashtable<Creature>& defenders, StateTN<Creature>& attackers) {
     (void) defenders; (void) attackers;
 }
 

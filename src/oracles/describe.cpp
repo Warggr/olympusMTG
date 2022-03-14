@@ -6,6 +6,12 @@
 #include "classes/perm_option.h"
 #include <vector>
 
+#include "frontend/basicIO.h"
+
+void CardOracle::disp(BasicIO *io) const {
+    io->disp(*this, 0);
+}
+
 std::string PermOption::describe(const std::string& cardname) const {
     std::string ret = "[" + cost.mana.m2t() + "]";
     if(tapsymbol){
@@ -110,12 +116,6 @@ std::string card_type::toString() const {
             return ret + (shift ? "Instant" : "Sorcery");
     }
     return ret;
-}
-
-#include "frontend/basicIO.h"
-
-void CardOracle::disp(BasicIO *io) const {
-    io->disp(*this, 0);
 }
 
 std::string CardOption::describe() const {

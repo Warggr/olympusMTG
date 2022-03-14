@@ -8,7 +8,8 @@
 #include "boost/format.hpp"
 #include "displayable.h"
 
-class CardOracle; class Target; class Card; class Player; class CardWrapper;
+class CardOracle; class Target; class Card; class Player; class CardWrapper; class Creature;
+template<typename T> class StateTN;
 
 class BasicIO {
 protected:
@@ -19,10 +20,10 @@ protected:
         virtual abstract_iterator_wrapper& operator++() = 0;
         virtual abstract_iterator_wrapper& operator--() = 0;
     };
-    template<typename Container> class iterator_wrapper: public abstract_iterator_wrapper {
+    template<typename iter> class iterator_wrapper: public abstract_iterator_wrapper {
     public:
-        typename Container::iterator inner;
-        constexpr iterator_wrapper(typename Container::iterator i): inner(i) {};
+        iter inner;
+        constexpr iterator_wrapper(iter i): inner(i) {};
         abstract_iterator_wrapper& operator++() override { ++inner; return *this; }
         abstract_iterator_wrapper& operator--() override { ++inner; return *this; }
     };
@@ -45,9 +46,11 @@ public:
     virtual int getInt(int lowerBound, int upperBound) = 0;
     virtual bool simpleChoice(const char* optTrue, const char* optFalse) = 0;
 
+    void chooseAttackers(StateTN<Creature>& attackers);
+
     template<typename O>
     uint chooseAmong(std::vector<O> all) {
-        iterator_wrapper<std::vector<O>> wrapper = all.begin();
+        iterator_wrapper<typename std::vector<O>::iterator> wrapper = all.begin();
         uint pos = 0;
         int i = 0;
         for(auto iter = all.begin(); iter != all.end(); ++iter, ++i)
@@ -69,7 +72,7 @@ public:
         uint nbSelected = 0;
         std::vector<bool> selected(all.size() + 1, false);
 
-        iterator_wrapper<std::list<O>> wrapper = all.begin();
+        iterator_wrapper<typename std::list<O>::iterator> wrapper = all.begin();
         uint pos = 0;
         while(true) {
             int i=0;
@@ -90,12 +93,12 @@ public:
         }
         auto lastPos = all.end(), iter2 = all.begin();
         for(uint i=0; i<all.size(); ++i, ++iter2) if(selected[i] != selected[i+1]) {
-                if(lastPos == all.end()) {
-                    lastPos = iter2;
-                } else {
-                    ret.splice(ret.end(), all, lastPos, iter2);
-                    lastPos = all.end();
-                }
+            if(lastPos == all.end()) {
+                lastPos = iter2;
+            } else {
+                ret.splice(ret.end(), all, lastPos, iter2);
+                lastPos = all.end();
+            }
         }
         if(lastPos != all.end()) ret.splice(ret.end(), all, lastPos, iter2);
         return ret;

@@ -3,7 +3,7 @@
 #include "oracles/filereader/plain/Dictionary/dictholder.h"
 #include "oracles/filereader/visit.hpp"
 #include "classes/card_oracle.h"
-#include "build_types.h"
+#include "logging.h"
 #include "leveldb/db.h"
 #include <fstream>
 #include <sstream>
@@ -18,7 +18,7 @@ void refreshDatabase() {
 
     std::ifstream fb("database/oracles.txt", std::ios::in);
     if(!fb) {
-        gdebug(DBG_IMPORTANT | DBG_READFILE) << "Error: no oracles.txt file\n";
+        gdebug(DBG_READFILE) << "Error: no oracles.txt file\n";
         exit(1);
     }
 

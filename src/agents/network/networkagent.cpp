@@ -54,14 +54,13 @@ bool NetworkAgent::keepsHand(const fwdlist<uptr<Card>>& cards) {
     return (answer[2] == 1);
 }
 
-Option * NetworkAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
+Option* NetworkAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
     (void) sorcerySpeed; (void) pl; //TODO implement
     return nullptr;
 }
 
-bool NetworkAgent::chooseAttackers(Y_Hashtable<Creature>& mycreas) {
+void NetworkAgent::chooseAttackers(StateTN<Creature>& mycreas) {
     (void) mycreas; //TODO implement
-    return false;
 }
 
 void NetworkAgent::chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature>& attackers) {

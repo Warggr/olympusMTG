@@ -3,6 +3,7 @@
 
 #include "abstract_n.h"
 #include "collection_tn.h"
+#include <functional>
 class BoardN; class Player; class Card;
 template<typename T> class StateTN;
 
@@ -16,7 +17,7 @@ protected:
     int ht_size_log;
     CollectionTN<T>* ht;
 public:
-    inline CollectionTN<T>& getChild(int block, int i, int multiplicity) const { return ht[ block * PATTERNSIZE + i ]; }
+    inline CollectionTN<T>& getChild(int block, int i, int multiplicity, bool first) const { return ht[ block * PATTERNSIZE + i + (first ? 0 : BLOCKSIZE) ]; }
     inline int nbBlocks(int multiplicity) const { return 1 << (ht_size_log - multiplicity); }
 
     template<bool b>
@@ -37,6 +38,14 @@ public:
     };
 
     Y_Hashtable(BoardN* parent): parent(parent), ht_size_log(0), ht(new CollectionTN<T>[1])  { ht->setParent(this); }
+    bool split(std::function<bool(T)> predicate, int multiplicity) {
+        bool ret = false;
+        for(int blk = 0; blk < nbBlocks(multiplicity); ++blk)
+            for (int i = 0; i < BLOCKSIZE; ++i ) {
+                ret = ht[blk * PATTERNSIZE + i].split(predicate, ht[blk * PATTERNSIZE + BLOCKSIZE + i]) || ret;
+            }
+        return ret;
+    }
     void unfold(StateTN<T>* newState) {
         auto* new_ht = new CollectionTN<T>[(1 << (ht_size_log+1))];
         for(int i=0; i<(1 << ht_size_log); i++) {
@@ -60,27 +69,27 @@ public:
         delete[] ht;
         ht = new_ht;
     }
-    inline CollectionTN<T>* firstNonEmpty(int multiplicity) {
+    inline CollectionTN<T>* firstNonEmpty(int multiplicity, bool first) {
         for(int blk = 0; blk < nbBlocks(ht_size_log); ++blk )
             for (int i = 0; i < BLOCKSIZE; ++i )
-                if (!ht[blk * PATTERNSIZE + i].empty()) return &(ht[blk * PATTERNSIZE + i]);
+                if (!getChild(blk, i, multiplicity, first).empty()) return &(getChild(blk, i, multiplicity, first));
         return nullptr;
     }
-    inline const CollectionTN<T>* firstNonEmpty(int multiplicity) const {
-        return const_cast<Y_Hashtable<T>*>(this)->firstNonEmpty(multiplicity);
+    inline const CollectionTN<T>* firstNonEmpty(int multiplicity, bool first) const {
+        return const_cast<Y_Hashtable<T>*>(this)->firstNonEmpty(multiplicity, first);
     }
-    inline bool partlyEmpty(int multiplicity) const {
-        return firstNonEmpty(multiplicity) == nullptr;
+    inline bool partlyEmpty(int multiplicity, bool first) const {
+        return firstNonEmpty(multiplicity, first) == nullptr;
     }
-    inline unsigned int partialSize(int multiplicity) const {
+    inline unsigned int partialSize(int multiplicity, bool first) const {
         unsigned int size = 0;
         for(int blk = 0; blk < nbBlocks(ht_size_log); ++blk )
             for (int i = 0; i < BLOCKSIZE; ++i )
-                size += ht[blk*PATTERNSIZE + i].size();
+                size += getChild(blk, i, multiplicity, first).size();
         return size;
     }
-    bool empty() const override { return partlyEmpty(ht_size_log+1); }
-    unsigned int size() const override { return partialSize(1); }
+    bool empty() const override { return partlyEmpty(ht_size_log+1, true); }
+    unsigned int size() const override { return partialSize(ht_size_log+1, true); }
     iterator<T, false> begin() override { return { createStart(nullptr, true) }; }
     iterator<T, true> cbegin() const override { return { createStart(nullptr, true) }; }
     iterator<Permanent, false> pbegin() override {

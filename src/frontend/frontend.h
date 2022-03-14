@@ -40,12 +40,9 @@ public:
 
     std::list <CardWrapper> chooseCardsToKeep(std::list<CardWrapper>& list, unsigned nbToDiscard);
 
-    virtual bool attackSwitch(int leftY, int rightY, int topZ, int arrowlength) const = 0;
-
     virtual void registerPlayers(std::list<Player>& players) = 0;
     virtual void registerMe(Player* pl) = 0;
 
-    virtual bool chooseattackers(Y_Hashtable<Creature>& cowards) = 0;
     virtual void chooseblockers(Y_Hashtable<Creature>& defenders, StateTN<Creature>& attackers) = 0;
 
     virtual void addCards(const std::list<CardWrapper>& cards) = 0;

@@ -38,8 +38,8 @@ bool BotAgent::keepsHand(const std::forward_list<uptr<Card>>& cards) {
     return true;
 }
 
-bool BotAgent::chooseAttackers(Y_Hashtable<Creature>& mycreas) {
-    (void) mycreas; return false;
+void BotAgent::chooseAttackers(StateTN<Creature>& mycreas) {
+    (void) mycreas;
 }
 
 void BotAgent::chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature>& attackers) {

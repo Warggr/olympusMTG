@@ -1,3 +1,4 @@
+#include "frontend/basicIO.h"
 #include "localagent.h"
 #include "gameplay/2cards.h"
 #include "gameplay/permanents/4permanents.h"
@@ -38,8 +39,8 @@ bool LocalAgent::keepsHand(const std::forward_list<uptr<Card>>& cards) {
     return viewer.frontEnd->getBasicIO()->simpleChoice("Keep Hand", "Mulligan");
 }
 
-bool LocalAgent::chooseAttackers(Y_Hashtable<Creature>& mycreas) {
-    return viewer.frontEnd->chooseattackers(mycreas);
+void LocalAgent::chooseAttackers(StateTN<Creature>& attackers) {
+    return viewer.frontEnd->getBasicIO()->chooseAttackers(attackers);
 }
 
 void LocalAgent::chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature>& attackers) {

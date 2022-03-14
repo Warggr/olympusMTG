@@ -6,6 +6,7 @@
 #include <list>
 #include <algorithm>
 #include <iostream>
+#include <functional>
 
 template<class T> class Y_Hashtable;
 class BoardN; class Player;
@@ -25,6 +26,7 @@ public:
     public:
         myiterator(isitconst(CollectionTN<T>, iconst)* n, inner_iterator<T, iconst>* in = nullptr):
             inner_iterator<T, iconst>(in), node(n), it(n->children.begin()) {}
+        const CollectionTN* getPted() const { return node; }
         void advance(bool bk) override { if(bk) ++it; else --it; }
         bool isEnd(bool bk) const override { return (bk and it == node->children.end()) or (!bk and it == --node->children.begin()); }
         Leaf<T, iconst>* down(bool bk) override {
@@ -35,6 +37,7 @@ public:
             for(uint i = 0; i<indent; i++) strm << '>';
             strm << "Collection @" << node << " at pos <somewhere in list> \n";
         }
+        friend class CollectionTN;
     };
 
     explicit CollectionTN(Y_Hashtable<T>* parent = nullptr): parent(parent) {}
@@ -56,6 +59,34 @@ public:
 
     void merge(CollectionTN& other) {
         children.splice(children.end(), other.children);
+    }
+
+    bool split(std::function<bool(T)> predicate, CollectionTN& other) {
+        bool ret = false;
+        for(auto iter = children.begin(); iter != children.end(); ){
+            if(predicate(*iter)){
+                auto i2 = iter;
+                i2++;
+                other.children.splice(other.children.begin(), *this, iter);
+                ret = true;
+                iter = i2;
+            } else {
+                ++iter;
+            }
+        }
+        return ret;
+    }
+
+    template<bool iconst>
+    iterator<T, iconst> splice(CollectionTN& other, iterator<T, iconst> position) {
+//        std::cout << "Splicing me (@" << this << ") inserting from other (@" << &other << ")\n";
+
+        myiterator<iconst>* iter = position.template findFor<CollectionTN<T>>(&other);
+//        std::cout << "Found iterator @" << iter << " (node=" << iter->node << ")\n";
+
+        children.splice(children.begin(), other.children, iter->it);
+        ++iter->it;
+        return position;
     }
 
     iterator<T, false> begin() override { return { createStart(nullptr, true) }; }

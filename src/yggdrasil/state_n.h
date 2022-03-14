@@ -9,6 +9,7 @@ template<typename T>
 class StateTN: public Yggdrasil<T> {
     Y_Hashtable<T>* parent;
     int multiplicity; //log-size of a pattern.
+    bool first;
     //E.g multiplicity 0: 111111... 1:010101... 2: 00110011... 3: 000011110...
     //block-size is 1 << (multiplicity - 1), block-number is 1 << (ht_size_log - multiplicity)
     inline int nbBlocks() const { return parent->nbBlocks(multiplicity); }
@@ -17,6 +18,7 @@ public:
     template<bool b> class myiterator: public inner_iterator<T, b> {
         isitconst(StateTN<T>, b)* pted;
         int block, position;
+        CollectionTN<T>& getRange() { return pted->parent->getChild(block, position, pted->multiplicity, pted->first); }
     public:
         myiterator(isitconst(StateTN<T>, b)* pted, inner_iterator<T, b>* parent):
             inner_iterator<T, b>(parent), pted(pted), block(0), position(0) {};
@@ -29,21 +31,25 @@ public:
             else { position--; if(position == -1) { position = pted->blockSize()-1; block--; } }
         }
         Leaf<T, b>* down(bool bk) override {
-            return pted->parent->getChild(block, position, pted->multiplicity).createStart(this, bk);
+            return getRange().createStart(this, bk);
         }
         void present(uint indent, logging::record_ostream& strm) const override {
             if(iterator_treenode<T, b>::parent) iterator_treenode<T, b>::parent->present(indent + 1, strm);
             for(uint i = 0; i<indent; i++) strm << '>';
             strm << "StateTN @" << pted << " at block " << block << ", position " << position << '\n';
         }
+        const StateTN<T>* getPted() const { return pted; }
+        friend class StateTN;
     };
 
+    StateTN(): parent(nullptr), multiplicity(0), first(false) {};
+    StateTN(const StateTN& tn): parent(tn.parent), multiplicity(tn.multiplicity), first(tn.first) { }
     void init(int mult, Y_Hashtable<T>* par) { multiplicity = mult; parent = par; }
     bool empty() const override {
-        return parent == nullptr or parent->partlyEmpty(multiplicity);
+        return parent == nullptr or parent->partlyEmpty(multiplicity, first);
     }
     unsigned int size() const override {
-        return parent == nullptr ? 0 : parent->partialSize(multiplicity);
+        return parent == nullptr ? 0 : parent->partialSize(multiplicity, first);
     }
     iterator<T, false> begin() override { return { createStart(nullptr, true) }; }
     iterator<T, true> cbegin() const override { return { createStart(nullptr, true) }; }
@@ -58,15 +64,15 @@ public:
         if(bk) {
             for(int blk = 0; blk < nbBlocks(); ++blk)
                 for (int i = 0; i != blockSize(); ++i)
-                    if (!parent->getChild(blk, i, multiplicity).empty()) {
-                        return parent->getChild(blk, i, multiplicity).createStart(
+                    if (!parent->getChild(blk, i, multiplicity, first).empty()) {
+                        return parent->getChild(blk, i, multiplicity, first).createStart(
                                 new myiterator<false>(this, iter), bk);
                     }
         } else {
             for (int blk = nbBlocks() - 1; blk != -1; --blk)
                 for (int i = blockSize() - 1; i != -1; --i)
-                    if (!parent->getChild(blk, i, multiplicity).empty()) {
-                        return parent->getChild(blk, i, multiplicity).createStart(
+                    if (!parent->getChild(blk, i, multiplicity, first).empty()) {
+                        return parent->getChild(blk, i, multiplicity, first).createStart(
                                 new myiterator<false>(this, iter), bk);
                     }
         }
@@ -77,15 +83,15 @@ public:
         if(bk) {
             for(int blk = 0; blk < nbBlocks(); ++blk)
                 for (int i = 0; i != blockSize() ; ++i)
-                    if (!parent->getChild(blk, i, multiplicity).empty()) {
-                        return parent->getChild(blk, i, multiplicity).createStart(
+                    if (!parent->getChild(blk, i, multiplicity, first).empty()) {
+                        return parent->getChild(blk, i, multiplicity, first).createStart(
                                 new myiterator<true>(this, iter), bk);
                     }
         } else {
             for (int blk = nbBlocks() - 1; blk != -1; --blk)
                 for (int i = blockSize() - 1; i != 0; --i)
-                    if (!parent->getChild(blk, i, multiplicity).empty()) {
-                        return parent->getChild(blk, i, multiplicity).createStart(
+                    if (!parent->getChild(blk, i, multiplicity, first).empty()) {
+                        return parent->getChild(blk, i, multiplicity, first).createStart(
                                 new myiterator<true>(this, iter), bk);
                     }
         }
@@ -99,6 +105,7 @@ public:
     }
 
     void restate() {
+//        std::cout << "Restate me @" << this << '\n';
         parent->refold(multiplicity);
         parent = nullptr;
     }
@@ -106,6 +113,24 @@ public:
     void disp(unsigned int indent, logging::record_ostream& strm) const override {
         for(uint i=0; i<indent; i++) strm << ' ';
         strm << "---State @" << this << " viewing parent " << parent << " at multiplicity " << multiplicity << '\n';
+    }
+
+    template<bool iconst>
+    iterator<T, iconst> splice(iterator<T, iconst> position) {
+        const myiterator<iconst>* iter = position.template findFor<StateTN<T>>(this);
+//        std::cout << "Found block " << iter->block << ", position " << iter->position << '\n';
+
+        CollectionTN<T>& child = parent->getChild(iter->block, iter->position, multiplicity, first);
+        CollectionTN<T>& antiChild = parent->getChild(iter->block, iter->position, multiplicity, not first);
+
+//        std::cout << "Splicing antiChild @" << &antiChild << " against child @" << &child << "\n";
+        return antiChild.splice(child, position);
+    }
+
+    StateTN anti() const {
+        StateTN ret(*this);
+        ret.first = !first;
+        return ret;
     }
 };
 

@@ -4,7 +4,7 @@
 #include "gameplay/2cards.h"
 
 void BoardN::insert(uptr<Card> to_add, Player* pl) {
-    src::logger& lg = dbg_yggdrasil::get();
+    src::logger& lg = DBG_YGGDRASIL::get();
     logging::record rec = lg.open_record();
     logging::record_ostream strm(rec);
 
