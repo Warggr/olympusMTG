@@ -83,9 +83,11 @@ public:
 
         myiterator<iconst>* iter = position.template findFor<CollectionTN<T>>(&other);
 //        std::cout << "Found iterator @" << iter << " (node=" << iter->node << ")\n";
+        typename std::list<PermanentTN<T>>::iterator it2 = iter->it;
+        it2++;
 
         children.splice(children.begin(), other.children, iter->it);
-        ++iter->it;
+        iter->it = it2;
         return position;
     }
 

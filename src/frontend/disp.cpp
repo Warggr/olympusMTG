@@ -45,7 +45,9 @@ void BasicIO::chooseAttackers(StateTN<Creature>& attackers) {
         else break;
     }
     auto iter2 = stay.begin();
-    for(uint i=0; i<stay.size(); ++i){
+    uint size = stay.size();
+    gdebug(DBG_YGGDRASIL) << size << '\n';
+    for(uint i=0; i<size; ++i){
         iter2.present();
 
         if(selected[i]) {

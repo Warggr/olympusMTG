@@ -41,7 +41,7 @@ local(00) - permanent(01) - resolvable(10) - card(11)
  types: land 000 - artifact 010 - planeswalker 100 - creature 110 - sorcery 001 - instant 011
  (damageable: 0X01X)
  (zone, enum, spell and ability/spell also envisaged)
-Some special Identifiers might general 'this' and 'you' (aka 'this object's controller') (TODO)
+Some special Identifiers might include 'this' and 'you' (aka 'this object's controller') (TODO)
 Controllers: you (0), an opponent (1)*/
 
 #endif //OLYMPUS_HEAD_I_IDENTIFIERS

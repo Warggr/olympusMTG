@@ -1,4 +1,4 @@
-#include "headI_identifiers.h" //auto-general by 4permanents.h
+#include "headI_identifiers.h"
 
 Identifier CardOracle::generate_casted_id() const {
     if(1 <= type && type <= 4){

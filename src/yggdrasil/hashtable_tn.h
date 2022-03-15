@@ -7,6 +7,7 @@
 class BoardN; class Player; class Card;
 template<typename T> class StateTN;
 
+#define HT_SIZE (1 << ht_size_log)
 #define BLOCKSIZE (1 << (multiplicity - 1))
 #define PATTERNSIZE (1 << multiplicity)
 
@@ -48,9 +49,9 @@ public:
     }
     void unfold(StateTN<T>* newState) {
         auto* new_ht = new CollectionTN<T>[(1 << (ht_size_log+1))];
-        for(int i=0; i<(1 << ht_size_log); i++) {
+        for(int i=0; i<HT_SIZE; i++) {
             new_ht[i] = std::move(ht[i]);
-            new_ht[(1 << ht_size_log) + i].setParent(this);
+            new_ht[HT_SIZE + i].setParent(this);
         }
         ht_size_log++;
         delete[] ht;
@@ -60,7 +61,7 @@ public:
     void refold(int multiplicity) {
         //TODO IMPL be able to refold a fold that's not the last one
         auto* new_ht = new CollectionTN<T>[(1 << (ht_size_log-1))];
-        for(int blk = 0; blk < nbBlocks(ht_size_log); ++blk )
+        for(int blk = 0; blk < nbBlocks(multiplicity); ++blk )
             for (int i = 0; i < BLOCKSIZE; ++i ) {
                 new_ht[blk * PATTERNSIZE + i] = std::move(ht[blk * PATTERNSIZE + i]);
                 new_ht[blk * PATTERNSIZE + i].merge(ht[blk * PATTERNSIZE + BLOCKSIZE + i]);
@@ -70,7 +71,7 @@ public:
         ht = new_ht;
     }
     inline CollectionTN<T>* firstNonEmpty(int multiplicity, bool first) {
-        for(int blk = 0; blk < nbBlocks(ht_size_log); ++blk )
+        for(int blk = 0; blk < nbBlocks(multiplicity); ++blk )
             for (int i = 0; i < BLOCKSIZE; ++i )
                 if (!getChild(blk, i, multiplicity, first).empty()) return &(getChild(blk, i, multiplicity, first));
         return nullptr;
@@ -83,13 +84,22 @@ public:
     }
     inline unsigned int partialSize(int multiplicity, bool first) const {
         unsigned int size = 0;
-        for(int blk = 0; blk < nbBlocks(ht_size_log); ++blk )
+        for(int blk = 0; blk < nbBlocks(multiplicity); ++blk )
             for (int i = 0; i < BLOCKSIZE; ++i )
                 size += getChild(blk, i, multiplicity, first).size();
         return size;
     }
-    bool empty() const override { return partlyEmpty(ht_size_log+1, true); }
-    unsigned int size() const override { return partialSize(ht_size_log+1, true); }
+    bool empty() const override {
+        for(int i = 0; i < HT_SIZE; ++i )
+            if (!ht[i].empty()) return false;
+        return true;
+    }
+    unsigned int size() const override { 
+        unsigned int size = 0;
+        for(int i = 0; i < HT_SIZE; ++i )
+            size += ht[i].size();
+        return size;
+    }
     iterator<T, false> begin() override { return { createStart(nullptr, true) }; }
     iterator<T, true> cbegin() const override { return { createStart(nullptr, true) }; }
     iterator<Permanent, false> pbegin() override {
@@ -140,8 +150,8 @@ public:
 
     void disp(unsigned int indent, logging::record_ostream& strm) const override {
         for(uint i=0; i<indent; i++) strm << ' ';
-        strm << "---Hashtable @" << this << " of size " << (1 << ht_size_log) << '\n';
-        for(int i=0; i<(1 << ht_size_log); i++) ht[i].disp(indent + 1, strm);
+        strm << "---Hashtable @" << this << " of size " << HT_SIZE << '\n';
+        for(int i=0; i<HT_SIZE; i++) ht[i].disp(indent + 1, strm);
     };
 
 #ifdef F_TESTS

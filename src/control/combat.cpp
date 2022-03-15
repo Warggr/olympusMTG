@@ -1,5 +1,6 @@
 #include "3player.h"
 #include "7game.h"
+#include "logging.h"
 
 void Player::chooseBlockers(StateTN<Creature>& attackers){
     agent.chooseBlockers(myboard.mycreas, attackers);
@@ -22,15 +23,12 @@ void Player::damagestep(){
     for(auto & attacker : myboard.myattackers){
         attacker.resolveAttack(nextopponent);
     }
-    myboard.myattackers.restate(); //destroying attackers list
 
-    src::logger& lg = DBG_YGGDRASIL::get();
-    logging::record rec = lg.open_record();
-    logging::record_ostream strm(rec);
-
+    OPEN_LOG_AS(DBG_YGGDRASIL, strm);
     myboard.disp(0, strm);
-    strm.flush();
-    lg.push_record(boost::move(rec));
+    CLOSE_LOG(strm);
+
+    myboard.myattackers.restate(); //destroying attackers list
 
     Game::god->stateBasedActions();
 }

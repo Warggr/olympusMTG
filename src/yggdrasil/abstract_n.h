@@ -3,7 +3,6 @@
 
 #include "classes/3statics.h"
 #include "iterators.h"
-#include "headI_identifiers.h"
 #include <list>
 
 /** Base class from which all Yggdrasil classes derive. Contains a list of modifs attached to it.
