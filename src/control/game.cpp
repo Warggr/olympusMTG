@@ -15,5 +15,7 @@ Game::Game(const std::list<std::unique_ptr<Agent>>& agents) {
     for(Player& player : players){
         player.setOpp(oppptr);
         oppptr = &player;
+
+        gamers.push_back(&player);
     }
 }

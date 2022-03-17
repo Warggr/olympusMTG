@@ -4,6 +4,9 @@
 #include "../reader.h"
 #include "../visit.hpp"
 #include "classes/serializable.h"
+#ifdef F_CANARY
+#include <cassert>
+#endif
 
 class BinaryReader : public ReaderVisitor {
     template<typename T>
@@ -15,21 +18,26 @@ class BinaryReader : public ReaderVisitor {
         directRead(nb_objects);
         if(nb_objects != 0) objects = new T[nb_objects];
         for(uint i=0; i<nb_objects; i++) {
-            ::visit<true>(objects[i],* this);
+            ::visit<true>(objects[i], *this);
         }
     }
+#ifdef F_CANARY
+    void canary(char canary){ assert(ifile.get() == canary); }
+#else
+    void canary(char){};
+#endif
 protected:
     void raiseError(const std::string& message) override;
     void readAtomEffect(effect_type& type, flag_t*& params);
 public:
     explicit BinaryReader(std::istream& stream): ReaderVisitor(stream) {};
     void visit(const char* key, std::string& name) override;
-    void visit(const char*, Cost& cost) override;
-    void visit(const char*, card_type& type) override { directRead<>(type); }
-    void visit(const char*, trig_type& type) override { directRead<>(type); }
-    void visit(const char*, bool& b) override { directRead(b); }
-    void visit(const char*, Mana& mana) override { directRead(mana); }
-    void visit(const char*, char& value) override { directRead(value); }
+    void visit(const char* key, Cost& cost) override;
+    void visit(const char* key, card_type& type) override { canary(key[0]); directRead<>(type); }
+    void visit(const char* key, trig_type& type) override { canary(key[0]); directRead<>(type); }
+    void visit(const char* key, bool& b) override { canary(key[0]); directRead(b); }
+    void visit(const char* key, Mana& mana) override { canary(key[0]); directRead(mana); }
+    void visit(const char* key, char& value) override { canary(key[0]); directRead(value); }
     void readSectionFlavor(char*& flavor_text, uint8_t offset_text) override;
     void readSectionOthercasts(fwdlist<CardOption>& node) override;
 

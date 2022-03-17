@@ -10,16 +10,16 @@ class NetworkAgent: public Agent, public Viewer {
     Game* game;
     std::map<CardOracle*, bool> alreadyKnownCards;
 public:
-	NetworkAgent();
+    NetworkAgent();
 
-	void specificSetup() override;
+    void specificSetup() override;
 
-	std::string getName() override { return networker.getName(); }
-	std::string getLogin() override;
-	std::unique_ptr<std::istream> getDeckFile() override;
+    std::string getName() override { return networker.getName(); }
+    std::string getLogin() override;
+    std::unique_ptr<std::istream> getDeckFile() override;
     //virtual EmptyOption* chooseOpt() override { return nullptr; }
 
-	Target* chooseTarget(char type) override;
+    const Target* chooseTarget(char type) override;
 
     void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) override;
 
@@ -27,7 +27,7 @@ public:
 
     bool keepsHand(const std::forward_list<uptr<Card>>& cards) override;
 
-    Option* chooseOpt(bool sorcerySpeed, Player* pl) override;
+    const Option* chooseOpt(bool sorcerySpeed, Player* pl) override;
 
     void chooseAttackers(StateTN<Creature>& mycreas) override;
 

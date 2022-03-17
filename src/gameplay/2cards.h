@@ -26,27 +26,27 @@
 class Card: public Displayable {
 public:
     enum zone { library, graveyard, exile, command };
-	card_ptr oracle;
+    card_ptr oracle;
 
-	explicit Card(card_ptr orc): oracle(move_cardptr(orc)) { }
+    explicit Card(card_ptr orc): oracle(move_cardptr(orc)) { }
 
     void reveal() const;
     std::string describe() const override { return oracle->describe(); };
 
-	card_type getType() const { return oracle->getType(); };
-	bool hasFlash() const { return oracle->type.underlying == card_type::sorcery and oracle->type.shift; } //TODO implement flash
-	Cost getCost() const { return oracle->getCost(); };
-	const Effect_H* getEffect() const { return oracle->rules.effects; };
-	colorId::type getColor() const { return oracle->color; };
-	void getPermabs(PermOption** pr, int* nb_opts) const { *pr = oracle->rules.first_actab; *nb_opts = oracle->rules.nb_actabs; };
-	void getTriggers(trig_type type, TriggerEvent& trigEv) const { oracle->getTriggers(type, trigEv); };
-	const char* getFlavorText() const { return oracle->rules.flavor_text; }
-	std::string getName() const { return oracle->getName(); }
+    card_type getType() const { return oracle->getType(); };
+    bool hasFlash() const { return oracle->type.underlying == card_type::sorcery and oracle->type.shift; } //TODO implement flash
+    Cost getCost() const { return oracle->getCost(); };
+    const Effect_H* getEffect() const { return oracle->rules.effects; };
+    colorId::type getColor() const { return oracle->color; };
+    void getPermabs(PermOption** pr, int* nb_opts) const { *pr = oracle->rules.first_actab; *nb_opts = oracle->rules.nb_actabs; };
+    void getTriggers(trig_type type, TriggerEvent& trigEv) const { oracle->getTriggers(type, trigEv); };
+    const char* getFlavorText() const { return oracle->rules.flavor_text; }
+    std::string getName() const { return oracle->getName(); }
 
-	void write(WriterVisitor& writer) const;
-	void disp(BasicIO* io) const override;
+    void write(WriterVisitor& writer) const;
+    void disp(BasicIO* io) const override;
 
-	friend class CardWrapper;
+    friend class CardWrapper;
 };
 
 /** A CardWrapper contains a card and information about its zone and owner. */
@@ -65,7 +65,7 @@ public:
 
     void disp(BasicIO* io) const override { origin->disp(io); }
     std::string describe() const override { return origin->describe(); };
-    Option* chooseOptionAction() override;
+    const Option* chooseOptionAction() const override;
     Player* getController() override { return owner; }
 
     void castOpt(Player* pl) override;

@@ -7,7 +7,11 @@
 #include "classes/5rulesholder.h"
 #include "../visit.hpp"
 
-void BinaryWriter::visit(const char*, const std::string& str) {
+#include <sstream>
+
+void BinaryWriter::visit(const char* key, const std::string& str) {
+    canary(key[0]);
+
     uchar length = str.length();
     directWrite(length);
     ofile.write(str.c_str(), str.length());
@@ -87,7 +91,7 @@ void BinaryWriter::visit(const char*, const Cost& cost) {
     directWrite<>(cost);
 }
 
-void BinaryWriter::visit(const char*, Mana mana) { directWrite(mana); }
+void BinaryWriter::visit(const char* key, Mana mana) { canary(key[0]); directWrite(mana); }
 
 void BinaryWriter::readEffect(const std::forward_list<AtomEffect_H>& effects, uint8_t nbparams, const char* param_hashtable) {
     directWrite(nbparams);
@@ -98,4 +102,8 @@ void BinaryWriter::readEffect(const std::forward_list<AtomEffect_H>& effects, ui
     for(auto& eff : effects) {
         readAtomEffect(eff.getType(), eff.getParams());
     }
+}
+
+void BinaryWriter::raiseError(const std::string& msg) {
+    (void) msg; //TODO
 }

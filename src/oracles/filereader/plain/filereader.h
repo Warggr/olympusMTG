@@ -12,7 +12,6 @@
 class DictHolder;
 
 class PlainFileReader: public ReaderVisitor {
-private:
     DictHolder* dicts;
     enum State { go_on, invalid, breakout, end_reached } state;
 
@@ -46,11 +45,13 @@ public:
     void visit(const char*, char& value) override;
     void visit(const char*, Mana& mana) override;
     void visit(const char*, bool& b) override;
+
+    short int readNumber(char a, bool can_be_zero, bool can_be_negative);
+
     void readAll(RulesHolder& rules, card_type type) override;
     void readEffect(std::forward_list<AtomEffect_H>& effects, uint8_t &nbparams, char*& param_hashtable) override;
 
     effect_type readAbilityType();
-    short int readNumber(char a, bool can_be_zero, bool can_be_negative);
     flag_t readAbilityParameter(char* allassignedvariables, uint8_t& effect_params, flag_t type);
 
     void readModifier(char& nbEffects, Modifier& firstEffect, Modifier*& otherEffects) override;

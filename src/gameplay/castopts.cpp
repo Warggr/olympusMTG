@@ -21,7 +21,7 @@ bool CardWrapper::isCastable(bool sorceryspeed, Player* player) const {
     return (sorceryspeed or origin->hasFlash()) and (player->manapool >= origin->getCost().mana);
 }
 
-Option* CardWrapper::chooseOptionAction() {
+const Option* CardWrapper::chooseOptionAction() const {
     return this;
 }
 
@@ -54,3 +54,6 @@ bool Player::pay(Cost cost) {
     manapool -= cost.mana;
     return true;
 }
+
+Player* Gamer::getDmgController() { return dynamic_cast<Player*>(this); }
+Player* Gamer::getController() { return dynamic_cast<Player*>(this); }

@@ -2,7 +2,7 @@
 #include "gameplay/permanents/4permanents.h"
 #include "headE_enums.h"
 #include "classes/2triggers.h"
-#include "control/3player.h"
+#include "gameplay/gamer.h"
 #include "gameplay/2cards.h"
 #include <boost/format.hpp>
 
@@ -28,7 +28,7 @@ void Card::reveal() const {
     //TODO
 }
 
-std::string Player::describe() const {
+std::string Gamer::describe() const {
     return (boost::format("{} ({} life)") % name % life).str();
 }
 

@@ -17,11 +17,11 @@ uptr<std::istream> LocalAgent::getDeckFile() {
     return fb;
 }
 
-Target* LocalAgent::chooseTarget(char type) {
+const Target* LocalAgent::chooseTarget(char type) {
     return viewer.frontEnd->chooseTarget(type);
 }
 
-Option* LocalAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
+const Option* LocalAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
     (void) pl; //No idea why we need it
     return viewer.frontEnd->chooseOpt(sorcerySpeed);
 }
@@ -64,5 +64,5 @@ std::string LocalAgent::getLogin() {
 }
 
 void LocalViewer::connectGame(Game* game) {
-    frontEnd->registerPlayers(game->players);
+    frontEnd->registerPlayers(game->getGamers());
 }

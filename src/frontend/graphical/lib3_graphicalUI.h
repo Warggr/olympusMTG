@@ -11,8 +11,8 @@ struct GraphicalUI: public AbstractFrontEnd {
 
     GraphicalUI();
 
-    void registerPlayers(std::list<Player>& players) override;
-    void registerMe(Player *pl) override;
+    void registerPlayers(const std::list<const Gamer*>& players) override;
+    void registerMe(const Gamer* pl) override;
     void addCards(const std::list<CardWrapper>& cards) override;
 
     void splitDamage(int power, std::__cxx11::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) override;
@@ -22,7 +22,7 @@ struct GraphicalUI: public AbstractFrontEnd {
     void chooseblockers(Y_Hashtable<Creature>& defenders, StateTN<Creature>& attackers) override;
     Creature* blockerSwitch(const Creature& blocker, int blockerIndex, StateTN<Creature>& attackers);
 
-    Target* chooseTarget(char type) override;
+    const Target* chooseTarget(char type) override;
 
     void disp(fwdlist<uptr<Card>>::const_iterator begin, fwdlist<uptr<Card>>::const_iterator end) override;
 

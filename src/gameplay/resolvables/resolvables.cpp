@@ -54,7 +54,7 @@ Resolvable::Resolvable(Player* ct, const Effect_H* tocast, Target* org): Target(
 		}
 		const char* params = tocast->getParams();
 		for(int i=0; i<nb_targets; i++){
-			list_of_targets[i].setTarget( ct->getAgent().chooseTarget(params[i]) );
+			list_of_targets[i].setTarget( const_cast<Target*>( ct->getAgent().chooseTarget(params[i]) ) );
 		}
 	} else{ //the resolvable, e.g. a permanent spell, has no on_resolve abilities
 		nb_targets = 0;

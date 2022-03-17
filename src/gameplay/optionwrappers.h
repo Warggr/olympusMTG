@@ -8,7 +8,7 @@ class Option; class Player;
 
 struct OptionWrapper {
     virtual ~OptionWrapper() = default;
-    virtual Option* chooseOptionAction() = 0;
+    virtual const Option* chooseOptionAction() const = 0;
 };
 
 template<typename T>

@@ -62,12 +62,12 @@ public:
     virtual uptr<std::istream> getDeckFile() = 0;
     std::vector<OracleDescr> getDeck();
 
-    virtual Option* chooseOpt(bool sorcerySpeed, Player* pl) = 0;
+    virtual const Option* chooseOpt(bool sorcerySpeed, Player* pl) = 0;
 
     virtual uint chooseAmong(std::vector<PermOption*> opts) = 0;
     virtual uint chooseAmong(std::vector<CardOption*> opts) = 0;
 
-    virtual Target* chooseTarget(char type) = 0;
+    virtual const Target* chooseTarget(char type) = 0;
 
     virtual void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) = 0;
 

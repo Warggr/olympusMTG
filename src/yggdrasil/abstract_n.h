@@ -20,10 +20,12 @@ public:
     }
 
     virtual iterator<Permanent, false> pbegin() = 0;
+    inline iterator<Permanent, true> pbegin() const { return cpbegin(); }
     virtual iterator<Permanent, true> cpbegin() const = 0;
     virtual Leaf<Permanent, false>* pcreateStart(inner_iterator<Permanent, false>* parent, bool bk) = 0;
     virtual Leaf<Permanent, true>* pcreateStart(inner_iterator<Permanent, true>* parent, bool bk) const = 0;
-    constexpr iterator<Permanent, false> pend() const { return { nullptr }; }
+    constexpr iterator<Permanent, false> pend() { return { nullptr }; }
+    constexpr iterator<Permanent, true> pend() const { return cpend(); }
     constexpr iterator<Permanent, true> cpend() const { return { nullptr }; }
 
     virtual bool empty() const = 0;
@@ -37,10 +39,12 @@ class Yggdrasil_N : public Yggdrasil_base {
 public:
     virtual ~Yggdrasil_N() = default;
     virtual iterator<T, false> begin() = 0;
+    iterator<T, true> begin() const { return cbegin(); }
     virtual iterator<T, true> cbegin() const = 0;
     virtual ConcreteLeaf<T, false>* createStart(inner_iterator<T, false>* parent, bool bk) = 0;
     virtual ConcreteLeaf<T, true>* createStart(inner_iterator<T, true>* parent, bool bk) const = 0;
-    constexpr iterator<T, false> end() const { return { nullptr }; }
+    constexpr iterator<T, false> end() { return { nullptr }; }
+    constexpr iterator<T, true> end() const { return cend(); }
     constexpr iterator<T, true> cend() const { return { nullptr }; }
 };
 

@@ -1,5 +1,6 @@
 #include "server.h"
 #include "build_types.h" //for program version
+#include "binaryvisitor.h" //for canaries
 #include "network/network.h" //for server version
 #include <iostream>
 #include <filesystem>
@@ -23,9 +24,9 @@ Usage parseArgs(int nbargs, char** args) {
             ("help,h", "produce help message")
             ("version,v", "print the version number")
             ("refresh-database,r", "refresh the oracles database")
-            ENABLE_IF_BOT(("bot,b", po::value<uint>(&ret.bot)->default_value(0), "number of bots"))
-            ENABLE_IF_LOCAL(("local,l", po::value<uint>(&ret.local)->default_value(0), "number of server-local players"))
-            ENABLE_IF_NETWORK(("network,n", po::value<uint>(&ret.network)->default_value(0), "number of players connected via network"))
+            ENABLE_IF_BOT(("bot,b", po::value<uint>(&ret.bot)->default_value(0)->implicit_value(1), "number of bots"))
+            ENABLE_IF_LOCAL(("local,l", po::value<uint>(&ret.local)->default_value(0)->implicit_value(1), "number of server-local players"))
+            ENABLE_IF_NETWORK(("network,n", po::value<uint>(&ret.network)->default_value(0)->implicit_value(1), "number of players connected via network"))
             ;
 
     po::variables_map vm;
@@ -69,4 +70,7 @@ void printVersion() {
     std::cout << "Olympus v" << Olympus_VERSION << '\n';
     std::cout << "Built " << __DATE__ << ", " << __TIME__ << '\n';
     std::cout << "Server protocol " << id_server << version_server << '\n';
+#ifdef F_CANARY
+    std::cout << "Built with canaries\n";
+#endif
 }

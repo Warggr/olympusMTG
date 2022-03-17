@@ -1,5 +1,6 @@
 #include "lib3_ncursesIO.h"
-#include "control/3player.h"
+#include "gameplay/gamer.h"
+#include "gameplay/permanents/4permanents.h"
 #include "gameplay/resolvables/5resolvables.h"
 
 void disp_mana(WINDOW* win, Mana mana, int endy, int topz);
@@ -76,7 +77,7 @@ void NcursesIO::draw_permanent(const Rect& zone, const std::string& name, char c
 	wattroff(win, A_STANDOUT);
 }
 
-void NcursesIO::draw(const Player& player, const Rect& zone, bool highlight) const {
+void NcursesIO::draw(const Gamer& player, const Rect& zone, bool highlight) const {
 	WINDOW* win = winzones[zone.zone];
 	if(highlight) wattron(win, A_STANDOUT);
 	assert(player.getLife() < 1000);
@@ -219,7 +220,7 @@ void NcursesIO::disp_inrow(const Displayable* disp, int number, int total, int f
     (void) disp; (void) number; (void) total; (void) flags; //TODO
 }
 
-void NcursesIO::disp_player(const Player& player, int flags) const {
+void NcursesIO::disp_player(const Gamer& player, int flags) const {
     (void) player; (void) flags;
     //TODO IMPLEM: what happens when you click on an opponent to get more details about him?
 }

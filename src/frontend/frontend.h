@@ -34,14 +34,14 @@ public:
 
     virtual void splitDamage(int power, std::__cxx11::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) = 0;
 
-    virtual Option* chooseOpt(bool sorcerySpeed) = 0;
+    virtual const Option* chooseOpt(bool sorcerySpeed) = 0;
 
-    virtual Target* chooseTarget(char type) = 0;
+    virtual const Target* chooseTarget(char type) = 0;
 
-    std::list <CardWrapper> chooseCardsToKeep(std::list<CardWrapper>& list, unsigned nbToDiscard);
+    std::list<CardWrapper> chooseCardsToKeep(std::list<CardWrapper>& list, unsigned nbToDiscard);
 
-    virtual void registerPlayers(std::list<Player>& players) = 0;
-    virtual void registerMe(Player* pl) = 0;
+    virtual void registerPlayers(const std::list<const Gamer*>& players) = 0;
+    virtual void registerMe(const Gamer* pl) = 0;
 
     virtual void chooseblockers(Y_Hashtable<Creature>& defenders, StateTN<Creature>& attackers) = 0;
 

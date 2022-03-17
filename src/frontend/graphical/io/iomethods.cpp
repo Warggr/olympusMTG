@@ -27,8 +27,8 @@ METHOD(void, message(const char* message) const);
 METHOD(void, message(const std::string& text) const);
 
 METHOD(void, draw_permanent(const Rect& zone, const std::string& name, char color, bool tapped, bool highlight, bool basicImg) const);
-METHOD(void, draw(const Player& player, const Rect& zone, bool highlight) const);
-METHOD(void, disp_player(const Player& player, int flags) const);
+METHOD(void, draw(const Gamer& player, const Rect& zone, bool highlight) const);
+METHOD(void, disp_player(const Gamer& player, int flags) const);
 METHOD(void, draw_cardback(const Rect& zone, int oncard_number) const);
 METHOD(void, draw(const CardOracle& card, const Rect& zone, bool highlight) const);
 METHOD(void, draw(const Permanent& perm, const Rect& zone, bool highlight) const);

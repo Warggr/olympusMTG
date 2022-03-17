@@ -12,18 +12,7 @@ void NetworkAgent::specificSetup() {
     networker.waitForConnection();
 }
 
-unsigned int parse_number(const char* line, unsigned int& pos) {
-    unsigned int ret = 0;
-    while (true) {
-        if (line[pos] == ' ') return ret;
-        else if ('0' <= line[pos] && line[pos] <= '9')
-            ret = 10 * ret + line[pos] - '0';
-        else throw DeckbuildingError("Not a number");
-        pos++;
-    }
-}
-
-Target *NetworkAgent::chooseTarget(char type) {
+const Target* NetworkAgent::chooseTarget(char type) {
     (void) type; //TODO implement
     return nullptr;
 }
@@ -37,15 +26,19 @@ std::list<CardWrapper> NetworkAgent::chooseCardsToKeep(std::list<CardWrapper> &l
     return std::list<CardWrapper>();
 }
 
+#include <iostream>
+
 bool NetworkAgent::keepsHand(const fwdlist<uptr<Card>>& cards) {
-    long size = std::distance(cards.begin(), cards.end());
+    long size = 7;
     char header[2] = { static_cast<char>(CREATE), static_cast<char>(size) };
     Sender sender = networker.getSender();
     sender.add_chunk(header, 2);
-    for(auto& card : cards){
+
+    int i = 0;
+    for(auto iter = cards.begin(); i < size; ++i, ++iter ){
         std::stringstream oracle_stream;
         BinaryWriter oracle_reader(oracle_stream);
-        card->write(oracle_reader);
+        (*iter)->write(oracle_reader);
         sender.add_chunk(oracle_stream.str());
     }
     sender.close();
@@ -54,7 +47,7 @@ bool NetworkAgent::keepsHand(const fwdlist<uptr<Card>>& cards) {
     return (answer[2] == 1);
 }
 
-Option* NetworkAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
+const Option* NetworkAgent::chooseOpt(bool sorcerySpeed, Player* pl) {
     (void) sorcerySpeed; (void) pl; //TODO implement
     return nullptr;
 }

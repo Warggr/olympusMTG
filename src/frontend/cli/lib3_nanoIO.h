@@ -23,7 +23,7 @@ public:
     bool simpleChoice(const char* optTrue, const char* optFalse) override;
 
     void draw_permanent(const std::string& name, char color, bool tapped, bool highlight) const;
-    void disp_player(const Player& player, int flags) const override;
+    void disp_player(const Gamer& player, int flags) const override;
     void disp_cardback(int oncard_number) const;
     void disp(const CardOracle& oracle, int flags) const override;
     void disp_inrow(const Displayable* disp, int number, int total, int flags) const override;

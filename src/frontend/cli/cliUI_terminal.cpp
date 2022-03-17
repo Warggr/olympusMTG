@@ -9,18 +9,18 @@
 
 struct Context {
     zone::zone where;
-    Target* what;
-    std::vector<const Player*> players;
+    const Target* what;
+    std::vector<const Gamer*> players;
     unsigned int who : 2;
     constexpr static char const* descriptions[] = {"none", "you", "opponent", "all"};
-    Context(Player* pl): where(zone::hand), what(nullptr), players({pl}), who(0b01) { }
+    Context(const Gamer* pl): where(zone::hand), what(nullptr), players({pl}), who(0b01) { }
     inline std::string prompt() const {
         return (boost::format("@%s:%s>")
                 % Context::descriptions[who]
                 % zone::descriptions[where]).str();
     }
     void setWho(uint l, const CliUI& ui);
-    inline const std::vector<const Player*> getPlayers() const { return players; }
+    inline const std::vector<const Gamer*> getPlayers() const { return players; }
 };
 
 namespace cmd {
@@ -31,9 +31,9 @@ const char* zone::descriptions[] = {"hand", "graveyard", "battlefield", "stack",
 
 bool readCommand(const char* input, Context& context, cmd::command& cmd, const CliUI& ui);
 void printHelp();
-void dispPlayers(const std::vector<const Player*> vec, const NanoIO& io);
+void dispPlayers(const std::vector<const Gamer*> vec, const NanoIO& io);
 
-Option* CliUI::chooseOpt(bool sorcerySpeed) {
+const Option* CliUI::chooseOpt(bool sorcerySpeed) {
     using namespace cmd;
     (void) sorcerySpeed; //TODO
     static Context context(pl);
@@ -47,7 +47,7 @@ Option* CliUI::chooseOpt(bool sorcerySpeed) {
         switch(cmd){
             case cd: context = temporaryContext; break;
             case ls: list(temporaryContext.where); break;
-            case sel: return dynamic_cast<OptionWrapper*>(temporaryContext.what)->chooseOptionAction();
+            case sel: return dynamic_cast<const OptionWrapper*>(temporaryContext.what)->chooseOptionAction();
             case view: temporaryContext.what->disp(&io); break;
             case help: printHelp(); break;
             case concede: throw UIClosedException();
@@ -57,7 +57,7 @@ Option* CliUI::chooseOpt(bool sorcerySpeed) {
     }
 }
 
-Target* readTarget(const char* str, zone::zone zone, const std::vector<const Player*>& pl) {
+const Target* readTarget(const char* str, zone::zone zone, const std::vector<const Gamer*>& pl) {
 //    std::cout << "Read target '" << str << "'\n";
     unsigned int pos = 0;
     for(unsigned int i = 0; '0' <= str[i] and str[i] <= '9'; i++) {
@@ -134,7 +134,7 @@ bool readCommand(const char* input, Context& context, cmd::command& cmd, const C
     return true;
 }
 
-void dispPlayers(const std::vector<const Player*> vec, const NanoIO& io) {
+void dispPlayers(const std::vector<const Gamer*> vec, const NanoIO& io) {
     for(auto player: vec) {
         io.disp_player(*player, NanoIO::INLINE);
     }
@@ -143,13 +143,13 @@ void dispPlayers(const std::vector<const Player*> vec, const NanoIO& io) {
 void Context::setWho(uint l, const CliUI& ui){
     if(l == who) return;
     who = l;
-    players = std::vector<const Player*>();
+    players = std::vector<const Gamer*>();
     if(l & 0b01){
-        players.push_back(ui.getPl());
+        players.push_back(ui.pl);
     }
     if(l & 0b10){
-        for(const auto& opp : Game::god->players){
-            if(&opp != ui.getPl()) players.push_back(&opp);
+        for(const auto& opp : *ui.players){
+            if(opp != ui.pl) players.push_back(opp);
         }
     }
 }

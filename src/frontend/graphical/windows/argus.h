@@ -8,11 +8,11 @@
    permanents 	stack ()	message
    local ()				logbook ()*/
 
-class Player; class Planeswalker; class Resolvable; class Option;
+class Gamer; class Planeswalker; class Resolvable; class Option;
 
-struct PlayerHeader: public Sprite<Player> {
-    PlayerHeader(): Sprite<Player>(nullptr) {}
-    inline void setPlayer(Player* player) { std::cout << "Set target to " << player << "\n"; target = player; }
+struct PlayerHeader: public Sprite<Gamer> {
+    PlayerHeader(): Sprite<Gamer>(nullptr) {}
+    inline void setPlayer(const Gamer* player) { /* std::cout << "Set target to " << player << "\n"; */ target = player; }
     void fullDisp(AbstractIO* io) const override {
         io->draw(*target, coords, false);
     }
@@ -67,7 +67,7 @@ struct BoardSide : public TemplateGallery<BoardSidePolicy> {};
 
 struct PlayerSide : public TemplateGallery<PolicyWith2Objects<PlayerHeader, BoardSide, UIElement::vertical>> {
     PlayerSide() {
-        std::cout << "Create PlayerSide\n";
+        //std::cout << "Create PlayerSide\n";
     }
     void init(const Rect& rect);
     inline PlayerHeader& header() { return policy.object1; }

@@ -1,4 +1,4 @@
-add_library(network STATIC network.cpp networkwriter.cpp networkmanager.cpp async.cpp)
+add_library(network STATIC network.cpp networkmanager.cpp async.cpp)
 create_test(network)
 
 add_subdirectory(client)

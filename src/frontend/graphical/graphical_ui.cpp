@@ -9,10 +9,10 @@ GraphicalUI::GraphicalUI() : io(AbstractIO::factory()) {
     io->harmonize(screen.leftBar().poster().coords, screen.rightBar().messageZone().coords, 16); //nb windows
 }
 
-void GraphicalUI::registerPlayers(std::list<Player>& players) {
+void GraphicalUI::registerPlayers(const std::list<const Gamer*>& players) {
     int i=0;
     for (auto iter = players.begin(); i < 2; i++, iter++) {
-        screen.board().players()[i].header().setPlayer(&(*iter));
+        screen.board().players()[i].header().setPlayer(*iter); //TODO FEATURE handle more than 2 players
     }
 }
 
@@ -31,7 +31,7 @@ void GraphicalUI::splitDamage(int power, std::list<std::pair<uint8_t, SpecificTa
     }
 }
 
-Target* GraphicalUI::chooseTarget(char type) {
+const Target* GraphicalUI::chooseTarget(char type) {
     return screen.iterate(type, true);
 }
 
@@ -71,6 +71,6 @@ void GraphicalUI::disp(fwdlist<uptr<Card>>::const_iterator begin, const fwdlist<
     }
 }
 
-void GraphicalUI::registerMe(Player* pl) {
+void GraphicalUI::registerMe(const Gamer* pl) {
     (void) pl;
 }

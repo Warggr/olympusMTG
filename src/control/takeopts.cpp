@@ -35,7 +35,7 @@ bool Player::chooseAndUseOpt(bool sorceryspeed){ //AKA "giving priority". Return
 
     bool hasCastAnything = false;
     while(true){
-        Option* choice = agent.chooseOpt(sorceryspeed, this); //chooses opt, pops it and returns it, returns 0 if passing was chosen
+        Option* choice = const_cast<Option*>(agent.chooseOpt(sorceryspeed, this)); //chooses opt, pops it and returns it, returns 0 if passing was chosen
         if(!choice) return hasCastAnything;
         else choice->castOpt(this); //casts the spell and deletes the option
         if(!Stack::god->stackIsEmpty()) sorceryspeed = false;

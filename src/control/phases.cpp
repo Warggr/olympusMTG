@@ -1,6 +1,6 @@
 #include "3player.h"
 #include "7game.h"
-#include "control/OutputManager.h"
+#include "server/OutputManager.h"
 
 #include <algorithm>
 //GUIDELINE: anything that calls statebasedactions() should be able to return afterwards
@@ -15,14 +15,14 @@ struct Phase{ //AFAIK there are no "additional step" cards, but there might be s
         for(int i = 0; i < _nb_steps; i++){
             (*pl.*(_steps[i]))();
             pl->emptyPool();
-            if(Game::god->haswon) return true;
+            if(Game::god->hasWon()) return true;
         }
         return false;
     }
 };
 
 bool Player::turn(){
-    OutputManager::addToLog("Starting your turn");
+    addToLog("Starting your turn");
     std::forward_list<const Phase*> thisTurnsOrder = defaultPhaseOrder;
     for(auto & iter : thisTurnsOrder){
         if((*iter)(this)) return true;
@@ -43,7 +43,7 @@ void Player::drawstep(){
 void Player::mainphasemainstep(){
     nb_mainphase++;
     phase = main;
-    OutputManager::addToLog(" Starting main phase");
+    addToLog(" Starting main phase");
     choicephase(true);
 }
 void Player::declareattackersstep(){
@@ -81,13 +81,10 @@ void Game::play() {
     }
 }
 
-#include <iostream>
-
 bool Player::stateBasedActions(){
     if(life <= 0 or milledout) return true;
     int i = 0;
     for(auto iter = myboard.mycreas.begin(); iter != myboard.mycreas.end(); ++iter, ++i){
-//        std::cout << iter->describe() << '\n';
         if(i > 30) exit(1);
     }
     for(auto iter = myboard.mycreas.begin(); iter != myboard.mycreas.end(); iter = iter){
@@ -116,9 +113,7 @@ const PHASEORDERTYPE Player::defaultPhaseOrder = PHASEORDERTYPE(
         );
 #undef PHASEORDERTYPE
 
-Player::Player(Agent &agent, CardZone&& library): Target(name), Damageable(20), agent(agent), viewer(agent.getViewer()),
-name(agent.getName()),
-phase(0), milledout(0), zerolife(0), nb_mainphase(0), nb_lands_remaining(1), myOptions(this), manapool(0) {
+Player::Player(Agent &agent, CardZone&& library): Gamer(agent.getName()), agent(agent), viewer(agent.getViewer()), myOptions(this) {
     viewer.registerMe(this);
     myLibrary = std::move(library);
     myLibrary.shuffle();

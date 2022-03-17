@@ -3,7 +3,8 @@
 #include <iostream>
 #include "frontend/headQ_rect.h"
 #include "classes/card_oracle.h"
-#include "control/3player.h"
+#include "gameplay/permanents/4permanents.h"
+#include "gameplay/gamer.h"
 #include "lib3_nanoIO.h"
 
 using namespace std;
@@ -19,7 +20,7 @@ void NanoIO::draw_permanent(const string& name, char, bool tapped, bool highligh
 	cout << "\n";
 }
 
-void NanoIO::disp_player(const Player& pl, int flags) const {
+void NanoIO::disp_player(const Gamer& pl, int flags) const {
     (void) flags; //TODO
 	cout << "[]: Player " << pl.getName() << "\n\t" << pl.getLife() << " life\t" << pl.manapool.m2t() << " mana\n";
 

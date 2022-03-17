@@ -4,9 +4,11 @@
 #include "../writer.h"
 #include <memory>
 
+#include <iostream>
+
 class BinaryWriter : public WriterVisitor {
 protected:
-    void raiseError(const std::string& msg) override { (void) msg; } //TODO
+    void raiseError(const std::string& msg) override;
     template<typename T>
     void directWrite(const T& value) { ofile.write(reinterpret_cast<const char*>(&value), sizeof value); }
     template<typename T>
@@ -14,15 +16,20 @@ protected:
         ofile.put(static_cast<char>(nb));
         ofile.write(reinterpret_cast<const char*>(objs), nb * sizeof(T));
     }
+#ifdef F_CANARY
+    void canary(char canary){ std::cout << "Writing canary " << canary << '\n';  ofile.put(canary); }
+#else
+    void canary(char){};
+#endif
 public:
     BinaryWriter(std::ostream& output): WriterVisitor(output) {};
-    void visit(const char*, const std::string& str) override;
-    void visit(const char*, Mana mana) override;
-    void visit(const char*, bool b) override { directWrite(b); }
-    void visit(const char*, char value) override { directWrite(value); }
-    void visit(const char*, const card_type& type) override { directWrite(type); }
-    void visit(const char*, trig_type type) override { directWrite(type); }
-    void visit(const char*, const Cost& cost) override;
+    void visit(const char* key, const std::string& str) override;
+    void visit(const char* key, Mana mana) override;
+    void visit(const char* key, bool b) override { canary(key[0]); directWrite(b); }
+    void visit(const char* key, char value) override { canary(key[0]); directWrite(value); }
+    void visit(const char* key, const card_type& type) override { canary(key[0]); directWrite(type); }
+    void visit(const char* key, trig_type type) override { canary(key[0]); directWrite(type); }
+    void visit(const char* key, const Cost& cost) override;
 
     void readEffect(const std::forward_list<AtomEffect_H> &effects, uint8_t nbparams, const char *param_hashtable) override;
     void readSectionFlavor(const char* flavor_text, uint8_t offset_text) override;

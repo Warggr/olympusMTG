@@ -17,7 +17,7 @@ void Card::disp(BasicIO *io) const {
     io->disp(*oracle, 0);
 }
 
-void Player::disp(BasicIO *io) const {
+void Gamer::disp(BasicIO *io) const {
     io->disp_player(*this, 0);
 }
 

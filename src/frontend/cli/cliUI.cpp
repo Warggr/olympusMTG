@@ -13,7 +13,7 @@ void CliUI::splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter
     (void) power; (void) blockers; //TODO
 }
 
-Target* CliUI::chooseTarget(char type) {
+const Target* CliUI::chooseTarget(char type) {
     (void) type; return nullptr;
 }
 
@@ -34,7 +34,7 @@ void CliUI::list(zone::zone zone) {
             for(const auto& card : pl->getHand()) io.disp_inrow(card.get(), i++, pl->getHand().size(), BasicIO::INLINE);
             break;
         case zone::battlefield:
-            for(const auto& perm : pl->myboard) io.disp_inrow(&perm, i++, pl->myboard.size(), BasicIO::INLINE);
+            for(auto perm = pl->myboard.cbegin(); perm != pl->myboard.end(); ++perm) io.disp_inrow(&(*perm), i++, pl->myboard.size(), BasicIO::INLINE);
             break;
         case zone::stack:
             for(const auto& x : *Stack::god) io.disp_inrow(x.get(), i++, Stack::god->size(), BasicIO::INLINE);
@@ -48,6 +48,6 @@ void CliUI::list(zone::zone zone) {
     }
 }
 
-void CliUI::registerMe(Player* player) {
+void CliUI::registerMe(const Gamer* player) {
     pl = player;
 }

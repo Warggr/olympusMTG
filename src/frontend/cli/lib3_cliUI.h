@@ -9,8 +9,9 @@
 
 class CliUI: public AbstractFrontEnd {
     NanoIO io;
-    Player* pl; //you might need to return the player as a Target*
 public:
+    const Gamer* pl;
+    const std::list<const Gamer*>* players;
 //    void create(const char* descr);
 //    void update(const char* descr);
 //    void del(const char* descr);
@@ -18,24 +19,22 @@ public:
 
     void splitDamage(int power, std::__cxx11::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) override;
 
-    Option* chooseOpt(bool sorcerySpeed) override;
+    const Option* chooseOpt(bool sorcerySpeed) override;
 
-    Target* chooseTarget(char type) override;
+    const Target* chooseTarget(char type) override;
 
-    void registerPlayers(std::list<Player>&) override {};
-    void registerMe(Player* pl) override;
+    void registerPlayers(const std::list<const Gamer*>& players){ this->players = &players; }
+    void registerMe(const Gamer* pl) override;
 
     void chooseblockers(Y_Hashtable<Creature>& defenders, StateTN<Creature>& attackers) override;
 
-    void addCards(const std::list<CardWrapper>&) override;
+    void addCards(const std::list<CardWrapper>& cards) override;
 
     void disp(fwdlist<uptr<Card>>::const_iterator begin, fwdlist<uptr<Card>>::const_iterator end) override;
 
     BasicIO* getBasicIO() override { return &io; }
 
     void list(zone::zone zone);
-
-    Player* getPl() const { return pl; }
 };
 
 #endif //OLYMPUS_LIB3_UI_CLI

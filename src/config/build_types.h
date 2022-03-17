@@ -10,7 +10,7 @@
 #define Olympus_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
 #define Olympus_VERSION_MINOR @PROJECT_VERSION_MINOR@
 #define Olympus_VERSION_PATCH @PROJECT_VERSION_PATCH@
-#cmakedefine F_TESTS
-#cmakedefine F_LOGGING
+
+#cmakedefine F_STRICT
 
 #endif //OLYMPUS_BUILD_TYPES_H

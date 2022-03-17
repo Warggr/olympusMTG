@@ -5,11 +5,14 @@
 #include "classes/3statics.h"
 #include "classes/perm_option.h"
 #include "classes/5rulesholder.h"
+#include <exception>
 
-void BinaryReader::visit(const char*, std::string& name) {
+void BinaryReader::visit(const char* key, std::string& name) {
+    canary(key[0]);
+
     uchar length = ifile.get();
     char* buffer = new char[length + 1];
-    ifile.get(buffer, length + 1);
+    ifile.read(buffer, length + 1);
     buffer[(int)length] = '\0';
     name = std::string(buffer);
 }
@@ -24,7 +27,7 @@ void BinaryReader::readAll(RulesHolder& rules, card_type) {
     if(flags & 0x10) readSectionFlavor(rules.flavor_text, 0); //offset_text is irrelevant here
 }
 
-void BinaryReader::readSectionFlavor(char *&flavor_text, uint8_t) {
+void BinaryReader::readSectionFlavor(char*& flavor_text, uint8_t) {
     uint textsize; directRead<>(textsize);
     if(textsize != 0) {
         flavor_text = new char[textsize];
@@ -32,7 +35,7 @@ void BinaryReader::readSectionFlavor(char *&flavor_text, uint8_t) {
     }
 }
 
-/*void BinaryReader::readEffectH(uint8_t& nb_params, char *&params, std::forward_list<AtomEffect_H>& atoms) {
+/*void BinaryReader::readEffectH(uint8_t& nb_params, char*& params, std::forward_list<AtomEffect_H>& atoms) {
     canary('b');
     readNumberOfObjects(nb_params);
     if(nb_params) params = new char[nb_params];
@@ -64,7 +67,7 @@ void BinaryReader::readSelector(Identifier& chars, Identifier& requs) {
     (void) chars; (void) requs; //TODO
 }
 
-void BinaryReader::readModifier(char& i, Modifier& first_effect, Modifier *&other_effects) {
+void BinaryReader::readModifier(char& i, Modifier& first_effect, Modifier*& other_effects) {
     (void) i; (void) first_effect; (void) other_effects; //TODO
 }
 
@@ -77,10 +80,12 @@ void BinaryReader::readSectionOthercasts(fwdlist<CardOption>& node) {
 }
 
 void BinaryReader::raiseError(const std::string& message) {
-    (void) message; //TODO raise error
+    (void) message;
+    throw std::exception(); //TODO FEATURE print the message somewhere
 }
 
-void BinaryReader::visit(const char*, Cost& cost) {
+void BinaryReader::visit(const char* key, Cost& cost) {
+    canary(key[0]);
     directRead<>(cost);
 }
 

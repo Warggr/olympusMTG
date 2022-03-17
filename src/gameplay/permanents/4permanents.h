@@ -45,7 +45,7 @@ public:
     Mana getManaCost() const;
 
     Player* getController() override { return ctrl; }
-    Option* chooseOptionAction() override;
+    const Option* chooseOptionAction() const override;
 
     friend class AbstractIO;
 };
