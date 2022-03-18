@@ -2,9 +2,8 @@
 #define OLYMPUS_BINARYWRITER_H
 
 #include "../writer.h"
+#include "../visit.hpp"
 #include <memory>
-
-#include <iostream>
 
 class BinaryWriter : public WriterVisitor {
 protected:
@@ -12,12 +11,17 @@ protected:
     template<typename T>
     void directWrite(const T& value) { ofile.write(reinterpret_cast<const char*>(&value), sizeof value); }
     template<typename T>
-    void readArray(unsigned char nb, T* objs) {
-        ofile.put(static_cast<char>(nb));
-        ofile.write(reinterpret_cast<const char*>(objs), nb * sizeof(T));
+    void readArray(unsigned char nb_objects, T* objects) {
+        canary('a');
+        ofile.put(static_cast<char>(nb_objects));
+        canary('b');
+        for(uint i=0; i<nb_objects; i++) {
+            ::visit<false>(objects[i], *this);
+        }
+        canary('c');
     }
 #ifdef F_CANARY
-    void canary(char canary){ std::cout << "Writing canary " << canary << '\n';  ofile.put(canary); }
+    void canary(char canary){ ofile.put(canary); }
 #else
     void canary(char){};
 #endif

@@ -12,7 +12,7 @@ void BinaryReader::visit(const char* key, std::string& name) {
 
     uchar length = ifile.get();
     char* buffer = new char[length + 1];
-    ifile.read(buffer, length + 1);
+    ifile.read(buffer, length);
     buffer[(int)length] = '\0';
     name = std::string(buffer);
 }

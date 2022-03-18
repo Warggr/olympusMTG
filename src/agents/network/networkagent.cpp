@@ -96,6 +96,10 @@ uptr<std::istream> NetworkAgent::getDeckFile() {
 void NetworkAgent::registerMe(Player*) {}
 
 void NetworkAgent::message(const char* message) {
+    char header = 'M';
+    Sender sender = networker.getSender();
+    sender.add_chunk(&header, 1);
     uint i; for(i=0; message[i] != 0; ++i);
-    networker.send(message, i);
+    sender.add_chunk(message, i);
+    sender.close();
 }

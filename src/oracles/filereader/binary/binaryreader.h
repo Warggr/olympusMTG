@@ -15,11 +15,15 @@ class BinaryReader : public ReaderVisitor {
     }
     template<typename T>
     void readArray(uint& nb_objects, T*& objects) {
-        directRead(nb_objects);
+        canary('a');
+        char nb; directRead(nb);
+        nb_objects = nb;
+        canary('b');
         if(nb_objects != 0) objects = new T[nb_objects];
         for(uint i=0; i<nb_objects; i++) {
             ::visit<true>(objects[i], *this);
         }
+        canary('c');
     }
 #ifdef F_CANARY
     void canary(char canary){ assert(ifile.get() == canary); }

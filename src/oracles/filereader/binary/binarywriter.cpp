@@ -7,8 +7,6 @@
 #include "classes/5rulesholder.h"
 #include "../visit.hpp"
 
-#include <sstream>
-
 void BinaryWriter::visit(const char* key, const std::string& str) {
     canary(key[0]);
 
@@ -87,7 +85,8 @@ void BinaryWriter::readMainSpell(const Cost& cost, const Effect_H* effect) {
     (void) cost; (void) effect; //TODO
 }
 
-void BinaryWriter::visit(const char*, const Cost& cost) {
+void BinaryWriter::visit(const char* key, const Cost& cost) {
+    canary(key[0]);
     directWrite<>(cost);
 }
 

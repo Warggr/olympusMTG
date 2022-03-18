@@ -19,6 +19,7 @@ private:
     unsigned int writehead;
     char buffer[BUFFER_SIZE]{};
     inline void send_chunks();
+    bool try_add_chunk(std::istream& ifile);
 public:
     static constexpr char MORE_PACKETS = '\n', END_OF_FILE = '\1';
     static_assert(MORE_PACKETS != END_OF_FILE);
