@@ -12,7 +12,7 @@ void CardWrapper::castOpt(Player* pl){
         pl->resolvePlayland(std::move(origin));
     } else {
         pl->pay(origin->getCost());
-        Stack::god->addToStack(std::make_unique<Spell>(std::move(origin), pl));
+        Stack::god->addToStack(std::make_unique<Spell>(move_cardptr(origin), pl));
     }
     pl->getHand().remove(*this);
 }

@@ -33,7 +33,7 @@ std::list<CardWrapper> BotAgent::chooseCardsToKeep(std::list<CardWrapper>& list,
     return std::list<CardWrapper>();
 }
 
-bool BotAgent::keepsHand(const std::forward_list<uptr<Card>>& cards) {
+bool BotAgent::keepsHand(const std::forward_list<card_ptr>& cards) {
     (void) cards;
     return true;
 }

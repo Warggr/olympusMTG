@@ -84,7 +84,6 @@ void Sender::add_chunk(const char* msg, unsigned int len) {
 }
 
 void Sender::close() {
-    std::cout << "Writing 1 to [" << writehead << "]\n";
     buffer[writehead] = END_OF_FILE;
     send_chunks();
 }
@@ -101,16 +100,34 @@ void Networker::sendFile(std::istream& file) {
     }
 }
 
-const char* Networker::receiveMessage() {
-    long n = ::read(sockfd, buffer, BUFFER_SIZE);
-    std::cout << "----GOT MESSAGE----\n";
-    for(int i=0; i<n; i++) {
-        if(i % 5 == 0) std::cout <<  "[" << i << "]:";
-        std::cout << (buffer[i] == 0 ? '_' : buffer[i]);
+const char* Networker::read() {
+    std::cout << "Waiting...\n";
+    _gcount = ::read(sockfd, buffer, BUFFER_SIZE-1);
+
+    if(_gcount == 0) { //Somebody disconnected , get his details and print
+        sockaddr_in cli_addr;
+        socklen_t clilen = sizeof(cli_addr);
+        getpeername(sockfd, (sockaddr*) &cli_addr, &clilen);
+        //printf("Host disconnected , ip %s , port %d \n", inet_ntoa(address.sin_addr) , ntohs(address.sin_port));
+
+        //Close the socket
+        close( sockfd );
+        connected = false;
+    } else if(_gcount == -1){
+        std::cout << "read failed: " << std::strerror(errno) << '\n';
+        throw NetworkError();
     }
-    std::cout << "\n----END (" << n << "characters)----\n";
-    if(n <= 0) throw NetworkError();
-    buffer[n] = 0;
+
+    buffer[_gcount] = 0;
+
+    std::cout << "----GOT MESSAGE----\n";
+    for(int i=0; i<_gcount; i++) {
+        if(i % 20 == 0) std::cout <<  '<' << i << ">";
+        if(buffer[i] <= 32) std::cout << '[' << static_cast<uint>(buffer[i]) << ']';
+        else std::cout << buffer[i];
+    }
+    std::cout << "\n----END (" << _gcount << "characters)----\n";
+
     return buffer;
 }
 
@@ -121,9 +138,10 @@ Networker::~Networker() {
 long Networker::send(const char* message, unsigned long length, int sockfd) {
     long n = write(sockfd, message, length);
     std::cout << "----SENDING----\n";
-    for(unsigned int i=0; i<length+2; i++){
-        if(i % 10 == 0) std::cout <<  "[" << i << "]:";
-        std::cout << (message[i] == 0 ? '_' : message[i]);
+    for(int i=0; i<n; i++) {
+        if(i % 20 == 0) std::cout << '<' << i << '>';
+        if(message[i] <= 32) std::cout << '[' << static_cast<uint>(message[i]) << ']';
+        else std::cout << message[i];
     }
     std::cout << "\n----END (" << length << "characters)----\n";
     if(n < 0) throw NetworkError();
@@ -133,39 +151,12 @@ long Networker::send(const char* message, unsigned long length, int sockfd) {
 uptr<std::istream> Networker::receiveFile() {
     auto ret = std::make_unique<std::stringstream>();
     while(true) { //read all segments
-        long n = read();
-        ret->write(buffer, n-1); //not including the 0 or the 1
-        if(buffer[n-1] == Sender::END_OF_FILE) {
+        read();
+        ret->write(buffer, _gcount-1); //not including the 0 or the 1
+        if(buffer[_gcount-1] == Sender::END_OF_FILE) {
             return ret;
         }
     }
-}
-
-long Networker::read() {
-    std::cout << "Waiting...\n";
-    long message_length = ::read(sockfd, buffer, BUFFER_SIZE-1);
-    if(message_length == -1){
-        std::cout << "read failed: " << std::strerror(errno) << '\n';
-        exit(1);
-    }
-    buffer[message_length] = 0;
-    std::cout << "----RECEIVED READ----\n";
-    for(int i=0; i<message_length; i++) {
-        if(i % 10 == 0) std::cout <<  "[" << i << "]:";
-        std::cout << (buffer[i] == 0 ? '_' : buffer[i] == 1 ? '#' : buffer[i]);
-    }
-    std::cout << "\n----END READ (" << message_length << "characters)----\n";
-    if (message_length == 0) { //Somebody disconnected , get his details and print
-        sockaddr_in cli_addr;
-        socklen_t clilen = sizeof(cli_addr);
-        getpeername(sockfd, (sockaddr*) &cli_addr, &clilen);
-        //printf("Host disconnected , ip %s , port %d \n", inet_ntoa(address.sin_addr) , ntohs(address.sin_port));
-
-        //Close the socket
-        close( sockfd );
-        connected = false;
-    }
-    return message_length;
 }
 
 void Networker::contact(const char* hostIp) {

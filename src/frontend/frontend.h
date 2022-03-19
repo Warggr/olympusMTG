@@ -3,6 +3,7 @@
 
 #include "classes/card_oracle.h"
 #include "basicIO.h"
+#include "head2_cardptrs.h"
 
 #include <string>
 #include <list>
@@ -32,7 +33,7 @@ public:
 //    void del(const char* descr);
 //    void bulkOp(const char* descr);
 
-    virtual void splitDamage(int power, std::__cxx11::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) = 0;
+    virtual void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) = 0;
 
     virtual const Option* chooseOpt(bool sorcerySpeed) = 0;
 
@@ -47,7 +48,7 @@ public:
 
     virtual void addCards(const std::list<CardWrapper>& cards) = 0;
 
-    virtual void disp(fwdlist<uptr<Card>>::const_iterator begin, fwdlist<uptr<Card>>::const_iterator end) = 0;
+    virtual void disp(fwdlist<card_ptr>::const_iterator begin, fwdlist<card_ptr>::const_iterator end) = 0;
 
     virtual BasicIO* getBasicIO() = 0;
 

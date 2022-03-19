@@ -3,7 +3,7 @@
 #include "gameplay/permanents/4permanents.h"
 #include "gameplay/2cards.h"
 
-void BoardN::insert(uptr<Card> to_add, Player* pl) {
+void BoardN::insert(card_ptr to_add, Player* pl) {
     src::logger& lg = DBG_YGGDRASIL::get();
     logging::record rec = lg.open_record();
     logging::record_ostream strm(rec);
@@ -14,11 +14,11 @@ void BoardN::insert(uptr<Card> to_add, Player* pl) {
 
     switch(to_add->getType().underlying) {
         case card_type::planeswalker:
-            mysuperfriends.insert(std::move(to_add), pl); break;
+            mysuperfriends.insert(move_cardptr(to_add), pl); break;
         case card_type::creature:
-            mycreas.insert(std::move(to_add), pl); break;
+            mycreas.insert(move_cardptr(to_add), pl); break;
         default:
-            myartos.insert(std::move(to_add), pl);
+            myartos.insert(move_cardptr(to_add), pl);
     }
 
     rec = lg.open_record();

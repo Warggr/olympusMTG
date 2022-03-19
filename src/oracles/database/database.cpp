@@ -34,7 +34,8 @@ void refreshDatabase() {
         std::ostringstream oss(binary);
         BinaryWriter writer(oss);
 
-        CardOracle oracle(reader);
+        CardOracle oracle;
+        visit<true>(oracle, reader);
         visit<false>(oracle, writer);
 
         status = db->Put(leveldb::WriteOptions(), oracle.getName(), binary);

@@ -13,6 +13,7 @@ class Player: public Gamer {
 private:
     Agent& agent;
     Viewer& viewer;
+    Deck deck;
     std::forward_list<PlayerPreStackElement> prestack;
     Player* nextopponent;
     TriggerEvent triggers[1]; //gain/lose life
@@ -22,7 +23,7 @@ public:
 
     OptionManager myOptions;
 
-    Player(Agent& agent, CardZone&& library);
+    Player(Agent& agent, Deck&& library);
 
     bool canPlayLand() const { return nb_lands_remaining != 0; };
     void gainLife(int nb_life) { life += nb_life; triggers[0].trigger(this, nullptr); }
@@ -33,13 +34,13 @@ public:
     bool chooseAndUseOpt(bool sorceryspeed);
     void choicephase(bool sorceryspeed);
 
-    void resolvePlayland(uptr<Card> source);
+    void resolvePlayland(card_ptr source);
     void chooseBlockers(StateTN<Creature>& attackers);
 
     void draw(int nb_cards);
     void drawStartingHand();
     void addMana(char color);
-    void putToZone(std::unique_ptr<Card>& x, myzone nb_zone);
+    void putToZone(card_ptr& x, myzone nb_zone);
 
     bool pay(Cost cost);
     void emptyPool();

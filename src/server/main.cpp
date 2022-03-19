@@ -1,7 +1,7 @@
 #include "server.h"
 #include "build_types.h" //for program version
 #include "binaryvisitor.h" //for canaries
-#include "network/network.h" //for server version
+#include "network/protocol.h" //for server version
 #include <iostream>
 #include <filesystem>
 #include <boost/program_options.hpp>

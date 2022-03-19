@@ -3,12 +3,13 @@
 
 #include "networkclient.h"
 #include "agents/local/localagent.h"
+#include "gameplay/2cards.h"
 #include <boost/program_options.hpp>
 
 class OlympusClient {
     LocalAgent agent;
     NetworkClient network;
-    std::map<int, Card> cards;
+    Deck deck;
     void play();
 public:
     OlympusClient() = default;

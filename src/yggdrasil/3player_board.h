@@ -42,7 +42,7 @@ public:
 
     BoardN(): myartos(this), mysuperfriends(this), mycreas(this) {};
 
-    void insert(uptr<Card> to_add, Player* pl);
+    void insert(card_ptr to_add, Player* pl);
 //    void remove(Permanent* perm, permanent_type type);
 
     void remove(Permanent* perm);

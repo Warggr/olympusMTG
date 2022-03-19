@@ -13,13 +13,7 @@ class AtomEffect_H; class Mana;
 class WriterVisitor {
 protected:
     std::ostream& ofile;
-    /*template<typename T>
-    void readArray(uint& nb_objects, T*& objects) {
-        readNumberOfObjects(nb_objects);
-        for(uint i=0; i<nb_objects; i++) {
-            objects[i].write(*this);
-        }
-    }*/
+
     virtual void raiseError(const std::string& message) = 0;
     virtual void readSectionFlavor(const char* flavor_text, uint8_t offset_text) = 0;
     virtual void readSectionOthercasts(const fwdlist<CardOption>& node) = 0;

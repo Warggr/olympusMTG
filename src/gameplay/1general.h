@@ -59,7 +59,7 @@ public:
     TriggerEvent is_damaged;
 
     explicit Damageable(int lif): life(lif){};
-    Damageable(int lif, Card* source);
+    Damageable(int lif, const Card* source);
     int getLife() const { return life; }
     virtual ~Damageable() = default;
     virtual void damage(int nb_damage, Target* origin);

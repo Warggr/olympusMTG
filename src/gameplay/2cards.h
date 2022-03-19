@@ -5,18 +5,11 @@
 #include "optionwrappers.h"
 #include "Mana/cost.h"
 #include "classes/card_oracle.h"
+#include "head2_cardptrs.h"
 #include <memory>
+#include <string>
+#include <istream>
 #include <forward_list>
-
-#ifdef ORACLE_ARRAY
-#define card_ptr const CardOracle*
-#define move_cardptr(x) x
-#define new_cardptr new CardOracle
-#else
-#define card_ptr std::shared_ptr<const CardOracle>
-#define move_cardptr(x) std::move(x)
-#define new_cardptr std::make_shared<const CardOracle>
-#endif
 
 /**Represents a physical card.
  * Class Card is as minimal as possible in order not to take too much space when packed 60 times in a deck.
@@ -26,9 +19,10 @@
 class Card: public Displayable {
 public:
     enum zone { library, graveyard, exile, command };
-    card_ptr oracle;
+    oracle_ptr oracle;
 
-    explicit Card(card_ptr orc): oracle(move_cardptr(orc)) { }
+    Card() = default;
+    explicit Card(oracle_ptr orc): oracle(move_oracleptr(orc)) { }
 
     void reveal() const;
     std::string describe() const override { return oracle->describe(); };
@@ -43,6 +37,8 @@ public:
     const char* getFlavorText() const { return oracle->rules.flavor_text; }
     std::string getName() const { return oracle->getName(); }
 
+    std::string toStr(const CardOracle* offset) const;
+    void fromStr(std::istream& ifile, const CardOracle* offset);
     void write(WriterVisitor& writer) const;
     void disp(BasicIO* io) const override;
 
@@ -51,17 +47,16 @@ public:
 
 /** A CardWrapper contains a card and information about its zone and owner. */
 class CardWrapper: public OptionWrapper, public Option, public Target {
-    uptr<Card> origin;
+    card_ptr origin;
     Player* owner;
 public:
-    CardWrapper(uptr<Card> origin, Player* owner):
-        Target(origin->getName()), origin(std::move(origin)), owner(owner) { t_type = target_type::card; };
-    Card& operator*() { return *origin; }
-    Card* get() { return origin.get(); }
-    const Card* get() const { return origin.get(); }
-    Card* operator->() { return origin.get(); }
-    const Card* operator->() const { return origin.get(); }
-    uptr<Card> unwrap() { return std::move(origin); }
+    CardWrapper(card_ptr origin, Player* owner):
+        Target(origin->getName()), origin(move_cardptr(origin)), owner(owner) { t_type = target_type::card; };
+    const Card& operator*() const { return *origin; }
+
+    card_ptr get() const { return origin; }
+    card_ptr operator->() const { return origin; }
+    card_ptr unwrap() { return origin; }
 
     void disp(BasicIO* io) const override { origin->disp(io); }
     std::string describe() const override { return origin->describe(); };
@@ -72,6 +67,13 @@ public:
     bool isCastable(bool sorceryspeed, Player* player) const override;
 
     bool operator==(const CardWrapper& other) const { return this == &other; }
+};
+
+struct Deck {
+    Deck() = default;
+    Deck(Deck&& other): cards(std::move(other.cards)), oracles(std::move(other.oracles)) {};
+    std::vector<Card> cards;
+    std::vector<CardOracle> oracles;
 };
 
 #endif //OLYMPUS_CLASSES_CARDS_2_H

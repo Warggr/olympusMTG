@@ -44,8 +44,8 @@ public:
     CollectionTN& operator=(CollectionTN&& other) noexcept { parent = other.parent; children = std::move(other.children); return *this; }
     inline void setParent(Y_Hashtable<T>* pr) { parent = pr; }
 
-    void insert(std::unique_ptr<Card> origin, Player* pl) {
-        children.template emplace_back(std::move(origin), pl);
+    void insert(card_ptr origin, Player* pl) {
+        children.template emplace_back(move_cardptr(origin), pl);
     }
 
     bool empty() const override { for(auto& i : children) if(!i.empty()) return false; return true; }

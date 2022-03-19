@@ -1,10 +1,9 @@
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <sstream>
-#include <oracles/filereader/visitor.h>
+#include "oracles/filereader/visitor.h"
+#include "network/protocol.h"
 #include "networkagent.h"
 #include "gameplay/2cards.h"
 #include "oracles/filereader/binary/binarywriter.h"
+#include <sstream>
 
 NetworkAgent::NetworkAgent() = default;
 
@@ -26,25 +25,56 @@ std::list<CardWrapper> NetworkAgent::chooseCardsToKeep(std::list<CardWrapper> &l
     return std::list<CardWrapper>();
 }
 
+void NetworkAgent::connectDeck(const Deck& deck) {
+    first_oracle = deck.oracles.data();
+    first_card = deck.cards.data();
+
+#define ADD_CHUNK_NOT_CHAR(x) add_chunk(reinterpret_cast<char*>(&x), sizeof(x));
+#define ADD_CHUNK(x) add_chunk(&x, sizeof(x));
+    Sender sender = networker.getSender();
+
+    char header = operations::COMPILED_DECK;
+    sender.ADD_CHUNK(header);
+    uint16_t size = deck.oracles.size();
+    sender.ADD_CHUNK_NOT_CHAR(size);
+
+    for(auto& oracle : deck.oracles){
+        std::stringstream oracle_stream;
+        BinaryWriter oracle_reader(oracle_stream);
+        visit<false>(oracle, oracle_reader);
+        sender.add_chunk(oracle_stream.str());
+    }
+
+    header = operations::COMPILED_DECK;
+    sender.ADD_CHUNK(header);
+    size = deck.cards.size();
+    sender.ADD_CHUNK_NOT_CHAR(size);
+
+    for(auto& card : deck.cards){
+        sender.add_chunk(card.toStr(first_oracle));
+    }
+
+    sender.close();
+}
+
 #include <iostream>
 
-bool NetworkAgent::keepsHand(const fwdlist<uptr<Card>>& cards) {
-    long size = 7;
-    char header[2] = { static_cast<char>(CREATE), static_cast<char>(size) };
+bool NetworkAgent::keepsHand(const fwdlist<card_ptr>& cards) {
+    const long size = 7;
+    char header[2] = { operations::CREATE, static_cast<char>(size) };
     Sender sender = networker.getSender();
     sender.add_chunk(header, 2);
 
     int i = 0;
     for(auto iter = cards.begin(); i < size; ++i, ++iter ){
-        std::stringstream oracle_stream;
-        BinaryWriter oracle_reader(oracle_stream);
-        (*iter)->write(oracle_reader);
-        sender.add_chunk(oracle_stream.str());
+        uint16_t offset = (*iter) - first_card;
+        std::cout << offset << ' ';
+        sender.add_chunk(reinterpret_cast<char*>(&offset), sizeof(offset));
     }
     sender.close();
     const char* answer = networker.receiveMessage();
-    assert(answer[0] == 'H' and answer[1] == 'K');
-    return (answer[2] == 1);
+    assert(answer[0] == operations::KEEPS_HAND);
+    return (answer[1] == 1);
 }
 
 const Option* NetworkAgent::chooseOpt(bool sorcerySpeed, Player* pl) {
@@ -65,7 +95,7 @@ void NetworkAgent::connectGame(Game* gm) {
 }
 
 void NetworkAgent::onDraw(const std::list<CardWrapper>& cards) {
-    char header[2] = { static_cast<char>(CREATE), static_cast<char>(cards.size()) };
+    char header[2] = { operations::CREATE, static_cast<char>(cards.size()) };
     Sender sender = networker.getSender();
     sender.add_chunk(header, 2);
     for(auto& card: cards) {
@@ -96,7 +126,7 @@ uptr<std::istream> NetworkAgent::getDeckFile() {
 void NetworkAgent::registerMe(Player*) {}
 
 void NetworkAgent::message(const char* message) {
-    char header = 'M';
+    char header = operations::MESSAGE;
     Sender sender = networker.getSender();
     sender.add_chunk(&header, 1);
     uint i; for(i=0; message[i] != 0; ++i);

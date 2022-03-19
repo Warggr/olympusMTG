@@ -13,7 +13,7 @@ public:
     void registerMe(Player* pl) override;
     void onDraw(const std::list<CardWrapper>& cards) override;
     void message(const char *message) override { frontEnd->getBasicIO()->message(message); }
-    void showTop(const std::forward_list<uptr<Card>>& cards, uint nb);
+    void showTop(const std::forward_list<card_ptr>& cards, uint nb);
 
     friend class LocalAgent;
 };
@@ -36,7 +36,7 @@ public:
 
     std::list<CardWrapper> chooseCardsToKeep(std::list<CardWrapper>& list, unsigned nbToDiscard) override;
 
-    bool keepsHand(const std::forward_list<uptr<Card>>& cards) override;
+    bool keepsHand(const std::forward_list<card_ptr>& cards) override;
 
     void chooseAttackers(StateTN<Creature>& attackers) override;
 

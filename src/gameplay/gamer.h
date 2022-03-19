@@ -46,7 +46,9 @@ public:
     Mana manapool;
     BoardN myboard;
 
-    Gamer(const std::string& nm): Target(name), Damageable(20), name(nm), phase(0), milledout(0), zerolife(0), nb_mainphase(0), nb_lands_remaining(1), manapool(0) {}
+    Gamer(const std::string& nm): Target(name), Damageable(20), name(nm), 
+        phase(0), milledout(0), zerolife(0), nb_mainphase(0), nb_lands_remaining(1), 
+        manapool(0) {}
     void disp(BasicIO* io) const override;
     std::string describe() const override;
 

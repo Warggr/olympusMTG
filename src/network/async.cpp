@@ -15,6 +15,7 @@ const char* AsyncNetworker::receiveMessage() {
 
 /* Callback function when a message has been received. */
 void AsyncNetworker::messageCallback() {
+    if(unread) throw NetworkError();
     read();
     unread = true;
 }

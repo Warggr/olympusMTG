@@ -17,6 +17,6 @@ struct OracleDescr {
     friend std::ostream& operator<<( std::ostream& output, const OracleDescr& desc );
 };
 
-CardZone parseDeck(const std::vector<OracleDescr>& deck);
+Deck parseDeck(const std::vector<OracleDescr>& deck);
 
 #endif //OLYMPUS_FILEREADER_H

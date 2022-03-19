@@ -8,27 +8,31 @@
 class CardZone {
 private:
     uint size;
-    std::forward_list<std::unique_ptr<Card>> cards;
+    std::forward_list<card_ptr> cards;
 
     inline void inc_size(int i){ size += i; };
 public:
     CardZone(): size(0) {};
     CardZone(CardZone&& other) noexcept : size(other.size), cards(std::move(other.cards)) {}
     CardZone& operator=(CardZone&& other) = default;
+    void init(const Deck& deck) noexcept {
+        size = deck.cards.size();
+        for(auto& card : deck.cards) cards.push_front(&card);
+    }
 
     void shuffle();
     int drawto(CardZone* target, int nb_cards);
-    inline void takeonecard(std::unique_ptr<Card> c){ ++size; cards.push_front(std::move(c)); }
-    void placeOnBottom(std::unique_ptr<Card> c);
+    inline void takeonecard(card_ptr c){ ++size; cards.push_front(move_cardptr(c)); }
+    void placeOnBottom(card_ptr c);
 
-    inline std::unique_ptr<Card> pop_front() {
+    inline card_ptr pop_front() {
         if(empty()) return nullptr;
-        auto f = std::move(cards.front()); cards.pop_front(); size--; return f;
+        auto f = move_cardptr(cards.front()); cards.pop_front(); size--; return f;
     }
     inline bool empty(){ return cards.empty(); }
     void revealTopCards(int nb_cards);
 
-    const std::forward_list<uptr<Card>>& getCards() const { return cards; }
+    const std::forward_list<card_ptr>& getCards() const { return cards; }
     uint getSize() const { return size; }
 
 //    std::string describe() const; //TODO

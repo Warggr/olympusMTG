@@ -20,7 +20,7 @@ public:
 
     std::list<CardWrapper> chooseCardsToKeep(std::list<CardWrapper>& list, unsigned nbToDiscard) override;
 
-    bool keepsHand(const std::forward_list<uptr<Card>>& cards) override;
+    bool keepsHand(const std::forward_list<card_ptr>& cards) override;
 
     void chooseAttackers(StateTN<Creature>& mycreas) override;
 

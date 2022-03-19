@@ -1,4 +1,5 @@
 #include "networkclient.h"
+#include "network/protocol.h"
 
 constexpr int MAX_NAME_LENGTH = 30;
 

@@ -1,3 +1,7 @@
+#include "protocol.h"
+#include "networkmanager.h"
+#include "async.h"
+#include "network.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -5,9 +9,6 @@
 #include <ifaddrs.h>
 #include <cstring>
 #include <iostream>
-#include "networkmanager.h"
-#include "async.h"
-#include "network.h"
 
 void printMyIp();
 

@@ -8,7 +8,8 @@
 class NetworkAgent: public Agent, public Viewer {
     AsyncNetworker networker;
     Game* game;
-    std::map<CardOracle*, bool> alreadyKnownCards;
+    const CardOracle* first_oracle;
+    const Card* first_card;
 public:
     NetworkAgent();
 
@@ -25,7 +26,7 @@ public:
 
     std::list<CardWrapper> chooseCardsToKeep(std::list<CardWrapper>& list, uint nbToDiscard) override;
 
-    bool keepsHand(const std::forward_list<uptr<Card>>& cards) override;
+    bool keepsHand(const std::forward_list<card_ptr>& cards) override;
 
     const Option* chooseOpt(bool sorcerySpeed, Player* pl) override;
 
@@ -39,6 +40,7 @@ public:
     uint chooseAmong(std::vector<PermOption*> opts) override;
 
     void connectGame(Game* game) override;
+    void connectDeck(const Deck& deck) override;
     void onDraw(const std::list<CardWrapper> &cards) override;
     void registerMe(Player* pl) override;
     void message(const char *message) override;

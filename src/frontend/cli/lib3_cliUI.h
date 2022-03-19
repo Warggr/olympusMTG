@@ -30,7 +30,7 @@ public:
 
     void addCards(const std::list<CardWrapper>& cards) override;
 
-    void disp(fwdlist<uptr<Card>>::const_iterator begin, fwdlist<uptr<Card>>::const_iterator end) override;
+    void disp(fwdlist<card_ptr>::const_iterator begin, fwdlist<card_ptr>::const_iterator end) override;
 
     BasicIO* getBasicIO() override { return &io; }
 

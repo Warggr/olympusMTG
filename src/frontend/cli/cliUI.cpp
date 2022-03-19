@@ -21,7 +21,7 @@ void CliUI::chooseblockers(Y_Hashtable<Creature>& defenders, StateTN<Creature>& 
     (void) defenders; (void) attackers;
 }
 
-void CliUI::disp(fwdlist<uptr<Card>>::const_iterator begin, const fwdlist<uptr<Card>>::const_iterator end) {
+void CliUI::disp(fwdlist<card_ptr>::const_iterator begin, const fwdlist<card_ptr>::const_iterator end) {
     for(auto i = begin; i != end; ++i) {
         io.disp(**i, NanoIO::INLINE);
     }
@@ -44,7 +44,7 @@ void CliUI::list(zone::zone zone) {
         case zone::graveyard:
             Player::myzone zn = zone == zone::exile ? Player::exile : zone == zone::commandzone ? Player::command : Player::graveyard;
             for(const auto& card : pl->getZone(zn).getCards())
-                io.disp_inrow(card.get(), i++, pl->getZone(zn).getSize(), BasicIO::INLINE );
+                io.disp_inrow(raw_cardptr(card), i++, pl->getZone(zn).getSize(), BasicIO::INLINE );
     }
 }
 

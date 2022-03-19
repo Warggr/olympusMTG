@@ -17,7 +17,7 @@ class PermOption;
 class Permanent: public Target, public SpecificOptionWrapper<PermOption> {
 protected:
     TriggerEvent triggers_permanent[4]; //becomes (state) - becomes (special) - ETB - LTB
-    std::unique_ptr<Card> source;
+    card_ptr source;
     Player* ctrl;
     PermOption* first_actab;
     int nb_actabs;
@@ -27,7 +27,7 @@ protected:
 public:
     typedef permanent_type type;
 
-    Permanent(uptr<Card> source, Player* pl);
+    Permanent(card_ptr source, Player* pl);
     virtual ~Permanent() = default;
     virtual std::string describe() const override;
     void disp(BasicIO* io) const override;
@@ -65,7 +65,7 @@ private:
 public:
     static constexpr Identifier def_identifier = construct_id_perm(permanent_type::creature, 0, false);
 
-    Creature(std::unique_ptr<Card> src, Player* pl);
+    Creature(card_ptr src, Player* pl);
     std::string describe() const override;
 
 //    void damage(int nb_damage, Target* origin = 0) override;
@@ -97,7 +97,7 @@ class Planeswalker: public Permanent, public Damageable{
     bool thisturn; //TODO planeswalker abilities
 public:
 
-    Planeswalker(uptr<Card> src, Player* pl);
+    Planeswalker(card_ptr src, Player* pl);
 //    void damage(int nb_damage, Target* origin) override;
     void activate() override;
     void declareBeginturn() override { Permanent::declareBeginturn(); thisturn = false; };

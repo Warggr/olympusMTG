@@ -5,7 +5,7 @@ void LocalViewer::onDraw(const std::list<CardWrapper>& cards) {
     frontEnd->addCards(cards);
 }
 
-void LocalViewer::showTop(const std::forward_list<std::unique_ptr<Card>>& cards, uint nb) {
+void LocalViewer::showTop(const std::forward_list<card_ptr>& cards, uint nb) {
     auto iter = cards.begin();
     std::advance(iter, nb);
     frontEnd->disp(cards.begin(), iter);

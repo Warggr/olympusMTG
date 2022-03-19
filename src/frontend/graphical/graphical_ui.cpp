@@ -65,7 +65,7 @@ Option* GraphicalUI::chooseOpt(bool sorcerySpeed) {
     return nullptr; //TODO
 }
 
-void GraphicalUI::disp(fwdlist<uptr<Card>>::const_iterator begin, const fwdlist<uptr<Card>>::const_iterator end) {
+void GraphicalUI::disp(fwdlist<card_ptr>::const_iterator begin, const fwdlist<card_ptr>::const_iterator end) {
     for(auto i = begin; i != end; ++i) {
         io->draw(*(*i)->oracle, Rect(0, 0, 0, 0), false); //TODO
     }

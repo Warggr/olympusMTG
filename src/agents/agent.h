@@ -71,7 +71,7 @@ public:
 
     virtual void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) = 0;
 
-    virtual bool keepsHand(const fwdlist<uptr<Card>>& cards) = 0;
+    virtual bool keepsHand(const fwdlist<card_ptr>& cards) = 0;
     virtual std::list<CardWrapper> chooseCardsToKeep(std::list<CardWrapper>& list, unsigned nbToDiscard) = 0;
 
     virtual void chooseAttackers(StateTN<Creature>& mycreas) = 0;
@@ -81,7 +81,8 @@ public:
 class Viewer {
 public:
     virtual ~Viewer() = default;
-    virtual void connectGame(Game* game) = 0;
+    virtual void connectGame(Game*) {};
+    virtual void connectDeck(const Deck&) {};
 
     virtual void message(const char* message) = 0;
     virtual void onDraw(const std::list<CardWrapper>& cards) = 0;

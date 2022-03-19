@@ -113,9 +113,9 @@ const PHASEORDERTYPE Player::defaultPhaseOrder = PHASEORDERTYPE(
         );
 #undef PHASEORDERTYPE
 
-Player::Player(Agent &agent, CardZone&& library): Gamer(agent.getName()), agent(agent), viewer(agent.getViewer()), myOptions(this) {
+Player::Player(Agent &agent, Deck&& deck): Gamer(agent.getName()), agent(agent), viewer(agent.getViewer()), deck(std::move(deck)), myOptions(this) {
     viewer.registerMe(this);
-    myLibrary = std::move(library);
+    myLibrary.init(this->deck);
     myLibrary.shuffle();
 
     drawStartingHand();

@@ -140,8 +140,8 @@ public:
         return AdapterLeaf<T, true>::create(createStart(nullptr, bk), iter);
     }
 
-    void insert(std::unique_ptr<Card> origin, Player* pl) {
-        ht[0].insert(std::move(origin), pl); //TODO FEATURE check whether the permanent fulfills one or more criteria
+    void insert(card_ptr origin, Player* pl) {
+        ht[0].insert(move_cardptr(origin), pl); //TODO FEATURE check whether the permanent fulfills one or more criteria
     }
 
     void remove(T* object) {

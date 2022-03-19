@@ -2,7 +2,6 @@
 #define OLYMPUS_NETWORK_CLIENT_H
 
 #include "network/network.h"
-#include <string>
 
 class NetworkClient: public Networker {
 public:

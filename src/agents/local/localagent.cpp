@@ -34,7 +34,7 @@ std::list<CardWrapper> LocalAgent::chooseCardsToKeep(std::list<CardWrapper>& lis
     return viewer.frontEnd->chooseCardsToKeep(list, nbToDiscard);
 }
 
-bool LocalAgent::keepsHand(const std::forward_list<uptr<Card>>& cards) {
+bool LocalAgent::keepsHand(const std::forward_list<card_ptr>& cards) {
     viewer.showTop(cards, 7);
     return viewer.frontEnd->getBasicIO()->simpleChoice("Keep Hand", "Mulligan");
 }
