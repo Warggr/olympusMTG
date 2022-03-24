@@ -1,5 +1,5 @@
 #include "async.h"
-#include "network/networkmanager.h"
+#include "networkmanager.h"
 #include <iostream>
 
 AsyncNetworker::AsyncNetworker() {
@@ -7,16 +7,17 @@ AsyncNetworker::AsyncNetworker() {
 }
 
 const char* AsyncNetworker::receiveMessage() {
+    NetworkManager::listener_mutex.lock();
     while(!unread) { NetworkManager::listen(); }
+    NetworkManager::listener_mutex.unlock();
     unread = false;
-    //std::cout << "Server received " << buffer << "\n";
     return buffer;
 }
 
 /* Callback function when a message has been received. */
 void AsyncNetworker::messageCallback() {
     if(unread) throw NetworkError();
-    read();
+    Networker::receiveMessage();
     unread = true;
 }
 
@@ -33,6 +34,9 @@ void AsyncNetworker::setName(const char *read_name) {
 void AsyncNetworker::waitForConnection() {
     std::cout << "Waiting for connection...\n";
     NetworkManager::listener_mutex.lock();
-    while(!connected) { NetworkManager::listen(); }
+    while(!connected) {
+        NetworkManager::listen();
+        std::cout << "Not connected\n";
+    }
     NetworkManager::listener_mutex.unlock();
 }

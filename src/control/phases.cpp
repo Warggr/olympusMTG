@@ -22,7 +22,8 @@ struct Phase{ //AFAIK there are no "additional step" cards, but there might be s
 };
 
 bool Player::turn(){
-    addToLog("Starting your turn");
+    std::string descr = "Starting " + getName() + "'s turn";
+    addToLog(descr.c_str());
     std::forward_list<const Phase*> thisTurnsOrder = defaultPhaseOrder;
     for(auto & iter : thisTurnsOrder){
         if((*iter)(this)) return true;
@@ -113,21 +114,23 @@ const PHASEORDERTYPE Player::defaultPhaseOrder = PHASEORDERTYPE(
         );
 #undef PHASEORDERTYPE
 
-Player::Player(Agent &agent, Deck&& deck): Gamer(agent.getName()), agent(agent), viewer(agent.getViewer()), deck(std::move(deck)), myOptions(this) {
-    viewer.registerMe(this);
+Player::Player(Agent &agent, Deck&& deck): Gamer(agent.getName()), agent(agent), deck(std::move(deck)), myOptions(this) {
+    agent.getViewer().registerMe(this);
     myLibrary.init(this->deck);
     myLibrary.shuffle();
 
     drawStartingHand();
 }
 
+constexpr int NB_STARTING_CARDS = 7;
+
 void Player::drawStartingHand() {
-    for(int i=0; i<8; i++) {
+    for(int i=0; i<NB_STARTING_CARDS + 1; i++) {
         if(agent.keepsHand(myLibrary.getCards())) {
-            draw(7);
+            quickDraw(NB_STARTING_CARDS);
             auto cardsDiscarded = agent.chooseCardsToKeep(myHand, i);
             for(auto& card: cardsDiscarded) {
-                myLibrary.placeOnBottom(card.unwrap());
+                myLibrary.placeOnBottom(move_cardptr(card.unwrap()));
             }
             return;
         } else {

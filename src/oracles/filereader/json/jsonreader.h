@@ -1,49 +1,36 @@
-#ifndef OLYMPUS_BINARYREADER_H
-#define OLYMPUS_BINARYREADER_H
+#ifndef OLYMPUS_JSONREADER_H
+#define OLYMPUS_JSONREADER_H
 
-#include <iostream>
 #include "../reader.h"
 
-class JsonReader : public ReaderVisitor {
-    inline void canary(char){}
+class JsonReader final : public ReaderVisitor {
+    void canary(char){}
 public:
     explicit JsonReader(std::istream& stream): ReaderVisitor(stream) {};
-    void raise_error(const std::string& message) override;
-    void readName(std::string& name) override;
-    void readCost(Cost& cost) override;
-    void readCardType(card_type& type) override;
+
+    void raiseError(const std::string& message) override;
     void readSectionFlavor(char*& flavor_text, uint8_t offset_text) override;
     void readSectionOthercasts(fwdlist<CardOption>& node) override;
 
-    template<typename T>
-    void directRead(T obj, const char* name) {
-        char begin; std::skipws(ifile); ifile >> begin;
-        if(begin != '{') throw DeckbuildingError("JSON error: does not start with '{'");
-        std::string key;
-    }
+    void visit(const char*, bool&) override {};
+    void visit(const char*, char&) override {};
+    void visit(const char*, std::string&) override {};
+    void visit(const char*, card_type&) override {};
+    void visit(const char*, trig_type&) override {};
+    void visit(const char*, Cost&) override {};
+    void visit(const char*, Mana&) override {};
 
-    template<>
-    void directRead(int obj, const char* name) {
-        char begin; std::skipws(ifile); ifile >> begin;
-        if(begin != '{') throw DeckbuildingError("JSON error: does not start with '{'");
-        std::string key;
-    }
+    void readEffect(std::forward_list<AtomEffect_H>& effects, uint8_t& nbparams, char*& param_hashtable) override;
 
     void readAll(RulesHolder& rules, card_type type) override;
 
-    void readNumberOfObjects(uint& nb) override;
-    void readNumberOfObjects(uint8_t& nb) override;
-
-    void readEffectH(uint8_t &nb_params, char*& params, std::forward_list<AtomEffect_H>& atoms) override;
-    void readTriggerType(trig_type& type) override;
-    void readAtomEffect(effect_type& type, flag_t*& params, uint8_t& nbparams, char* param_hashtable) override;
     void readActAb(Cost& cost, Effect_H* effects, bool &tapsymbol, bool &ismanaability, bool& instantspeed) override;
-
-    void readMainSpell(Cost& cost, Effect_H*& effect) override;
-
     void readSelector(Identifier& chars, Identifier& requs) override;
     void readModifier(char& i, Modifier& first_effect, Modifier*& other_effects) override;
     void readCosts(Cost& cost, bool& tapsymbol) override;
+    void readSubtypes() override;
+
+    void readMainSpell(Cost& cost, Effect_H*& effect) override;
 };
 
-#endif //OLYMPUS_BINARYREADER_H
+#endif //OLYMPUS_JSONREADER_H

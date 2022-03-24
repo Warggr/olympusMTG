@@ -21,11 +21,11 @@ TEST_CASE( "Plain file reader", "[reader]" ) {
     constexpr int NB_TEST_CASES = sizeof strs / sizeof strs[0];
     Mana costs[NB_TEST_CASES] = {"0", "W", "G", "5BBB", "4GG"};
 
-    vector<CardOracle> oracles;
-    for(const string& str : strs) {
-        stringstream stream(str);
+    vector<CardOracle> oracles(NB_TEST_CASES);
+    for(int i = 0; i<NB_TEST_CASES; i++) {
+        stringstream stream(strs[i]);
         PlainFileReader reader(&dicts, stream);
-        oracles.emplace_back(reader);
+        oracles[i].init(reader);
     }
 
     SECTION("Mana cost") {

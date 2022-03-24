@@ -1,6 +1,6 @@
 #include "network.h"
+#include "logging.h"
 #include <istream>
-#include <iostream>
 #include <sstream>
 #include <cassert>
 #include <cerrno>
@@ -22,11 +22,6 @@ const char* version_server = "1" ;
 const char* version_client = "1";
 
 void Sender::send_chunks() {
-    for(uint i=0; i<10 and i<writehead; i++){
-        if(buffer[i] > 32) std::cout << buffer[i];
-        else std::cout << '[' << static_cast<int>(buffer[i]) << ']';
-    }
-    std::cout << '\n';
     Networker::send(buffer, writehead + 1, sockfd); //writehead + 1 contains the MORE_PACKETS flag and is always in scope.
     writehead = 0;
 }
@@ -37,7 +32,7 @@ bool Sender::try_add_chunk(std::istream& ifile) {
     //(BUFFER_SIZE - 1 is reserved for MORE_PACKETS / END_OF_FILE) 
     //When less than one line is extracted, the FAIL bit is set
 
-    std::cout << "Attempting to read " << BUFFER_SIZE - writehead - 1 << " chars, only "
+    gdebug(DBG_NETWORK) << "Attempting to read " << BUFFER_SIZE - writehead - 1 << " chars, only "
               << ifile.gcount() << " read, '" << buffer + writehead
               << "', fail=" << ifile.fail() << ", eof=" << ifile.eof() << '\n';
 
@@ -75,6 +70,27 @@ void Sender::add_chunk(std::istream& ifile) {
     }
 }
 
+Networker::~Networker() {
+    if(connected) close(sockfd);
+}
+
+long Networker::send(const char* message, unsigned long length, int sockfd) {
+    long n = write(sockfd, message, length);
+
+    OPEN_LOG_AS(DBG_NETWORK, strm);
+    strm << "----SENDING----\n";
+    for(int i=0; i<n; i++) {
+        if(i % 20 == 0) strm << '<' << i << '>';
+        if(message[i] < 32 and message[i] != '\n') strm << '[' << static_cast<uint>(message[i]) << ']';
+        else strm << message[i];
+    }
+    strm << "\n----END (" << length << "characters)----\n";
+    CLOSE_LOG(strm);
+
+    if(n < 0) throw NetworkError();
+    return n;
+}
+
 void Sender::add_chunk(const char* msg, unsigned int len) {
     if(len > BUFFER_SIZE - 1 - writehead) send_chunks();
     if(len > BUFFER_SIZE - 1) exit(1);
@@ -100,9 +116,13 @@ void Networker::sendFile(std::istream& file) {
     }
 }
 
+#include <iostream>
+
+/* Lowest-level reading from the network.
+This operation is unsafe because it can return a non-null-terminated string (can also be terminated by MORE_PACKETS). */
 const char* Networker::read() {
     std::cout << "Waiting...\n";
-    _gcount = ::read(sockfd, buffer, BUFFER_SIZE-1);
+    _gcount = ::read(sockfd, buffer, BUFFER_SIZE);
 
     if(_gcount == 0) { //Somebody disconnected , get his details and print
         sockaddr_in cli_addr;
@@ -114,45 +134,34 @@ const char* Networker::read() {
         close( sockfd );
         connected = false;
     } else if(_gcount == -1){
-        std::cout << "read failed: " << std::strerror(errno) << '\n';
+        gdebug(DBG_NETWORK) << "read failed: " << std::strerror(errno) << '\n';
         throw NetworkError();
     }
 
-    buffer[_gcount] = 0;
-
-    std::cout << "----GOT MESSAGE----\n";
+    OPEN_LOG_AS(DBG_NETWORK, strm);
+    strm << "----GOT MESSAGE----\n";
     for(int i=0; i<_gcount; i++) {
-        if(i % 20 == 0) std::cout <<  '<' << i << ">";
-        if(buffer[i] <= 32) std::cout << '[' << static_cast<uint>(buffer[i]) << ']';
-        else std::cout << buffer[i];
+        if(i % 20 == 0) strm <<  '<' << i << ">";
+        if(buffer[i] < 32 and buffer[i] != '\n') strm << '[' << static_cast<uint>(buffer[i]) << ']';
+        else strm << buffer[i];
     }
-    std::cout << "\n----END (" << _gcount << "characters)----\n";
+    strm << "\n----END (" << _gcount << "characters)----\n";
+    CLOSE_LOG(strm);
 
     return buffer;
 }
 
-Networker::~Networker() {
-    if(connected) close(sockfd);
-}
-
-long Networker::send(const char* message, unsigned long length, int sockfd) {
-    long n = write(sockfd, message, length);
-    std::cout << "----SENDING----\n";
-    for(int i=0; i<n; i++) {
-        if(i % 20 == 0) std::cout << '<' << i << '>';
-        if(message[i] <= 32) std::cout << '[' << static_cast<uint>(message[i]) << ']';
-        else std::cout << message[i];
-    }
-    std::cout << "\n----END (" << length << "characters)----\n";
-    if(n < 0) throw NetworkError();
-    return n;
+const char* Networker::receiveMessage() {
+    read();
+    assert(buffer[_gcount-1] == Sender::END_OF_FILE);
+    return buffer;
 }
 
 uptr<std::istream> Networker::receiveFile() {
     auto ret = std::make_unique<std::stringstream>();
     while(true) { //read all segments
-        read();
-        ret->write(buffer, _gcount-1); //not including the 0 or the 1
+        receiveMessage();
+        ret->write(buffer, _gcount-1); //not including the END_OF_FILE
         if(buffer[_gcount-1] == Sender::END_OF_FILE) {
             return ret;
         }

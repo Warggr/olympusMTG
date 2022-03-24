@@ -1,8 +1,6 @@
 #include "networkclient.h"
 #include "network/protocol.h"
 
-constexpr int MAX_NAME_LENGTH = 30;
-
 void NetworkClient::init(const char* hostIp, const char* playerName) {
     contact(hostIp);
 

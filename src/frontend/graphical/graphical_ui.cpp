@@ -60,7 +60,7 @@ Creature* GraphicalUI::blockerSwitch(const Creature& blocker, int blockerIndex, 
     return &(*attackers.begin()); //TODO
 }
 
-Option* GraphicalUI::chooseOpt(bool sorcerySpeed) {
+const Option* GraphicalUI::chooseOpt(bool sorcerySpeed) {
     (void) sorcerySpeed;
     return nullptr; //TODO
 }

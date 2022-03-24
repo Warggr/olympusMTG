@@ -13,8 +13,7 @@ public:
     uptr<std::istream> getDeckFile() override;
 
     Target* chooseTarget(char type) override;
-
-    Option* chooseOpt(bool sorcerySpeed, Player* pl) override;
+    Option* chooseOpt(bool sorcerySpeed, const Player* pl) override;
 
     void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) override;
 
@@ -26,8 +25,8 @@ public:
 
     void chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature>& attackers) override;
 
-    uint chooseAmong(std::vector<PermOption*> opts) override;
-    uint chooseAmong(std::vector<CardOption*> opts) override;
+    uint chooseAmong(const std::vector<PermOption*>& opts) override;
+    uint chooseAmong(const std::vector<CardOption*>& opts) override;
 
     Viewer& getViewer() override { return *this; }
 

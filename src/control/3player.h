@@ -12,7 +12,6 @@ struct Phase; class Agent; class Viewer;
 class Player: public Gamer {
 private:
     Agent& agent;
-    Viewer& viewer;
     Deck deck;
     std::forward_list<PlayerPreStackElement> prestack;
     Player* nextopponent;
@@ -38,6 +37,7 @@ public:
     void chooseBlockers(StateTN<Creature>& attackers);
 
     void draw(int nb_cards);
+    void quickDraw(int nb_cards);
     void drawStartingHand();
     void addMana(char color);
     void putToZone(card_ptr& x, myzone nb_zone);

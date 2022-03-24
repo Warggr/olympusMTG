@@ -25,6 +25,7 @@ public:
     explicit Card(oracle_ptr orc): oracle(move_oracleptr(orc)) { }
 
     void reveal() const;
+    void disp(BasicIO* io) const override;
     std::string describe() const override { return oracle->describe(); };
 
     card_type getType() const { return oracle->getType(); };
@@ -40,7 +41,6 @@ public:
     std::string toStr(const CardOracle* offset) const;
     void fromStr(std::istream& ifile, const CardOracle* offset);
     void write(WriterVisitor& writer) const;
-    void disp(BasicIO* io) const override;
 
     friend class CardWrapper;
 };
@@ -63,8 +63,8 @@ public:
     const Option* chooseOptionAction() const override;
     Player* getController() override { return owner; }
 
-    void castOpt(Player* pl) override;
-    bool isCastable(bool sorceryspeed, Player* player) const override;
+    bool castOpt(Player* pl) override;
+    bool isCastable(bool sorceryspeed, const Player* player) const override;
 
     bool operator==(const CardWrapper& other) const { return this == &other; }
 };

@@ -62,10 +62,10 @@ public:
     virtual uptr<std::istream> getDeckFile() = 0;
     std::vector<OracleDescr> getDeck();
 
-    virtual const Option* chooseOpt(bool sorcerySpeed, Player* pl) = 0;
+    virtual const Option* chooseOpt(bool sorcerySpeed, const Player* pl) = 0;
 
-    virtual uint chooseAmong(std::vector<PermOption*> opts) = 0;
-    virtual uint chooseAmong(std::vector<CardOption*> opts) = 0;
+    virtual uint chooseAmong(const std::vector<PermOption*>& opts) = 0;
+    virtual uint chooseAmong(const std::vector<CardOption*>& opts) = 0;
 
     virtual const Target* chooseTarget(char type) = 0;
 

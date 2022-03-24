@@ -19,6 +19,29 @@ void OlympusClient::play() {
     }
 }
 
+void OlympusClient::discardCards(const char* message, long gcount){
+    assert(message[0] == operations::CHOOSE_AMONG);
+    const uint16_t* size = reinterpret_cast<const uint16_t*>(message + 1);
+    const uint16_t* nbToDiscard = size + 1;
+    assert(*size >= *nbToDiscard);
+
+    if(*nbToDiscard != 0){
+        auto wrappers = std::list<CardWrapper>();
+        for(const uint16_t* i = nbToDiscard + 1; reinterpret_cast<const char*>(i) < message + gcount - 1; i++){
+            wrappers.emplace_front(&(deck.cards[*i]), nullptr);
+        }
+        auto discarded = agent.chooseCardsToKeep(wrappers, *nbToDiscard);
+        Sender sender = network.getSender();
+        char header = operations::CHOOSE_AMONG;
+        sender.add_chunk(&header);
+        for(auto& card : discarded){
+            uint16_t offset = card.get() - deck.cards.data();
+            sender.add_chunk(&offset);
+        }
+        sender.close();
+    }
+}
+
 void OlympusClient::start() {
     uptr<std::istream> compiled_deck = network.receiveFile();
 
@@ -44,9 +67,8 @@ void OlympusClient::start() {
         char a = hand_desc->get();
         assert(a == operations::CREATE);
         char nb = hand_desc->get();
-        gdebug(DBG_NETWORK) << "Received hand: [CREATE][" << static_cast<int>(nb) << "]\n";
+
         std::forward_list<card_ptr> hand;
-        BinaryReader reader(*hand_desc);
         for(int i=0; i<nb; i++){
             uint16_t offset; hand_desc->read(reinterpret_cast<char*>(&offset), sizeof(offset));
             gdebug(DBG_NETWORK) << offset << '\n';
@@ -58,6 +80,10 @@ void OlympusClient::start() {
         network.send(answer, sizeof(answer));
         if(keeps) break;
     };
+
+    const char* discards = network.receiveMessage();
+    discardCards(discards, network.gcount());
+
     try {
         while (true) play();
     } catch(const UIClosedException& x) {

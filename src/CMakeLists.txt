@@ -27,6 +27,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/incl
 
 add_subdirectory(agents)
 add_subdirectory(control)
+add_subdirectory(client)
 add_subdirectory(frontend)
 add_subdirectory(gameplay)
 add_subdirectory(include/Mana)

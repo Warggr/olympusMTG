@@ -20,9 +20,45 @@ void NetworkAgent::splitDamage(int power, std::list<std::pair<uint8_t, SpecificT
     (void) power; (void) blockers; //TODO implement
 }
 
-std::list<CardWrapper> NetworkAgent::chooseCardsToKeep(std::list<CardWrapper> &list, uint nbToDiscard) {
-    (void) list; (void) nbToDiscard; //TODO implement
-    return std::list<CardWrapper>();
+std::list<CardWrapper> NetworkAgent::chooseCardsToKeep(std::list<CardWrapper>& list, uint nbToDiscard) {
+    Sender sender = networker.getSender();
+
+    char header = operations::CHOOSE_AMONG; sender.add_chunk(&header);
+    uint16_t size = list.size(); sender.add_chunk(&size);
+    uint16_t nbSel = nbToDiscard; sender.add_chunk(&nbSel);
+
+    if(nbToDiscard == 0){
+        sender.close();
+        return std::list<CardWrapper>();
+    } else {
+        for(auto& wrapper: list){
+            const Card* card = wrapper.get();
+            uint16_t offset = card - first_card;
+            sender.add_chunk(reinterpret_cast<char*>(&offset), sizeof(offset));
+        }
+        sender.close();
+
+        auto ret = std::list<CardWrapper>();
+
+        const char* answer = networker.receiveMessage();
+        assert(answer[0] == operations::CHOOSE_AMONG);
+
+        for(int i = 1; i < networker.gcount() - 1; i += sizeof(uint16_t)){
+            uint16_t offset = *reinterpret_cast<const uint16_t*>(answer + i);
+            card_ptr card = first_card + offset;
+
+            auto iter = list.begin();
+            for( ; iter != list.end(); iter++ ){ //TODO OPTIMIZE
+                if(iter->get() == card) {
+                    ret.splice(iter, list);
+                    break;
+                }
+            }
+            assert(iter != list.end());
+        }
+
+        return ret;
+    }
 }
 
 void NetworkAgent::connectDeck(const Deck& deck) {
@@ -57,8 +93,6 @@ void NetworkAgent::connectDeck(const Deck& deck) {
     sender.close();
 }
 
-#include <iostream>
-
 bool NetworkAgent::keepsHand(const fwdlist<card_ptr>& cards) {
     const long size = 7;
     char header[2] = { operations::CREATE, static_cast<char>(size) };
@@ -68,7 +102,6 @@ bool NetworkAgent::keepsHand(const fwdlist<card_ptr>& cards) {
     int i = 0;
     for(auto iter = cards.begin(); i < size; ++i, ++iter ){
         uint16_t offset = (*iter) - first_card;
-        std::cout << offset << ' ';
         sender.add_chunk(reinterpret_cast<char*>(&offset), sizeof(offset));
     }
     sender.close();
@@ -77,7 +110,7 @@ bool NetworkAgent::keepsHand(const fwdlist<card_ptr>& cards) {
     return (answer[1] == 1);
 }
 
-const Option* NetworkAgent::chooseOpt(bool sorcerySpeed, Player* pl) {
+const Option* NetworkAgent::chooseOpt(bool sorcerySpeed, const Player* pl) {
     (void) sorcerySpeed; (void) pl; //TODO implement
     return nullptr;
 }
@@ -107,11 +140,11 @@ void NetworkAgent::onDraw(const std::list<CardWrapper>& cards) {
     sender.close();
 }
 
-uint NetworkAgent::chooseAmong(std::vector<CardOption*> opts) {
+uint NetworkAgent::chooseAmong(const std::vector<CardOption*>& opts) {
     (void) opts; return 0; //TODO
 }
 
-uint NetworkAgent::chooseAmong(std::vector<PermOption*> opts) {
+uint NetworkAgent::chooseAmong(const std::vector<PermOption*>& opts) {
     (void) opts; return 0; //TODO
 }
 

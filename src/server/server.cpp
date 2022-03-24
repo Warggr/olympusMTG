@@ -1,6 +1,6 @@
 #include "server.h"
 #include "agents/agent.h"
-#include "network/networkmanager.h"
+#include "network/server/networkmanager.h"
 #include "control/3player.h" //some kind of implicit deletion of Players when creating a list
 #include "control/7game.h"
 #include <thread>

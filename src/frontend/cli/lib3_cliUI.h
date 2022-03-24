@@ -17,7 +17,7 @@ public:
 //    void del(const char* descr);
 //    void bulkOp(const char* descr);
 
-    void splitDamage(int power, std::__cxx11::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) override;
+    void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) override;
 
     const Option* chooseOpt(bool sorcerySpeed) override;
 

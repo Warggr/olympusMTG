@@ -45,19 +45,27 @@ void Player::putToZone(card_ptr& x, myzone nb_zone){
     myZones[nb_zone].takeonecard(move_cardptr(x));
 }
 
+void Player::quickDraw(int nb_cards) {
+    for(int i = 0; i<nb_cards; i++){
+        card_ptr card = myZones[library].pop_front();
+        myHand.emplace_front(move_cardptr(card), this);
+    }
+}
+
 void Player::draw(int nb_cards) {
     hand_type temporaryZone; //according to Magic rules, these cards are already in your hand.
     //We just cache them in a temporary zone and assume nothing happens while they're in the process of being drawn.
+    //TODO OPTIM do not use any temporary zone
     for(int i=0; i<nb_cards; i++) {
         card_ptr card = myZones[library].pop_front();
         if(!card){
             milledout = 1;
             //Rule 104.3c: a player who must draw too many cards loses the game the next time a player would receive prio
-            return;
+            break;
         }
         temporaryZone.emplace_front(move_cardptr(card), this);
     }
-    viewer.onDraw(temporaryZone);
+    agent.getViewer().onDraw(temporaryZone);
     myHand.splice(myHand.end(), temporaryZone);
 }
 

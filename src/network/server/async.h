@@ -1,7 +1,7 @@
 #ifndef OLYMPUS_ASYNC_H
 #define OLYMPUS_ASYNC_H
 
-#include "network.h"
+#include "../network.h"
 
 class AsyncNetworker: public Networker {
     bool unread;

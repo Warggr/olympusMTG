@@ -15,11 +15,11 @@ uptr<std::istream> BotAgent::getDeckFile() {
     return std::make_unique<std::ifstream>("decks/deck1.dck", std::ios::in);
 }
 
-Target *BotAgent::chooseTarget(char type) {
+Target* BotAgent::chooseTarget(char type) {
     (void) type; return nullptr;
 }
 
-Option * BotAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
+Option* BotAgent::chooseOpt(bool sorcerySpeed, const Player *pl) {
     (void) sorcerySpeed; (void) pl;
     return nullptr;
 }
@@ -46,11 +46,11 @@ void BotAgent::chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature>&
     (void) mycreas; (void) attackers;
 }
 
-uint BotAgent::chooseAmong(std::vector<PermOption*> opts) {
+uint BotAgent::chooseAmong(const std::vector<PermOption*>& opts) {
     (void) opts; return 0;
 }
 
-uint BotAgent::chooseAmong(std::vector<CardOption *> opts) {
+uint BotAgent::chooseAmong(const std::vector<CardOption*>& opts) {
     (void) opts;
     return 0;
 }

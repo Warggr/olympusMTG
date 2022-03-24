@@ -22,9 +22,6 @@ protected:
     colorId::type color;
     RulesHolder rules;
 public:
-#ifdef F_TESTS
-    CardOracle(type_t type): name("Test card"), type(type) {}
-#endif
     void init(ReaderVisitor& reader);
 
     std::string describe() const override;

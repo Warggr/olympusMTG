@@ -4,3 +4,7 @@ add_subdirectory(filereader)
 add_subdirectory(database)
 
 create_test(oracles)
+
+if(ENABLE_TESTING)
+	target_link_libraries(oracles-test filereader dictionary database)
+endif()

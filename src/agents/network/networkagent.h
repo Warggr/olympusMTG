@@ -2,7 +2,7 @@
 #define OLYMPUS_AGENT_NETWORK_H
 
 #include "../agent.h"
-#include "network/async.h"
+#include "network/server/async.h"
 #include <map>
 
 class NetworkAgent: public Agent, public Viewer {
@@ -28,7 +28,7 @@ public:
 
     bool keepsHand(const std::forward_list<card_ptr>& cards) override;
 
-    const Option* chooseOpt(bool sorcerySpeed, Player* pl) override;
+    const Option* chooseOpt(bool sorcerySpeed, const Player* pl) override;
 
     void chooseAttackers(StateTN<Creature>& mycreas) override;
 
@@ -36,12 +36,12 @@ public:
 
     Viewer& getViewer() override { return *this; }
 
-    uint chooseAmong(std::vector<CardOption*> opts) override;
-    uint chooseAmong(std::vector<PermOption*> opts) override;
+    uint chooseAmong(const std::vector<CardOption*>& opts) override;
+    uint chooseAmong(const std::vector<PermOption*>& opts) override;
 
     void connectGame(Game* game) override;
     void connectDeck(const Deck& deck) override;
-    void onDraw(const std::list<CardWrapper> &cards) override;
+    void onDraw(const std::list<CardWrapper>& cards) override;
     void registerMe(Player* pl) override;
     void message(const char *message) override;
 };

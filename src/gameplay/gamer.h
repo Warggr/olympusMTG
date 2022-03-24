@@ -59,6 +59,8 @@ public:
     Player* getDmgController() override;
     Player* getController() override;
     const CardZone& getZone(myzone zone) const { return myZones[zone]; }
+
+    bool canPlayLand() const { return nb_lands_remaining != 0; }
 };
 
 #endif //OLYMPUS_GAMER_H
