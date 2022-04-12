@@ -5,11 +5,15 @@
 #include <forward_list>
 #include <memory>
 
+OlympusClient::OlympusClient(): gamer(playerName) {
+    agent.getViewer().registerMe(&gamer);
+}
+
 void OlympusClient::play() {
     const char* request = network.receiveMessage();
     switch(request[0]) {
         case operations::MESSAGE: agent.getViewer().message(request + 1); break;
-//        case 'X': frontEnd.create(request + 1); break;
+        case operations::CREATE: create(request + 1); break;
 //        case 'U': frontEnd.update(request + 1); break;
 //        case 'D': frontEnd.del(request + 1); break;
 //        case 'B': frontEnd.bulkOp(request + 1); break;
@@ -20,17 +24,15 @@ void OlympusClient::play() {
 }
 
 void OlympusClient::discardCards(const char* message, long gcount){
+    (void) gcount;
     assert(message[0] == operations::CHOOSE_AMONG);
-    const uint16_t* size = reinterpret_cast<const uint16_t*>(message + 1);
-    const uint16_t* nbToDiscard = size + 1;
-    assert(*size >= *nbToDiscard);
+    const uint16_t size = *reinterpret_cast<const uint16_t*>(message + 1);
+    const uint16_t nbToDiscard = *reinterpret_cast<const uint16_t*>(message + 2);
+    assert(size == hand.size());
+    assert(size >= nbToDiscard);
 
-    if(*nbToDiscard != 0){
-        auto wrappers = std::list<CardWrapper>();
-        for(const uint16_t* i = nbToDiscard + 1; reinterpret_cast<const char*>(i) < message + gcount - 1; i++){
-            wrappers.emplace_front(&(deck.cards[*i]), nullptr);
-        }
-        auto discarded = agent.chooseCardsToKeep(wrappers, *nbToDiscard);
+    if(nbToDiscard != 0){
+        auto discarded = agent.chooseCardsToKeep(hand, nbToDiscard);
         Sender sender = network.getSender();
         char header = operations::CHOOSE_AMONG;
         sender.add_chunk(&header);
@@ -81,6 +83,11 @@ void OlympusClient::start() {
         if(keeps) break;
     };
 
+    const char* hand = network.receiveMessage();
+    assert(hand[0] == operations::CREATE);
+    assert(hand[1] == entities::CARDWRAPPER);
+    drawCards(hand + 2);
+
     const char* discards = network.receiveMessage();
     discardCards(discards, network.gcount());
 
@@ -88,5 +95,26 @@ void OlympusClient::start() {
         while (true) play();
     } catch(const UIClosedException& x) {
 
+    }
+}
+
+void OlympusClient::drawCards(const char* message){
+    constexpr int STEPSIZE = sizeof(long long) + sizeof(uint16_t);
+    for(const char* i = message + 1; i < message + 1 + message[0] * STEPSIZE; i += STEPSIZE){
+        long long llptr = *(reinterpret_cast<const long long*>(i));
+        Card* card = deck.cards.data() + *(reinterpret_cast<const uint16_t*>(i + sizeof(long long)));
+        CardWrapper& new_card = hand.emplace_back(card, nullptr);
+        auto ret = wrapperMapping.insert(std::make_pair(&new_card, llptr));
+        assert(ret.second == true);
+    }
+}
+
+void OlympusClient::create(const char* message) {
+    switch(message[0]){
+        case entities::CARDWRAPPER:
+            drawCards(message + 1);
+            break;
+        default:
+            gdebug(DBG_NETWORK) << "Unrecognized entity: " << message[0] << '\n';
     }
 }

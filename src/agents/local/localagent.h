@@ -10,9 +10,9 @@ public:
     LocalViewer(): frontEnd(AbstractFrontEnd::factory()) {};
     ~LocalViewer() { delete frontEnd; }
     void connectGame(Game* game) override;
-    void registerMe(Player* pl) override;
+    void registerMe(Gamer* pl) override;
     void onDraw(const std::list<CardWrapper>& cards) override;
-    void message(const char *message) override { frontEnd->getBasicIO()->message(message); }
+    void message(const char* message) override { frontEnd->getBasicIO()->message(message); }
     void showTop(const std::forward_list<card_ptr>& cards, uint nb);
 
     friend class LocalAgent;

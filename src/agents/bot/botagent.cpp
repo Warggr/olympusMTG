@@ -63,6 +63,6 @@ void BotAgent::onDraw(const std::list<CardWrapper> &cards) {
     (void) cards;
 }
 
-void BotAgent::registerMe(Player* pl) {
+void BotAgent::registerMe(Gamer* pl) {
     (void) pl;
 }

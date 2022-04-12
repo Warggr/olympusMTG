@@ -37,7 +37,6 @@ public:
     void chooseBlockers(StateTN<Creature>& attackers);
 
     void draw(int nb_cards);
-    void quickDraw(int nb_cards);
     void drawStartingHand();
     void addMana(char color);
     void putToZone(card_ptr& x, myzone nb_zone);

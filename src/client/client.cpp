@@ -29,7 +29,7 @@ po::variables_map readArgs(int argc, char** argv) {
 }
 
 void OlympusClient::init(const po::variables_map& vm) {
-    std::string playerName = vm.count("username") ? vm["username"].as<std::string>() : agent.getName();
+    playerName = vm.count("username") ? vm["username"].as<std::string>() : agent.getName();
     std::string hostIp = vm.count("ip") ? vm["ip"].as<std::string>() : agent.getLogin();
 
     std::thread net_thread(&NetworkClient::init, &network, hostIp.c_str(), playerName.c_str());

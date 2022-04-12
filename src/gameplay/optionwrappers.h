@@ -4,8 +4,13 @@
 #include <vector>
 #include <memory>
 
-class Option; class Player;
+class Option;
 
+/**
+ * An OptionWrapper is an object that contains multiple options that are somehow related to each other.
+ * When choosing an Option, the user will usually select an OptionWrapper and then choose one of the contained Options.
+ * Grouping Options into OptionWrapper is also useful because they often need to be deleted / invalidated at the same time.
+ */
 struct OptionWrapper {
     virtual ~OptionWrapper() = default;
     virtual const Option* chooseOptionAction() const = 0;

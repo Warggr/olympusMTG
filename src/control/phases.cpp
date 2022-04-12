@@ -114,7 +114,7 @@ const PHASEORDERTYPE Player::defaultPhaseOrder = PHASEORDERTYPE(
         );
 #undef PHASEORDERTYPE
 
-Player::Player(Agent &agent, Deck&& deck): Gamer(agent.getName()), agent(agent), deck(std::move(deck)), myOptions(this) {
+Player::Player(Agent& agent, Deck&& deck): Gamer(agent.getName()), agent(agent), deck(std::move(deck)), myOptions(this) {
     agent.getViewer().registerMe(this);
     myLibrary.init(this->deck);
     myLibrary.shuffle();
@@ -127,7 +127,7 @@ constexpr int NB_STARTING_CARDS = 7;
 void Player::drawStartingHand() {
     for(int i=0; i<NB_STARTING_CARDS + 1; i++) {
         if(agent.keepsHand(myLibrary.getCards())) {
-            quickDraw(NB_STARTING_CARDS);
+            draw(NB_STARTING_CARDS);
             auto cardsDiscarded = agent.chooseCardsToKeep(myHand, i);
             for(auto& card: cardsDiscarded) {
                 myLibrary.placeOnBottom(move_cardptr(card.unwrap()));

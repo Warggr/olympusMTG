@@ -11,6 +11,6 @@ void LocalViewer::showTop(const std::forward_list<card_ptr>& cards, uint nb) {
     frontEnd->disp(cards.begin(), iter);
 }
 
-void LocalViewer::registerMe(Player* pl) {
+void LocalViewer::registerMe(Gamer* pl) {
     frontEnd->registerMe(pl);
 }

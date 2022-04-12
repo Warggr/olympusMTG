@@ -45,13 +45,6 @@ void Player::putToZone(card_ptr& x, myzone nb_zone){
     myZones[nb_zone].takeonecard(move_cardptr(x));
 }
 
-void Player::quickDraw(int nb_cards) {
-    for(int i = 0; i<nb_cards; i++){
-        card_ptr card = myZones[library].pop_front();
-        myHand.emplace_front(move_cardptr(card), this);
-    }
-}
-
 void Player::draw(int nb_cards) {
     hand_type temporaryZone; //according to Magic rules, these cards are already in your hand.
     //We just cache them in a temporary zone and assume nothing happens while they're in the process of being drawn.

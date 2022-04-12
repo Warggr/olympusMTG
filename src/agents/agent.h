@@ -11,7 +11,7 @@
 #include "oracles/filereader/filereader.h"
 
 class Target; class Creature; template<typename T> class SpecificTargeter; class Card; class CardWrapper; class CardWrapper;
-class Player; class Game;
+class Player; class Game; class Gamer;
 class Option; class CardOption; class PermOption;
 template<typename T> class Y_Hashtable; template<typename T> class StateTN; template<typename T> class PermanentTN;
 
@@ -86,7 +86,7 @@ public:
 
     virtual void message(const char* message) = 0;
     virtual void onDraw(const std::list<CardWrapper>& cards) = 0;
-    virtual void registerMe(Player* pl) = 0;
+    virtual void registerMe(Gamer* pl) = 0;
 };
 
 #endif //OLYMPUS_AGENT_H

@@ -3,13 +3,13 @@
 
 #include "../agent.h"
 #include "network/server/async.h"
-#include <map>
 
 class NetworkAgent: public Agent, public Viewer {
     AsyncNetworker networker;
     Game* game;
     const CardOracle* first_oracle;
     const Card* first_card;
+    std::vector<const Permanent*> permanents;
 public:
     NetworkAgent();
 
@@ -42,7 +42,7 @@ public:
     void connectGame(Game* game) override;
     void connectDeck(const Deck& deck) override;
     void onDraw(const std::list<CardWrapper>& cards) override;
-    void registerMe(Player* pl) override;
+    void registerMe(Gamer* pl) override;
     void message(const char *message) override;
 };
 
