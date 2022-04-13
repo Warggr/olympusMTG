@@ -36,7 +36,7 @@ std::list<CardWrapper> NetworkAgent::chooseCardsToKeep(std::list<CardWrapper>& l
         const char* answer = networker.receiveMessage();
         assert(answer[0] == operations::CHOOSE_AMONG);
 
-        for(int i = 1; i < networker.gcount() - 1; i += sizeof(uint16_t)){
+        for(int i = 1; i < networker.gcount(); i += sizeof(uint16_t)){
             uint16_t offset = *reinterpret_cast<const uint16_t*>(answer + i);
             card_ptr card = first_card + offset;
 
@@ -104,9 +104,18 @@ bool NetworkAgent::keepsHand(const fwdlist<card_ptr>& cards) {
     return (answer[1] == 1);
 }
 
+static_assert(reinterpret_cast<intptr_t>(nullptr) == 0); //assert that the agent never sends a zero for a valid pointer
+
 const Option* NetworkAgent::chooseOpt(bool sorcerySpeed, const Player* pl) {
-    (void) sorcerySpeed; (void) pl; //TODO implement
-    return nullptr;
+    (void) pl;
+    char content[] = { operations::GET_OPTION, static_cast<char>(sorcerySpeed) };
+    networker.send(content, sizeof(content));
+
+    const char* msg = networker.receiveMessage();
+    assert(networker.gcount() == sizeof(long long));
+    long long msg_long = *(reinterpret_cast<const long long*>(msg));
+    if(msg_long == 0) return nullptr;
+    else return reinterpret_cast<const Option*>(msg_long);
 }
 
 void NetworkAgent::chooseAttackers(StateTN<Creature>& mycreas) {
@@ -126,7 +135,8 @@ void NetworkAgent::onDraw(const std::list<CardWrapper>& cards) {
     Sender sender = networker.getSender();
     sender.add_chunk(header, sizeof(header));
     for(auto& wrapper: cards) {
-        intptr_t ptr = reinterpret_cast<intptr_t>(&wrapper);
+        const Option* opt = &wrapper;
+        intptr_t ptr = reinterpret_cast<intptr_t>(opt);
         long long llptr = ptr;
         uint16_t card = wrapper.get() - first_card;
 

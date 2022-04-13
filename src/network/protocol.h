@@ -3,7 +3,7 @@
 
 extern const char* id_client, * id_server, * version_server, * version_client;
 
-enum operations : char { CREATE, UPDATE, DELETE, MESSAGE, COMPILED_DECK, KEEPS_HAND, CHOOSE_AMONG };
+enum operations : char { CREATE, UPDATE, DELETE, MESSAGE, COMPILED_DECK, KEEPS_HAND, CHOOSE_AMONG, GET_OPTION };
 
 enum entities : char { CARDWRAPPER };
 

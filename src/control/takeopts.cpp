@@ -30,7 +30,7 @@ void Player::choicephase(bool sorceryspeed){
 }
 
 bool Player::chooseAndUseOpt(bool sorceryspeed){ //AKA "giving priority". Returns false if a pass option was chosen
-    Game::god->stateBasedActions(); //"before any player receives priority, state-based actions are done"
+    Game::the_game->stateBasedActions(); //"before any player receives priority, state-based actions are done"
     if(!myOptions.hasOptions(sorceryspeed)) return false;
 
     bool hasCastAnything = false;

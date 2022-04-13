@@ -3,10 +3,10 @@
 #include "agents/agent.h"
 #include "oracles/filereader/filereader.h"
 
-Game* Game::god = nullptr;
+Game* Game::the_game = nullptr;
 
 Game::Game(const std::list<std::unique_ptr<Agent>>& agents) {
-    god = this;
+    the_game = this;
     for(auto & agent : agents){
         auto deck = parseDeck(agent->descriptors);
         agent->getViewer().connectDeck(deck);

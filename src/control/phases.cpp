@@ -15,7 +15,7 @@ struct Phase{ //AFAIK there are no "additional step" cards, but there might be s
         for(int i = 0; i < _nb_steps; i++){
             (*pl.*(_steps[i]))();
             pl->emptyPool();
-            if(Game::god->hasWon()) return true;
+            if(Game::the_game->hasWon()) return true;
         }
         return false;
     }
@@ -49,7 +49,8 @@ void Player::mainphasemainstep(){
 }
 void Player::declareattackersstep(){
     myboard.mycreas.unfold(&myboard.myattackers);
-    agent.chooseAttackers(myboard.myattackers);
+    if(!myboard.mycreas.empty())
+        agent.chooseAttackers(myboard.myattackers);
     phase = afterattack;
 }
 void Player::declareblockersstep(){

@@ -5,6 +5,7 @@
 #include "agents/local/localagent.h"
 #include "gameplay/2cards.h"
 #include "gameplay/gamer.h"
+#include "gameplay/game.h"
 #include <boost/program_options.hpp>
 #include <vector>
 #include <list>
@@ -13,16 +14,16 @@
 class CardWrapper;
 using hand_type = std::list<CardWrapper>;
 
-class OlympusClient {
+class OlympusClient: public Gamer {
     std::string playerName;
     LocalAgent agent;
     NetworkClient network;
     Deck deck;
-    Gamer gamer;
-    std::list<CardWrapper> hand;
-    std::map<CardWrapper*, long long> wrapperMapping; //TODO OPTIMIZE
+    ProtoGame game;
+    std::map<const Option*, long long> optionMapping; //TODO OPTIMIZE
     void play();
     inline void discardCards(const char* message, long gcount);
+    inline long long make_ref(const Option* opt){ return optionMapping.at(opt); }
     void drawCards(const char* message);
 public:
     OlympusClient();

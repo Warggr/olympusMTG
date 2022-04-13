@@ -5,8 +5,8 @@
 #include <forward_list>
 #include <memory>
 
-OlympusClient::OlympusClient(): gamer(playerName) {
-    agent.getViewer().registerMe(&gamer);
+OlympusClient::OlympusClient() {
+    agent.getViewer().registerMe(this);
 }
 
 void OlympusClient::play() {
@@ -14,10 +14,19 @@ void OlympusClient::play() {
     switch(request[0]) {
         case operations::MESSAGE: agent.getViewer().message(request + 1); break;
         case operations::CREATE: create(request + 1); break;
+        case operations::GET_OPTION: {
+            bool sorceryspeed = static_cast<bool>(request[1]);
+            const Option* opt = agent.chooseOpt(sorceryspeed, nullptr);
+            long long ret;
+            if(opt == nullptr)
+                ret = 0;
+            else
+                ret = make_ref(opt);
+            network.send(reinterpret_cast<char*>(&ret), sizeof(ret));
+        } break;
 //        case 'U': frontEnd.update(request + 1); break;
 //        case 'D': frontEnd.del(request + 1); break;
 //        case 'B': frontEnd.bulkOp(request + 1); break;
-//        case '?': query(request + 1); break;
         default:
             gdebug(DBG_NETWORK) << "Unrecognized opcode: " << request[0] << '\n';
     }
@@ -28,11 +37,11 @@ void OlympusClient::discardCards(const char* message, long gcount){
     assert(message[0] == operations::CHOOSE_AMONG);
     const uint16_t size = *reinterpret_cast<const uint16_t*>(message + 1);
     const uint16_t nbToDiscard = *reinterpret_cast<const uint16_t*>(message + 2);
-    assert(size == hand.size());
+    assert(size == myHand.size());
     assert(size >= nbToDiscard);
 
     if(nbToDiscard != 0){
-        auto discarded = agent.chooseCardsToKeep(hand, nbToDiscard);
+        auto discarded = agent.chooseCardsToKeep(myHand, nbToDiscard);
         Sender sender = network.getSender();
         char header = operations::CHOOSE_AMONG;
         sender.add_chunk(&header);
@@ -103,8 +112,8 @@ void OlympusClient::drawCards(const char* message){
     for(const char* i = message + 1; i < message + 1 + message[0] * STEPSIZE; i += STEPSIZE){
         long long llptr = *(reinterpret_cast<const long long*>(i));
         Card* card = deck.cards.data() + *(reinterpret_cast<const uint16_t*>(i + sizeof(long long)));
-        CardWrapper& new_card = hand.emplace_back(card, nullptr);
-        auto ret = wrapperMapping.insert(std::make_pair(&new_card, llptr));
+        CardWrapper& new_card = myHand.emplace_back(card, nullptr);
+        auto ret = optionMapping.insert(std::make_pair(&new_card, llptr));
         assert(ret.second == true);
     }
 }

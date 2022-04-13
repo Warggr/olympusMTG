@@ -30,5 +30,5 @@ void Player::damagestep(){
 
     myboard.myattackers.restate(); //destroying attackers list
 
-    Game::god->stateBasedActions();
+    Game::the_game->stateBasedActions();
 }

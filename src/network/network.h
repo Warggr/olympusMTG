@@ -54,13 +54,15 @@ public:
     long send(const std::string& message) const { return send(message.c_str(), message.size() + 1, sockfd); } //including the final \0
     long send(const char* message, unsigned long size) const { return send(message, size + 1, sockfd); }
     void sendFile(std::istream& file);
+
     virtual const char* receiveMessage(); //reads a C-style string from the network. Other implementations (e.g. async) may override this.
     uptr<std::istream> receiveFile();
+
     int getSock() const { return sockfd; }
     bool isConnected() const { return connected; }
     inline Sender getSender() const { return Sender(sockfd); }
 
-    long gcount() const { return _gcount; }
+    long gcount() const { return _gcount - 1; }
 };
 
 #endif //OLYMPUS_NETWORK_H
