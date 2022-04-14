@@ -54,12 +54,12 @@ public:
     void chooseAttackers(StateTN<Creature>& attackers);
 
     template<typename O>
-    uint chooseAmong(const std::vector<O> all) {
-        iterator_wrapper<typename std::vector<O>::const_iterator> wrapper = all.begin();
+    uint chooseAmong(const std::vector<O>& all) {
+        iterator_wrapper<typename std::vector<O>::const_iterator> wrapper( all.begin() );
         uint pos = 0;
-        int i = 0;
+        uint i = 0;
         for(auto iter = all.begin(); iter != all.end(); ++iter, ++i)
-            disp_inrow(to_disp(*iter), i, all.size(), 0);
+            disp_inrow(to_disp(*iter), i, all.size(), (i == pos) ? SELECTED : 0 );
         while(true) {
             auto action = getNextPosition(&wrapper, pos, all.size());
             if(action == commit) return pos;

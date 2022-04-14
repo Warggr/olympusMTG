@@ -47,7 +47,10 @@ const Option* CliUI::chooseOpt(bool sorcerySpeed) {
         switch(cmd){
             case cd: context = temporaryContext; break;
             case ls: list(temporaryContext.where); break;
-            case sel: return dynamic_cast<const OptionWrapper*>(temporaryContext.what)->chooseOptionAction();
+            case sel: {
+                const Option* ret = dynamic_cast<const OptionWrapper*>(temporaryContext.what)->chooseOptionAction();
+                if(ret) return ret;
+            } break;
             case view: temporaryContext.what->disp(&io); break;
             case help: printHelp(); break;
             case concede: throw UIClosedException();
@@ -70,15 +73,24 @@ const Target* readTarget(const char* str, zone::zone zone, const std::vector<con
     pos -= 1; //'1' refers to the object at position 0
 
     switch(zone) {
-    case zone::hand: if(pos < pl[0]->getHand().size()) {
-        auto iter = pl[0]->getHand().begin();
-        std::advance(iter, pos);
-        return const_cast<CardWrapper*>(iter.operator->());
-    } else {
-        std::cout << "No such card\n";
-    } break;
-    default:
-        std::cout << "Zone not implemented yet.\n";
+        case zone::hand:
+            if(pos < pl[0]->getHand().size()) {
+                auto iter = pl[0]->getHand().begin();
+                std::advance(iter, pos);
+                return iter.operator->();
+            } else {
+                std::cout << "No such card\n";
+            } break;
+        case zone::battlefield:
+            if(pos < pl[0]->myboard.size()) {
+                auto iter = pl[0]->myboard.cbegin();
+                std::advance(iter, pos);
+                return iter.operator->();
+            } else {
+                std::cout << "No such permanent\n";
+            } break;
+        default:
+            std::cout << "Zone not implemented yet.\n";
     }
     return nullptr;
 }
