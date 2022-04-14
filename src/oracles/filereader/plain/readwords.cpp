@@ -70,19 +70,19 @@ flag_t PlainFileReader::readAbilityParameter(char* allassignedvariables, uint8_t
         case 'y':{
             char you[4];
             ifile.get(you, 4);
-            if(strcmp("you", you) == 0) return -1; //-1 is 'you'
+            if(strcmp("you", you) == 0) return targets::you;
             else { throw DeckbuildingError("The only valid parameter starting with 'y' is 'you'"); }
         }
         case 't':{
             char you[5];
             ifile.get(you, 5);
-            if(strcmp("this", you) == 0) return -2; //-2 is 'this'
+            if(strcmp("this", you) == 0) return targets::origin;
             else {throw DeckbuildingError("The only valid parameter starting with 't' is 'this'"); }
         }
         case 'e':{
             char you[10];
             ifile.get(you, 10);
-            if(strcmp("enchanted", you) == 0) return -3; //-3 is 'enchanted or equipped permanent'
+            if(strcmp("enchanted", you) == 0) return targets::attached; //TODO FEATURE make attached permanents work, they'll also need to use targeters
             else {throw DeckbuildingError("The only valid parameter starting with 'e' is 'enchanted'"); }
         }
         case '%':{ //possible options: local, planeswalker, permanent, out_of_hand_card, spell, creature

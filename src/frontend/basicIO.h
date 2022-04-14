@@ -1,15 +1,16 @@
 #ifndef OLYMPUS_BASICIO_H
 #define OLYMPUS_BASICIO_H
 
+#include "displayable.h"
+#include "boost/format.hpp"
 #include <list>
 #include <vector>
 #include <iterator>
-#include <memory>
-#include "boost/format.hpp"
-#include "displayable.h"
+#include <string>
 
 class CardOracle; class Target; class Card; class Gamer; class CardWrapper; class Creature;
 template<typename T> class StateTN;
+class PermOption;
 
 class BasicIO {
 protected:
@@ -31,6 +32,7 @@ protected:
     template<typename T> const Displayable* to_disp(const T* t) { return t; }
     template<typename T> const Displayable* to_disp(const uptr<T>& t) { return t.get(); }
     inline const CardWrapper* to_disp(const CardWrapper& card) { return &card; }
+    inline const PermOption* to_disp(const PermOption& opt) { return &opt; }
     virtual checklistCallbackAction getNextPosition(abstract_iterator_wrapper* iter, uint& position, uint max) = 0;
 public:
     static constexpr int INLINE = 1, INROW = 2, HIGHLIGHT = 4, SELECTED = 8;

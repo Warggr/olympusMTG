@@ -20,16 +20,13 @@ class PlainFileReader: public ReaderVisitor {
     void readCosts(Cost& cost, bool& tapsymbol) override;
     uint nb_phrases(); //Reads how many phrases there are, separated by . and ended by '<' or '}'
     template<typename T>
-    void readArray(uint& nb_objects, T*& objects) {
-        nb_objects = nb_phrases();
-        objects = new T[nb_objects];
-        for(uint i=0; i<nb_objects; i++) {
-            ::visit<true>(objects[i], *this);
+    void readArray(std::vector<T>& objects) {
+        uint nb_objects = nb_phrases();
+        objects = std::vector<T>(nb_objects);
+        for(T& t : objects) {
+            ::visit<true>(t, *this);
         }
     }
-
-/*    void readNumberOfObjects(uint& nb) override { nb = nb_phrases(); }
-    void readNumberOfObjects(uint8_t& nb) override { nb = nb_phrases(); }*/
 
     void checkSafepoint(char expected, const char* error_msg);
     void raiseError(const std::string& message) override;

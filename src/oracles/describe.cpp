@@ -1,18 +1,17 @@
-#include "headE_enums.h"
+#include "frontend/basicIO.h"
 #include "classes/1effects.h"
 #include "classes/card_oracle.h"
 #include "classes/2triggers.h"
 #include "classes/3statics.h"
 #include "classes/perm_option.h"
+#include "headE_enums.h"
 #include <vector>
-
-#include "frontend/basicIO.h"
 
 void CardOracle::disp(BasicIO *io) const {
     io->disp(*this, 0);
 }
 
-std::string PermOption::describe(const std::string& cardname) const {
+std::string PermOption_H::describe(const std::string& cardname) const {
     std::string ret = "[" + cost.mana.m2t() + "]";
     if(tapsymbol){
         ret += ", [T]";
@@ -20,10 +19,6 @@ std::string PermOption::describe(const std::string& cardname) const {
     ret += ": ";
     ret += effects.describe(cardname);
     return ret;
-}
-
-std::string PermOption::describe() const {
-    return describe("CARDNAME"); //TODO
 }
 
 std::string CardOracle::describe() const {
@@ -40,7 +35,7 @@ std::string Effect_H::describe(const std::string& name) const {
     return ret;
 }
 
-std::string TriggerHolder_H::describe(const std::string &name, const Effect_H *effects, trig_type type) {
+std::string TriggerHolder_H::describe(const std::string& name, const Effect_H* effects, trig_type type) {
     std::string ds = trigger_descriptions[static_cast<int>(type)];
     std::string ret = "Whenever ";
     for(char d : ds){
@@ -73,11 +68,11 @@ std::vector<std::string> CardOracle::allText(int& power, int& toughness, int& fr
     for(const auto& i : rules.otherCardOptions) {
         all_text.push_back(i.describe(name));
     }
-    for(uint i=0; i<rules.nb_actabs; i++){
-        all_text.push_back(rules.first_actab[i].describe(name));
+    for(const auto& i : rules.actabs){
+        all_text.push_back(i.describe(name));
     }
-    for(uint i=0; i<rules.nb_triggers; i++){
-        all_text.push_back(rules.triggers[i].describe(name));
+    for(const auto& i : rules.triggers){
+        all_text.push_back(i.describe(name));
     }
     int offset = 0;
     if(type.underlying == card_type::creature){

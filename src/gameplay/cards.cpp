@@ -41,7 +41,7 @@ void CardZone::placeOnBottom(card_ptr c) {
     cards.emplace_after(iter, move_cardptr(c));
 }
 
-void Player::putToZone(card_ptr& x, myzone nb_zone){
+void Gamer::putToZone(card_ptr& x, myzone nb_zone){
     myZones[nb_zone].takeonecard(move_cardptr(x));
 }
 

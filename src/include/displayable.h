@@ -1,6 +1,8 @@
 #ifndef OLYMPUS_DISPLAYABLE_H
 #define OLYMPUS_DISPLAYABLE_H
 
+#include <string>
+
 class BasicIO;
 
 class Displayable {

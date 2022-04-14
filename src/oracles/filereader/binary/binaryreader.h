@@ -4,6 +4,8 @@
 #include "../reader.h"
 #include "../visit.hpp"
 #include "classes/serializable.h"
+#include "Mana/lib2_mana.h"
+#include <vector>
 #ifdef F_CANARY
 #include <cassert>
 #endif
@@ -14,14 +16,13 @@ class BinaryReader : public ReaderVisitor {
         ifile.read(reinterpret_cast<char*>(&value), sizeof value);
     }
     template<typename T>
-    void readArray(uint& nb_objects, T*& objects) {
+    void readArray(std::vector<T>& array) {
         canary('a');
         char nb; directRead(nb);
-        nb_objects = nb;
+        array = std::vector<T>(nb);
         canary('b');
-        if(nb_objects != 0) objects = new T[nb_objects];
-        for(uint i=0; i<nb_objects; i++) {
-            ::visit<true>(objects[i], *this);
+        for(T& t : array) {
+            ::visit<true>(t, *this);
         }
         canary('c');
     }

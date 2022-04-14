@@ -38,11 +38,8 @@ public:
 
     void draw(int nb_cards);
     void drawStartingHand();
-    void addMana(char color);
-    void putToZone(card_ptr& x, myzone nb_zone);
 
     bool pay(Cost cost);
-    void emptyPool();
 
     bool stateBasedActions();
     bool turn();

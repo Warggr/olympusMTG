@@ -12,7 +12,10 @@ private:
     int mana; //0xXcgrbuw1, in inverse order of priority
 public:
     struct positions {
-        static constexpr int GENERIC = 0, FIRST_COLOR = 1, WHITE = 1, BLUE = 2, BLACK = 3, LAST_COLOR = 5, COLORLESS = 6;
+        static constexpr char GENERIC = 0, FIRST_COLOR = 1, WHITE = 1, BLUE = 2, BLACK = 3, RED = 4, GREEN = 5, LAST_COLOR = 5, COLORLESS = 6;
+        static_assert(WHITE == mtg::manatype::white);
+        static_assert(GREEN == mtg::manatype::green);
+        static_assert(COLORLESS == mtg::manatype::colorless);
     };
 
     constexpr Mana(): mana(0){};

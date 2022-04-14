@@ -42,7 +42,7 @@ public:
 
     void chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature>& attackers) override;
 
-    uint chooseAmong(const std::vector<PermOption*>& opts) override;
+    uint chooseAmong(const std::vector<PermOption>& opts) override;
     uint chooseAmong(const std::vector<CardOption*>& opts) override;
 
     Viewer& getViewer() override { return viewer; }

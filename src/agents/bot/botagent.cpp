@@ -46,7 +46,7 @@ void BotAgent::chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature>&
     (void) mycreas; (void) attackers;
 }
 
-uint BotAgent::chooseAmong(const std::vector<PermOption*>& opts) {
+uint BotAgent::chooseAmong(const std::vector<PermOption>& opts) {
     (void) opts; return 0;
 }
 

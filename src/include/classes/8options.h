@@ -29,7 +29,7 @@ public:
 class CardOption : public Option {
 public:
     bool isCastable(bool sorceryspeed, const Player* player) const override;
-    bool castOpt(Player *pl) override;
+    bool castOpt(Player* pl) override;
     std::string describe() const override;
     std::string describe(const std::string& cardName) const;
     void disp(BasicIO* io) const override;

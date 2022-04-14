@@ -150,7 +150,7 @@ uint NetworkAgent::chooseAmong(const std::vector<CardOption*>& opts) {
     (void) opts; return 0; //TODO
 }
 
-uint NetworkAgent::chooseAmong(const std::vector<PermOption*>& opts) {
+uint NetworkAgent::chooseAmong(const std::vector<PermOption>& opts) {
     (void) opts; return 0; //TODO
 }
 

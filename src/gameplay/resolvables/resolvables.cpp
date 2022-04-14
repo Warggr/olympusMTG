@@ -32,7 +32,7 @@ void Resolvable::counter(){
 void Spell::counter(){
     gdebug(DBG_TARGETING) << "A Spell called "<< source->getName()<<" is countered! Removing it from stack and deleting it...\n";
     ctrl->putToZone(source, Player::graveyard);
-    Stack::god->removeFromStack(this);
+    Resolvable::counter();
 }
 
 Spell::Spell(card_ptr src, Player* ct): Resolvable(ct, src->getEffect()), source(std::move(src)) {}

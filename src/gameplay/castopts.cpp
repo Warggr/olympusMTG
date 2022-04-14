@@ -28,21 +28,21 @@ const Option* CardWrapper::chooseOptionAction() const {
 
 bool PermOption::isCastable(bool sorceryspeed, const Player* player) const {
     (void) sorceryspeed; //TODO FEATURE some abilities are only sorcery-speed
-    return player->manapool >= cost.mana;
+    return player->manapool >= content.cost.mana;
 }
 
 void PermOption::straight_cast(Player* pl){
-    Resolvable typecasted(pl, &effects);
+    Resolvable typecasted(pl, &content.effects);
     typecasted.resolve();
 }
 
 bool PermOption::castOpt(Player* pl){
-    if(!pl->pay(cost)) return false;
-    if(tapsymbol){
+    if(!pl->pay(content.cost)) return false;
+    if(content.tapsymbol){
         if(!origin->isUntapped()) return false;
         origin->tap();
     }
-    Stack::god->addToStack(std::make_unique<Resolvable>(pl, &effects));
+    Stack::god->addToStack(std::make_unique<Resolvable>(pl, &content.effects, origin));
     return true;
 }
 

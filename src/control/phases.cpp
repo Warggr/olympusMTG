@@ -65,10 +65,6 @@ void Player::cleanupstep(){
     phase = nonactive;
 }
 
-void Player::emptyPool(){
-    manapool = Mana();
-}
-
 void Game::stateBasedActions(){
     for(auto& player : players){
         haswon = haswon | player.stateBasedActions();
@@ -85,10 +81,6 @@ void Game::play() {
 
 bool Player::stateBasedActions(){
     if(life <= 0 or milledout) return true;
-    int i = 0;
-    for(auto iter = myboard.mycreas.begin(); iter != myboard.mycreas.end(); ++iter, ++i){
-        if(i > 30) exit(1);
-    }
     for(auto iter = myboard.mycreas.begin(); iter != myboard.mycreas.end(); iter = iter){
         if(iter->getToughness() + iter->getLife() <= 0){
             auto i2 = iter;

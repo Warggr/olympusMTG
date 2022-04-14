@@ -21,10 +21,10 @@ void PlainFileReader::readAll(RulesHolder& rules, card_type type) {
             gdebug(DBG_READFILE) << "Expecting section n°" << (int) section_name << "\n";
             if(ifile.peek() != '<') switch(section_name){
                 case onresolve: readMainSpell(rules.cost, rules.effects); break;
-                case activated: readArray<PermOption>(rules.nb_actabs, rules.first_actab); break;
+                case activated: readArray<>(rules.actabs); break;
                 case flavor: readSectionFlavor(rules.flavor_text, offset_text); break;
-                case triggered: readArray<TriggerHolder_H>(rules.nb_triggers, rules.triggers); break;
-                case astatic: readArray<StaticAb_H>(rules.nb_statics, rules.statics); break;
+                case triggered: readArray<TriggerHolder_H>(rules.triggers); break;
+                case astatic: readArray<StaticAb_H>(rules.statics); break;
                 case altcosts: readSectionOthercasts(rules.otherCardOptions); break;
             }
             if(ifile.peek() == '}') break;

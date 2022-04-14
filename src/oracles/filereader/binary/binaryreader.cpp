@@ -20,10 +20,10 @@ void BinaryReader::visit(const char* key, std::string& name) {
 void BinaryReader::readAll(RulesHolder& rules, card_type) {
     readMainSpell(rules.cost, rules.effects);
     char flags = ifile.get();
-    if(flags & 0x1) readArray<PermOption>(rules.nb_actabs, rules.first_actab);
+    if(flags & 0x1) readArray<>(rules.actabs);
     if(flags & 0x2) readSectionOthercasts(rules.otherCardOptions);
-    if(flags & 0x4) readArray<StaticAb_H>(rules.nb_statics, rules.statics);
-    if(flags & 0x8) readArray<TriggerHolder_H>(rules.nb_triggers, rules.triggers);
+    if(flags & 0x4) readArray<StaticAb_H>(rules.statics);
+    if(flags & 0x8) readArray<TriggerHolder_H>(rules.triggers);
     if(flags & 0x10) readSectionFlavor(rules.flavor_text, 0); //offset_text is irrelevant here
 }
 
@@ -88,10 +88,6 @@ void BinaryReader::visit(const char* key, Cost& cost) {
     canary(key[0]);
     directRead<>(cost);
 }
-
-/*void BinaryReader::visit(const char*, Effect_H*& effect) {
-    effect = new Effect_H(*this);
-}*/
 
 void BinaryReader::readEffect(std::forward_list<AtomEffect_H>& effects, uint8_t& nbparams, char*& param_hashtable) {
     nbparams = ifile.get();

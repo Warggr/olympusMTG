@@ -128,6 +128,12 @@ class iterator {
      * but with a hierarchy of Leaves that get built and destroyed. */
     Leaf<T, iconst>* in;
 public:
+    typedef std::bidirectional_iterator_tag iterator_category;
+    typedef typename ConcreteLeaf<T, iconst>::pointed_type value_type;
+    typedef int difference_type;
+    typedef value_type* pointer;
+    typedef value_type& reference;
+
     constexpr iterator(Leaf<T, iconst>* in) : in(in) { }
     iterator operator--() { in = in->next(false); return *this; }
     iterator operator++() { in = in->next(true); return *this; }
@@ -146,7 +152,7 @@ public:
     typename std::conditional<iconst, const T, T>::type& operator*() {
         return *(operator->());
     }
-    typename ConcreteLeaf<T, iconst>::pointed_type* getPointed() const { return in->getPointed(); };
+    pointer getPointed() const { return in->getPointed(); };
     void present() {
         OPEN_LOG_AS(DBG_YGGDRASIL, strm);
 

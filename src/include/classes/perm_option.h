@@ -5,29 +5,35 @@
 #include "8options.h"
 #include "Mana/cost.h"
 
-class PermOption: public Option {
+class PermOption_H {
 private:
     bool tapsymbol, ismanaability, instantspeed;
-    Permanent* origin;
     Effect_H effects;
     Cost cost;
 public:
-    PermOption(): tapsymbol(false), ismanaability(false) {};
-    ~PermOption() = default;
+    PermOption_H(): tapsymbol(false), ismanaability(false) {};
 
-    std::string describe() const override;
     std::string describe(const std::string& cardname) const;
-
-    bool castOpt(Player* pl) override;
-    void straight_cast(Player* pl);
 
     bool get_tapsymbol() const { return tapsymbol; };
     bool get_ismana() const { return ismanaability; };
-    void disp(BasicIO* io) const override;
 
+    template<bool read> friend void visit(ConstHost<PermOption_H, read>&, Visitor<read>&);
+    friend class PermOption;
+};
+
+class PermOption : public Option {
+    Permanent* origin;
+    const PermOption_H& content;
+public:
+    PermOption(const PermOption_H& content): content(content) {};
+    void init(Permanent* origin) { this->origin = origin; } 
     bool isCastable(bool sorceryspeed, const Player* player) const override;
-
-    template<bool read> friend void visit(ConstHost<PermOption, read>&, Visitor<read>&);
+    bool castOpt(Player* pl) override;
+    void straight_cast(Player* pl);
+    
+    std::string describe() const override;
+    void disp(BasicIO* io) const override;
 };
 
 #endif //OLYMPUS_PERM_OPTION_H

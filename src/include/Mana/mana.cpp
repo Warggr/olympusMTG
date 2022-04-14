@@ -46,6 +46,10 @@ void Mana::operator-=(Mana cost){
     }
 }
 
+inline void Mana::operator+=(char color){
+    mana += (1 << (4*color)) + 1;
+}
+
 Mana::Mana(const char* x){ //non-mana symbols are considered terminator symbols
     //which does not mean there's a such thing as mana used for cards depicting the Terminator, but that the string ends there
     mana = 0;
@@ -55,12 +59,12 @@ Mana::Mana(const char* x){ //non-mana symbols are considered terminator symbols
     }
     while(true){
         switch(x[pos++]){
-            case 'W': mana += 1 + (1 << (4*1)); break;
-            case 'U': mana += 1 + (1 << (4*2)); break;
-            case 'B': mana += 1 + (1 << (4*3)); break;
-            case 'R': mana += 1 + (1 << (4*4)); break;
-            case 'G': mana += 1 + (1 << (4*5)); break;
-            case 'C': mana += 1 + (1 << (4*6)); break;
+            case 'W': (*this) += positions::WHITE    ; break;
+            case 'U': (*this) += positions::BLUE     ; break;
+            case 'B': (*this) += positions::BLACK    ; break;
+            case 'R': (*this) += positions::RED      ; break;
+            case 'G': (*this) += positions::GREEN    ; break;
+            case 'C': (*this) += positions::COLORLESS; break;
             default: return;
         }
     }
@@ -80,12 +84,8 @@ std::string Mana::m2t() const {
     return ret;
 }
 
-void Mana::operator+=(char color){
-    mana += (1 << (4*color)) + 1;
-}
-
 void Mana::operator+=(Mana m){
-    mana += m.mana;
+    mana += m.mana; //TODO FEATURE fix this if the result'd have more than 15 of one type
 }
 
 std::ostream& operator<<(std::ostream& os, const Mana& m){

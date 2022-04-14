@@ -47,7 +47,7 @@ void LocalAgent::chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature
     return viewer.frontEnd->chooseblockers(mycreas, attackers);
 }
 
-uint LocalAgent::chooseAmong(const std::vector<PermOption*>& opts) {
+uint LocalAgent::chooseAmong(const std::vector<PermOption>& opts) {
     return viewer.frontEnd->getBasicIO()->chooseAmong(opts);
 }
 

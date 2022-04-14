@@ -1,6 +1,7 @@
 #ifndef OLYMPUS_AGENT_H
 #define OLYMPUS_AGENT_H
 
+#include "oracles/filereader/filereader.h"
 #include <istream>
 #include <memory>
 #include <utility>
@@ -8,7 +9,6 @@
 #include <list>
 #include <forward_list>
 #include <functional>
-#include "oracles/filereader/filereader.h"
 
 class Target; class Creature; template<typename T> class SpecificTargeter; class Card; class CardWrapper; class CardWrapper;
 class Player; class Game; class Gamer;
@@ -64,7 +64,7 @@ public:
 
     virtual const Option* chooseOpt(bool sorcerySpeed, const Player* pl) = 0;
 
-    virtual uint chooseAmong(const std::vector<PermOption*>& opts) = 0;
+    virtual uint chooseAmong(const std::vector<PermOption>& opts) = 0;
     virtual uint chooseAmong(const std::vector<CardOption*>& opts) = 0;
 
     virtual const Target* chooseTarget(char type) = 0;

@@ -3,7 +3,7 @@
 
 #include "classes/serializable.h"
 
-class PermOption; class TriggerHolder_H; class CardOracle; class StaticAb_H;
+class PermOption_H; class TriggerHolder_H; class CardOracle; class StaticAb_H;
 
 template<bool read>
 void visit(ConstHost<StaticAb_H, read>& host, Visitor<read>& visitor){
@@ -17,7 +17,7 @@ void visit(ConstHost<Effect_H, read>& effect, Visitor<read>& visitor) {
 }
 
 template<bool read>
-void visit(ConstHost<PermOption, read>& h, Visitor<read>& visitor) {
+void visit(ConstHost<PermOption_H, read>& h, Visitor<read>& visitor) {
     visitor.readActAb(h.cost, &h.effects, h.tapsymbol, h.ismanaability, h.instantspeed);
 }
 

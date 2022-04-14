@@ -3,6 +3,7 @@
 
 #include "../writer.h"
 #include "../visit.hpp"
+#include <vector>
 #include <memory>
 
 class BinaryWriter : public WriterVisitor {
@@ -11,12 +12,12 @@ protected:
     template<typename T>
     void directWrite(const T& value) { ofile.write(reinterpret_cast<const char*>(&value), sizeof value); }
     template<typename T>
-    void readArray(unsigned char nb_objects, T* objects) {
+    void readArray(const std::vector<T>& array) {
         canary('a');
-        ofile.put(static_cast<char>(nb_objects));
+        ofile.put(static_cast<char>(array.size()));
         canary('b');
-        for(uint i=0; i<nb_objects; i++) {
-            ::visit<false>(objects[i], *this);
+        for(const T& t : array) {
+            ::visit<false>(t, *this);
         }
         canary('c');
     }
@@ -39,7 +40,7 @@ public:
     void readSectionFlavor(const char* flavor_text, uint8_t offset_text) override;
     void readSectionOthercasts(const fwdlist<CardOption>& node) override;
     void readAll(const RulesHolder& rules, const card_type& type) override;
-    
+
 /*    void readNumberOfObjects(uint& nb) override { directWrite<>(nb); }
     void readNumberOfObjects(uint8_t& nb) override { directWrite<>(nb); }*/
 

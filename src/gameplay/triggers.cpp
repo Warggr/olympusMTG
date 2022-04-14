@@ -7,10 +7,10 @@ void TriggerEvent::trigger(Player* pl, Target* origin) const {
 	    pl->addToPrestack(trigger, origin);
 }
 
-void CardOracle::getTriggers(trig_type ttype, TriggerEvent& trigEv) const{
-    for(uint i=0; i<rules.nb_triggers; i++){
-        if(rules.triggers[i].type == ttype){
-            trigEv.addTrigger(rules.triggers[i].effects);
+void CardOracle::getTriggers(trig_type ttype, TriggerEvent& trigEv) const {
+    for(const auto& trigger : rules.triggers){
+        if(trigger.type == ttype){
+            trigEv.addTrigger(trigger.effects);
         }
     }
 }

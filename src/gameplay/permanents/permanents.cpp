@@ -12,11 +12,12 @@ void Player::resolvePlayland(card_ptr source){
 }
 
 Permanent::Permanent(card_ptr src, Player* pl): Target(src->getName()), source(move_cardptr(src)),
-    ctrl(pl), first_actab(nullptr), nb_actabs(0),
+    ctrl(pl), actabs(source->getPermabs().begin(), source->getPermabs().end()),
     etbBeforeThisTurn(0), untapped(1), keywords(0), color(source->getColor())
 {
     t_type = target_type::permanent;
-    source->getPermabs(&first_actab, &nb_actabs);
+    for(uint i = 0; i<source->getPermabs().size(); i++)
+        actabs[i].init(this);
     source->getTriggers(trig_type::etb, triggers_permanent[0]);
     source->getTriggers(trig_type::ltb, triggers_permanent[1]);
     source->getTriggers(trig_type::statechange, triggers_permanent[2]);
@@ -58,9 +59,10 @@ void Permanent::destroy(){
 }
 
 void Permanent::activate(){
-    if(nb_actabs == 1){
-        first_actab[0].castOpt(ctrl);
+    if(actabs.size() == 1){
+        actabs[0].castOpt(ctrl);
     }
+    //TODO IMPLEM else
 }
 
 void Planeswalker::activate() {
@@ -68,5 +70,12 @@ void Planeswalker::activate() {
 }
 
 const Option* Permanent::chooseOptionAction() const {
-    return options.at(ctrl->getAgent().chooseAmong(options));
+    if(actabs.size() != 0)
+        return & actabs[ ctrl->getAgent().chooseAmong(actabs) ];
+    else
+        return nullptr;
+}
+
+std::string PermOption::describe() const {
+    return content.describe(origin->getName());
 }

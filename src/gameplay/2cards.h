@@ -6,6 +6,7 @@
 #include "Mana/cost.h"
 #include "classes/card_oracle.h"
 #include "head2_cardptrs.h"
+#include <vector>
 #include <memory>
 #include <string>
 #include <istream>
@@ -32,11 +33,11 @@ public:
     bool hasFlash() const { return oracle->type.underlying == card_type::sorcery and oracle->type.shift; } //TODO implement flash
     Cost getCost() const { return oracle->getCost(); };
     const Effect_H* getEffect() const { return oracle->rules.effects; };
-    colorId::type getColor() const { return oracle->color; };
-    void getPermabs(PermOption** pr, int* nb_opts) const { *pr = oracle->rules.first_actab; *nb_opts = oracle->rules.nb_actabs; };
+    colorId::type getColor() const { return oracle->color; }
+    const std::vector<PermOption_H>& getPermabs() const { return oracle->rules.actabs; }
     void getTriggers(trig_type type, TriggerEvent& trigEv) const { oracle->getTriggers(type, trigEv); };
     const char* getFlavorText() const { return oracle->rules.flavor_text; }
-    std::string getName() const { return oracle->getName(); }
+    const std::string& getName() const { return oracle->getName(); }
 
     std::string toStr(const CardOracle* offset) const;
     void fromStr(std::istream& ifile, const CardOracle* offset);
@@ -70,10 +71,11 @@ public:
 };
 
 struct Deck {
-    Deck() = default;
-    Deck(Deck&& other): cards(std::move(other.cards)), oracles(std::move(other.oracles)) {};
     std::vector<Card> cards;
     std::vector<CardOracle> oracles;
+
+    Deck() = default;
+    Deck(Deck&& other): cards(std::move(other.cards)), oracles(std::move(other.oracles)) {};
 };
 
 #endif //OLYMPUS_CLASSES_CARDS_2_H

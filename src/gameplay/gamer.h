@@ -62,6 +62,11 @@ public:
     const CardZone& getZone(myzone zone) const { return myZones[zone]; }
 
     bool canPlayLand() const { return nb_lands_remaining != 0; }
+
+    void addMana(char color);
+    void emptyPool();
+
+    void putToZone(card_ptr& x, myzone nb_zone);
 };
 
 #endif //OLYMPUS_GAMER_H

@@ -3,6 +3,7 @@
 
 #include "../1general.h"
 #include "../optionwrappers.h"
+#include "classes/perm_option.h"
 #include "classes/1effects.h"
 #include "classes/3statics.h"
 #include "agents/agent.h"
@@ -12,15 +13,12 @@
 #include <memory>
 #include <list>
 
-class PermOption;
-
-class Permanent: public Target, public SpecificOptionWrapper<PermOption> {
+class Permanent: public Target, public OptionWrapper {
 protected:
     TriggerEvent triggers_permanent[4]; //becomes (state) - becomes (special) - ETB - LTB
     card_ptr source;
     Player* ctrl;
-    PermOption* first_actab;
-    int nb_actabs;
+    std::vector<PermOption> actabs;
     uchar etbBeforeThisTurn : 1, untapped : 1;
     char keywords; //indestructible -
     colorId::type color;

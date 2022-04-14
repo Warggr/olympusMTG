@@ -37,7 +37,7 @@ public:
     Viewer& getViewer() override { return *this; }
 
     uint chooseAmong(const std::vector<CardOption*>& opts) override;
-    uint chooseAmong(const std::vector<PermOption*>& opts) override;
+    uint chooseAmong(const std::vector<PermOption>& opts) override;
 
     void connectGame(Game* game) override;
     void connectDeck(const Deck& deck) override;

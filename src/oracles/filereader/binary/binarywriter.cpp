@@ -18,16 +18,16 @@ void BinaryWriter::visit(const char* key, const std::string& str) {
 void BinaryWriter::readAll(const RulesHolder& rules, const card_type&) {
     readMainSpell(rules.cost, rules.effects);
     char flags = 0;
-    if(rules.first_actab) flags += 0x1;
+    if(!rules.actabs.empty()) flags += 0x1;
     if(!rules.otherCardOptions.empty()) flags += 0x2;
-    if(rules.statics) flags += 0x4;
-    if(rules.triggers) flags += 0x8;
+    if(!rules.statics.empty()) flags += 0x4;
+    if(!rules.triggers.empty()) flags += 0x8;
     if(rules.flavor_text) flags += 0x10;
     ofile << flags;
-    if(flags & 0x1) readArray<PermOption>(rules.nb_actabs, rules.first_actab);
+    if(flags & 0x1) readArray<>(rules.actabs);
     if(flags & 0x2) readSectionOthercasts(rules.otherCardOptions);
-    if(flags & 0x4) readArray<StaticAb_H>(rules.nb_statics, rules.statics);
-    if(flags & 0x8) readArray<TriggerHolder_H>(rules.nb_triggers, rules.triggers);
+    if(flags & 0x4) readArray<StaticAb_H>(rules.statics);
+    if(flags & 0x8) readArray<TriggerHolder_H>(rules.triggers);
     if(flags & 0x10) readSectionFlavor(rules.flavor_text, 0); //offset_text is irrelevant here
 }
 
