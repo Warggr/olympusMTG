@@ -15,11 +15,11 @@ uptr<std::istream> BotAgent::getDeckFile() {
     return std::make_unique<std::ifstream>("decks/deck1.dck", std::ios::in);
 }
 
-Target *BotAgent::chooseTarget(char type) {
+Target* BotAgent::chooseTarget(char type) {
     (void) type; return nullptr;
 }
 
-Option * BotAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
+Option* BotAgent::chooseOpt(bool sorcerySpeed, const Player *pl) {
     (void) sorcerySpeed; (void) pl;
     return nullptr;
 }
@@ -33,24 +33,24 @@ std::list<CardWrapper> BotAgent::chooseCardsToKeep(std::list<CardWrapper>& list,
     return std::list<CardWrapper>();
 }
 
-bool BotAgent::keepsHand(const std::forward_list<uptr<Card>>& cards) {
+bool BotAgent::keepsHand(const std::forward_list<card_ptr>& cards) {
     (void) cards;
     return true;
 }
 
-bool BotAgent::chooseAttackers(Y_Hashtable<Creature>& mycreas) {
-    (void) mycreas; return false;
+void BotAgent::chooseAttackers(StateTN<Creature>& mycreas) {
+    (void) mycreas;
 }
 
 void BotAgent::chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature>& attackers) {
     (void) mycreas; (void) attackers;
 }
 
-uint BotAgent::chooseAmong(std::vector<PermOption*> opts) {
+uint BotAgent::chooseAmong(const std::vector<PermOption>& opts) {
     (void) opts; return 0;
 }
 
-uint BotAgent::chooseAmong(std::vector<CardOption *> opts) {
+uint BotAgent::chooseAmong(const std::vector<CardOption*>& opts) {
     (void) opts;
     return 0;
 }
@@ -63,6 +63,6 @@ void BotAgent::onDraw(const std::list<CardWrapper> &cards) {
     (void) cards;
 }
 
-void BotAgent::registerMe(Player* pl) {
+void BotAgent::registerMe(Gamer* pl) {
     (void) pl;
 }

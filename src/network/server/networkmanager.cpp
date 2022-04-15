@@ -1,3 +1,7 @@
+#include "networkmanager.h"
+#include "async.h"
+#include "network/network.h"
+#include "network/protocol.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -5,9 +9,6 @@
 #include <ifaddrs.h>
 #include <cstring>
 #include <iostream>
-#include "networkmanager.h"
-#include "async.h"
-#include "network.h"
 
 void printMyIp();
 
@@ -100,7 +101,7 @@ bool NetworkManager::init_connection(int new_connection) {
     }
 
     std::string first_message = std::string(id_server) + version_server;
-    n = write(new_connection, first_message.c_str(), first_message.size());
+    n = write(new_connection, first_message.c_str(), first_message.size() + 1); //including the final 0
     if(n < 0) throw NetworkError();
 
     return true;

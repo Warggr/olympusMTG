@@ -12,10 +12,10 @@ GraphicalUI::GraphicalUI() : io(AbstractIO::factory()) {
     io->harmonize(screen.leftBar().poster().getCoords(), screen.rightBar().messageZone().getCoords(), 16); //nb windows
 }
 
-void GraphicalUI::registerPlayers(std::list<Player>& players) {
+void GraphicalUI::registerPlayers(const std::list<const Gamer*>& players) {
     int i=0;
     for (auto iter = players.begin(); i < 2; i++, iter++) {
-        screen.board().players()[i].header().setPlayer(&(*iter));
+        screen.board().players()[i].header().setPlayer(*iter); //TODO FEATURE handle more than 2 players
     }
 }
 
@@ -34,23 +34,20 @@ void GraphicalUI::splitDamage(int power, std::list<std::pair<uint8_t, SpecificTa
     }
 }
 
-Target* GraphicalUI::chooseTarget(char type) {
+const Target* GraphicalUI::chooseTarget(char type) {
     return screen.iterate(type, true);
 }
 
-bool GraphicalUI::chooseattackers(Y_Hashtable<Creature>& cowards) {
-    bool ret = false;
+/*void GraphicalUI::chooseattackers(StateTN<Creature>& attackers) {
     int yOffset, zOffset;
     Rect rect = screen.board().players()[0].board().getCoordinates(&yOffset, &zOffset);
-    for(auto& i : cowards) {
+    for(auto& i : attackers) {
         bool attacks = io->attackSwitch(rect.y, rect.right(), rect.z, 15);
         if(attacks) {
-            ret = true;
             (void) i;//TODO actually make the creature attack
         }
     }
-    return ret;
-}
+}*/
 
 void GraphicalUI::chooseblockers(Y_Hashtable<Creature>& defenders, StateTN<Creature>& attackers) {
     int i = 0;
@@ -66,16 +63,12 @@ Creature* GraphicalUI::blockerSwitch(const Creature& blocker, int blockerIndex, 
     return &(*attackers.begin()); //TODO
 }
 
-Option* GraphicalUI::chooseOpt(bool sorcerySpeed) {
+const Option* GraphicalUI::chooseOpt(bool sorcerySpeed) {
     (void) sorcerySpeed;
     return nullptr; //TODO
 }
 
-bool GraphicalUI::attackSwitch(int leftY, int rightY, int topZ, int arrowlength) const {
-    return io->attackSwitch(leftY, rightY, topZ, arrowlength);
-}
-
-void GraphicalUI::disp(fwdlist<uptr<Card>>::const_iterator begin, const fwdlist<uptr<Card>>::const_iterator end) {
+void GraphicalUI::disp(fwdlist<card_ptr>::const_iterator begin, const fwdlist<card_ptr>::const_iterator end) {
     Rect rect(0, 0, 375, 523); //TODO IMPLEM put actual IO-independant coordinates
     for(auto i = begin; i != end; ++i) {
         io->draw(*(*i)->oracle, rect, false);
@@ -84,6 +77,6 @@ void GraphicalUI::disp(fwdlist<uptr<Card>>::const_iterator begin, const fwdlist<
     }
 }
 
-void GraphicalUI::registerMe(Player* pl) {
+void GraphicalUI::registerMe(const Gamer* pl) {
     (void) pl;
 }

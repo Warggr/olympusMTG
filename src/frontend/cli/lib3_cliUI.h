@@ -9,31 +9,28 @@
 
 class CliUI: public AbstractFrontEnd {
     NanoIO io;
-    const std::list<Player>* the_players {nullptr};
-    Player* pl; //you might need to return the player as a Target*
 public:
+    const Gamer* pl;
+    const std::list<const Gamer*>* players;
 //    void create(const char* descr);
 //    void update(const char* descr);
 //    void del(const char* descr);
 //    void bulkOp(const char* descr);
 
-    void splitDamage(int power, std::__cxx11::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) override;
+    void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) override;
 
-    Option* chooseOpt(bool sorcerySpeed) override;
+    const Option* chooseOpt(bool sorcerySpeed) override;
 
-    Target* chooseTarget(char type) override;
+    const Target* chooseTarget(char type) override;
 
-    bool attackSwitch(int leftY, int rightY, int topZ, int arrowlength) const override;
+    void registerPlayers(const std::list<const Gamer*>& players){ this->players = &players; }
+    void registerMe(const Gamer* pl) override;
 
-    void registerPlayers(std::list<Player>& players) override;
-    void registerMe(Player* pl) override;
-
-    bool chooseattackers(Y_Hashtable<Creature>& cowards) override;
     void chooseblockers(Y_Hashtable<Creature>& defenders, StateTN<Creature>& attackers) override;
 
-    void addCards(const std::list<CardWrapper>&) override;
+    void addCards(const std::list<CardWrapper>& cards) override;
 
-    void disp(fwdlist<uptr<Card>>::const_iterator begin, fwdlist<uptr<Card>>::const_iterator end) override;
+    void disp(fwdlist<card_ptr>::const_iterator begin, fwdlist<card_ptr>::const_iterator end) override;
 
     BasicIO* getBasicIO() override { return &io; }
 

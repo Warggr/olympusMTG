@@ -1,18 +1,19 @@
 #ifndef OLYMPUS_AGENT_H
 #define OLYMPUS_AGENT_H
 
+#include "oracles/filereader/filereader.h"
 #include <istream>
 #include <memory>
 #include <utility>
 #include <vector>
 #include <list>
 #include <forward_list>
-#include "oracles/filereader/filereader.h"
+#include <functional>
 
 class Target; class Creature; template<typename T> class SpecificTargeter; class Card; class CardWrapper; class CardWrapper;
-class Player; class Game;
+class Player; class Game; class Gamer;
 class Option; class CardOption; class PermOption;
-template<typename T> class Y_Hashtable; template<typename T> class StateTN;
+template<typename T> class Y_Hashtable; template<typename T> class StateTN; template<typename T> class PermanentTN;
 
 enum playerType {
 #ifdef MOCK_AGENT
@@ -61,30 +62,31 @@ public:
     virtual uptr<std::istream> getDeckFile() = 0;
     std::vector<OracleDescr> getDeck();
 
-    virtual Option* chooseOpt(bool sorcerySpeed, Player* pl) = 0;
+    virtual const Option* chooseOpt(bool sorcerySpeed, const Player* pl) = 0;
 
-    virtual uint chooseAmong(std::vector<PermOption*> opts) = 0;
-    virtual uint chooseAmong(std::vector<CardOption*> opts) = 0;
+    virtual uint chooseAmong(const std::vector<PermOption>& opts) = 0;
+    virtual uint chooseAmong(const std::vector<CardOption*>& opts) = 0;
 
-    virtual Target* chooseTarget(char type) = 0;
+    virtual const Target* chooseTarget(char type) = 0;
 
     virtual void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) = 0;
 
-    virtual bool keepsHand(const fwdlist<uptr<Card>>& cards) = 0;
+    virtual bool keepsHand(const fwdlist<card_ptr>& cards) = 0;
     virtual std::list<CardWrapper> chooseCardsToKeep(std::list<CardWrapper>& list, unsigned nbToDiscard) = 0;
 
-    virtual bool chooseAttackers(Y_Hashtable<Creature>& mycreas) = 0;
+    virtual void chooseAttackers(StateTN<Creature>& mycreas) = 0;
     virtual void chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature>& attackers) = 0;
 };
 
 class Viewer {
 public:
     virtual ~Viewer() = default;
-    virtual void connectGame(Game* game) = 0;
+    virtual void connectGame(Game*) {};
+    virtual void connectDeck(const Deck&) {};
 
     virtual void message(const char* message) = 0;
     virtual void onDraw(const std::list<CardWrapper>& cards) = 0;
-    virtual void registerMe(Player* pl) = 0;
+    virtual void registerMe(Gamer* pl) = 0;
 };
 
 #endif //OLYMPUS_AGENT_H

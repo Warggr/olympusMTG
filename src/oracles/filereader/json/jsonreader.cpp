@@ -5,13 +5,13 @@
 #include "classes/perm_option.h"
 #include "classes/5rulesholder.h"
 
-void JsonReader::readName(std::string& name) {
+/*void JsonReader::readName(std::string& name) {
     uchar length = ifile.get();
     char* buffer = new char[length + 1];
     ifile.get(buffer, length + 1);
     buffer[(int)length] = '\0';
     name = std::string(buffer);
-}
+}*/
 
 void JsonReader::readAll(RulesHolder& rules, card_type) {
     readMainSpell(rules.cost, rules.effects);
@@ -80,13 +80,9 @@ void JsonReader::read_section_othercasts(fwdlist<CardOption>& node) {
     (void) node; //TODO
 }
 
-void JsonReader::raise_error(const std::string& message) {
+void JsonReader::raiseError(const std::string& message) {
     (void) message; //TODO raise error
 }
-
-void JsonReader::readNumberOfObjects(uint8_t& nb) { directRead<>(nb); }
-
-void JsonReader::readNumberOfObjects(uint& nb) { directRead<>(nb); }
 
 void JsonReader::readCardType(card_type& type) { directRead<>(type); }
 

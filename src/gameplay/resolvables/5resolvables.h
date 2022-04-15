@@ -3,6 +3,7 @@
 
 #include "classes/1effects.h"
 #include "gameplay/1general.h"
+#include "gameplay/2cards.h"
 #include <string>
 #include <forward_list>
 #include <memory>
@@ -19,33 +20,33 @@ We could imagine sth like "do blah. If you have this and that, copy this ability
 
 class Resolvable: public Target {
 protected:
-	Player* ctrl;
-	std::unique_ptr<Targeter> origin; //the one every 'this' refers to, such as 'when this exploits a creature', 'this deals damage', ...
-	char nb_targets;
-	Targeter* list_of_targets;
-	const Effect_H* on_resolve; //we can't change the Ability, since it's a Card characteristics
-	static const std::string description;
+    Player* ctrl;
+    std::unique_ptr<Targeter> origin; //the one every 'this' refers to, such as 'when this exploits a creature', 'this deals damage', ...
+    char nb_targets;
+    Targeter* list_of_targets;
+    const Effect_H* on_resolve; //we can't change the Ability, since it's a Card characteristics
+    static const std::string description;
 public:
     Resolvable(Player* ct, const Effect_H* preRes, Target* origin = nullptr);
-	virtual ~Resolvable() = default;
-	virtual void resolve(); //this is what a resolvable is about
-	virtual colorId::type getColor() const;
-	virtual std::string describe() const override { return description; };
+    virtual ~Resolvable() = default;
+    virtual void resolve(); //this is what a resolvable is about
+    virtual colorId::type getColor() const;
+    virtual std::string describe() const override { return description; };
     virtual void disp(BasicIO* io) const override;
-	virtual void counter();
+    virtual void counter();
 
     Player* getController() override { return ctrl; }
 };
 
 class Spell: public Resolvable{
 private:
-	std::unique_ptr<Card> source; //the source will be kept by the option, the spell and the permanent to finally go the myGraveyard
+    card_ptr source; //the source will be kept by the option, the spell and the permanent to finally go the myGraveyard
 public:
-	Spell(std::unique_ptr<Card> src, Player* ct);
-	void resolve() override;
-	void counter() override;
-	colorId::type getColor() const override;
-	std::string describe() const override;
+    Spell(card_ptr src, Player* ct);
+    void resolve() override;
+    void counter() override;
+    colorId::type getColor() const override;
+    std::string describe() const override;
 
     void disp(BasicIO* io) const override;
 };

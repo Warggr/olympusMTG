@@ -2,9 +2,9 @@
 #define OLYMPUS_PLAIN_FILEREADER_H
 
 #include <iostream>
-#include <utility>
+#include "logging.h"
 #include "headE_enums.h"
-#include "build_types.h"
+#include "build_types.h" //for pedantic_safepoint
 #include "classes/serializable.h"
 #include "../reader.h"
 #include "../visit.hpp"
@@ -12,7 +12,6 @@
 class DictHolder;
 
 class PlainFileReader: public ReaderVisitor {
-private:
     DictHolder* dicts;
     enum State { go_on, invalid, breakout, end_reached } state;
 
@@ -21,16 +20,13 @@ private:
     void readCosts(Cost& cost, bool& tapsymbol) override;
     uint nb_phrases(); //Reads how many phrases there are, separated by . and ended by '<' or '}'
     template<typename T>
-    void readArray(uint& nb_objects, T*& objects) {
-        nb_objects = nb_phrases();
-        objects = new T[nb_objects];
-        for(uint i=0; i<nb_objects; i++) {
-            ::visit<true>(objects[i], *this);
+    void readArray(std::vector<T>& objects) {
+        uint nb_objects = nb_phrases();
+        objects = std::vector<T>(nb_objects);
+        for(T& t : objects) {
+            ::visit<true>(t, *this);
         }
     }
-
-/*    void readNumberOfObjects(uint& nb) override { nb = nb_phrases(); }
-    void readNumberOfObjects(uint8_t& nb) override { nb = nb_phrases(); }*/
 
     void checkSafepoint(char expected, const char* error_msg);
     void raiseError(const std::string& message) override;
@@ -46,11 +42,13 @@ public:
     void visit(const char*, char& value) override;
     void visit(const char*, Mana& mana) override;
     void visit(const char*, bool& b) override;
+
+    short int readNumber(char a, bool can_be_zero, bool can_be_negative);
+
     void readAll(RulesHolder& rules, card_type type) override;
     void readEffect(std::forward_list<AtomEffect_H>& effects, uint8_t &nbparams, char*& param_hashtable) override;
 
     effect_type readAbilityType();
-    short int readNumber(char a, bool can_be_zero, bool can_be_negative);
     flag_t readAbilityParameter(char* allassignedvariables, uint8_t& effect_params, flag_t type);
 
     void readModifier(char& nbEffects, Modifier& firstEffect, Modifier*& otherEffects) override;

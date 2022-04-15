@@ -21,46 +21,46 @@ void Spell::resolve(){
     if(source->getType().underlying == card_type::sorcery) {
         ctrl->putToZone(source, Player::graveyard);
     } else {
-        ctrl->myboard.insert(std::move(source), ctrl);
+        ctrl->myboard.insert(move_cardptr(source), ctrl);
     }
 }
 
 void Resolvable::counter(){
-	Stack::god->removeFromStack(this);
+    Stack::god->removeFromStack(this);
 }
 
 void Spell::counter(){
     gdebug(DBG_TARGETING) << "A Spell called "<< source->getName()<<" is countered! Removing it from stack and deleting it...\n";
     ctrl->putToZone(source, Player::graveyard);
-    Stack::god->removeFromStack(this);
+    Resolvable::counter();
 }
 
-Spell::Spell(std::unique_ptr<Card> src, Player* ct): Resolvable(ct, src->getEffect()), source(std::move(src)) {}
+Spell::Spell(card_ptr src, Player* ct): Resolvable(ct, src->getEffect()), source(std::move(src)) {}
 
 Resolvable::Resolvable(Player* ct, const Effect_H* tocast, Target* org): Target(description), ctrl(ct){
-	//Technically, Resolvables are put on the stack, then targets are chosen.
-	// Olympus decided that objects with no targets chosen were PreRes
-	//and thus not on the stack. However, it should be displayed somewhere.
-	if(org) origin = std::make_unique<Targeter>(org);
-	target_flags = target_type::resolvable;
-	if(tocast){
-		nb_targets = tocast->getNbParams();
-		list_of_targets = new Targeter[nb_targets]; //the last being for the origin
-		on_resolve = tocast;
-		if(nb_targets){
-			/*std::string name = "this spell or ability";
-			if(org) name = org->get_name();
-			Game::god->disp_preRes(tocast, name); */
-		}
-		const char* params = tocast->getParams();
-		for(int i=0; i<nb_targets; i++){
-			list_of_targets[i].setTarget( ct->getAgent().chooseTarget(params[i]) );
-		}
-	} else{ //the resolvable, e.g. a permanent spell, has no on_resolve abilities
-		nb_targets = 0;
-		list_of_targets = nullptr;
-		on_resolve = nullptr;
-	}
+    //Technically, Resolvables are put on the stack, then targets are chosen.
+    // Olympus decided that objects with no targets chosen were PreRes
+    //and thus not on the stack. However, it should be displayed somewhere.
+    if(org) origin = std::make_unique<Targeter>(org);
+    target_flags = target_type::resolvable;
+    if(tocast){
+        nb_targets = tocast->getNbParams();
+        list_of_targets = new Targeter[nb_targets]; //the last being for the origin
+        on_resolve = tocast;
+        if(nb_targets){
+            /*std::string name = "this spell or ability";
+            if(org) name = org->get_name();
+            Game::god->disp_preRes(tocast, name); */
+        }
+        const char* params = tocast->getParams();
+        for(int i=0; i<nb_targets; i++){
+            list_of_targets[i].setTarget( const_cast<Target*>( ct->getAgent().chooseTarget(params[i]) ) );
+        }
+    } else{ //the resolvable, e.g. a permanent spell, has no on_resolve abilities
+        nb_targets = 0;
+        list_of_targets = nullptr;
+        on_resolve = nullptr;
+    }
 }
 
 colorId::type Resolvable::getColor() const {

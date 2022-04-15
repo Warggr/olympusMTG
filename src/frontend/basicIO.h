@@ -1,14 +1,16 @@
 #ifndef OLYMPUS_BASICIO_H
 #define OLYMPUS_BASICIO_H
 
+#include "displayable.h"
+#include "boost/format.hpp"
 #include <list>
 #include <vector>
 #include <iterator>
-#include <memory>
-#include "boost/format.hpp"
-#include "displayable.h"
+#include <string>
 
-class CardOracle; class Target; class Card; class Player; class CardWrapper;
+class CardOracle; class Target; class Card; class Gamer; class CardWrapper; class Creature;
+template<typename T> class StateTN;
+class PermOption;
 
 class BasicIO {
 protected:
@@ -19,10 +21,10 @@ protected:
         virtual abstract_iterator_wrapper& operator++() = 0;
         virtual abstract_iterator_wrapper& operator--() = 0;
     };
-    template<typename Container> class iterator_wrapper: public abstract_iterator_wrapper {
+    template<typename iter> class iterator_wrapper: public abstract_iterator_wrapper {
     public:
-        typename Container::iterator inner;
-        constexpr iterator_wrapper(typename Container::iterator i): inner(i) {};
+        iter inner;
+        constexpr iterator_wrapper(iter i): inner(i) {};
         abstract_iterator_wrapper& operator++() override { ++inner; return *this; }
         abstract_iterator_wrapper& operator--() override { ++inner; return *this; }
     };
@@ -30,6 +32,7 @@ protected:
     template<typename T> const Displayable* to_disp(const T* t) { return t; }
     template<typename T> const Displayable* to_disp(const uptr<T>& t) { return t.get(); }
     inline const CardWrapper* to_disp(const CardWrapper& card) { return &card; }
+    inline const PermOption* to_disp(const PermOption& opt) { return &opt; }
     virtual checklistCallbackAction getNextPosition(abstract_iterator_wrapper* iter, uint& position, uint max) = 0;
 public:
     static constexpr int INLINE = 1, INROW = 2, HIGHLIGHT = 4, SELECTED = 8;
@@ -39,15 +42,17 @@ public:
     virtual void message(const std::string& text) const = 0;
     virtual void disp(const CardOracle& oracle, int flags) const = 0;
     virtual void disp_inrow(const Displayable*, int number, int total, int flags) const = 0;
-    virtual void disp_player(const Player& player, int flags) const = 0;
+    virtual void disp_player(const Gamer& player, int flags) const = 0;
 
     virtual std::string getTextInput(const char* question) = 0;
     virtual int getInt(int lowerBound, int upperBound) = 0;
     virtual bool simpleChoice(const char* optTrue, const char* optFalse) = 0;
 
+    void chooseAttackers(StateTN<Creature>& attackers);
+
     template<typename O>
-    uint chooseAmong(std::vector<O> all) {
-        iterator_wrapper<std::vector<O>> wrapper = all.begin();
+    uint chooseAmong(const std::vector<O> all) {
+        iterator_wrapper<typename std::vector<O>::const_iterator> wrapper = all.begin();
         uint pos = 0;
         int i = 0;
         for(auto iter = all.begin(); iter != all.end(); ++iter, ++i)
@@ -69,7 +74,7 @@ public:
         uint nbSelected = 0;
         std::vector<bool> selected(all.size() + 1, false);
 
-        iterator_wrapper<std::list<O>> wrapper = all.begin();
+        iterator_wrapper<typename std::list<O>::iterator> wrapper = all.begin();
         uint pos = 0;
         while(true) {
             int i=0;
@@ -90,12 +95,12 @@ public:
         }
         auto lastPos = all.end(), iter2 = all.begin();
         for(uint i=0; i<all.size(); ++i, ++iter2) if(selected[i] != selected[i+1]) {
-                if(lastPos == all.end()) {
-                    lastPos = iter2;
-                } else {
-                    ret.splice(ret.end(), all, lastPos, iter2);
-                    lastPos = all.end();
-                }
+            if(lastPos == all.end()) {
+                lastPos = iter2;
+            } else {
+                ret.splice(ret.end(), all, lastPos, iter2);
+                lastPos = all.end();
+            }
         }
         if(lastPos != all.end()) ret.splice(ret.end(), all, lastPos, iter2);
         return ret;

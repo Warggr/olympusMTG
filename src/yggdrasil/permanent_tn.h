@@ -19,7 +19,7 @@ class PermanentTN: public Yggdrasil<T>, public PermanentN {
     T describedObject;
     std::list<Yggdrasil_base*> parents;
 public:
-    PermanentTN(std::unique_ptr<Card> source, Player* pl): describedObject(std::move(source), pl) {}
+    PermanentTN(card_ptr source, Player* pl): describedObject(move_cardptr(source), pl) {}
     bool empty() const override { return false; }
     unsigned int size() const override { return 1; }
     iterator<T, false> begin() override { return { new ConcreteLeaf<T, false>(this, nullptr) }; }
@@ -47,6 +47,11 @@ public:
     const Permanent* getPermanent() const override { return &describedObject; }
     T* getObject() { return &describedObject; }
     const T* getObject() const { return &describedObject; }
+
+    void disp(unsigned int indent, logging::record_ostream& strm) const override {
+        for(uint i=0; i<indent; i++) strm << ' ';
+        strm << "---Permanent @" << this << " containing " << describedObject.describe() << '\n';
+    }
 
     friend class Leaf<T, true>; friend class Leaf<T, false>;
 };

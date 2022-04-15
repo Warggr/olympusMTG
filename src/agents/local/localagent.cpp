@@ -1,3 +1,4 @@
+#include "frontend/basicIO.h"
 #include "localagent.h"
 #include "gameplay/2cards.h"
 #include "gameplay/permanents/4permanents.h"
@@ -16,11 +17,11 @@ uptr<std::istream> LocalAgent::getDeckFile() {
     return fb;
 }
 
-Target* LocalAgent::chooseTarget(char type) {
+const Target* LocalAgent::chooseTarget(char type) {
     return viewer.frontEnd->chooseTarget(type);
 }
 
-Option* LocalAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
+const Option* LocalAgent::chooseOpt(bool sorcerySpeed, const Player *pl) {
     (void) pl; //No idea why we need it
     return viewer.frontEnd->chooseOpt(sorcerySpeed);
 }
@@ -33,24 +34,24 @@ std::list<CardWrapper> LocalAgent::chooseCardsToKeep(std::list<CardWrapper>& lis
     return viewer.frontEnd->chooseCardsToKeep(list, nbToDiscard);
 }
 
-bool LocalAgent::keepsHand(const std::forward_list<uptr<Card>>& cards) {
+bool LocalAgent::keepsHand(const std::forward_list<card_ptr>& cards) {
     viewer.showTop(cards, 7);
     return viewer.frontEnd->getBasicIO()->simpleChoice("Keep Hand", "Mulligan");
 }
 
-bool LocalAgent::chooseAttackers(Y_Hashtable<Creature>& mycreas) {
-    return viewer.frontEnd->chooseattackers(mycreas);
+void LocalAgent::chooseAttackers(StateTN<Creature>& attackers) {
+    return viewer.frontEnd->getBasicIO()->chooseAttackers(attackers);
 }
 
 void LocalAgent::chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature>& attackers) {
     return viewer.frontEnd->chooseblockers(mycreas, attackers);
 }
 
-uint LocalAgent::chooseAmong(std::vector<PermOption*> opts) {
+uint LocalAgent::chooseAmong(const std::vector<PermOption>& opts) {
     return viewer.frontEnd->getBasicIO()->chooseAmong(opts);
 }
 
-uint LocalAgent::chooseAmong(std::vector<CardOption *> opts) {
+uint LocalAgent::chooseAmong(const std::vector<CardOption*>& opts) {
     return viewer.frontEnd->getBasicIO()->chooseAmong(opts);
 }
 
@@ -63,5 +64,5 @@ std::string LocalAgent::getLogin() {
 }
 
 void LocalViewer::connectGame(Game* game) {
-    frontEnd->registerPlayers(game->players);
+    frontEnd->registerPlayers(game->getGamers());
 }

@@ -3,6 +3,7 @@
 
 #include "classes/card_oracle.h"
 #include "basicIO.h"
+#include "head2_cardptrs.h"
 
 #include <string>
 #include <list>
@@ -32,25 +33,22 @@ public:
 //    void del(const char* descr);
 //    void bulkOp(const char* descr);
 
-    virtual void splitDamage(int power, std::__cxx11::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) = 0;
+    virtual void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) = 0;
 
-    virtual Option* chooseOpt(bool sorcerySpeed) = 0;
+    virtual const Option* chooseOpt(bool sorcerySpeed) = 0;
 
-    virtual Target* chooseTarget(char type) = 0;
+    virtual const Target* chooseTarget(char type) = 0;
 
-    std::list <CardWrapper> chooseCardsToKeep(std::list<CardWrapper>& list, unsigned nbToDiscard);
+    std::list<CardWrapper> chooseCardsToKeep(std::list<CardWrapper>& list, unsigned nbToDiscard);
 
-    virtual bool attackSwitch(int leftY, int rightY, int topZ, int arrowlength) const = 0;
+    virtual void registerPlayers(const std::list<const Gamer*>& players) = 0;
+    virtual void registerMe(const Gamer* pl) = 0;
 
-    virtual void registerPlayers(std::list<Player>& players) = 0;
-    virtual void registerMe(Player* pl) = 0;
-
-    virtual bool chooseattackers(Y_Hashtable<Creature>& cowards) = 0;
     virtual void chooseblockers(Y_Hashtable<Creature>& defenders, StateTN<Creature>& attackers) = 0;
 
     virtual void addCards(const std::list<CardWrapper>& cards) = 0;
 
-    virtual void disp(fwdlist<uptr<Card>>::const_iterator begin, fwdlist<uptr<Card>>::const_iterator end) = 0;
+    virtual void disp(fwdlist<card_ptr>::const_iterator begin, fwdlist<card_ptr>::const_iterator end) = 0;
 
     virtual BasicIO* getBasicIO() = 0;
 

@@ -1,4 +1,5 @@
 #include "agent.h"
+#include "logging.h"
 #include <cassert>
 
 #ifdef MOCK_AGENT
@@ -19,23 +20,25 @@ uptr<Agent> Agent::factory(playerType desc) {
     exit(1); //Shouldn't happen, dunno why GCC doesn't see this
 }
 
-//#include <iostream>
 std::vector<OracleDescr> Agent::getDeck() {
     std::vector<OracleDescr> ret;
     auto fb = getDeckFile();
     while(fb->peek() != fb->eof() and !fb->fail()) {
+        OPEN_LOG_AS(DBG_READFILE, strm);
         char buffer[1024]; int nb;
         *fb >> nb >> std::skipws;
-        std::cout << "Read " << nb << "\n";
+        strm << "Read " << nb << "\n";
         fb->getline(buffer, 1024);
         int read_str_size = fb->gcount();
-        std::cout << "'";
-        for(int i=0; i<read_str_size + 2; ++i) std::cout << (buffer[i] ? buffer[i] : '#');
-        std::cout << "'\n";
+        strm << "'";
+        for(int i=0; i<read_str_size + 2; ++i) strm << (buffer[i] ? buffer[i] : '#');
+        strm << "'\n";
+        CLOSE_LOG(strm);
+
         assert(buffer[0] == ' ');
         ret.emplace_back(buffer[1] == '"' ? customcard : reference,
                          nb, std::string(buffer + 1));
-        std::cout << "Peek: '" << fb->peek() << "'; Fail: " << fb->fail() << "\n";
+        gdebug(DBG_READFILE) << "Peek: '" << fb->peek() << "'; Fail: " << fb->fail() << "\n";
     }
     return ret;
 }

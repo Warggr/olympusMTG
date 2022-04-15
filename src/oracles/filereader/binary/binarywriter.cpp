@@ -7,7 +7,9 @@
 #include "classes/5rulesholder.h"
 #include "../visit.hpp"
 
-void BinaryWriter::visit(const char*, const std::string& str) {
+void BinaryWriter::visit(const char* key, const std::string& str) {
+    canary(key[0]);
+
     uchar length = str.length();
     directWrite(length);
     ofile.write(str.c_str(), str.length());
@@ -16,16 +18,16 @@ void BinaryWriter::visit(const char*, const std::string& str) {
 void BinaryWriter::readAll(const RulesHolder& rules, const card_type&) {
     readMainSpell(rules.cost, rules.effects);
     char flags = 0;
-    if(rules.first_actab) flags += 0x1;
+    if(!rules.actabs.empty()) flags += 0x1;
     if(!rules.otherCardOptions.empty()) flags += 0x2;
-    if(rules.statics) flags += 0x4;
-    if(rules.triggers) flags += 0x8;
+    if(!rules.statics.empty()) flags += 0x4;
+    if(!rules.triggers.empty()) flags += 0x8;
     if(rules.flavor_text) flags += 0x10;
     ofile << flags;
-    if(flags & 0x1) readArray<PermOption>(rules.nb_actabs, rules.first_actab);
+    if(flags & 0x1) readArray<>(rules.actabs);
     if(flags & 0x2) readSectionOthercasts(rules.otherCardOptions);
-    if(flags & 0x4) readArray<StaticAb_H>(rules.nb_statics, rules.statics);
-    if(flags & 0x8) readArray<TriggerHolder_H>(rules.nb_triggers, rules.triggers);
+    if(flags & 0x4) readArray<StaticAb_H>(rules.statics);
+    if(flags & 0x8) readArray<TriggerHolder_H>(rules.triggers);
     if(flags & 0x10) readSectionFlavor(rules.flavor_text, 0); //offset_text is irrelevant here
 }
 
@@ -83,11 +85,12 @@ void BinaryWriter::readMainSpell(const Cost& cost, const Effect_H* effect) {
     (void) cost; (void) effect; //TODO
 }
 
-void BinaryWriter::visit(const char*, const Cost& cost) {
+void BinaryWriter::visit(const char* key, const Cost& cost) {
+    canary(key[0]);
     directWrite<>(cost);
 }
 
-void BinaryWriter::visit(const char*, Mana mana) { directWrite(mana); }
+void BinaryWriter::visit(const char* key, Mana mana) { canary(key[0]); directWrite(mana); }
 
 void BinaryWriter::readEffect(const std::forward_list<AtomEffect_H>& effects, uint8_t nbparams, const char* param_hashtable) {
     directWrite(nbparams);
@@ -98,4 +101,8 @@ void BinaryWriter::readEffect(const std::forward_list<AtomEffect_H>& effects, ui
     for(auto& eff : effects) {
         readAtomEffect(eff.getType(), eff.getParams());
     }
+}
+
+void BinaryWriter::raiseError(const std::string& msg) {
+    (void) msg; //TODO
 }

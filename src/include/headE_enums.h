@@ -32,8 +32,9 @@ namespace colorId {
 enum class object_type { player, permanent, resolvable, card };
 enum class permanent_type { land, artifact, planeswalker, creature };
 namespace mtg {
-    enum class color { white, blue, black, red, green };
-    enum class manatype { white, blue, black, red, green, colorless };
+    enum class color { white = 1, blue, black, red, green };
+    enum manatype { white = 1, blue, black, red, green, colorless }; //1 for compatibility with Mana::positions
+    static_assert( static_cast<manatype>(color::white) == manatype::white);
 }
 
 namespace effect {
@@ -92,5 +93,12 @@ namespace zone {
 
 extern const std::string trigger_descriptions[6];
 extern const std::string ability_descriptions[12];
+
+namespace targets {
+    constexpr unsigned char you = -1
+        , origin = -2
+        , attached = -3
+        ;
+}
 
 #endif //OLYMPUS_HEAD_E_ENUMS_H

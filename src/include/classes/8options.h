@@ -14,22 +14,22 @@ class Resolvable; class Player; class Card; class Permanent;
 class Option : virtual public Displayable {
 public:
     virtual ~Option() = default;
-    virtual bool isCastable(bool sorceryspeed, Player* player) const { (void) sorceryspeed; (void) player; return true; }
+    virtual bool isCastable(bool sorceryspeed, const Player* player) const { (void) sorceryspeed; (void) player; return true; }
     // Whether it is possible to cast it on principle. Returns true by default.
     // Filters out more or less easy restrictions such as "only as a sorcery"
-    virtual void castOpt(Player* pl) = 0;
+    virtual bool castOpt(Player* pl) = 0; //Actually try to cast the option. Returns false on failure.
 };
 
 class CostOption: public Option {
 public:
-    virtual bool isCastable(bool sorceryspeed, Player* pl) const override;
+    virtual bool isCastable(bool sorceryspeed, const Player* pl) const override;
     virtual Cost getCost() = 0;
 };
 
 class CardOption : public Option {
 public:
-    bool isCastable(bool sorceryspeed, Player* player) const override;
-    void castOpt(Player *pl) override;
+    bool isCastable(bool sorceryspeed, const Player* player) const override;
+    bool castOpt(Player* pl) override;
     std::string describe() const override;
     std::string describe(const std::string& cardName) const;
     void disp(BasicIO* io) const override;

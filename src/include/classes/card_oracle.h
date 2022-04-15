@@ -22,10 +22,7 @@ protected:
     colorId::type color;
     RulesHolder rules;
 public:
-#ifdef F_TESTS
-    CardOracle(type_t type): name("Test card"), type(type) {}
-#endif
-    explicit CardOracle(ReaderVisitor& reader);
+    void init(ReaderVisitor& reader);
 
     std::string describe() const override;
     void disp(BasicIO* io) const override;

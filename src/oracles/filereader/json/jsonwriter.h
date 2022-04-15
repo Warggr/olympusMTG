@@ -1,5 +1,5 @@
-#ifndef OLYMPUS_BINARYWRITER_H
-#define OLYMPUS_BINARYWRITER_H
+#ifndef OLYMPUS_JSONWRITER_H
+#define OLYMPUS_JSONWRITER_H
 
 #include "../writer.h"
 #include "classes/serializable.h"
@@ -44,12 +44,9 @@ public:
     void visit(const char* key, const Effect_H* effect) override;
     void visit(const char* key, Mana mana) override { _visit(key, mana); }
     void visit(const char* key, bool b) override { _visit(key, b); }
-    void readSectionFlavor(char*& flavor_text, uint8_t offset_text) override;
-    void readSectionOthercasts(fwdlist<CardOption>& node) override;
+    void readSectionFlavor(const char* flavor_text, uint8_t offset_text) override;
+    void readSectionOthercasts(const fwdlist<CardOption>& node) override;
     void readAll(RulesHolder& rules, card_type type) override;
-
-    void readNumberOfObjects(uint&) override {  }
-    void readNumberOfObjects(uint8_t&) override {  }
 
     void readEffectH(uint8_t& nb_params, char*& params, std::forward_list<AtomEffect_H>& atoms);
     void readAtomEffect(effect_type& type, flag_t*& params, uint8_t& nbparams, char* param_hashtable) override;
@@ -61,4 +58,4 @@ public:
     void readCosts(Cost& costs, bool& tapsymbol) override;
 };
 
-#endif //OLYMPUS_BINARYWRITER_H
+#endif //OLYMPUS_JSONWRITER_H

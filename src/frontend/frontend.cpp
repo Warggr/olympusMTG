@@ -1,11 +1,10 @@
 #include "implementUI.h"
-#include "gameplay/2cards.h" //there seems to be an implicit deletion of an uptr<Card> in chooseCardsToKeep() ?
+#include "gameplay/2cards.h"
 
 AbstractFrontEnd* AbstractFrontEnd::factory() {
     return new ImplFrontEnd();
 }
 
-std::list<CardWrapper>
-AbstractFrontEnd::chooseCardsToKeep(std::list<CardWrapper>& list, unsigned int nbToDiscard) {
-    return getBasicIO()->checklist(list, nbToDiscard, nbToDiscard);
+std::list<CardWrapper> AbstractFrontEnd::chooseCardsToKeep(std::list<CardWrapper>& list, unsigned int nbToDiscard) {
+    return std::move( getBasicIO()->checklist(list, nbToDiscard, nbToDiscard) );
 }

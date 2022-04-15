@@ -6,13 +6,7 @@
 #include "reader.h"
 #include "writer.h"
 
-/*
-#define HALF_INSTANCIATE(type, b) template void visit<type, b>(ConstHost<type, b>&, Visitor<b>&)
-#define INSTANCIATE(type) class type; HALF_INSTANCIATE(type, true); HALF_INSTANCIATE(type, false);
-
-INSTANCIATE(CardOracle)
-*/
-CardOracle::CardOracle(ReaderVisitor& reader) {
+void CardOracle::init(ReaderVisitor& reader) {
     visit<true>(*this, reader);
     if(type.land) color = colorId::colorless;
     else color = rules.cost.mana.m2color();
@@ -20,6 +14,16 @@ CardOracle::CardOracle(ReaderVisitor& reader) {
 
 void Card::write(WriterVisitor& writer) const {
     visit<false>(*oracle, writer);
+}
+
+std::string Card::toStr(const CardOracle* begin) const {
+    uint16_t offset = oracle - begin;
+    return std::string().assign(reinterpret_cast<const char*>(&offset), sizeof(offset));
+}
+
+void Card::fromStr(std::istream& ifile, const CardOracle* begin) {
+    uint16_t offset; ifile.read(reinterpret_cast<char*>(&offset), sizeof(offset));
+    oracle = begin + offset;
 }
 
 Effect_H::Effect_H(ReaderVisitor& reader){ visit<true>(*this, reader); }

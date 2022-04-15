@@ -30,4 +30,6 @@ TEST_CASE( "Zero mana", "[mana]") {
 
     REQUIRE( mana.m2t().size() == 1 );
     REQUIRE( mana.m2t()[0] == '0' );
+    REQUIRE( mana >= Mana("0") );
+    REQUIRE( Mana("1R") >= mana );
 }

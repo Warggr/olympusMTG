@@ -14,10 +14,8 @@ TEST_CASE("Yggdrasil", "[yggdrasil]") {
     REQUIRE(board.size() == 0);
     REQUIRE(board.cpbegin() == board.cpend());
 
-    card_type type; type.underlying = card_type::flagged; type.legendary = 1;
-    auto orc = std::make_shared<CardOracle>(type);
-    uptr<Card> card = std::make_unique<Card>(orc);
-    board.insert(std::move(card), nullptr);
+    Card card(nullptr);
+    board.insert(move_cardptr(&card), nullptr);
 
     REQUIRE_FALSE(board.myartos.getObject(0)->getChildren().empty());
     REQUIRE_FALSE(board.myartos.getObject(0)->empty());

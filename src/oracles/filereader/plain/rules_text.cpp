@@ -9,27 +9,27 @@
 #include "classes/perm_option.h"
 
 void PlainFileReader::readAll(RulesHolder& rules, card_type type) {
-	checkSafepoint('{', "at the beginning of the rules text");
-	uint8_t offset_text = defaultOffsetFor(type);
-	if(ifile.peek() == '}'){
-	    ifile.get();
-	} else {
+    checkSafepoint('{', "at the beginning of the rules text");
+    uint8_t offset_text = defaultOffsetFor(type);
+    if(ifile.peek() == '}'){
+        ifile.get();
+    } else {
         checkSafepoint(' ', "after opening {");
-		enum section_types{ onresolve, altcosts, activated, triggered , flavor, astatic };
-		section_types section_name = (type.underlying == card_type::sorcery) ? onresolve : activated;
-		while(true){ //loop to read all sections
-			gdebug(DBG_READFILE) << "Expecting section n°" << (int) section_name << "\n";
-			if(ifile.peek() != '<') switch(section_name){
-				case onresolve: readMainSpell(rules.cost, rules.effects); break;
-				case activated: readArray<PermOption>(rules.nb_actabs, rules.first_actab); break;
-				case flavor: readSectionFlavor(rules.flavor_text, offset_text); break;
-				case triggered: readArray<TriggerHolder_H>(rules.nb_triggers, rules.triggers); break;
-				case astatic: readArray<StaticAb_H>(rules.nb_statics, rules.statics); break;
-				case altcosts: readSectionOthercasts(rules.otherCardOptions); break;
-			}
-			if(ifile.peek() == '}') break;
-			else{
-			    checkSafepoint('<', "before section name");
+        enum section_types{ onresolve, altcosts, activated, triggered , flavor, astatic };
+        section_types section_name = (type.underlying == card_type::sorcery) ? onresolve : activated;
+        while(true){ //loop to read all sections
+            gdebug(DBG_READFILE) << "Expecting section n°" << (int) section_name << "\n";
+            if(ifile.peek() != '<') switch(section_name){
+                case onresolve: readMainSpell(rules.cost, rules.effects); break;
+                case activated: readArray<>(rules.actabs); break;
+                case flavor: readSectionFlavor(rules.flavor_text, offset_text); break;
+                case triggered: readArray<TriggerHolder_H>(rules.triggers); break;
+                case astatic: readArray<StaticAb_H>(rules.statics); break;
+                case altcosts: readSectionOthercasts(rules.otherCardOptions); break;
+            }
+            if(ifile.peek() == '}') break;
+            else{
+                checkSafepoint('<', "before section name");
                 switch(ifile.get()){
                     case 'o': section_name = onresolve; break;
                     case 'a': section_name = activated; break;
@@ -40,46 +40,46 @@ void PlainFileReader::readAll(RulesHolder& rules, card_type type) {
                     default: raiseError("unrecognized section type (o, a, x, t, s)"); return;
                 }
                 checkSafepoint('>', "after declaring another section");
-			}
-		}
-	}
+            }
+        }
+    }
     checkSafepoint('}', "after rules text");
-	if(offset_text != 0){
-		if(!rules.flavor_text){
-			rules.flavor_text = new char [offset_text+1];
-			rules.flavor_text[(int) offset_text] = 0;
-		}
-		if(type.underlying == card_type::creature){ //getting power and toughness
-			int power, toughness;
-			ifile >> power;
-			checkSafepoint('/', "between power and toughness");
-			ifile >> toughness;
-			rules.flavor_text[0] = (char) power;
-			rules.flavor_text[1] = (char) toughness;
-		}
-		else if(type.underlying == card_type::planeswalker){ //getting loyalty
-			int loyalty;
-			checkSafepoint(' ', "just before loyalty");
-			checkSafepoint('\\', "just before loyalty number");
-			ifile >> loyalty;
-			rules.flavor_text[0] = (char) loyalty;
-			checkSafepoint('/', "just after loyalty number");
-		}
-	}
+    if(offset_text != 0){
+        if(!rules.flavor_text){
+            rules.flavor_text = new char [offset_text+1];
+            rules.flavor_text[(int) offset_text] = 0;
+        }
+        if(type.underlying == card_type::creature){ //getting power and toughness
+            int power, toughness;
+            ifile >> power;
+            checkSafepoint('/', "between power and toughness");
+            ifile >> toughness;
+            rules.flavor_text[0] = (char) power;
+            rules.flavor_text[1] = (char) toughness;
+        }
+        else if(type.underlying == card_type::planeswalker){ //getting loyalty
+            int loyalty;
+            checkSafepoint(' ', "just before loyalty");
+            checkSafepoint('\\', "just before loyalty number");
+            ifile >> loyalty;
+            rules.flavor_text[0] = (char) loyalty;
+            checkSafepoint('/', "just after loyalty number");
+        }
+    }
 }
 
 void PlainFileReader::readSectionFlavor(char*& flavor_text, uint8_t offset_text){
     if(flavor_text != nullptr) raiseError("Flavor text of this spell declared multiple times");
-	int len = 0;
-	char a;
-	while((a = ifile.get())){
-		len++;
-		if(a == '<'){ a = 0; state = breakout; break; }
-		else if(a == '}') { state = end_reached; break; }
-	}
+    int len = 0;
+    char a;
+    while((a = ifile.get())){
+        len++;
+        if(a == '<'){ a = 0; state = breakout; break; }
+        else if(a == '}') { state = end_reached; break; }
+    }
 
     ifile.seekg(-len, std::ios_base::cur);
-	if(a == 0) --len;
+    if(a == 0) --len;
     flavor_text = new char [len + offset_text];
     ifile.get(flavor_text + offset_text, len);
     flavor_text[len + offset_text - 1] = '\0';
@@ -110,36 +110,36 @@ void PlainFileReader::visit(const char*, trig_type& type){
 }
 
 void PlainFileReader::readEffect(std::forward_list<AtomEffect_H>& effects, uint8_t& nbparams, char*& param_hashtable) {
-	char allassignedvariables[256] = {0};
-	uint8_t nbassignedparams = 0;
-	while(state == go_on){ //TODO OPTI optimize this
+    char allassignedvariables[256] = {0};
+    uint8_t nbassignedparams = 0;
+    while(state == go_on){ //TODO OPTI optimize this
         effect_type type; flag_t* params = nullptr;
         readAtomEffect(type, params, nbassignedparams, allassignedvariables);
-		effects.emplace_front(type, params);
-	}
+        effects.emplace_front(type, params);
+    }
     state = go_on;
 
-	param_hashtable = new char[nbassignedparams];
-	nbparams = nbassignedparams;
+    param_hashtable = new char[nbassignedparams];
+    nbparams = nbassignedparams;
 
     //putting all parameters from the hashtable 'allassignedvariables' into the array 'parameters'
-	for(uint i = 0; i < 256; i++) {
-		if(allassignedvariables[i] != 0){
-			char value = (i&0xf0) + ((allassignedvariables[i]&0xf0) >> 4);
-			char index = allassignedvariables[i]&0x0f;
-			param_hashtable[index - 1] = value;
-		}
-	}
+    for(uint i = 0; i < 256; i++) {
+        if(allassignedvariables[i] != 0){
+            char value = (i&0xf0) + ((allassignedvariables[i]&0xf0) >> 4);
+            char index = allassignedvariables[i]&0x0f;
+            param_hashtable[index - 1] = value;
+        }
+    }
 }
 
 void PlainFileReader::readModifier(char& nbEffects, Modifier& firstEffect, Modifier*& otherEffects) {
-	checkSafepoint(' ', "just after : of selector");
-	char tmp[20]; int i = 0; nbEffects = 0;
-	Modifier::type tmp_effect[20];
-	bool end_of_effects = false;
-	while(!end_of_effects){
-	    nbEffects++;
-	    if(nbEffects > 20) raiseError("Can't handle more than 20 static effects");
+    checkSafepoint(' ', "just after : of selector");
+    char tmp[20]; int i = 0; nbEffects = 0;
+    Modifier::type tmp_effect[20];
+    bool end_of_effects = false;
+    while(!end_of_effects){
+        nbEffects++;
+        if(nbEffects > 20) raiseError("Can't handle more than 20 static effects");
         while(true){
             tmp[i++] = ifile.get();
             if(tmp[i-1] == '.' || tmp[i-1] == ','){ if(tmp[i-1] == '.') end_of_effects = true; tmp[i] = '\0'; break;}
@@ -151,15 +151,15 @@ void PlainFileReader::readModifier(char& nbEffects, Modifier& firstEffect, Modif
             raiseError(std::string("static ") + tmp + " does not exist");
         else
             tmp_effect[i] = *result;
-	}
+    }
     firstEffect.myType = tmp_effect[0];
-	if(nbEffects == 1) otherEffects = nullptr;
-	else{
+    if(nbEffects == 1) otherEffects = nullptr;
+    else{
         otherEffects = new Modifier[nbEffects - 1];
         for(i=1; i<nbEffects; i++){
             otherEffects[i].myType = tmp_effect[i];
         }
-	}
+    }
 }
 
 bool PlainFileReader::read_one_criterion(Identifier& chars, Identifier& requs){ //reads up to ')' or ' '
@@ -234,7 +234,7 @@ uint PlainFileReader::nb_phrases(){
     uint ret = 0;
     long int startpos = ifile.tellg();
     while(true){ //counting number of 'sep'-separated objects
-        char a = ifile.get(); gdebug(DBG_READFILE) << a;
+        char a = ifile.get();
         if(a == '<' || a == '}') break;
         if(a == '.') ret++;
     }

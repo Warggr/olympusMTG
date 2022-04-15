@@ -3,12 +3,14 @@
 
 #include <condition_variable>
 #include <iterator>
+#include "logging.h"
 
 template<typename T> class PermanentTN;
 class PermanentN;
 template<typename T> class Yggdrasil_N;
 class Yggdrasil_base;
 class Permanent;
+template<class T, bool b> class iterator;
 template<class T, bool b> class AdapterLeaf;
 template<class T, bool b> class Leaf;
 
@@ -23,6 +25,8 @@ public:
     constexpr iterator_treenode(iterator_treenode* parent): parent(parent) {};
     virtual ~iterator_treenode() = default;
     virtual Leaf<T, iconst>* next(bool bk) = 0;
+    virtual void present(unsigned int indent, logging::record_ostream& strm) const = 0;
+    friend class iterator<T, iconst>;
 };
 
 template<typename T, bool iconst>
@@ -74,6 +78,11 @@ public:
         return a != nullptr and a->pted == pted;
     }
     pointed_type* getPointed() override { return pted; };
+    void present(unsigned int indent, logging::record_ostream& strm) const override {
+        if(iterator_treenode<T, b>::parent) iterator_treenode<T, b>::parent->present(indent + 1, strm);
+        for(uint i = 0; i<indent; i++) strm << '>';
+        strm << "ConcreteLeaf pointing to " << pted->getPermanent()->describe() << '\n';
+    }
 };
 
 template<class T, bool iconst>
@@ -103,6 +112,13 @@ public:
     }
 
     isitconst(PermanentN*, iconst) getPointed() override { return content->getPointed(); }
+    void present(unsigned int indent, logging::record_ostream& strm) const override {
+        if(this->parent) this->parent->present(indent + 1, strm);
+        for(uint i = 0; i<indent; i++) strm << '>';
+        strm << "AdapterLeaf adapting (\n";
+        content->present(0, strm);
+        strm << ')' << '\n';
+    }
 };
 
 /** Allows to iterate over an Yggdrasil object. */
@@ -112,7 +128,13 @@ class iterator {
      * but with a hierarchy of Leaves that get built and destroyed. */
     Leaf<T, iconst>* in;
 public:
-    constexpr iterator(Leaf<T, iconst>* in) : in(in) {};
+    typedef std::bidirectional_iterator_tag iterator_category;
+    typedef typename ConcreteLeaf<T, iconst>::pointed_type value_type;
+    typedef int difference_type;
+    typedef value_type* pointer;
+    typedef value_type& reference;
+
+    constexpr iterator(Leaf<T, iconst>* in) : in(in) { }
     iterator operator--() { in = in->next(false); return *this; }
     iterator operator++() { in = in->next(true); return *this; }
     bool operator==(const iterator& other) const { return in == other.in or *in == *other.in; }
@@ -130,7 +152,23 @@ public:
     typename std::conditional<iconst, const T, T>::type& operator*() {
         return *(operator->());
     }
-    typename ConcreteLeaf<T, iconst>::pointed_type* getPointed() const { return in->getPointed(); };
+    pointer getPointed() const { return in->getPointed(); };
+    void present() {
+        OPEN_LOG_AS(DBG_YGGDRASIL, strm);
+
+        if(!in) strm << "(iterator END)\n";
+        else in->present(0, strm);
+
+        CLOSE_LOG(strm);
+    }
+    template<typename Container>
+    typename Container::myiterator<iconst>* findFor(const Container* cont) const {
+        for(iterator_treenode<T, iconst>* iter = in; iter != nullptr; iter = iter->parent) {
+            auto myiter = dynamic_cast<typename Container::myiterator<iconst>*>(iter);
+            if(myiter != nullptr and myiter->getPted() == cont) return myiter;
+        }
+        return nullptr;
+    }
 };
 
 #endif //OLYMPUS_HEADER_5_YGGDRASIL_H

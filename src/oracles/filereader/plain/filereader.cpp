@@ -2,15 +2,15 @@
 #include "Mana/cost.h"
 
 void PlainFileReader::checkSafepoint(char c, const char* message){
-	char x = ifile.get();
-	if(x != c){
-		raiseError(std::string(message) + ": expected '" + c + "', got '" + x + "' instead");
-	}
+    char x = ifile.get();
+    if(x != c){
+        raiseError(std::string(message) + ": expected '" + c + "', got '" + x + "' instead");
+    }
 }
 
 void PlainFileReader::raiseError(const std::string& message){
-	gdebug(DBG_READFILE | DBG_IMPORTANT) << "Error: at position " << ifile.tellg() << ":" << message << "\n";
-	throw DeckbuildingError(message);
+    gdebug(DBG_READFILE) << "Error: at position " << ifile.tellg() << ":" << message << "\n";
+    throw DeckbuildingError(message);
 }
 
 void PlainFileReader::visit(const char*, std::string& name) {

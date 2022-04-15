@@ -1,10 +1,9 @@
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <sstream>
-#include <oracles/filereader/visitor.h>
+#include "oracles/filereader/visitor.h"
+#include "network/protocol.h"
 #include "networkagent.h"
 #include "gameplay/2cards.h"
 #include "oracles/filereader/binary/binarywriter.h"
+#include <sstream>
 
 NetworkAgent::NetworkAgent() = default;
 
@@ -12,18 +11,7 @@ void NetworkAgent::specificSetup() {
     networker.waitForConnection();
 }
 
-unsigned int parse_number(const char* line, unsigned int& pos) {
-    unsigned int ret = 0;
-    while (true) {
-        if (line[pos] == ' ') return ret;
-        else if ('0' <= line[pos] && line[pos] <= '9')
-            ret = 10 * ret + line[pos] - '0';
-        else throw DeckbuildingError("Not a number");
-        pos++;
-    }
-}
-
-Target *NetworkAgent::chooseTarget(char type) {
+const Target* NetworkAgent::chooseTarget(char type) {
     (void) type; //TODO implement
     return nullptr;
 }
@@ -32,36 +20,106 @@ void NetworkAgent::splitDamage(int power, std::list<std::pair<uint8_t, SpecificT
     (void) power; (void) blockers; //TODO implement
 }
 
-std::list<CardWrapper> NetworkAgent::chooseCardsToKeep(std::list<CardWrapper> &list, uint nbToDiscard) {
-    (void) list; (void) nbToDiscard; //TODO implement
-    return std::list<CardWrapper>();
+std::list<CardWrapper> NetworkAgent::chooseCardsToKeep(std::list<CardWrapper>& list, uint nbToDiscard) {
+    Sender sender = networker.getSender();
+
+    char header = operations::CHOOSE_AMONG; sender.add_chunk(&header);
+    uint16_t size = list.size(); sender.add_chunk(&size);
+    uint16_t nbSel = nbToDiscard; sender.add_chunk(&nbSel);
+    sender.close();
+
+    if(nbToDiscard == 0){
+        return std::list<CardWrapper>();
+    } else {
+        auto ret = std::list<CardWrapper>();
+
+        const char* answer = networker.receiveMessage();
+        assert(answer[0] == operations::CHOOSE_AMONG);
+
+        for(int i = 1; i < networker.gcount(); i += sizeof(uint16_t)){
+            uint16_t offset = *reinterpret_cast<const uint16_t*>(answer + i);
+            card_ptr card = first_card + offset;
+
+            auto iter = list.begin();
+            for( ; iter != list.end(); iter++ ){ //TODO OPTIMIZE
+                if(iter->get() == card) {
+                    ret.splice(iter, list);
+                    break;
+                }
+            }
+            assert(iter != list.end());
+        }
+
+        return ret;
+    }
 }
 
-bool NetworkAgent::keepsHand(const fwdlist<uptr<Card>>& cards) {
-    long size = std::distance(cards.begin(), cards.end());
-    char header[2] = { static_cast<char>(CREATE), static_cast<char>(size) };
+#define ADD_CHUNK_NOT_CHAR(x) add_chunk(reinterpret_cast<char*>(&x), sizeof(x));
+#define ADD_CHUNK(x) add_chunk(&x, sizeof(x));
+
+void NetworkAgent::connectDeck(const Deck& deck) {
+    first_oracle = deck.oracles.data();
+    first_card = deck.cards.data();
+
     Sender sender = networker.getSender();
-    sender.add_chunk(header, 2);
-    for(auto& card : cards){
+
+    char header = operations::COMPILED_DECK;
+    sender.ADD_CHUNK(header);
+    uint16_t size = deck.oracles.size();
+    sender.ADD_CHUNK_NOT_CHAR(size);
+
+    for(auto& oracle : deck.oracles){
         std::stringstream oracle_stream;
         BinaryWriter oracle_reader(oracle_stream);
-        card->write(oracle_reader);
+        visit<false>(oracle, oracle_reader);
         sender.add_chunk(oracle_stream.str());
+    }
+
+    header = operations::COMPILED_DECK;
+    sender.ADD_CHUNK(header);
+    size = deck.cards.size();
+    sender.ADD_CHUNK_NOT_CHAR(size);
+
+    for(auto& card : deck.cards){
+        sender.add_chunk(card.toStr(first_oracle));
+    }
+
+    sender.close();
+}
+
+bool NetworkAgent::keepsHand(const fwdlist<card_ptr>& cards) {
+    const long size = 7;
+    char header[2] = { operations::CREATE, static_cast<char>(size) };
+    Sender sender = networker.getSender();
+    sender.add_chunk(header, 2);
+
+    int i = 0;
+    for(auto iter = cards.begin(); i < size; ++i, ++iter ){
+        uint16_t offset = (*iter) - first_card;
+        sender.ADD_CHUNK_NOT_CHAR(offset);
     }
     sender.close();
     const char* answer = networker.receiveMessage();
-    assert(answer[0] == 'H' and answer[1] == 'K');
-    return (answer[2] == 1);
+    assert(answer[0] == operations::KEEPS_HAND);
+    return (answer[1] == 1);
 }
 
-Option * NetworkAgent::chooseOpt(bool sorcerySpeed, Player *pl) {
-    (void) sorcerySpeed; (void) pl; //TODO implement
-    return nullptr;
+static_assert(reinterpret_cast<intptr_t>(nullptr) == 0); //assert that the agent never sends a zero for a valid pointer
+
+const Option* NetworkAgent::chooseOpt(bool sorcerySpeed, const Player* pl) {
+    (void) pl;
+    char content[] = { operations::GET_OPTION, static_cast<char>(sorcerySpeed) };
+    networker.send(content, sizeof(content));
+
+    const char* msg = networker.receiveMessage();
+    assert(networker.gcount() == sizeof(long long));
+    long long msg_long = *(reinterpret_cast<const long long*>(msg));
+    if(msg_long == 0) return nullptr;
+    else return reinterpret_cast<const Option*>(msg_long);
 }
 
-bool NetworkAgent::chooseAttackers(Y_Hashtable<Creature>& mycreas) {
+void NetworkAgent::chooseAttackers(StateTN<Creature>& mycreas) {
     (void) mycreas; //TODO implement
-    return false;
 }
 
 void NetworkAgent::chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature>& attackers) {
@@ -73,23 +131,26 @@ void NetworkAgent::connectGame(Game* gm) {
 }
 
 void NetworkAgent::onDraw(const std::list<CardWrapper>& cards) {
-    char header[2] = { static_cast<char>(CREATE), static_cast<char>(cards.size()) };
+    char header[] = { operations::CREATE, entities::CARDWRAPPER, static_cast<char>(cards.size()) };
     Sender sender = networker.getSender();
-    sender.add_chunk(header, 2);
-    for(auto& card: cards) {
-        std::stringstream oracle_stream;
-        BinaryWriter oracle_reader(oracle_stream);
-        card->write(oracle_reader);
-        sender.add_chunk(oracle_stream.str());
+    sender.add_chunk(header, sizeof(header));
+    for(auto& wrapper: cards) {
+        const Option* opt = &wrapper;
+        intptr_t ptr = reinterpret_cast<intptr_t>(opt);
+        long long llptr = ptr;
+        uint16_t card = wrapper.get() - first_card;
+
+        sender.ADD_CHUNK_NOT_CHAR(llptr);
+        sender.ADD_CHUNK_NOT_CHAR(card);
     }
     sender.close();
 }
 
-uint NetworkAgent::chooseAmong(std::vector<CardOption*> opts) {
+uint NetworkAgent::chooseAmong(const std::vector<CardOption*>& opts) {
     (void) opts; return 0; //TODO
 }
 
-uint NetworkAgent::chooseAmong(std::vector<PermOption*> opts) {
+uint NetworkAgent::chooseAmong(const std::vector<PermOption>& opts) {
     (void) opts; return 0; //TODO
 }
 
@@ -101,9 +162,13 @@ uptr<std::istream> NetworkAgent::getDeckFile() {
     return networker.receiveFile();
 }
 
-void NetworkAgent::registerMe(Player*) {}
+void NetworkAgent::registerMe(Gamer*) {}
 
 void NetworkAgent::message(const char* message) {
+    char header = operations::MESSAGE;
+    Sender sender = networker.getSender();
+    sender.add_chunk(&header, 1);
     uint i; for(i=0; message[i] != 0; ++i);
-    networker.send(message, i);
+    sender.add_chunk(message, i);
+    sender.close();
 }

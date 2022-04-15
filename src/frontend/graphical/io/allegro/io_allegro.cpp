@@ -1,6 +1,7 @@
 #include "lib3_allegroIO.h"
 #include "frontend/headQ_rect.h"
-#include "control/3player.h"
+#include "gameplay/gamer.h"
+#include "gameplay/permanents/4permanents.h"
 #include "gameplay/resolvables/5resolvables.h"
 #include <iostream>
 #include <utility>
@@ -26,7 +27,7 @@ void AllegroIO::disp_inrow(const Displayable* disp, int number, int total, int f
     (void) disp; (void) number; (void) total; (void) flags; //TODO
 }
 
-void AllegroIO::disp_player(const Player& player, int flags) const {
+void AllegroIO::disp_player(const Gamer& player, int flags) const {
     (void) player; (void) flags;
     //TODO IMPLEM: what happens when you click on an opponent to get more details about him?
 }
@@ -63,7 +64,7 @@ void AllegroIO::draw(const Resolvable& resolvable, const Rect& zone, bool highli
     draw_boxed_text(resolvable.getName(), highlight ? HIGH1 : BLACK, highlight ? BLACK : WHITE, zone.y, zone.z, zone.width);
 }
 
-void AllegroIO::draw(const Player& player, const Rect& zone, bool highlight) const {
+void AllegroIO::draw(const Gamer& player, const Rect& zone, bool highlight) const {
 	int x = highlight ? HIGH2 : WHITE;
 	al_draw_text(fonts[0], registeredColors[x], zone.y + zone.width/2 - 20, zone.z + 3, 0, player.getName().c_str());
 	char lifec[4]; std::sprintf(lifec, "%3d", player.getLife());

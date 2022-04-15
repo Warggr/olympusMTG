@@ -11,16 +11,16 @@ class Player; class Target; class Permanent; template<typename T> class Specific
 
 class AtomEffect_H { //TODO FEATURE logical gate-like effects, such as "do this or do that". Or modal spells.
 public:
-	typedef effect_type type_t;
+    typedef effect_type type_t;
 protected:
-	type_t type;
-	flag_t* params; //0 is 'you'. x+1 is 'the target number x in the parameter list of the Resolvable'
-	// or literal x; depending on the exact ability
+    type_t type;
+    flag_t* params; //0 is 'you'. x+1 is 'the target number x in the parameter list of the Resolvable'
+    // or literal x; depending on the exact ability
 public:
-	AtomEffect_H(type_t type, flag_t* params): type(type), params(params) {  };
+    AtomEffect_H(type_t type, flag_t* params): type(type), params(params) {  };
     ~AtomEffect_H() { delete[] params; }
 
-	void activate(SpecificTargeter<Target>* list_of_targets, Player* ctrl, Target* origin) const;
+    void activate(SpecificTargeter<Target>* list_of_targets, Player* ctrl, Target* origin) const;
 
     type_t getType() const { return type; }
     flag_t* getParams() const { return params; }
@@ -31,52 +31,28 @@ public:
 /** A printed instruction such as "X fights Y, and you gain 3 life",
 * for which targets haven't been chosen. They can be cast into Resolvables by choosing targets. */
 class Effect_H {
-	std::forward_list<AtomEffect_H> effects;
-	unsigned char nb_parameters;
-	char* parameters;
+    std::forward_list<AtomEffect_H> effects;
+    unsigned char nb_parameters;
+    char* parameters;
 public:
-	Effect_H() = default;
-	Effect_H(ReaderVisitor& reader);
-	Effect_H(Effect_H&& other) noexcept : nb_parameters(other.nb_parameters), parameters(other.parameters) {
-	    effects = std::move(other.effects);
-	}
-	~Effect_H() { delete parameters; }
+    Effect_H() = default;
+    Effect_H(ReaderVisitor& reader);
+    Effect_H(Effect_H&& other) noexcept : nb_parameters(other.nb_parameters), parameters(other.parameters) {
+        effects = std::move(other.effects);
+    }
+    ~Effect_H() { delete[] parameters; }
 
     void activate(SpecificTargeter<Target>* list_of_targets, Player* ctrl, Target* origin) const;
 
-	std::string describe(const std::string& known_sourcename) const;
+    std::string describe(const std::string& known_sourcename) const;
 
-	uint8_t getNbParams() const { return nb_parameters; }
-	const char* getParams() const { return parameters; }
+    uint8_t getNbParams() const { return nb_parameters; }
+    const char* getParams() const { return parameters; }
 
 //    void straight_cast(Player* pl, Permanent* origin);
 //    void disp(const Rect& zone, std::string origin_name) const; //mimicks a Resolvable on top of the stack
     template<bool read> friend void visit(ConstHost<Effect_H, read>&, Visitor<read>&);
-	friend class PlainFileReader;
+    friend class PlainFileReader;
 };
-
-/*ALL POSSIBLE ABILITIES
-0 deal damage (Damageable target, unsigned int nb_dam)
-1 draw (Player target, int nb_cards)
-2 gain/lose life (Player target, int nb_life)
-3 set life to (Player target, int nb_life)
-4 add mana(Player target, int mana)
-5 destroy (Permanent target)
-6 counter (Resolvable target) //we could add sth like (Resolvable target, Mana unless_pay_amount)
-+X/+0 (Creature target, int x)
-+0/+X (Creature target, int x)
-destroy_all(characteristics)
-myExile (Permanent target)
-copy (Resolvable target)
-deal damage to all (characterstics, int nb_damage)
-create token (Permanent to_copy)
-//okay, so for tokens, a blank token will be created, then either an object will be copied or stats/abilities will be given.
-make creature ?/X
-make creature X/?
-make local sacrifice
-search myLibrary for a (characteristics)
-make fight (Creature 1, Creature 2)
-swap life (Player 1, Player 2)
-gain control of (Player target) */
 
 #endif //OLYMPUS_CLASSES_EFFECTS_1_H
