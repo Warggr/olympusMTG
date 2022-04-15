@@ -12,6 +12,12 @@ class CardOracle; class Target; class Card; class Gamer; class CardWrapper; clas
 template<typename T> class StateTN;
 class PermOption;
 
+struct Canvas {
+    virtual ~Canvas() = default;
+    virtual void disp(const CardOracle& oracle, int flags) const = 0;
+    virtual void disp_player(const Gamer& player, int flags) const = 0;
+};
+
 class BasicIO {
 protected:
     enum checklistCallbackAction { commit, change };
@@ -40,9 +46,7 @@ public:
 
     virtual void message(const char* message) const = 0;
     virtual void message(const std::string& text) const = 0;
-    virtual void disp(const CardOracle& oracle, int flags) const = 0;
     virtual void disp_inrow(const Displayable*, int number, int total, int flags) const = 0;
-    virtual void disp_player(const Gamer& player, int flags) const = 0;
 
     virtual std::string getTextInput(const char* question) = 0;
     virtual int getInt(int lowerBound, int upperBound) = 0;

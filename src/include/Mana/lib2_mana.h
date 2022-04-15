@@ -10,13 +10,14 @@ using ExplicitMana = std::array<uint, 7>;
 class Mana{
 private:
     int mana; //0xXcgrbuw1, in inverse order of priority
-public:
     struct positions {
-        static constexpr char GENERIC = 0, FIRST_COLOR = 1, WHITE = 1, BLUE = 2, BLACK = 3, RED = 4, GREEN = 5, LAST_COLOR = 5, COLORLESS = 6;
-        static_assert(WHITE == mtg::manatype::white);
-        static_assert(GREEN == mtg::manatype::green);
-        static_assert(COLORLESS == mtg::manatype::colorless);
+        enum pos: char { GENERIC = 0, FIRST_COLOR = 1, WHITE = 1, BLUE, BLACK, RED, GREEN, LAST_COLOR = GREEN, COLORLESS };
     };
+public:
+    enum xpos : char { FIRST_COLOR = 0, WHITE = 0, BLUE, BLACK, RED, GREEN, LAST_COLOR = GREEN, COLORLESS, GENERIC };
+    static_assert((char)xpos::WHITE == (char)mtg::manatype::white);
+    static_assert((char)xpos::GREEN == (char)mtg::manatype::green);
+    static_assert((char)xpos::COLORLESS == (char)mtg::manatype::colorless);
 
     constexpr Mana(): mana(0){};
     constexpr Mana(int i): mana(i){};

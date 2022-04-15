@@ -62,11 +62,11 @@ void NcursesIO::message(const char* text) const {
 	mvwprintw(message_zone, 0, 0, "%s", text);
 }
 
-void NcursesIO::draw_permanent(const Rect& zone, const std::string& name, char color, bool tapped, bool highlight, bool) const {
+void NcursesIO::draw_permanent(const Rect& zone, const std::string& name, char color, bool tapped, disp_flags flags, bool) const {
 	WINDOW* win = winzones[zone.zone];
 	wattron(win, COLOR_PAIR(color+1));
 	char sep = tapped ? '/' : '|';
-	if(highlight) wattron(win, A_STANDOUT);
+	if(flags) wattron(win, A_STANDOUT);
 
 	mvwprintw(win, zone.z, zone.y, "%c", sep); wprintw(win, "%s", name.c_str());
 	mvwprintw(win, zone.z, zone.y+zone.width, "%c", sep);
@@ -77,9 +77,9 @@ void NcursesIO::draw_permanent(const Rect& zone, const std::string& name, char c
 	wattroff(win, A_STANDOUT);
 }
 
-void NcursesIO::draw(const Gamer& player, const Rect& zone, bool highlight) const {
+void NcursesIO::draw(const Gamer& player, const Rect& zone, disp_flags flags) const {
 	WINDOW* win = winzones[zone.zone];
-	if(highlight) wattron(win, A_STANDOUT);
+	if(flags) wattron(win, A_STANDOUT);
 	assert(player.getLife() < 1000);
 	mvwprintw(win, zone.y, zone.z, " <%s> (%d life)  ", player.getName().c_str(), player.getLife());
 
@@ -249,13 +249,13 @@ void NcursesIO::setGameScene() {
     //TODO IMPLEM game scene
 }
 
-void NcursesIO::draw(const CardOracle& card, const Rect& zone, bool highlight) const {
+void NcursesIO::draw(const CardOracle& card, const Rect& zone, disp_flags flags) const {
     WINDOW* win = winzones[zone.zone];
     wclear(win);
     auto card_color = main_color(card.getCost().mana.m2color());
 
     wattron(win, COLOR_PAIR( card_color + 1));
-    if(highlight) wattron(win, HIGHLIGHT);
+    if(flags) wattron(win, HIGHLIGHT);
     wmove(win, zone.z, zone.y);
     for(int i=zone.y; i<zone.right(); i++) wprintw(win, "-");
     wmove(win, zone.height-1, 0);
@@ -291,13 +291,13 @@ void NcursesIO::draw(const CardOracle& card, const Rect& zone, bool highlight) c
     wrefresh(win);
 }
 
-void NcursesIO::draw(const Resolvable& resolvable, const Rect& zone, bool highlight) const {
-    if(highlight) wattron(winzones[zone.zone], HIGHLIGHT);
+void NcursesIO::draw(const Resolvable& resolvable, const Rect& zone, disp_flags flags) const {
+    if(flags) wattron(winzones[zone.zone], HIGHLIGHT);
     draw_full_rectangle(main_color(resolvable.getColor()), zone);
     draw_boxed_text(resolvable.describe(), BLACK, main_color(resolvable.getColor()), zone.y, zone.z, zone.width);
     wattroff(winzones[zone.zone], HIGHLIGHT);
 }
 
-void NcursesIO::draw(const Permanent& perm, const Rect& zone, bool highlight) const {
-    draw_permanent(zone, perm.getName(), main_color(perm.getManaCost().m2color()), !perm.isUntapped(), highlight, true);
+void NcursesIO::draw(const Permanent& perm, const Rect& zone, disp_flags flags) const {
+    draw_permanent(zone, perm.getName(), main_color(perm.getManaCost().m2color()), !perm.isUntapped(), flags, true);
 }

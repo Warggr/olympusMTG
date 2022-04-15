@@ -1,4 +1,3 @@
-#include "frontend/basicIO.h"
 #include "classes/1effects.h"
 #include "classes/card_oracle.h"
 #include "classes/2triggers.h"
@@ -6,10 +5,6 @@
 #include "classes/perm_option.h"
 #include "headE_enums.h"
 #include <vector>
-
-void CardOracle::disp(BasicIO *io) const {
-    io->disp(*this, 0);
-}
 
 std::string PermOption_H::describe(const std::string& cardname) const {
     std::string ret = "[" + cost.mana.m2t() + "]";

@@ -32,7 +32,7 @@ public:
     virtual void resolve(); //this is what a resolvable is about
     virtual colorId::type getColor() const;
     virtual std::string describe() const override { return description; };
-    virtual void disp(BasicIO* io) const override;
+    virtual void disp(Canvas* io, disp_flags flags) const override;
     virtual void counter();
 
     Player* getController() override { return ctrl; }
@@ -40,7 +40,7 @@ public:
 
 class Spell: public Resolvable{
 private:
-    card_ptr source; //the source will be kept by the option, the spell and the permanent to finally go the myGraveyard
+    card_ptr source; //the source will be kept by the option, the spell and the permanent to finally go the graveyard
 public:
     Spell(card_ptr src, Player* ct);
     void resolve() override;
@@ -48,7 +48,7 @@ public:
     colorId::type getColor() const override;
     std::string describe() const override;
 
-    void disp(BasicIO* io) const override;
+    void disp(Canvas* io, disp_flags flags) const override;
 };
 
 #endif //OLYMPUS_CLASSES_RESOLVABLE_5_H

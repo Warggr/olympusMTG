@@ -6,7 +6,7 @@
 
 class Permanent; class Card; class Creature; class CardOracle; class EmptyOption; class Player; class Resolvable;
 
-class NanoIO: public BasicIO {
+class NanoIO: public BasicIO, public Canvas {
 public:
     NanoIO();
     ~NanoIO();

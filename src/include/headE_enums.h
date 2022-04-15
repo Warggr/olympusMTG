@@ -32,8 +32,8 @@ namespace colorId {
 enum class object_type { player, permanent, resolvable, card };
 enum class permanent_type { land, artifact, planeswalker, creature };
 namespace mtg {
-    enum class color { white = 1, blue, black, red, green };
-    enum manatype { white = 1, blue, black, red, green, colorless }; //1 for compatibility with Mana::positions
+    enum class color { white, blue, black, red, green };
+    enum manatype { white, blue, black, red, green, colorless };
     static_assert( static_cast<manatype>(color::white) == manatype::white);
 }
 

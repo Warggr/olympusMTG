@@ -25,7 +25,7 @@ public:
     void init(ReaderVisitor& reader);
 
     std::string describe() const override;
-    void disp(BasicIO* io) const override;
+    void disp(Canvas* io, disp_flags) const override;
     std::vector<std::string> allText(int& power, int& toughness, int& frametype) const;
 
     inline Cost getCost() const { return rules.cost; }

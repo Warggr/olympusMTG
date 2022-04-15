@@ -28,7 +28,7 @@ public:
     Permanent(card_ptr source, Player* pl);
     virtual ~Permanent() = default;
     virtual std::string describe() const override;
-    void disp(BasicIO* io) const override;
+    void disp(Canvas* io, disp_flags flags) const override;
 
     bool isUntapped() const { return untapped; }
     bool noSummonSick() const { return etbBeforeThisTurn; }

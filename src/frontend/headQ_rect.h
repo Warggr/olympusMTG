@@ -3,11 +3,13 @@
 
 using uint16_t = unsigned short;
 
-struct Rect{
+struct Rect {
     uint16_t zone : 5;
     uint16_t y : 11, z;
     uint16_t width, height;
 
+    int left() const { return y; }
+    int top() const { return z; }
     int right() const {return y + width; }
     int bottom() const {return z + height; }
 

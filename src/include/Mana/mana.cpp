@@ -97,12 +97,14 @@ ExplicitMana Mana::m2x() const {
     auto ret = ExplicitMana();
     uint generic = cmc();
     int mcopy = mana;
+    static_assert(0 == (char)xpos::WHITE);
+    static_assert(5 == (char)xpos::COLORLESS);
     for(int i=0; i<6; i++){
         mcopy = mcopy >> 4;
-        ret[i+1] = mcopy & 0xf;
-        generic -= ret[i+1];
+        ret[i] = mcopy & 0xf;
+        generic -= ret[i];
     }
-    ret[0] = generic;
+    ret[Mana::xpos::GENERIC] = generic;
     return ret;
 }
 

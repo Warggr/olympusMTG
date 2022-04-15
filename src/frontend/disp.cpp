@@ -1,32 +1,42 @@
 #include "frontend/basicIO.h"
+#include "classes/card_oracle.h"
 #include "gameplay/permanents/4permanents.h"
 #include "gameplay/2cards.h"
 #include "gameplay/resolvables/5resolvables.h"
 #include "control/3player.h"
 #include "classes/perm_option.h"
+#include <vector>
 
-void Permanent::disp(BasicIO* io) const {
-    io->disp(*source->oracle, 0);
+void CardOption::disp(Canvas* io, disp_flags flags) const {
+    (void) io; (void) flags; //TODO
 }
 
-void Spell::disp(BasicIO *io) const {
-    io->disp(*source->oracle, 0);
+void CardOracle::disp(Canvas* io, disp_flags flags) const {
+    io->disp(*this, flags);
 }
 
-void Card::disp(BasicIO *io) const {
-    io->disp(*oracle, 0);
+void Permanent::disp(Canvas* io, disp_flags flags) const {
+    io->disp(*source->oracle, flags);
 }
 
-void Gamer::disp(BasicIO *io) const {
-    io->disp_player(*this, 0);
+void Spell::disp(Canvas* io, disp_flags flags) const {
+    io->disp(*source->oracle, flags);
 }
 
-void Resolvable::disp(BasicIO* io) const {
-    (void) io; //TODO
+void Card::disp(Canvas* io, disp_flags flags) const {
+    io->disp(*oracle, flags);
 }
 
-void PermOption::disp(BasicIO *io) const {
-    (void) io; //TODO
+void Gamer::disp(Canvas* io, disp_flags flags) const {
+    io->disp_player(*this, flags);
+}
+
+void Resolvable::disp(Canvas* io, disp_flags flags) const {
+    (void) io; (void) flags; //TODO
+}
+
+void PermOption::disp(Canvas* io, disp_flags flags) const {
+    (void) io; (void) flags; //TODO
 }
 
 void BasicIO::chooseAttackers(StateTN<Creature>& attackers) {

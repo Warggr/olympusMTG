@@ -21,9 +21,10 @@ void CliUI::chooseblockers(Y_Hashtable<Creature>& defenders, StateTN<Creature>& 
     (void) defenders; (void) attackers;
 }
 
-void CliUI::disp(fwdlist<card_ptr>::const_iterator begin, const fwdlist<card_ptr>::const_iterator end) {
-    for(auto i = begin; i != end; ++i) {
-        io.disp(**i, NanoIO::INLINE);
+void CliUI::disp(const fwdlist<card_ptr>& list, uint size) {
+    auto iter = list.begin();
+    for(uint i = 0; i < size; ++i, ++iter) {
+        io.disp(**iter, NanoIO::INLINE);
     }
 }
 

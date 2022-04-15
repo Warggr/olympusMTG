@@ -50,7 +50,7 @@ public:
         phase(0), milledout(0), zerolife(0), nb_mainphase(0), nb_lands_remaining(1), 
         manapool(0) {}
     Gamer(std::string&& nm): Gamer() { name = nm; }
-    void disp(BasicIO* io) const override;
+    void disp(Canvas* io, disp_flags flags) const override;
     std::string describe() const override;
 
     u_char getPhase() const { return phase; }

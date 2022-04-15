@@ -1,10 +1,10 @@
-#ifndef OLYMPUS_11_Ncurses_IO
-#define OLYMPUS_11_Ncurses_IO
+#ifndef OLYMPUS_11_NCURSES_IO
+#define OLYMPUS_11_NCURSES_IO
 
 #include "../6abstractIO.h"
 #include <ncurses.h>
 
-class NcursesIO: public AbstractIO {
+class NcursesIO: public AbstractIO, public Canvas {
 private:
 	WINDOW** winzones{nullptr};
 	WINDOW* message_zone, *poster_zone;
@@ -24,6 +24,9 @@ public:
 	~NcursesIO();
 
 #include "../iomethods.cpp"
+
+	void disp(const CardOracle& oracle, int flags) const override;
+    void disp_player(const Gamer& player, int flags) const override;
 };
 
 inline float NcursesIO::gmouseY() { return mousey; }
@@ -40,4 +43,4 @@ inline void NcursesIO::print_text(const std::string& text, char color, int x, in
     print_text(text.c_str(), color, x, y);
 }
 
-#endif //OLYMPUS_11_Ncurses_IO
+#endif //OLYMPUS_11_NCURSES_IO

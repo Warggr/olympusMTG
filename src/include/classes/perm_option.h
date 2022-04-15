@@ -33,7 +33,7 @@ public:
     void straight_cast(Player* pl);
     
     std::string describe() const override;
-    void disp(BasicIO* io) const override;
+    void disp(Canvas* io, disp_flags flags) const override;
 };
 
 #endif //OLYMPUS_PERM_OPTION_H

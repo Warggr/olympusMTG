@@ -32,7 +32,7 @@ public:
     bool castOpt(Player* pl) override;
     std::string describe() const override;
     std::string describe(const std::string& cardName) const;
-    void disp(BasicIO* io) const override;
+    void disp(Canvas* io, disp_flags flags) const override;
 };
 
 //There are multiple types of options:

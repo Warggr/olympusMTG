@@ -48,7 +48,7 @@ public:
 
     virtual void addCards(const std::list<CardWrapper>& cards) = 0;
 
-    virtual void disp(fwdlist<card_ptr>::const_iterator begin, fwdlist<card_ptr>::const_iterator end) = 0;
+    virtual void disp(const fwdlist<card_ptr>& list, uint size) = 0;
 
     virtual BasicIO* getBasicIO() = 0;
 

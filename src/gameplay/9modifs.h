@@ -41,7 +41,7 @@ public:
     }
     SpecificTargeter(): AbstractTargeter(false), colorIdentity(-1) { gdebug(DBG_TARGETING) << " Creating a Targeter\n"; }
     ~SpecificTargeter(){
-    	content->removePersecutor(this); //removes references to itself from its victim
+        content->removePersecutor(this); //removes references to itself from its victim
     };
     void setTarget(T* tgt) {
         assert(tgt != nullptr);

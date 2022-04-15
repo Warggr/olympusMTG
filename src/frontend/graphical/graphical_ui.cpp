@@ -38,17 +38,6 @@ const Target* GraphicalUI::chooseTarget(char type) {
     return screen.iterate(type, true);
 }
 
-/*void GraphicalUI::chooseattackers(StateTN<Creature>& attackers) {
-    int yOffset, zOffset;
-    Rect rect = screen.board().players()[0].board().getCoordinates(&yOffset, &zOffset);
-    for(auto& i : attackers) {
-        bool attacks = io->attackSwitch(rect.y, rect.right(), rect.z, 15);
-        if(attacks) {
-            (void) i;//TODO actually make the creature attack
-        }
-    }
-}*/
-
 void GraphicalUI::chooseblockers(Y_Hashtable<Creature>& defenders, StateTN<Creature>& attackers) {
     int i = 0;
     for(Creature& defender : defenders) {
@@ -68,12 +57,14 @@ const Option* GraphicalUI::chooseOpt(bool sorcerySpeed) {
     return nullptr; //TODO
 }
 
-void GraphicalUI::disp(fwdlist<card_ptr>::const_iterator begin, const fwdlist<card_ptr>::const_iterator end) {
+void GraphicalUI::disp(const fwdlist<card_ptr>& lib, uint size) {
+    uint total_size = screen.rightBar().getCoords().left();
+    uint stepsize = total_size / size;
     Rect rect(0, 0, 375, 523); //TODO IMPLEM put actual IO-independant coordinates
-    for(auto i = begin; i != end; ++i) {
-        io->draw(*(*i)->oracle, rect, false);
-        rect.shift(380, 0);
-        if(rect.right() > screen.getCoords().right()) break;
+    auto iter = lib.begin();
+    for(uint i = 0; i < size; ++i, ++iter) {
+        io->draw(*(*iter)->oracle, rect, false);
+        rect.shift(stepsize, 0);
     }
 }
 

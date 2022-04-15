@@ -26,7 +26,7 @@ public:
     explicit Card(oracle_ptr orc): oracle(move_oracleptr(orc)) { }
 
     void reveal() const;
-    void disp(BasicIO* io) const override;
+    void disp(Canvas* io, disp_flags flags) const override;
     std::string describe() const override { return oracle->describe(); };
 
     card_type getType() const { return oracle->getType(); };
@@ -59,7 +59,7 @@ public:
     card_ptr operator->() const { return origin; }
     card_ptr unwrap() { return origin; }
 
-    void disp(BasicIO* io) const override { origin->disp(io); }
+    void disp(Canvas* io, disp_flags flags) const override { origin->disp(io, flags); }
     std::string describe() const override { return origin->describe(); };
     const Option* chooseOptionAction() const override;
     Player* getController() override { return owner; }

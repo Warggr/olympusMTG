@@ -52,8 +52,6 @@ bool CardOption::isCastable(bool sorceryspeed, const Player* player) const {
 
 bool CardOption::castOpt(Player* ) { return true; /*TODO*/ }
 
-void CardOption::disp(BasicIO*) const { /*TODO*/ }
-
 bool Player::pay(Cost cost) {
     if(not (manapool >= cost.mana)) return false;
     manapool -= cost.mana;
