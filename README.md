@@ -41,8 +41,13 @@ The user interface is found in the `frontend` folder. It has two different imple
 
 ## Future directions
 
-- Implement Python agents
-- Make networking more portable
-- Allow networking over WebSockets and JSON, instead of TCP and (the current binary format we're using)
-- This would allow implementing a client in Javascript
-- Allow choosing an I/O library at runtime instead of compile-time
+- *Janus* - create a menu at the start of the game
+- *Hydra* - Implement Python agents
+- *Ceres* - Read names from (JSON?) file instead of hard-coding them
+- *Hermes* - Make networking more portable
+- *Persephone* Allow networking over WebSockets and JSON, instead of TCP and (the current binary format we're using)
+- *Hades* - This would allow implementing a client in Javascript
+- *Apollo* - Allow choosing an I/O library at runtime instead of compile-time
+- *Prometheus* - have a fully-fledged, learning AI player
+- *Medusa* - implement WeirdCosts
+- *Athena* - conditional abilities and modal spells
