@@ -48,8 +48,7 @@ public:
     flag_t targetType() const { return t_type; };
 
     virtual Player* getController() = 0;
-    virtual const std::string* getNameRef() const {return &name; };
-    virtual const std::string& getName() const {return name; };
+    virtual const std::string& getName() const { return name; };
 };
 
 class Damageable { //Planeswalkers, Creatures and Players
@@ -58,12 +57,12 @@ protected:
 public:
     TriggerEvent is_damaged;
 
-    explicit Damageable(int lif): life(lif){};
-    Damageable(int lif, const Card* source);
+    explicit Damageable(int life): life(life){};
+    Damageable(int life, const Card* source);
     int getLife() const { return life; }
     virtual ~Damageable() = default;
     virtual void damage(int nb_damage, Target* origin);
-    virtual void setLife(int life_total){life = life_total; }
+    virtual void setLife(int life_total){ life = life_total; }
     virtual Player* getDmgController() = 0; //Not const because Player returns a non-const reference to itself
     virtual Target* getMeAsTarget() = 0;
 };

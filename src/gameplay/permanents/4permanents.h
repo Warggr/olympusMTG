@@ -67,7 +67,7 @@ public:
     std::string describe() const override;
 
 //    void damage(int nb_damage, Target* origin = 0) override;
-    void hit(Damageable* tgt);
+    void hit(Damageable& tgt);
     void addBlocker(Creature* bl) { //inlined for linking reasons
         is_block = true;
         assigned_bl.emplace_front(std::pair<uint8_t, SpecificTargeter<Creature>>(0, bl));

@@ -32,7 +32,7 @@ Usage parseArgs(int nbargs, char** args) {
     po::variables_map vm;
     po::store(po::command_line_parser(nbargs, args).options(usage).run(), vm);
     po::notify(vm);
-    uint nb_players =
+    uint nb_players = 0
             ENABLE_IF_LOCAL(+ vm["local"].as<uint>())
             ENABLE_IF_BOT( + vm["bot"].as<uint>())
             ENABLE_IF_NETWORK(+ vm["network"].as<uint>());
@@ -48,7 +48,7 @@ Usage parseArgs(int nbargs, char** args) {
 }
 
 int main(int nbargs, char** args) {
-    std::filesystem::current_path("../material");
+    std::filesystem::current_path( std::filesystem::current_path().parent_path() / "material");
 
     Usage usage = parseArgs(nbargs, args);
     if(usage.refresh_db) refreshDatabase();

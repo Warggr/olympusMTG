@@ -7,11 +7,11 @@ TEST_CASE( "Mana library", "[mana]" ) {
         REQUIRE( mana.cmc() == 4 );
     }
 
-    INFO(Mana::positions::WHITE);
+    INFO(Mana::xpos::WHITE);
     SECTION("Colors") {
         REQUIRE_FALSE( mana >= Mana("R"));
         REQUIRE( mana.m2color() == colorId::white );
-        REQUIRE( mana.m2x()[Mana::positions::WHITE] == 3 );
+        REQUIRE( mana.m2x()[Mana::xpos::WHITE] == 3 );
     }
 
     mana -= Mana("1W");

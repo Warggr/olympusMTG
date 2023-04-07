@@ -1,9 +1,9 @@
 #ifndef OLYMPUS_HEADER_5_YGGDRASIL_H
 #define OLYMPUS_HEADER_5_YGGDRASIL_H
 
+#include "logging.h"
 #include <condition_variable>
 #include <iterator>
-#include "logging.h"
 
 template<typename T> class PermanentTN;
 class PermanentN;

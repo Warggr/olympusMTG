@@ -38,10 +38,10 @@ public:
         return AdapterLeaf<T, true>::create( new ConcreteLeaf<T, true>(this, nullptr), parent);
     }
     iterator<Permanent, false> pbegin() override {
-        return { AdapterLeaf<T, false>::create( new ConcreteLeaf<T, false>(this, nullptr), nullptr) };
+        return { pcreateStart(nullptr, false) };
     }
     iterator<Permanent, true> cpbegin() const override {
-        return { AdapterLeaf<T, true>::create(new ConcreteLeaf<T, true>(this, nullptr), nullptr) };
+        return { pcreateStart(nullptr, false) };
     }
     Permanent* getPermanent() override { return &describedObject; }
     const Permanent* getPermanent() const override { return &describedObject; }

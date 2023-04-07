@@ -24,6 +24,13 @@ void Effect_H::activate(SpecificTargeter<Target>* list_of_targets, Player* ctrl,
     }
 }
 
+template<typename T>
+inline T& as(Target* t){
+    T* ret = dynamic_cast<T*>(t);
+    assert(ret != nullptr);
+    return *ret;
+}
+
 void AtomEffect_H::activate(Targeter* list_of_targets, Player* ctrl, Target* origin) const {
     using namespace effect;
     Target* target1;
@@ -35,24 +42,25 @@ void AtomEffect_H::activate(Targeter* list_of_targets, Player* ctrl, Target* ori
         target1 = list_of_targets[params[0]-3].getTarget();
     }
     switch(type){
+    #define AS(Type) assert(dynamic_cast<Type*>(target1) != nullptr); dynamic_cast<Type*>(target1)
         case deal_damage:
-            (dynamic_cast<Damageable*> (target1))->damage(params[1], origin); break;
+            as<Damageable>(target1).damage(params[1], origin); break;
         case draw:
-            (dynamic_cast<Player*> (target1))->draw(params[1]); break;
+            as<Player>(target1).draw(params[1]); break;
         case gain_life:
-            (dynamic_cast<Player*> (target1))->gainLife(params[1]); break;
+            as<Player>(target1).gainLife(params[1]); break;
         case set_life:
-            (dynamic_cast<Gamer*> (target1))->setLife(params[1]); break;
+            as<Gamer>(target1).setLife(params[1]); break;
         case add_mana:
-            (dynamic_cast<Gamer*> (target1))->addMana(params[1]); break;
+            as<Gamer>(target1).addMana(params[1]); break;
         case destroy:
-            (dynamic_cast<Permanent*> (target1))->destroy(); break;
+            as<Permanent>(target1).destroy(); break;
         case exile:
-            (dynamic_cast<Permanent*>(target1))->exile(); break;
+            as<Permanent>(target1).exile(); break;
         case counter:
-            (dynamic_cast<Resolvable*> (target1))->counter(); break;
+            as<Resolvable>(target1).counter(); break;
         case untap:
-            (dynamic_cast<Permanent*>(target1))->untap(); break;
+            as<Permanent>(target1).untap(); break;
         default:
             gdebug(DBG_INTERNAL) << "Internal error: this ability (" << static_cast<int>(type) <<") hasn't been implemented yet\n";
     }

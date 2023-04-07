@@ -54,9 +54,6 @@ std::list<CardWrapper> NetworkAgent::chooseCardsToKeep(std::list<CardWrapper>& l
     }
 }
 
-#define ADD_CHUNK_NOT_CHAR(x) add_chunk(reinterpret_cast<char*>(&x), sizeof(x));
-#define ADD_CHUNK(x) add_chunk(&x, sizeof(x));
-
 void NetworkAgent::connectDeck(const Deck& deck) {
     first_oracle = deck.oracles.data();
     first_card = deck.cards.data();
@@ -64,9 +61,9 @@ void NetworkAgent::connectDeck(const Deck& deck) {
     Sender sender = networker.getSender();
 
     char header = operations::COMPILED_DECK;
-    sender.ADD_CHUNK(header);
+    sender.add_chunk(&header);
     uint16_t size = deck.oracles.size();
-    sender.ADD_CHUNK_NOT_CHAR(size);
+    sender.add_chunk(&size);
 
     for(auto& oracle : deck.oracles){
         std::stringstream oracle_stream;
@@ -76,9 +73,9 @@ void NetworkAgent::connectDeck(const Deck& deck) {
     }
 
     header = operations::COMPILED_DECK;
-    sender.ADD_CHUNK(header);
+    sender.add_chunk(&header);
     size = deck.cards.size();
-    sender.ADD_CHUNK_NOT_CHAR(size);
+    sender.add_chunk(&size);
 
     for(auto& card : deck.cards){
         sender.add_chunk(card.toStr(first_oracle));
@@ -96,7 +93,7 @@ bool NetworkAgent::keepsHand(const fwdlist<card_ptr>& cards) {
     int i = 0;
     for(auto iter = cards.begin(); i < size; ++i, ++iter ){
         uint16_t offset = (*iter) - first_card;
-        sender.ADD_CHUNK_NOT_CHAR(offset);
+        sender.add_chunk(&offset);
     }
     sender.close();
     const char* answer = networker.receiveMessage();
@@ -140,8 +137,8 @@ void NetworkAgent::onDraw(const std::list<CardWrapper>& cards) {
         long long llptr = ptr;
         uint16_t card = wrapper.get() - first_card;
 
-        sender.ADD_CHUNK_NOT_CHAR(llptr);
-        sender.ADD_CHUNK_NOT_CHAR(card);
+        sender.add_chunk(&llptr);
+        sender.add_chunk(&card);
     }
     sender.close();
 }

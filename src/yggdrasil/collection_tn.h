@@ -48,8 +48,8 @@ public:
         children.template emplace_back(move_cardptr(origin), pl);
     }
 
-    bool empty() const override { for(auto& i : children) if(!i.empty()) return false; return true; }
-    unsigned int size() const override {
+    [[nodiscard]] bool empty() const override { for(auto& i : children) if(!i.empty()) return false; return true; }
+    [[nodiscard]] unsigned int size() const override {
         uint size = 0; for(auto& i : children) size += i.size(); return size;
     }
 
@@ -79,10 +79,9 @@ public:
 
     template<bool iconst>
     iterator<T, iconst> splice(CollectionTN& other, iterator<T, iconst> position) {
-//        std::cout << "Splicing me (@" << this << ") inserting from other (@" << &other << ")\n";
 
         myiterator<iconst>* iter = position.template findFor<CollectionTN<T>>(&other);
-//        std::cout << "Found iterator @" << iter << " (node=" << iter->node << ")\n";
+        assert(iter != nullptr);
         typename std::list<PermanentTN<T>>::iterator it2 = iter->it;
         it2++;
 

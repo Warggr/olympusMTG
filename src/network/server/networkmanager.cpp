@@ -15,7 +15,7 @@ void printMyIp();
 void NetworkManager::initialize() {
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if(sockfd < 0) throw NetworkError();
-    std::cout << "Starting a warggrserver on port " << Networker::PORT_NO << "...\nHere my IP(s):\n";
+    std::cout << "Starting a server on port " << Networker::PORT_NO << "...\nHere my IP(s):\n";
     printMyIp();
 
     int opt = 1;

@@ -1,5 +1,11 @@
 add_library(IOAllegro STATIC io_allegro.cpp io_allegro_combat.cpp io_allegro_input.cpp)
 target_link_libraries(IOAllegro allegro allegro_font allegro_primitives allegro_image allegro_ttf Mana BaseIO)
+target_include_directories(IOAllegro PUBLIC ${CMAKE_BINARY_DIR}/_deps/allegro-build/include)
+target_include_directories(IOAllegro PUBLIC ${CMAKE_BINARY_DIR}/_deps/allegro-src/include)
+target_include_directories(IOAllegro PUBLIC ${CMAKE_BINARY_DIR}/_deps/allegro-src/addons/font)
+target_include_directories(IOAllegro PUBLIC ${CMAKE_BINARY_DIR}/_deps/allegro-src/addons/primitives)
+target_include_directories(IOAllegro PUBLIC ${CMAKE_BINARY_DIR}/_deps/allegro-src/addons/image)
+target_include_directories(IOAllegro PUBLIC ${CMAKE_BINARY_DIR}/_deps/allegro-src/addons/ttf)
 
 create_test(IOAllegro)
 if(ENABLE_TESTING)

@@ -118,6 +118,7 @@ public:
     template<bool iconst>
     iterator<T, iconst> splice(iterator<T, iconst> position) {
         const myiterator<iconst>* iter = position.template findFor<StateTN<T>>(this);
+        assert(iter != nullptr);
 //        std::cout << "Found block " << iter->block << ", position " << iter->position << '\n';
 
         CollectionTN<T>& child = parent->getChild(iter->block, iter->position, multiplicity, first);

@@ -135,9 +135,9 @@ void PlainFileReader::readEffect(std::forward_list<AtomEffect_H>& effects, uint8
 void PlainFileReader::readModifier(char& nbEffects, Modifier& firstEffect, Modifier*& otherEffects) {
     checkSafepoint(' ', "just after : of selector");
     char tmp[20]; int i = 0; nbEffects = 0;
-    Modifier::type tmp_effect[20];
+    Modifier::type tmp_effect[20] = {};
     bool end_of_effects = false;
-    while(!end_of_effects){
+    do {
         nbEffects++;
         if(nbEffects > 20) raiseError("Can't handle more than 20 static effects");
         while(true){
@@ -149,9 +149,8 @@ void PlainFileReader::readModifier(char& nbEffects, Modifier& firstEffect, Modif
         auto result = dicts->dict_static_types.find(tmp);
         if(result == dicts->dict_static_types.not_found)
             raiseError(std::string("static ") + tmp + " does not exist");
-        else
-            tmp_effect[i] = *result;
-    }
+        tmp_effect[i] = *result;
+    } while(!end_of_effects);
     firstEffect.myType = tmp_effect[0];
     if(nbEffects == 1) otherEffects = nullptr;
     else{

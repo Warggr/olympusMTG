@@ -41,6 +41,8 @@ protected:
     bool connected; //whether he is currently connected to that IP address
     long _gcount; //the last number of characters read, including the final 0
 
+    /* Lowest-level reading from the network.
+    This operation is unsafe because it can return a non-null-terminated string (can also be terminated by MORE_PACKETS). */
     const char* read();
 public:
     static constexpr int PORT_NO = 4242;

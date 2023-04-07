@@ -2,7 +2,7 @@
 #define OLYMPUS_DICTHOLDER_H
 
 #include "classes/3statics.h"
-#include "lib1_dict.h"
+#include "lib1_dictionary.h"
 #include "headE_enums.h"
 
 enum selectors { types, subtypes, tribes, players };

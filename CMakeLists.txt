@@ -54,11 +54,15 @@ if(ENABLE_PROFILING)
 endif()
 
 #Warnings
-target_compile_options(project_warnings INTERFACE -Wall -Wextra -Werror
+target_compile_options(project_warnings INTERFACE -Wall -Wextra
         -Wnon-virtual-dtor -Wcast-align
         -Wunused -Woverloaded-virtual -Wpedantic
-        -Wnull-dereference -Wdouble-promotion
+        -Wdouble-promotion
         -Wformat=2)
+
+if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    target_compile_options(project_warnings INTERFACE -Werror -Wnull-dereference)
+endif()
 
 # some GCC specific warnings. These flags are added only if the used compiler is GCC.
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
@@ -100,6 +104,28 @@ if(ENABLE_CLANG_TIDY)
         message(SEND_ERROR "clang-tidy requested but executable not found")
     endif()
 endif()
+
+include(FetchContent)
+FetchContent_Declare(
+  Catch2
+  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+  GIT_TAG        v3.1.0
+)
+FetchContent_MakeAvailable(Catch2)
+
+FetchContent_Declare(
+        leveldb
+        GIT_REPOSITORY https://github.com/google/leveldb
+        GIT_TAG   1.23
+)
+FetchContent_MakeAvailable(leveldb)
+
+FetchContent_Declare(
+        Allegro
+        GIT_REPOSITORY https://github.com/liballeg/allegro5.git
+        GIT_TAG   5.2.8
+)
+FetchContent_MakeAvailable(Allegro)
 
 if(ENABLE_TESTING)
     enable_testing()

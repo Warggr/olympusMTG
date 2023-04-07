@@ -40,7 +40,7 @@ public:
     Y_Hashtable<Creature> mycreas;
     StateTN<Creature> myattackers;
 
-    BoardN(): myartos(this), mysuperfriends(this), mycreas(this) {};
+    BoardN(): myartos(*this), mysuperfriends(*this), mycreas(*this) {};
 
     void insert(card_ptr to_add, Player* pl);
 //    void remove(Permanent* perm, permanent_type type);

@@ -116,12 +116,7 @@ void Networker::sendFile(std::istream& file) {
     }
 }
 
-#include <iostream>
-
-/* Lowest-level reading from the network.
-This operation is unsafe because it can return a non-null-terminated string (can also be terminated by MORE_PACKETS). */
 const char* Networker::read() {
-    std::cout << "Waiting...\n";
     _gcount = ::read(sockfd, buffer, BUFFER_SIZE);
 
     if(_gcount == 0) { //Somebody disconnected , get his details and print
@@ -181,5 +176,5 @@ void Networker::contact(const char* hostIp) {
             .sin_addr = addr,
             .sin_zero = {0}
     };
-    if (connect(sockfd, (sockaddr*) &serv_addr, sizeof(serv_addr)) < 0) throw NetworkError();
+    if(connect(sockfd, (sockaddr*) &serv_addr, sizeof(serv_addr)) < 0) throw NetworkError();
 }

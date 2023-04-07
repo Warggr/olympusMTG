@@ -7,7 +7,7 @@
 #include <cstring>
 
 //adapted from https://stackoverflow.com/questions/4157687/using-char-as-a-key-in-stdmap
-struct StrCompare : public std::binary_function<const char*, const char*, bool> {
+struct StrCompare {
 public:
     bool operator() (const char* str1, const char* str2) const
     { return std::strcmp(str1, str2) < 0; }
@@ -20,7 +20,7 @@ protected:
 	bool is_a_copy;
 public:
     class iterator {
-    	typedef std::map<const char *, T>::const_iterator underlying;
+    	typedef typename std::map<const char *, T>::const_iterator underlying;
         underlying x;
     public:
     	constexpr iterator(underlying x): x(x) {};

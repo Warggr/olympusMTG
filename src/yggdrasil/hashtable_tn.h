@@ -14,11 +14,13 @@ template<typename T> class StateTN;
 template<typename T>
 class Y_Hashtable : public Yggdrasil<T> {
 protected:
-    BoardN* parent;
+    BoardN& parent;
     int ht_size_log;
-    CollectionTN<T>* ht;
+    std::unique_ptr<CollectionTN<T>[]> ht;
 public:
-    inline CollectionTN<T>& getChild(int block, int i, int multiplicity, bool first) const { return ht[ block * PATTERNSIZE + i + (first ? 0 : BLOCKSIZE) ]; }
+    inline CollectionTN<T>& getChild(int block, int i, int multiplicity, bool first) const {
+        return ht[ block * PATTERNSIZE + i + (first ? 0 : BLOCKSIZE) ];
+    }
     inline int nbBlocks(int multiplicity) const { return 1 << (ht_size_log - multiplicity); }
 
     template<bool b>
@@ -38,7 +40,7 @@ public:
         }
     };
 
-    Y_Hashtable(BoardN* parent): parent(parent), ht_size_log(0), ht(new CollectionTN<T>[1])  { ht->setParent(this); }
+    Y_Hashtable(BoardN& parent): parent(parent), ht_size_log(0), ht(std::make_unique<CollectionTN<T>[]>(1))  { ht[0].setParent(this); }
     bool split(std::function<bool(T)> predicate, int multiplicity) {
         bool ret = false;
         for(int blk = 0; blk < nbBlocks(multiplicity); ++blk)
@@ -48,27 +50,25 @@ public:
         return ret;
     }
     void unfold(StateTN<T>* newState) {
-        auto* new_ht = new CollectionTN<T>[(1 << (ht_size_log+1))];
+        auto new_ht = std::make_unique<CollectionTN<T>[]>(1 << (ht_size_log+1));
         for(int i=0; i<HT_SIZE; i++) {
             new_ht[i] = std::move(ht[i]);
             new_ht[HT_SIZE + i].setParent(this);
         }
         ht_size_log++;
-        delete[] ht;
-        ht = new_ht;
+        ht = std::move(new_ht);
         newState->init(ht_size_log, this);
     }
     void refold(int multiplicity) {
         //TODO IMPL be able to refold a fold that's not the last one
-        auto* new_ht = new CollectionTN<T>[(1 << (ht_size_log-1))];
+        auto new_ht = std::make_unique<CollectionTN<T>[]>(1 << (ht_size_log-1));
         for(int blk = 0; blk < nbBlocks(multiplicity); ++blk )
             for (int i = 0; i < BLOCKSIZE; ++i ) {
                 new_ht[blk * PATTERNSIZE + i] = std::move(ht[blk * PATTERNSIZE + i]);
                 new_ht[blk * PATTERNSIZE + i].merge(ht[blk * PATTERNSIZE + BLOCKSIZE + i]);
             }
         ht_size_log--;
-        delete[] ht;
-        ht = new_ht;
+        ht = std::move(new_ht);
     }
     inline CollectionTN<T>* firstNonEmpty(int multiplicity, bool first) {
         for(int blk = 0; blk < nbBlocks(multiplicity); ++blk )
@@ -89,12 +89,12 @@ public:
                 size += getChild(blk, i, multiplicity, first).size();
         return size;
     }
-    bool empty() const override {
+    [[nodiscard]] bool empty() const override {
         for(int i = 0; i < HT_SIZE; ++i )
             if (!ht[i].empty()) return false;
         return true;
     }
-    unsigned int size() const override { 
+    [[nodiscard]] unsigned int size() const override {
         unsigned int size = 0;
         for(int i = 0; i < HT_SIZE; ++i )
             size += ht[i].size();

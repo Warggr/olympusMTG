@@ -23,7 +23,7 @@ public:
 
     const Target* chooseTarget(char type) override;
 
-    void registerPlayers(const std::list<const Gamer*>& players){ this->players = &players; }
+    void registerPlayers(const std::list<const Gamer*>& players) override { this->players = &players; }
     void registerMe(const Gamer* pl) override;
 
     void chooseblockers(Y_Hashtable<Creature>& defenders, StateTN<Creature>& attackers) override;

@@ -1,1 +1,0 @@
-add_library(OlympicDict INTERFACE) #OlympicDict is a header-only template.
