@@ -6,6 +6,7 @@
 #include "visitor.h"
 #include <istream>
 #include <forward_list>
+#include <cstdint>
 
 class CardOption; class Cost; class RulesHolder; class Modifier; class Effect_H;
 class AtomEffect_H; class Mana;

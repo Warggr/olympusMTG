@@ -123,7 +123,7 @@ FetchContent_MakeAvailable(leveldb)
 FetchContent_Declare(
         Allegro
         GIT_REPOSITORY https://github.com/liballeg/allegro5.git
-        GIT_TAG   5.2.8
+        GIT_TAG   master
 )
 FetchContent_MakeAvailable(Allegro)
 

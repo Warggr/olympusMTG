@@ -4,7 +4,7 @@
 #include <iostream>
 #include "frontend/basicIO.h"
 
-class Permanent; class Card; class Creature; class CardOracle; class EmptyOption; class Player; class Resolvable;
+class Permanent; class Card; class Creature; class CardOracle; class Option; class Player; class Resolvable;
 
 class NanoIO: public BasicIO, public Canvas {
 public:
@@ -14,8 +14,7 @@ public:
     void setMenuScene();
     void setGameScene();
 
-    void message(const char* message) const override;
-    void message(const std::string& text) const override;
+    void message(std::string_view) const override;
 
     int getInt(int lowerBound, int upperBound) override;
     std::string getTextInput(const char* question, bool newline);

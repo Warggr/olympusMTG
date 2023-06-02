@@ -5,11 +5,7 @@
 #include "control/7game.h"
 #include <thread>
 
-Server* Server::god = nullptr;
-
-Server::Server() {
-    assert(god == nullptr);
-    god = this;
+Server::Server(){
 }
 
 void Server::launchGame() {
@@ -19,15 +15,21 @@ void Server::launchGame() {
     currentGame->play();
 }
 
-void Server::addPlayer(playerType type) {
-	players.push_front(Agent::factory(type));
+void Server::addPlayer(PlayerType type) {
+    AgentContext context = {
+        ENABLE_IF_NETWORK(manager)
+    };
+	players.push_front(agent_factory(type, context));
     (*players.begin())->setup();
 }
 
-void Server::addPlayers(const std::list<playerType>& types) {
+void Server::addPlayers(const std::list<PlayerType>& types) {
     std::list<std::thread> setups;
+    AgentContext context = {
+        ENABLE_IF_NETWORK(manager)
+    };
     for(auto desc : types) {
-        std::unique_ptr<Agent> agent = Agent::factory(desc);
+        std::unique_ptr<Agent> agent = agent_factory(desc, context);
         setups.emplace_front(&Agent::setup, agent.get());
         players.push_front(std::move(agent));
     }
@@ -37,5 +39,10 @@ void Server::addPlayers(const std::list<playerType>& types) {
 }
 
 Server::~Server() {
-    ENABLE_IF_NETWORK(NetworkManager::closeInstances();)
+}
+
+void Server::addToLog(std::string_view message) {
+    for(const auto& agent : getAgents()) {
+        agent->getViewer().message(message);
+    }
 }

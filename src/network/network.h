@@ -1,70 +1,61 @@
 #ifndef OLYMPUS_NETWORK_H
 #define OLYMPUS_NETWORK_H
 
+#include <boost/asio.hpp>
 #include <exception>
 #include <istream>
+#include <string>
+#include <array>
 #include <memory>
-#include <unistd.h> //TODO DREAM this could be cross-platform
+
+namespace ip = boost::asio::ip;
+using tcp = boost::asio::ip::tcp;
 
 class NetworkError: public std::exception {};
 
+/* Wraps a socket. Allows sending arbitrary amounts of data by buffering chunks. */
 class Sender {
-private:
-    static constexpr unsigned int BUFFER_SIZE = 1000;
-    int sockfd;
+    tcp::socket& socket;
     unsigned int writehead;
-    char buffer[BUFFER_SIZE]{};
-    inline void send_chunks();
+    std::array<char, 1000> buffer;
+    void send_chunks();
     bool try_add_chunk(std::istream& ifile);
 public:
-    static constexpr char MORE_PACKETS = '\n', END_OF_FILE = '\0';
-    static_assert(MORE_PACKETS != END_OF_FILE);
+    Sender(tcp::socket& socket): socket(socket), writehead(0) {};
 
-    Sender(int sockfd): sockfd(sockfd), writehead(0) {};
+    void add_chunk_from_file(std::istream& ifile);
 
-    void add_chunk(const char* msg, unsigned int len);
-    void add_chunk(const std::string& msg){ add_chunk(msg.c_str(), msg.size()); }
-    void add_chunk(std::istream& ifile);
+    void add_chunk(const char* chunk, std::size_t length);
+    inline void add_chunk(std::string_view str){ add_chunk(str.data(), str.size()); }
 
     template<typename T>
-    void add_chunk(T* chunk) { add_chunk(reinterpret_cast<char*>(chunk), sizeof(T)); }
+    void add_chunk(T* chunk) { add_chunk(reinterpret_cast<char*>(chunk), sizeof(T) ); }
     void add_chunk(char* a) { add_chunk(a, 1); }
 
     void close();
 };
 
+/* This class contains both a socket and a buffer to contain the last message received.
+ * This allows reading the message later from another thread. */
 class Networker {
 protected:
-    static constexpr int BUFFER_SIZE = 1000;
-    char buffer[BUFFER_SIZE]{};
-    int sockfd {-1};
-    bool connected; //whether he is currently connected to that IP address
-    long _gcount; //the last number of characters read, including the final 0
+    tcp::socket socket;
+    long gcount; //the last number of characters read, including the final 0
+    std::array<char, 1000> buffer;
 
-    /* Lowest-level reading from the network.
-    This operation is unsafe because it can return a non-null-terminated string (can also be terminated by MORE_PACKETS). */
-    const char* read();
+    // Wait for a packet to arrive. The default behavior is busy-wait,
+    // but there's an override where we let the network loop send us the packet instead
+    virtual void await_packet();
 public:
-    static constexpr int PORT_NO = 4242;
+    Networker(tcp::socket&& socket): socket(std::move(socket)) {};
+    virtual ~Networker() = default;
 
-    Networker(): sockfd(-1), connected(false) {};
-    virtual ~Networker();
-
-    void contact(const char* hostIp);
-
-    static long send(const char* message, unsigned long size, int fd);
-    long send(const std::string& message) const { return send(message.c_str(), message.size() + 1, sockfd); } //including the final \0
-    long send(const char* message, unsigned long size) const { return send(message, size + 1, sockfd); }
+    void send(std::string_view message);
     void sendFile(std::istream& file);
+    Sender getSender() { return Sender(socket); }
 
-    virtual const char* receiveMessage(); //reads a C-style string from the network. Other implementations (e.g. async) may override this.
-    uptr<std::istream> receiveFile();
-
-    int getSock() const { return sockfd; }
-    bool isConnected() const { return connected; }
-    inline Sender getSender() const { return Sender(sockfd); }
-
-    long gcount() const { return _gcount - 1; }
+    std::string receiveMessage_sync();
+    uptr<std::istream> receiveFile_sync();
 };
 
 #endif //OLYMPUS_NETWORK_H

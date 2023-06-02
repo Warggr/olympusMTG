@@ -44,8 +44,7 @@ public:
     static constexpr int INLINE = 1, INROW = 2, HIGHLIGHT = 4, SELECTED = 8;
     virtual ~BasicIO() = default;
 
-    virtual void message(const char* message) const = 0;
-    virtual void message(const std::string& text) const = 0;
+    virtual void message(std::string_view message) const = 0;
     virtual void disp_inrow(const Displayable*, int number, int total, int flags) const = 0;
 
     virtual std::string getTextInput(const char* question) = 0;

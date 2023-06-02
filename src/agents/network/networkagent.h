@@ -2,20 +2,22 @@
 #define OLYMPUS_AGENT_NETWORK_H
 
 #include "../agent.h"
-#include "network/server/async.h"
+
+class NetworkManager;
+class AsyncNetworker;
 
 class NetworkAgent: public Agent, public Viewer {
-    AsyncNetworker networker;
+    AsyncNetworker& networker;
     Game* game;
     const CardOracle* first_oracle;
     const Card* first_card;
     std::vector<const Permanent*> permanents;
 public:
-    NetworkAgent();
+    NetworkAgent(NetworkManager& server);
 
     void specificSetup() override;
 
-    std::string getName() override { return networker.getName(); }
+    std::string getName() override;
     std::string getLogin() override;
     std::unique_ptr<std::istream> getDeckFile() override;
     //virtual EmptyOption* chooseOpt() override { return nullptr; }
@@ -43,7 +45,7 @@ public:
     void connectDeck(const Deck& deck) override;
     void onDraw(const std::list<CardWrapper>& cards) override;
     void registerMe(Gamer* pl) override;
-    void message(const char *message) override;
+    void message(std::string_view message) override;
 };
 
 #endif //OLYMPUS_AGENT_NETWORK_H

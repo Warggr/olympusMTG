@@ -6,5 +6,5 @@ AbstractFrontEnd* AbstractFrontEnd::factory() {
 }
 
 std::list<CardWrapper> AbstractFrontEnd::chooseCardsToKeep(std::list<CardWrapper>& list, unsigned int nbToDiscard) {
-    return std::move( getBasicIO()->checklist(list, nbToDiscard, nbToDiscard) );
+    return getBasicIO()->checklist(list, nbToDiscard, nbToDiscard);
 }

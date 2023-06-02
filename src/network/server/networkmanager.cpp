@@ -2,136 +2,77 @@
 #include "async.h"
 #include "network/network.h"
 #include "network/protocol.h"
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <ifaddrs.h>
-#include <cstring>
+#include <boost/asio.hpp>
+#include <functional>
 #include <iostream>
 
-void printMyIp();
+namespace net = boost::asio;
+using tcp = net::ip::tcp;
 
-void NetworkManager::initialize() {
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if(sockfd < 0) throw NetworkError();
-    std::cout << "Starting a server on port " << Networker::PORT_NO << "...\nHere my IP(s):\n";
-    printMyIp();
+const tcp::endpoint NetworkManager::default_endpoint = tcp::endpoint(boost::asio::ip::make_address("127.0.0.1"), 4242);
 
-    int opt = 1;
-    //set master socket to allow multiple connections, this is just a good habit, it will work without this
-    if( setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (char*) &opt, sizeof(opt)) < 0 ) throw NetworkError();
-
-    struct sockaddr_in local_address = { .sin_family = AF_INET,
-            .sin_port = htons(Networker::PORT_NO),
-            .sin_addr = { .s_addr = INADDR_ANY } ,
-            .sin_zero = {0}
-    };
-
-    if (bind(sockfd, (sockaddr*) &local_address, sizeof(local_address)) < 0) throw NetworkError();
-    std::cout << "Socket open\n";
-    ::listen(sockfd, 5);
-
-    initialized = true;
+NetworkManager::NetworkManager(const tcp::endpoint& endpoint):
+acceptor(context, endpoint)
+{
+    std::cout << "Starting a server on " << endpoint << "...\nHere my IP(s):\n";
+    std::cout << endpoint;
+    acceptor.async_accept(
+        [&](const boost::system::error_code& error, tcp::socket peer) { on_connect(error, std::move(peer)); }
+    ); //Start accepting connections
 }
 
-void NetworkManager::closeInstances() {
-    if(initialized) close(sockfd);
+NetworkManager::~NetworkManager() {
 }
 
-void NetworkManager::listen() {
-    std::cout << "Listening\n";
-    int max_fd = sockfd;
-    fd_set readfds; //set of socket descriptors
-    FD_ZERO(&readfds); //clear the socket set
+void NetworkManager::on_connect(const boost::system::error_code& error, tcp::socket peer) {
+    if(error){ std::cerr << "On connect: " << error << '\n'; return; }
 
-    if(!orphan_clients.empty()) FD_SET(sockfd, &readfds); //add master socket to set
-    for (AsyncNetworker* agent : clients) if(agent->isConnected()) { //add child sockets to set
-        std::cout << "Agent " << agent << " is connected on socket " << agent->getSock() << "\n";
-        if(agent->getSock() > max_fd) max_fd = agent->getSock();
-        FD_SET( agent->getSock() , &readfds); //add to read list
-    } else {
-        std::cout << "Agent " << agent << " is not connected\n";
-    }
+    std::array<char, 1000> buffer;
+    peer.async_read_some(boost::asio::buffer(buffer),
+        [&buffer,peer=std::move(peer),this]
+        (const boost::system::error_code& error, std::size_t bytes_transferred) mutable -> void {
+            if(error){ std::cerr << "On read client hello: " << error << '\n'; return; }
+            assert( buffer[bytes_transferred - 1] == '\0' ); // whole 0-terminated message transferred
 
-    //wait for an activity on one of the sockets , timeout is NULL , so wait indefinitely
-    int activity = select( max_fd + 1 , &readfds , nullptr , nullptr , nullptr);
-    if ((activity < 0) && (errno!=EINTR)) throw NetworkError();
+            uint i;
+            for(i=0; id_client[i] != 0; i++) if(id_client[i] != buffer[i]) return;
+            for(uint j=0; version_client[j] != 0; i++, j++) if(version_client[j] != buffer[i]) {
+                std::cerr << "Version mismatch: " << (&(buffer.front()) + id_client.size()) << " vs. " << version_client << "\n";
+                return;
+            }
 
-    //If something happened on the master socket ,
-    //then its an incoming connection
-    if (!orphan_clients.empty() && FD_ISSET(sockfd, &readfds)) {
-        std::cout << "Orphans: " << orphan_clients.size() << "\n";
-        sockaddr_in cli_addr;
-        socklen_t clilen = sizeof(cli_addr);
-        int new_socket = accept( sockfd, (sockaddr*) &cli_addr, &clilen);
-        if (new_socket < 0) throw NetworkError();
-        std::cout << "New socket open: " << new_socket << "\n";
+            std::string first_message = std::string(id_server).append(version_server);
+            boost::asio::const_buffer out_buffer(first_message.c_str(), first_message.size());
+            peer.async_send(out_buffer, [](const boost::system::error_code& error, std::size_t bytes_transferred){
+                (void) error; (void) bytes_transferred; // we don't care what happens once this message is sent
+            });
 
-        if(init_connection(new_socket)) {
             //inform user of socket number - used in send and receive commands
-            std::cout << "New connection , socket fd is " << new_socket <<
-                      " , ip is : " << inet_ntoa(cli_addr.sin_addr) <<
-                      " , port : " << ntohs(cli_addr.sin_port) << "\n";
+            std::cout << "New connection" <<
+                      " , ip is : " << peer.remote_endpoint().address() <<
+                      " , port : " << peer.remote_endpoint().port() << "\n";
             auto* agent = orphan_clients.back();
-            agent->setSock(new_socket);
-            agent->setName(buffer + strlen(id_client) + strlen(version_client));
             orphan_clients.pop_back();
+            agent->setSock(std::move(peer));
+            const char* name = &buffer.front() + id_client.size() + version_client.size();
+            std::size_t name_size = bytes_transferred - id_client.size() - version_client.size();
+            agent->setName(std::string_view(name, name_size));
         }
-        else close(new_socket);
-    }
-
-    //else its some IO operation on some other socket
-    for (auto* agent : clients) if(agent->isConnected()) {
-        if (FD_ISSET( agent->getSock(), &readfds)) {
-            agent->messageCallback();
-        }
-    }
-}
-
-bool NetworkManager::init_connection(int new_connection) {
-    long n = read(new_connection, buffer, BUFFER_SIZE-1);
-    if(n < 0) throw NetworkError();
-    buffer[n] = 0;
-    int i;
-    for(i=0; id_client[i] != 0; i++) if(id_client[i] != buffer[i]) return false;
-    for(int j = 0; version_client[j] != 0; i++, j++) if(version_client[j] != buffer[i]) {
-        std::cout << "Version mismatch: " << buffer + strlen(id_client) << " vs. " << version_client << "\n";
-        return false;
-    }
-
-    std::string first_message = std::string(id_server) + version_server;
-    n = write(new_connection, first_message.c_str(), first_message.size() + 1); //including the final 0
-    if(n < 0) throw NetworkError();
-
-    return true;
+    );
+    acceptor.async_accept(
+        [&](const boost::system::error_code& error, tcp::socket peer) { on_connect(error, std::move(peer)); }
+    ); //Continue accepting connections
 }
 
 void printMyIp() {
-    struct ifaddrs *all, *iter;
-    getifaddrs(&all);
-    iter = all;
-    while (iter != nullptr) {
-        if (iter->ifa_addr && iter->ifa_addr->sa_family == AF_INET) {
-            auto *pAddr = (struct sockaddr_in *)iter->ifa_addr;
-            std::cout << iter->ifa_name << ":" << inet_ntoa(pAddr->sin_addr) << "\n";
-        }
-        iter = iter->ifa_next;
-    }
-    freeifaddrs(all);
+    // TODO FEATURE: print my IPs if available
+    std::cout << "local" << ":" << "127.0.0.1" << "\n";
 }
 
-bool NetworkManager::initialized = false;
-int NetworkManager::sockfd = 0;
-
-void NetworkManager::declareAgent(AsyncNetworker *agent) {
-    if(!initialized) initialize();
-    clients.push_back(agent);
-    orphan_clients.push_back(agent);
-    std::cout << "Added an agent\n";
+AsyncNetworker& NetworkManager::declareAgent() {
+    auto newAgent = std::make_unique<AsyncNetworker>( *this, tcp::socket(context) );
+    auto newAgent_ptr = newAgent.get();
+    clients.push_back(std::move(newAgent));
+    orphan_clients.push_back(newAgent_ptr);
+    return *newAgent_ptr;
 }
-
-std::vector<AsyncNetworker*> NetworkManager::clients;
-std::vector<AsyncNetworker*> NetworkManager::orphan_clients;
-char NetworkManager::buffer[256];
-std::mutex NetworkManager::listener_mutex;

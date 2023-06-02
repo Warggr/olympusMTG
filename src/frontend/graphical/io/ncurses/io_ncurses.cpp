@@ -58,8 +58,8 @@ void NcursesIO::draw_boxed_text(const char* text, char color, char, int y, int z
 	wattroff(win, A_BOLD | A_STANDOUT);
 }
 
-void NcursesIO::message(const char* text) const {
-	mvwprintw(message_zone, 0, 0, "%s", text);
+void NcursesIO::message(std::string_view text) const {
+	mvwprintw(message_zone, 0, 0, "%s", text.data());
 }
 
 void NcursesIO::draw_permanent(const Rect& zone, const std::string& name, char color, bool tapped, disp_flags flags, bool) const {

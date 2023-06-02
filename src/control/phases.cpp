@@ -1,6 +1,5 @@
 #include "3player.h"
 #include "7game.h"
-#include "server/OutputManager.h"
 
 #include <algorithm>
 //GUIDELINE: anything that calls statebasedactions() should be able to return afterwards
@@ -22,8 +21,7 @@ struct Phase{ //AFAIK there are no "additional step" cards, but there might be s
 };
 
 bool Player::turn(){
-    std::string descr = "Starting " + getName() + "'s turn";
-    addToLog(descr.c_str());
+    std::cout << "Starting " << getName() << "'s turn\n";
     std::forward_list<const Phase*> thisTurnsOrder = defaultPhaseOrder;
     for(auto & iter : thisTurnsOrder){
         if((*iter)(this)) return true;
@@ -44,7 +42,7 @@ void Player::drawstep(){
 void Player::mainphasemainstep(){
     nb_mainphase++;
     phase = main;
-    addToLog(" Starting main phase");
+    std::cout << " Starting main phase" << '\n';
     choicephase(true);
 }
 void Player::declareattackersstep(){

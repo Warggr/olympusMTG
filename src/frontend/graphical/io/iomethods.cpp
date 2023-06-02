@@ -23,8 +23,7 @@ METHOD(void, print_text(const char* text, char color, int x, int y) const);
 METHOD(void, print_text(const std::string& text, char color, int x, int y) const);
 METHOD(void, draw_boxed_text(const char* text, char color, char backgr_color, int left, int top, int width) const);
 METHOD(void, draw_boxed_text(const std::string& text, char color, char backgr_color, int left, int top, int width) const);
-METHOD(void, message(const char* message) const);
-METHOD(void, message(const std::string& text) const);
+METHOD(void, message(std::string_view message) const);
 
 METHOD(void, draw_permanent(const Rect& zone, const std::string& name, char color, bool tapped, disp_flags flags, bool basicImg) const);
 METHOD(void, draw(const Gamer& player, const Rect& zone, disp_flags flags) const);

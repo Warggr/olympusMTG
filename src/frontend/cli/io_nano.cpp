@@ -1,16 +1,15 @@
-#include "lib3_cliUI.h"
-#include <list>
-#include <iostream>
+#include "lib3_nanoIO.h"
 #include "frontend/headQ_rect.h"
 #include "classes/card_oracle.h"
 #include "gameplay/permanents/4permanents.h"
 #include "gameplay/gamer.h"
-#include "lib3_nanoIO.h"
+#include <list>
+#include <iostream>
 
 using namespace std;
 
-void NanoIO::message(const char* text) const {
-	cout << "[Computer]: " << text << "\n";
+void NanoIO::message(std::string_view message) const {
+	cout << "[Computer]: " << message << "\n";
 }
 
 void NanoIO::draw_permanent(const string& name, char, bool tapped, bool highlight) const {
@@ -67,8 +66,6 @@ std::string NanoIO::getTextInput(const char *question, bool newline) {
     std::getline( std::cin, ret );
     return ret;
 }
-
-void NanoIO::message(const std::string &text) const { cout << text; }
 
 bool NanoIO::simpleChoice(const char* optTrue, const char* optFalse) {
     cout << optTrue << " (1/Y)";

@@ -108,7 +108,7 @@ public:
     }
     bool operator==(const Leaf<Permanent, iconst>& other) const override {
         auto* a = dynamic_cast<const AdapterLeaf<T, iconst>*>(&other);
-        return ((a != nullptr) && *content == *a->content);
+        return ((a != nullptr) && content->operator==(*(a->content)));
     }
 
     isitconst(PermanentN*, iconst) getPointed() override { return content->getPointed(); }

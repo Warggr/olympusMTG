@@ -107,9 +107,9 @@ void AllegroIO::draw(const CardOracle& card, const Rect& rect, disp_flags flags)
     }
 }
 
-void AllegroIO::message(const char* text) const {
+void AllegroIO::message(std::string_view text) const {
     al_draw_filled_rectangle(messageY, messageZ, screenY, messageZ+25, registeredColors[0]);
-    al_draw_text(fonts[0], registeredColors[1], messageY, messageZ,0, text);
+    al_draw_text(fonts[0], registeredColors[1], messageY, messageZ,0, text.data());
 }
 
 class CouldntInitializeSthException: public std::exception {

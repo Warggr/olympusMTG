@@ -1,14 +1,16 @@
-#include "oracles/filereader/visitor.h"
-#include "network/protocol.h"
 #include "networkagent.h"
+#include "network/server/networkmanager.h"
+#include "network/server/async.h"
+#include "network/protocol.h"
 #include "gameplay/2cards.h"
+#include "oracles/filereader/visitor.h"
 #include "oracles/filereader/binary/binarywriter.h"
 #include <sstream>
 
-NetworkAgent::NetworkAgent() = default;
+NetworkAgent::NetworkAgent(NetworkManager& server): networker(server.declareAgent()) {}
 
 void NetworkAgent::specificSetup() {
-    networker.waitForConnection();
+    networker.await_reconnect();
 }
 
 const Target* NetworkAgent::chooseTarget(char type) {
@@ -33,11 +35,11 @@ std::list<CardWrapper> NetworkAgent::chooseCardsToKeep(std::list<CardWrapper>& l
     } else {
         auto ret = std::list<CardWrapper>();
 
-        const char* answer = networker.receiveMessage();
+        auto answer = networker.receiveMessage_sync();
         assert(answer[0] == operations::CHOOSE_AMONG);
 
-        for(int i = 1; i < networker.gcount(); i += sizeof(uint16_t)){
-            uint16_t offset = *reinterpret_cast<const uint16_t*>(answer + i);
+        for(size_t i = 1; i < answer.size(); i += sizeof(uint16_t)){
+            uint16_t offset = *reinterpret_cast<const uint16_t*>(answer.c_str() + i);
             card_ptr card = first_card + offset;
 
             auto iter = list.begin();
@@ -96,7 +98,7 @@ bool NetworkAgent::keepsHand(const fwdlist<card_ptr>& cards) {
         sender.add_chunk(&offset);
     }
     sender.close();
-    const char* answer = networker.receiveMessage();
+    auto answer = networker.receiveMessage_sync();
     assert(answer[0] == operations::KEEPS_HAND);
     return (answer[1] == 1);
 }
@@ -106,11 +108,11 @@ static_assert(reinterpret_cast<intptr_t>(nullptr) == 0); //assert that the agent
 const Option* NetworkAgent::chooseOpt(bool sorcerySpeed, const Player* pl) {
     (void) pl;
     char content[] = { operations::GET_OPTION, static_cast<char>(sorcerySpeed) };
-    networker.send(content, sizeof(content));
+    networker.send(std::string_view(content, sizeof(content)));
 
-    const char* msg = networker.receiveMessage();
-    assert(networker.gcount() == sizeof(long long));
-    long long msg_long = *(reinterpret_cast<const long long*>(msg));
+    auto msg = networker.receiveMessage_sync();
+    assert(msg.size() == sizeof(long long));
+    long long msg_long = *(reinterpret_cast<const long long*>(msg.c_str()));
     if(msg_long == 0) return nullptr;
     else return reinterpret_cast<const Option*>(msg_long);
 }
@@ -155,17 +157,20 @@ std::string NetworkAgent::getLogin() {
     return "127.0.0.1"; //value irrelevant - you're not supposed to chain two network agents
 }
 
+std::string NetworkAgent::getName() {
+    return networker.getName();
+}
+
 uptr<std::istream> NetworkAgent::getDeckFile() {
-    return networker.receiveFile();
+    return networker.receiveFile_sync();
 }
 
 void NetworkAgent::registerMe(Gamer*) {}
 
-void NetworkAgent::message(const char* message) {
+void NetworkAgent::message(std::string_view message) {
     char header = operations::MESSAGE;
     Sender sender = networker.getSender();
     sender.add_chunk(&header, 1);
-    uint i; for(i=0; message[i] != 0; ++i);
-    sender.add_chunk(message, i);
+    sender.add_chunk(message);
     sender.close();
 }

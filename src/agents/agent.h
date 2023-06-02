@@ -7,38 +7,14 @@
 #include <utility>
 #include <vector>
 #include <list>
-#include <forward_list>
-#include <functional>
+#include <string_view>
 
 class Target; class Creature; template<typename T> class SpecificTargeter; class Card; class CardWrapper; class CardWrapper;
 class Player; class Game; class Gamer;
 class Option; class CardOption; class PermOption;
 template<typename T> class Y_Hashtable; template<typename T> class StateTN; template<typename T> class PermanentTN;
 
-enum playerType {
-#ifdef MOCK_AGENT
-    #define ENABLE_IF_MOCK(x) x
-    #define ENABLE_IF_LOCAL(x)
-    #define ENABLE_IF_BOT(x)
-    #define ENABLE_IF_NETWORK(x)
-    MOCK,
-#else
-    #define ENABLE_IF_MOCK(x)
-    #ifndef ENABLE_IF_LOCAL
-        #define ENABLE_IF_LOCAL(x) x
-        LOCAL,
-    #endif
-    #ifndef ENABLE_IF_BOT
-        #define ENABLE_IF_BOT(x) x
-        BOT,
-    #endif
-    #ifndef ENABLE_IF_NETWORK
-        #define ENABLE_IF_NETWORK(x) x
-        NETWORK,
-    #endif
-#endif
-};
-
+struct AgentContext;
 class Viewer;
 
 class Agent {
@@ -46,8 +22,6 @@ protected:
     virtual void specificSetup() = 0;
 public:
     std::vector<OracleDescr> descriptors;
-
-    static uptr<Agent> factory(playerType desc);
 
     virtual ~Agent() = default;
     virtual Viewer& getViewer() = 0;
@@ -84,7 +58,7 @@ public:
     virtual void connectGame(Game*) {};
     virtual void connectDeck(const Deck&) {};
 
-    virtual void message(const char* message) = 0;
+    virtual void message(std::string_view message) = 0;
     virtual void onDraw(const std::list<CardWrapper>& cards) = 0;
     virtual void registerMe(Gamer* pl) = 0;
 };

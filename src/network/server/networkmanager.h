@@ -1,30 +1,32 @@
 #ifndef OLYMPUS_NETWORKMANAGER_H
 #define OLYMPUS_NETWORKMANAGER_H
 
+#include <boost/asio.hpp>
 #include <memory>
 #include <vector>
-#include <netinet/in.h>
 #include <string>
 #include <mutex>
 
 class AsyncNetworker;
 
+using tcp = boost::asio::ip::tcp;
+
 class NetworkManager {
 private:
-    static constexpr int BUFFER_SIZE = 256;
-    static bool initialized;
-    static int sockfd;
-    static std::vector<AsyncNetworker*> clients;
-    static std::vector<AsyncNetworker*> orphan_clients;
-    static char buffer[BUFFER_SIZE];
+    boost::asio::io_context context;
+    tcp::acceptor acceptor;
+    std::vector<std::unique_ptr<AsyncNetworker>> clients;
+    std::vector<AsyncNetworker*> orphan_clients;
 
-    static void initialize();
-    static bool init_connection(int new_connection);
+    void on_connect(const boost::system::error_code& error, tcp::socket peer);
+    static const tcp::endpoint default_endpoint;
 public:
-    static std::mutex listener_mutex;
-    static void declareAgent(AsyncNetworker* agent);
-    static void closeInstances();
-    static void listen();
+    // Lock this mutex to make sure that the server doesn't change connection status while the main thread does something
+    std::mutex protect_connections;
+
+    NetworkManager(const tcp::endpoint& endpoint = default_endpoint);
+    ~NetworkManager();
+    AsyncNetworker& declareAgent();
 };
 
 #endif //OLYMPUS_NETWORKMANAGER_H

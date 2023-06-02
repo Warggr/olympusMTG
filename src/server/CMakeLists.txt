@@ -1,6 +1,6 @@
 find_package( Boost 1.40 COMPONENTS program_options REQUIRED )
 
-add_executable(olympus_server main.cpp server.cpp OutputManager.cpp)
+add_executable(olympus_server main.cpp server.cpp)
 target_link_libraries(olympus_server agents control pthread ${Boost_LIBRARIES})
 set_target_properties(olympus_server PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${RUNTIME_OUTPUT_DIRECTORY})
 

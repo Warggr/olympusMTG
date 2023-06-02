@@ -10,10 +10,10 @@ OlympusClient::OlympusClient() {
 }
 
 void OlympusClient::play() {
-    const char* request = network.receiveMessage();
+    auto request = network.receiveMessage_sync();
     switch(request[0]) {
-        case operations::MESSAGE: agent.getViewer().message(request + 1); break;
-        case operations::CREATE: create(request + 1); break;
+        case operations::MESSAGE: agent.getViewer().message(request.c_str() + 1); break;
+        case operations::CREATE: create(request.c_str() + 1); break;
         case operations::GET_OPTION: {
             bool sorceryspeed = static_cast<bool>(request[1]);
             const Option* opt = agent.chooseOpt(sorceryspeed, nullptr);
@@ -22,7 +22,7 @@ void OlympusClient::play() {
                 ret = 0;
             else
                 ret = make_ref(opt);
-            network.send(reinterpret_cast<char*>(&ret), sizeof(ret));
+            network.send(std::string_view(reinterpret_cast<char*>(&ret), sizeof(ret)));
         } break;
 //        case 'U': frontEnd.update(request + 1); break;
 //        case 'D': frontEnd.del(request + 1); break;
@@ -54,7 +54,7 @@ void OlympusClient::discardCards(const char* message, long gcount){
 }
 
 void OlympusClient::start() {
-    uptr<std::istream> compiled_deck = network.receiveFile();
+    uptr<std::istream> compiled_deck = network.receiveFile_sync();
 
     char header = compiled_deck->get();
     assert(header == operations::COMPILED_DECK);
@@ -74,7 +74,7 @@ void OlympusClient::start() {
     }
 
     while(true) {
-        uptr<std::istream> hand_desc = network.receiveFile();
+        uptr<std::istream> hand_desc = network.receiveFile_sync();
         char a = hand_desc->get();
         assert(a == operations::CREATE);
         char nb = hand_desc->get();
@@ -88,17 +88,18 @@ void OlympusClient::start() {
         }
         bool keeps = agent.keepsHand(hand);
         const char answer[] = {operations::KEEPS_HAND, static_cast<char>(keeps)};
-        network.send(answer, sizeof(answer));
+        network.send(answer);
         if(keeps) break;
-    };
+    }
 
-    const char* hand = network.receiveMessage();
+    auto hand_str = network.receiveMessage_sync();
+    std::string_view hand = hand_str;
     assert(hand[0] == operations::CREATE);
     assert(hand[1] == entities::CARDWRAPPER);
-    drawCards(hand + 2);
+    drawCards(hand.data() + 2);
 
-    const char* discards = network.receiveMessage();
-    discardCards(discards, network.gcount());
+    auto discards_str = network.receiveMessage_sync();
+    discardCards(discards_str.c_str(), discards_str.size());
 
     try {
         while (true) play();

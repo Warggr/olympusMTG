@@ -52,9 +52,6 @@ inline void AllegroIO::draw_boxed_text(const std::string &text, char color, char
                                 int width) const {
     draw_boxed_text(text.c_str(), color, backgr_color, left, top, width);
 }
-inline void AllegroIO::message(const std::string &text) const {
-    message(text.c_str());
-}
 
 struct AllegroCanvas: public Canvas {
 private:

@@ -6,9 +6,15 @@
 #include "visitor.h"
 #include <ostream>
 #include <forward_list>
+#include <cstdint>
 
-class CardOption; class Cost; class RulesHolder; class Modifier; class Effect_H;
-class AtomEffect_H; class Mana;
+class CardOption;
+class Cost;
+class RulesHolder;
+class Modifier;
+class Effect_H;
+class AtomEffect_H;
+class Mana;
 
 class WriterVisitor {
 protected:

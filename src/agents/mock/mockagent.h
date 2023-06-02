@@ -45,8 +45,8 @@ public:
     void connectGame(Game* game) override { (void) game; }
 
     void onDraw(const std::list<CardWrapper> &cards) override { (void) cards; }
-    void registerMe(Player* pl) override { (void) pl; }
-    void message(const char*) override {};
+    void registerMe(Gamer* pl) override { (void) pl; }
+    void message(std::string_view) override {};
 };
 
 #endif //OLYMPUS_MOCKAGENT_H

@@ -54,7 +54,7 @@ int main(int nbargs, char** args) {
     if(usage.refresh_db) refreshDatabase();
     if(!usage.start_game) return 0;
 
-    std::list<playerType> types;
+    std::list<PlayerType> types;
     ENABLE_IF_LOCAL(for(uint j=0; j<usage.local; j++) types.push_front(LOCAL); )
     ENABLE_IF_NETWORK(for(uint j=0; j<usage.network; j++) types.push_front(NETWORK); )
     ENABLE_IF_BOT(for(uint j=0; j<usage.bot; j++) types.push_front(BOT); )

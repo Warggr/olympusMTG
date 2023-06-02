@@ -17,7 +17,7 @@ struct PlayerPreStackElement{
     };
 };
 
-struct Gamer: public Target, public Damageable {
+class Gamer: public Target, public Damageable {
 public:
     using hand_type = std::list<CardWrapper>;
 protected:

@@ -37,8 +37,6 @@ inline void NcursesIO::draw_boxed_text(const std::string& text, char color, char
     draw_boxed_text(text.c_str(), color, backgr_color, left, top, width);
 }
 
-inline void NcursesIO::message(const std::string& text) const { message(text.c_str()); }
-
 inline void NcursesIO::print_text(const std::string& text, char color, int x, int y) const {
     print_text(text.c_str(), color, x, y);
 }
