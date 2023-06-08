@@ -11,13 +11,14 @@ target_compile_definitions(project_warnings INTERFACE
         flag_t=unsigned\ char
         fwdlist=std::forward_list)
 
-link_libraries(project_options project_warnings ${Boost_LIBRARIES})
+# Boost::log is ubiquitous in the project
+link_libraries(project_options project_warnings Boost::log)
 
 function(create_test SUT)
     if(ENABLE_TESTING)
         add_executable(${SUT}-test test.cpp)
         target_include_directories(${SUT}-test PRIVATE ${INCLUDES})
-        target_link_libraries(${SUT}-test ${SUT} Catch2::Catch2WithMain)
+        target_link_libraries(${SUT}-test ${SUT} Catch2::Catch2)
         target_compile_definitions(${SUT}-test PRIVATE F_TESTS)
         catch_discover_tests(${SUT}-test)
     endif()

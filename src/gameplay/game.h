@@ -11,10 +11,6 @@ protected:
     Stack stack;
     std::list<const Gamer*> gamers;
 public:
-    static ProtoGame* god;
-
-    ProtoGame() { god = this; }
-
     const Stack& getStack() const { return stack; }
     const std::list<const Gamer*>& getGamers() const { return gamers; }
 };

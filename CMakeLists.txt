@@ -55,23 +55,29 @@ endif()
 
 #Warnings
 target_compile_options(project_warnings INTERFACE -Wall -Wextra
-        -Wnon-virtual-dtor -Wcast-align
-        -Wunused -Woverloaded-virtual -Wpedantic
+        -Wcast-align
+        -Wunused -Wpedantic
         -Wdouble-promotion
-        -Wformat=2)
+
+#Specific to C++
+    $<$<COMPILE_LANGUAGE:CXX>:
+        -Woverloaded-virtual -Wnon-virtual-dtor
+#        -Wformat=2
+    >
+
+#Specific to GCC
+    $<$<CXX_COMPILER_ID:GNU>:
+        -Wmisleading-indentation
+        -Wduplicated-cond
+        -Wlogical-op
+        $<$<COMPILE_LANGUAGE:CXX>:
+            -Wuseless-cast
+        >
+    >
+)
 
 if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-    target_compile_options(project_warnings INTERFACE -Werror -Wnull-dereference)
-endif()
-
-# some GCC specific warnings. These flags are added only if the used compiler is GCC.
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    target_compile_options(project_warnings INTERFACE
-            -Wmisleading-indentation
-            -Wduplicated-cond
-            -Wlogical-op
-            -Wuseless-cast )
-    target_link_libraries(project_options INTERFACE stdc++fs)
+    target_compile_options(project_warnings INTERFACE $<$<COMPILE_LANGUAGE:CXX>: -Werror -Wnull-dereference>)
 endif()
 
 #colored output
@@ -106,30 +112,27 @@ if(ENABLE_CLANG_TIDY)
 endif()
 
 include(FetchContent)
-FetchContent_Declare(
-  Catch2
-  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-  GIT_TAG        v3.1.0
-)
-FetchContent_MakeAvailable(Catch2)
 
 FetchContent_Declare(
         leveldb
         GIT_REPOSITORY https://github.com/google/leveldb
         GIT_TAG   1.23
+        FIND_PACKAGE_ARGS NAMES leveldb
 )
 FetchContent_MakeAvailable(leveldb)
 
-FetchContent_Declare(
-        Allegro
-        GIT_REPOSITORY https://github.com/liballeg/allegro5.git
-        GIT_TAG   master
-)
-FetchContent_MakeAvailable(Allegro)
-
 if(ENABLE_TESTING)
     enable_testing()
-    find_package(Catch2 REQUIRED)
+
+    FetchContent_Declare(
+            Catch2
+            GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+            GIT_TAG        v3.1.0
+            FIND_PACKAGE_ARGS NAMES Catch2
+            CMAKE_ARGS     -DCMAKE_BUILD_TYPE:STRING=Release
+    )
+    FetchContent_MakeAvailable(Catch2)
+
     include(CTest)
     include(Catch)
 endif()

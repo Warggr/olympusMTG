@@ -3,7 +3,7 @@ add_subdirectory(resolvables)
 add_subdirectory(description)
 
 add_library(gameplay STATIC
-        abilities.cpp cards.cpp castopts.cpp game.cpp modifiers.cpp triggers.cpp ueot.cpp)
+        abilities.cpp cards.cpp castopts.cpp modifiers.cpp triggers.cpp ueot.cpp)
 
 target_link_libraries(gameplay PUBLIC gameplay_description permanents resolvables yggdrasil oracles Mana)
 
