@@ -7,6 +7,7 @@
 // using a class so that context (a member variable) can be used to initialize Networker (a parent class)
 class _ContextWrapper {
 public:
+    std::thread networkThread;
     boost::asio::io_context io_context;
 };
 

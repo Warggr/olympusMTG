@@ -7,6 +7,7 @@
 #include "gameplay/gamer.h"
 #include "gameplay/game.h"
 #include <boost/program_options.hpp>
+#include <string_view>
 #include <vector>
 #include <list>
 #include <unordered_map>
@@ -20,15 +21,15 @@ class OlympusClient: public Gamer {
     NetworkClient network;
     Deck deck;
     ProtoGame game;
-    std::map<const Option*, long long> optionMapping; //TODO OPTIMIZE
+    std::unordered_map<const Option*, long long> optionMapping; //TODO OPTIMIZE
     void play();
-    inline void discardCards(const char* message, long gcount);
+    inline void discardCards(std::string_view message);
     inline long long make_ref(const Option* opt){ return optionMapping.at(opt); }
-    void drawCards(const char* message);
+    void drawCards(std::string_view message);
 public:
     OlympusClient();
     void init(const boost::program_options::variables_map& vm);
-    void create(const char* request);
+    void create(std::string_view request);
     void start();
 };
 

@@ -1,9 +1,9 @@
 #include "OlympusClient.h"
 #include "oracles/filereader/binary/binaryreader.h"
 #include "network/protocol.h"
+#include "network/binary_data_reader.h"
 #include "logging.h"
-#include <forward_list>
-#include <memory>
+#include <iostream>
 
 OlympusClient::OlympusClient() {
     agent.getViewer().registerMe(this);
@@ -11,11 +11,12 @@ OlympusClient::OlympusClient() {
 
 void OlympusClient::play() {
     auto request = network.receiveMessage_sync();
-    switch(request[0]) {
-        case operations::MESSAGE: agent.getViewer().message(request.c_str() + 1); break;
-        case operations::CREATE: create(request.c_str() + 1); break;
+    auto request_data = BinaryDataReader(request);
+    switch(request_data.get<char>()) {
+        case operations::MESSAGE: agent.getViewer().message(request_data.remainder()); break;
+        case operations::CREATE: create(request_data.remainder()); break;
         case operations::GET_OPTION: {
-            bool sorceryspeed = static_cast<bool>(request[1]);
+            bool sorceryspeed = request_data.get<bool>();
             const Option* opt = agent.chooseOpt(sorceryspeed, nullptr);
             long long ret;
             if(opt == nullptr)
@@ -28,17 +29,18 @@ void OlympusClient::play() {
 //        case 'D': frontEnd.del(request + 1); break;
 //        case 'B': frontEnd.bulkOp(request + 1); break;
         default:
-            gdebug(DBG_NETWORK) << "Unrecognized opcode: " << request[0] << '\n';
+            std::cerr << "Unrecognized opcode: " << request[0] << '\n';
     }
 }
 
-void OlympusClient::discardCards(const char* message, long gcount){
-    (void) gcount;
-    assert(message[0] == operations::CHOOSE_AMONG);
-    const uint16_t size = *reinterpret_cast<const uint16_t*>(message + 1);
-    const uint16_t nbToDiscard = *reinterpret_cast<const uint16_t*>(message + 2);
+void OlympusClient::discardCards(std::string_view message){
+    BinaryDataReader data(message);
+    assert(data.get<char>() == operations::CHOOSE_AMONG);
+    const auto size = data.get<uint16_t>();
+    const auto nbToDiscard = data.get<uint16_t>();
     assert(size == myHand.size());
     assert(size >= nbToDiscard);
+    assert(data.empty());
 
     if(nbToDiscard != 0){
         auto discarded = agent.chooseCardsToKeep(myHand, nbToDiscard);
@@ -48,8 +50,10 @@ void OlympusClient::discardCards(const char* message, long gcount){
         for(auto& card : discarded){
             uint16_t offset = card.get() - deck.cards.data();
             sender.add_chunk(&offset);
+
+            optionMapping.erase(&card);
         }
-        sender.close();
+        sender.close(false);
     }
 }
 
@@ -61,7 +65,7 @@ void OlympusClient::start() {
     uint16_t size; compiled_deck->read(reinterpret_cast<char*>(&size), sizeof(size));
 
     deck.oracles = std::vector<CardOracle>(size);
-    BinaryReader reader(*compiled_deck.get());
+    BinaryReader reader(*compiled_deck);
     for(auto& orc : deck.oracles) orc.init(reader);
 
     header = compiled_deck->get();
@@ -70,36 +74,37 @@ void OlympusClient::start() {
 
     deck.cards = std::vector<Card>(size);
     for(auto& card : deck.cards) {
-        card.fromStr(*compiled_deck.get(), deck.oracles.data());
+        card.fromStr(*compiled_deck, deck.oracles.data());
     }
 
     while(true) {
-        uptr<std::istream> hand_desc = network.receiveFile_sync();
-        char a = hand_desc->get();
+        OwningReader<BinaryDataReader> hand_desc(network.receiveMessage_sync());
+        char a = hand_desc.get<char>();
         assert(a == operations::CREATE);
-        char nb = hand_desc->get();
+        char nb = hand_desc.get<char>();
 
         std::forward_list<card_ptr> hand;
         for(int i=0; i<nb; i++){
-            uint16_t offset; hand_desc->read(reinterpret_cast<char*>(&offset), sizeof(offset));
+            uint16_t offset = hand_desc.get<uint16_t>();
             gdebug(DBG_NETWORK) << offset << '\n';
             const Card* card = deck.cards.data() + offset;
             hand.push_front(card);
         }
+        assert(hand_desc.empty());
+
         bool keeps = agent.keepsHand(hand);
-        const char answer[] = {operations::KEEPS_HAND, static_cast<char>(keeps)};
-        network.send(answer);
+        const char answer[] = {operations::KEEPS_HAND, static_cast<char>(keeps), Networker::END_OF_FILE};
+        network.send(std::string_view(answer, 3));
         if(keeps) break;
     }
 
-    auto hand_str = network.receiveMessage_sync();
-    std::string_view hand = hand_str;
-    assert(hand[0] == operations::CREATE);
-    assert(hand[1] == entities::CARDWRAPPER);
-    drawCards(hand.data() + 2);
+    auto hand = OwningReader<BinaryDataReader>(network.receiveMessage_sync());
+    assert(hand.get<char>() == operations::CREATE);
+    assert(hand.get<char>() == entities::CARDWRAPPER);
+    drawCards(hand.remainder());
 
     auto discards_str = network.receiveMessage_sync();
-    discardCards(discards_str.c_str(), discards_str.size());
+    discardCards(discards_str);
 
     try {
         while (true) play();
@@ -108,21 +113,29 @@ void OlympusClient::start() {
     }
 }
 
-void OlympusClient::drawCards(const char* message){
-    constexpr int STEPSIZE = sizeof(long long) + sizeof(uint16_t);
-    for(const char* i = message + 1; i < message + 1 + message[0] * STEPSIZE; i += STEPSIZE){
-        long long llptr = *(reinterpret_cast<const long long*>(i));
-        Card* card = deck.cards.data() + *(reinterpret_cast<const uint16_t*>(i + sizeof(long long)));
+void OlympusClient::drawCards(std::string_view message){
+    auto data = BinaryDataReader(message);
+    auto expected_length = data.get<unsigned char>();
+
+    for(unsigned i = 0; i < expected_length; i++){
+        long long llptr = data.get<long long>();
+        uint16_t card_offset = data.get<uint16_t>();
+        Card* card = deck.cards.data() + card_offset;
         CardWrapper& new_card = myHand.emplace_back(card, nullptr);
-        auto ret = optionMapping.insert(std::make_pair(&new_card, llptr));
-        assert(ret.second == true);
+        Option* optionKey = &new_card;
+
+        assert(not optionMapping.contains(optionKey));
+        auto [_iter, success] = optionMapping.emplace(optionKey, llptr);
+        assert(success);
     }
+    assert(data.get<char>() == Networker::END_OF_FILE);
+    assert(data.empty());
 }
 
-void OlympusClient::create(const char* message) {
+void OlympusClient::create(std::string_view message) {
     switch(message[0]){
         case entities::CARDWRAPPER:
-            drawCards(message + 1);
+            drawCards(message.substr(1));
             break;
         default:
             gdebug(DBG_NETWORK) << "Unrecognized entity: " << message[0] << '\n';
