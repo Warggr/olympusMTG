@@ -35,7 +35,7 @@ public:
 
     virtual void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) = 0;
 
-    virtual const Option* chooseOpt(bool sorcerySpeed) = 0;
+    virtual const Option* chooseOpt(const Option::CastingContext& context) = 0;
 
     virtual const Target* chooseTarget(char type) = 0;
 

@@ -52,8 +52,8 @@ Creature* GraphicalUI::blockerSwitch(const Creature& blocker, int blockerIndex, 
     return &(*attackers.begin()); //TODO
 }
 
-const Option* GraphicalUI::chooseOpt(bool sorcerySpeed) {
-    (void) sorcerySpeed;
+const Option* GraphicalUI::chooseOpt(const Option::CastingContext& context) {
+    (void) context;
     return nullptr; //TODO
 }
 

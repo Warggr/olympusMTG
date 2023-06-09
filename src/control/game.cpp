@@ -1,7 +1,7 @@
 #include "3player.h"
 #include "7game.h"
 #include "agents/agent.h"
-#include "oracles/filereader/filereader.h"
+#include "oracles/filereader/readfile.h"
 
 Game* Game::the_game = nullptr;
 

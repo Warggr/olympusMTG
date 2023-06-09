@@ -15,8 +15,9 @@
 class CardWrapper;
 using hand_type = std::list<CardWrapper>;
 
-class OlympusClient: public Gamer {
+class OlympusClient {
     std::string playerName;
+    Gamer player;
     LocalAgent agent;
     NetworkClient network;
     Deck deck;

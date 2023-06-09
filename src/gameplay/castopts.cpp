@@ -17,18 +17,19 @@ bool CardWrapper::castOpt(Player* pl){
     return true;
 }
 
-bool CardWrapper::isCastable(bool sorceryspeed, const Player* player) const {
-    if(origin->getType().land) return player->canPlayLand();
-    else return (sorceryspeed or origin->hasFlash()) and (player->manapool >= origin->getCost().mana);
+bool CardWrapper::isCastable(const CastingContext& context) const {
+    if(origin->getType().land)
+        return context.sorcerySpeed and context.player->canPlayLand();
+    else return (context.sorcerySpeed or origin->hasFlash()) and (context.player->manapool >= origin->getCost().mana);
 }
 
-const Option* CardWrapper::chooseOptionAction() const {
+const Option* CardWrapper::chooseOptionAction(const CastingContext&) const {
     return this;
 }
 
-bool PermOption::isCastable(bool sorceryspeed, const Player* player) const {
-    (void) sorceryspeed; //TODO FEATURE some abilities are only sorcery-speed
-    return player->manapool >= content.cost.mana;
+bool PermOption::isCastable(const CastingContext& context) const {
+    //TODO FEATURE some abilities are only sorcery-speed
+    return context.player->manapool >= content.cost.mana;
 }
 
 void PermOption::straight_cast(Player* pl){
@@ -46,8 +47,8 @@ bool PermOption::castOpt(Player* pl){
     return true;
 }
 
-bool CardOption::isCastable(bool sorceryspeed, const Player* player) const {
-    return Option::isCastable(sorceryspeed, player);
+bool CardOption::isCastable(const CastingContext& context) const {
+    return Option::isCastable(context);
 }
 
 bool CardOption::castOpt(Player* ) { return true; /*TODO*/ }

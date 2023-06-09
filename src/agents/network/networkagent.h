@@ -5,6 +5,8 @@
 
 class NetworkManager;
 class AsyncNetworker;
+class CardOracle;
+class Permanent;
 
 class NetworkAgent: public Agent, public Viewer {
     AsyncNetworker& networker;
@@ -30,7 +32,7 @@ public:
 
     bool keepsHand(const std::forward_list<card_ptr>& cards) override;
 
-    const Option* chooseOpt(bool sorcerySpeed, const Player* pl) override;
+    const Option* chooseOpt(const Option::CastingContext& context) override;
 
     void chooseAttackers(StateTN<Creature>& mycreas) override;
 
@@ -38,8 +40,7 @@ public:
 
     Viewer& getViewer() override { return *this; }
 
-    uint chooseAmong(const std::vector<CardOption*>& opts) override;
-    uint chooseAmong(const std::vector<PermOption>& opts) override;
+    uint chooseAmong(const std::vector<const Option*>& opts) override;
 
     void connectGame(Game* game) override;
     void connectDeck(const Deck& deck) override;

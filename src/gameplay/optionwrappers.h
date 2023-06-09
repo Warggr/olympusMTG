@@ -1,10 +1,9 @@
 #ifndef OLYMPUS_OPTIONWRAPPERS_H
 #define OLYMPUS_OPTIONWRAPPERS_H
 
+#include "classes/8options.h"
 #include <vector>
 #include <memory>
-
-class Option;
 
 /**
  * An OptionWrapper is an object that contains multiple options that are somehow related to each other.
@@ -13,7 +12,7 @@ class Option;
  */
 struct OptionWrapper {
     virtual ~OptionWrapper() = default;
-    virtual const Option* chooseOptionAction() const = 0;
+    virtual const Option* chooseOptionAction(const Option::CastingContext& context) const = 0;
 };
 
 template<typename T>

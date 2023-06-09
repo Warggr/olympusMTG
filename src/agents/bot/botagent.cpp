@@ -19,8 +19,8 @@ Target* BotAgent::chooseTarget(char type) {
     (void) type; return nullptr;
 }
 
-Option* BotAgent::chooseOpt(bool sorcerySpeed, const Player *pl) {
-    (void) sorcerySpeed; (void) pl;
+Option* BotAgent::chooseOpt(const Option::CastingContext& context) {
+    (void) context;
     return nullptr;
 }
 
@@ -46,11 +46,7 @@ void BotAgent::chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature>&
     (void) mycreas; (void) attackers;
 }
 
-uint BotAgent::chooseAmong(const std::vector<PermOption>& opts) {
-    (void) opts; return 0;
-}
-
-uint BotAgent::chooseAmong(const std::vector<CardOption*>& opts) {
+uint BotAgent::chooseAmong(const std::vector<const Option*>& opts) {
     (void) opts;
     return 0;
 }

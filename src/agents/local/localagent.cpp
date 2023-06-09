@@ -21,9 +21,8 @@ const Target* LocalAgent::chooseTarget(char type) {
     return viewer.frontEnd->chooseTarget(type);
 }
 
-const Option* LocalAgent::chooseOpt(bool sorcerySpeed, const Player *pl) {
-    (void) pl; //No idea why we need it
-    return viewer.frontEnd->chooseOpt(sorcerySpeed);
+const Option* LocalAgent::chooseOpt(const Option::CastingContext& context) {
+    return viewer.frontEnd->chooseOpt(context);
 }
 
 void LocalAgent::splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) {
@@ -47,11 +46,7 @@ void LocalAgent::chooseBlockers(Y_Hashtable<Creature>& mycreas, StateTN<Creature
     return viewer.frontEnd->chooseblockers(mycreas, attackers);
 }
 
-uint LocalAgent::chooseAmong(const std::vector<PermOption>& opts) {
-    return viewer.frontEnd->getBasicIO()->chooseAmong(opts);
-}
-
-uint LocalAgent::chooseAmong(const std::vector<CardOption*>& opts) {
+uint LocalAgent::chooseAmong(const std::vector<const Option*>& opts) {
     return viewer.frontEnd->getBasicIO()->chooseAmong(opts);
 }
 

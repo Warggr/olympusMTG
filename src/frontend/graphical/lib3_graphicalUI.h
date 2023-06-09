@@ -17,7 +17,7 @@ struct GraphicalUI: public AbstractFrontEnd {
 
     void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) override;
 
-    const Option* chooseOpt(bool sorcerySpeed) override;
+    const Option* chooseOpt(const Option::CastingContext& context) override;
 
     void chooseblockers(Y_Hashtable<Creature>& defenders, StateTN<Creature>& attackers) override;
     Creature* blockerSwitch(const Creature& blocker, int blockerIndex, StateTN<Creature>& attackers);

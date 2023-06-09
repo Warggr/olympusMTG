@@ -2,11 +2,12 @@
 #include "oracles/filereader/binary/binaryreader.h"
 #include "network/protocol.h"
 #include "network/binary_data_reader.h"
+#include "agents/local/localagent.h"
 #include "logging.h"
 #include <iostream>
 
 OlympusClient::OlympusClient() {
-    agent.getViewer().registerMe(this);
+    agent.getViewer().registerMe(&player);
 }
 
 void OlympusClient::play() {
@@ -16,8 +17,8 @@ void OlympusClient::play() {
         case operations::MESSAGE: agent.getViewer().message(request_data.remainder()); break;
         case operations::CREATE: create(request_data.remainder()); break;
         case operations::GET_OPTION: {
-            bool sorceryspeed = request_data.get<bool>();
-            const Option* opt = agent.chooseOpt(sorceryspeed, nullptr);
+            bool sorcerySpeed = request_data.get<bool>();
+            const Option* opt = agent.chooseOpt({ sorcerySpeed, &player });
             long long ret;
             if(opt == nullptr)
                 ret = 0;
@@ -38,12 +39,12 @@ void OlympusClient::discardCards(std::string_view message){
     assert(data.get<char>() == operations::CHOOSE_AMONG);
     const auto size = data.get<uint16_t>();
     const auto nbToDiscard = data.get<uint16_t>();
-    assert(size == myHand.size());
+    assert(size == player.getHand().size());
     assert(size >= nbToDiscard);
     assert(data.empty());
 
     if(nbToDiscard != 0){
-        auto discarded = agent.chooseCardsToKeep(myHand, nbToDiscard);
+        auto discarded = agent.chooseCardsToKeep(player.getHand(), nbToDiscard);
         Sender sender = network.getSender();
         char header = operations::CHOOSE_AMONG;
         sender.add_chunk(&header);
@@ -121,7 +122,7 @@ void OlympusClient::drawCards(std::string_view message){
         long long llptr = data.get<long long>();
         uint16_t card_offset = data.get<uint16_t>();
         Card* card = deck.cards.data() + card_offset;
-        CardWrapper& new_card = myHand.emplace_back(card, nullptr);
+        CardWrapper& new_card = player.getHand().emplace_back(card, nullptr);
         Option* optionKey = &new_card;
 
         assert(not optionMapping.contains(optionKey));

@@ -108,9 +108,8 @@ bool NetworkAgent::keepsHand(const fwdlist<card_ptr>& cards) {
 
 static_assert(reinterpret_cast<intptr_t>(nullptr) == 0); //assert that the agent never sends a zero for a valid pointer
 
-const Option* NetworkAgent::chooseOpt(bool sorcerySpeed, const Player* pl) {
-    (void) pl;
-    char content[] = { operations::GET_OPTION, static_cast<char>(sorcerySpeed) };
+const Option* NetworkAgent::chooseOpt(const Option::CastingContext& context) {
+    char content[] = { operations::GET_OPTION, static_cast<char>(context.sorcerySpeed) };
     networker.send(std::string_view(content, sizeof(content)));
 
     auto msg = networker.receiveMessage_sync();
@@ -150,11 +149,7 @@ void NetworkAgent::onDraw(const std::list<CardWrapper>& cards) {
     sender.close();
 }
 
-uint NetworkAgent::chooseAmong(const std::vector<CardOption*>& opts) {
-    (void) opts; return 0; //TODO
-}
-
-uint NetworkAgent::chooseAmong(const std::vector<PermOption>& opts) {
+uint NetworkAgent::chooseAmong(const std::vector<const Option*>& opts) {
     (void) opts; return 0; //TODO
 }
 

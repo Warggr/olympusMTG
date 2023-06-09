@@ -1,3 +1,4 @@
+#include "readfile.h"
 #include "gameplay/2cards.h"
 #include "filereader.h"
 #include "binary/binaryreader.h"

@@ -19,7 +19,7 @@ public:
 
     void splitDamage(int power, std::list<std::pair<uint8_t, SpecificTargeter<Creature>>>& blockers) override;
 
-    const Option* chooseOpt(bool sorcerySpeed) override;
+    const Option* chooseOpt(const Option::CastingContext& context) override;
 
     const Target* chooseTarget(char type) override;
 

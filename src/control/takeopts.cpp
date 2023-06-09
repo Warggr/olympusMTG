@@ -31,13 +31,16 @@ void Player::choicephase(bool sorceryspeed){
 
 bool Player::chooseAndUseOpt(bool sorceryspeed){ //AKA "giving priority". Returns false if a pass option was chosen
     Game::the_game->stateBasedActions(); //"before any player receives priority, state-based actions are done"
+
     if(!myOptions.hasOptions(sorceryspeed)) return false;
 
     bool hasCastAnything = false;
     while(true){
-        Option* choice = const_cast<Option*>(agent.chooseOpt(sorceryspeed, this)); //chooses opt, pops it and returns it, returns 0 if passing was chosen
+        const Option::CastingContext context = { sorceryspeed, this };
+
+        auto* choice = const_cast<Option*>(agent.chooseOpt(context)); //chooses opt, pops it and returns it, returns 0 if passing was chosen
         if(!choice) return hasCastAnything;
-        if(choice->isCastable(sorceryspeed, this) and choice->castOpt(this)){ //casts the spell and deletes the option
+        if(choice->isCastable(context) and choice->castOpt(this)){ //casts the spell and deletes the option
             if(!Stack::god->stackIsEmpty()) sorceryspeed = false;
             hasCastAnything = true;
         } else {

@@ -13,7 +13,6 @@ class Player: public Gamer {
 private:
     Agent& agent;
     Deck deck;
-    std::forward_list<PlayerPreStackElement> prestack;
     Player* nextopponent;
     TriggerEvent triggers[1]; //gain/lose life
 public:

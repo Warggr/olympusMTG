@@ -2,15 +2,19 @@
 #define OLYMPUS_AGENT_H
 
 #include "oracles/filereader/filereader.h"
+#include "head2_cardptrs.h"
+#include "classes/8options.h"
 #include <istream>
 #include <memory>
 #include <utility>
 #include <vector>
 #include <list>
 #include <string_view>
+#include <forward_list>
 
 class Target; class Creature; template<typename T> class SpecificTargeter; class Card; class CardWrapper; class CardWrapper;
 class Player; class Game; class Gamer;
+class Deck;
 class Option; class CardOption; class PermOption;
 template<typename T> class Y_Hashtable; template<typename T> class StateTN; template<typename T> class PermanentTN;
 
@@ -36,10 +40,9 @@ public:
     virtual uptr<std::istream> getDeckFile() = 0;
     std::vector<OracleDescr> getDeck();
 
-    virtual const Option* chooseOpt(bool sorcerySpeed, const Player* pl) = 0;
+    virtual const Option* chooseOpt(const Option::CastingContext& context) = 0;
 
-    virtual uint chooseAmong(const std::vector<PermOption>& opts) = 0;
-    virtual uint chooseAmong(const std::vector<CardOption*>& opts) = 0;
+    virtual uint chooseAmong(const std::vector<const Option*>& opts) = 0;
 
     virtual const Target* chooseTarget(char type) = 0;
 

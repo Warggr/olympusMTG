@@ -17,6 +17,8 @@ struct PlayerPreStackElement{
     };
 };
 
+/* Represents a player as seen by the game rules. Contains the player's HP and stats,
+ * but does not have the capacity to make decisions since it does not contain an Agent. */
 class Gamer: public Target, public Damageable {
 public:
     using hand_type = std::list<CardWrapper>;

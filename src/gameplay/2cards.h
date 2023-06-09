@@ -61,11 +61,11 @@ public:
 
     void disp(Canvas* io, disp_flags flags) const override { origin->disp(io, flags); }
     std::string describe() const override { return origin->describe(); };
-    const Option* chooseOptionAction() const override;
+    const Option* chooseOptionAction(const Option::CastingContext& context) const override;
     Player* getController() override { return owner; }
 
     bool castOpt(Player* pl) override;
-    bool isCastable(bool sorceryspeed, const Player* player) const override;
+    bool isCastable(const CastingContext& context) const override;
 
     bool operator==(const CardWrapper& other) const { return this == &other; }
 };

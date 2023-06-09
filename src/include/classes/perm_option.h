@@ -28,10 +28,10 @@ class PermOption : public Option {
 public:
     PermOption(const PermOption_H& content): content(content) {};
     void init(Permanent* origin) { this->origin = origin; } 
-    bool isCastable(bool sorceryspeed, const Player* player) const override;
+    bool isCastable(const Option::CastingContext& context) const override;
     bool castOpt(Player* pl) override;
     void straight_cast(Player* pl);
-    
+
     std::string describe() const override;
     void disp(Canvas* io, disp_flags flags) const override;
 };

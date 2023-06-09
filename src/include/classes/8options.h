@@ -5,7 +5,7 @@
 #include "1effects.h"
 #include "displayable.h"
 #include <memory>
-class Resolvable; class Player; class Card; class Permanent;
+class Resolvable; class Gamer; class Card; class Permanent;
 
 /** Options are the standard format for any action the player can do.
 * This standard only imposes that each Option has a castOpt method,
@@ -13,22 +13,28 @@ class Resolvable; class Player; class Card; class Permanent;
 * Notably, Cards in a player's hand are Options. Technically, 'conceding' is an option. */
 class Option : virtual public Displayable {
 public:
+    struct CastingContext {
+        bool sorcerySpeed;
+        const Gamer* player;
+    };
+
     virtual ~Option() = default;
-    virtual bool isCastable(bool sorceryspeed, const Player* player) const { (void) sorceryspeed; (void) player; return true; }
+    virtual bool isCastable(const CastingContext& context) const { (void) context; return true; }
     // Whether it is possible to cast it on principle. Returns true by default.
     // Filters out more or less easy restrictions such as "only as a sorcery"
     virtual bool castOpt(Player* pl) = 0; //Actually try to cast the option. Returns false on failure.
 };
 
+/** Parent class for any Option that has a mana cost. */
 class CostOption: public Option {
 public:
-    virtual bool isCastable(bool sorceryspeed, const Player* pl) const override;
+    virtual bool isCastable(const CastingContext& context) const override;
     virtual Cost getCost() = 0;
 };
 
 class CardOption : public Option {
 public:
-    bool isCastable(bool sorceryspeed, const Player* player) const override;
+    bool isCastable(const CastingContext& context) const override;
     bool castOpt(Player* pl) override;
     std::string describe() const override;
     std::string describe(const std::string& cardName) const;

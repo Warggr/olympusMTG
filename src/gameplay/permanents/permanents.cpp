@@ -69,9 +69,13 @@ void Planeswalker::activate() {
     //TODO
 }
 
-const Option* Permanent::chooseOptionAction() const {
-    if(actabs.size() != 0)
-        return & actabs[ ctrl->getAgent().chooseAmong(actabs) ];
+const Option* Permanent::chooseOptionAction(const Option::CastingContext& context) const {
+    std::vector<const Option*> castable;
+    for(const PermOption& option: actabs){
+        if(option.isCastable(context)) castable.push_back(&option);
+    }
+    if(castable.size() != 0)
+        return castable[ ctrl->getAgent().chooseAmong(castable) ];
     else
         return nullptr;
 }

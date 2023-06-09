@@ -1,7 +1,8 @@
 #ifndef OLYMPUS_FILEREADER_H
 #define OLYMPUS_FILEREADER_H
 
-#include "gameplay/3player_cards.h"
+#include <string>
+#include <ostream>
 
 enum oracle_type { reference, customcard, compiled_customcard };
 
@@ -16,7 +17,5 @@ struct OracleDescr {
 
     friend std::ostream& operator<<( std::ostream& output, const OracleDescr& desc );
 };
-
-Deck parseDeck(const std::vector<OracleDescr>& deck);
 
 #endif //OLYMPUS_FILEREADER_H
