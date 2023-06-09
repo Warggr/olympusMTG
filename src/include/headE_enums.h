@@ -2,6 +2,7 @@
 #define OLYMPUS_HEAD_E_ENUMS_H
 
 #include <string>
+#include <array>
 
 namespace target_type {
     constexpr flag_t damageable = 0x80,
@@ -88,11 +89,11 @@ namespace zone {
     enum zone {
         hand, graveyard, battlefield, stack, exile, commandzone
     };
-    extern const char* descriptions[6];
+    extern std::array<const char*, 6> descriptions;
 }
 
-extern const std::string trigger_descriptions[6];
-extern const std::string ability_descriptions[12];
+extern const std::array<const char*, 6> trigger_descriptions;
+extern const std::array<const char*, 12> ability_descriptions;
 
 namespace targets {
     constexpr unsigned char you = -1

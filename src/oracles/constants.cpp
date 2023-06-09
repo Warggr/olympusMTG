@@ -1,13 +1,14 @@
 #include "headE_enums.h"
+#include <array>
 
-const std::string trigger_descriptions[] = {"~ enters the battlefield",
+const std::array<const char*, 6> trigger_descriptions = {"~ enters the battlefield",
 "~ leaves the battlefield",
 "~ changes state",
 "~ becomes something",
 "~ attacks",
 "~ is dealt damage" };
 
-const std::string ability_descriptions[] = {"~ deals ? damage to target opponent",
+const std::array<const char*, 12> ability_descriptions = {"~ deals ? damage to target opponent",
 "Target local draws ? cards",
 "Target local gains ? life",
 "Your life total becomes ?",

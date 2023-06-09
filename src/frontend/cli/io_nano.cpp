@@ -1,10 +1,13 @@
 #include "lib3_nanoIO.h"
-#include "frontend/headQ_rect.h"
 #include "classes/card_oracle.h"
 #include "gameplay/permanents/4permanents.h"
 #include "gameplay/gamer.h"
-#include <list>
 #include <iostream>
+
+#ifdef USE_READLINE
+#include <readline/readline.h>
+#include <readline/history.h>
+#endif
 
 using namespace std;
 
@@ -59,11 +62,23 @@ void NanoIO::setMenuScene() { cout << "---Menu---\n"; }
 
 void NanoIO::setGameScene() { cout << "---Game Scene---\n"; }
 
-std::string NanoIO::getTextInput(const char *question, bool newline) {
+#ifdef USE_READLINE
+std::string NanoIO::getCommandLineInput(std::string_view question) {
+    char* buf = readline(question.data());
+    if(buf == nullptr) throw UIClosedException();
+    if (strlen(buf) > 0) add_history(buf);
+    std::string ret(buf);
+    free(buf); // readline malloc's a new buffer every time.
+    return ret;
+}
+#endif
+
+std::string NanoIO::getTextInput(std::string_view question, bool newline) {
+    std::string ret;
     std::cout << question;
     if(newline) std::cout << "\n>\t";
-    std::string ret;
     std::getline( std::cin, ret );
+    if(!std::cin) throw UIClosedException();
     return ret;
 }
 

@@ -17,9 +17,15 @@ public:
     void message(std::string_view) const override;
 
     int getInt(int lowerBound, int upperBound) override;
-    std::string getTextInput(const char* question, bool newline);
+    std::string getTextInput(std::string_view question, bool newline);
     inline std::string getTextInput(const char* question) override { return getTextInput(question, true); }
-    bool simpleChoice(const char* optTrue, const char* optFalse) override;
+    std::string getCommandLineInput(std::string_view question)
+#ifndef USE_READLINE
+    { return getTextInput(question, false); }
+#endif
+    ;
+
+    bool simpleChoice(const char* optTrue, const char* optFalse) override; // has to be C-style strings so that optFalse is nullable
 
     void draw_permanent(const std::string& name, char color, bool tapped, bool highlight) const;
     void disp_player(const Gamer& player, int flags) const override;

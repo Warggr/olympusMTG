@@ -6,18 +6,21 @@
 #include "headE_enums.h"
 #include "boost/format.hpp"
 #include <vector>
+#include <span>
 
 struct Context {
     zone::zone where;
     const Target* what;
     std::vector<const Gamer*> players;
     unsigned int who : 2;
-    constexpr static char const* descriptions[] = {"none", "you", "opponent", "all"};
+    constexpr static std::array descriptions = {"none", "you", "opponent", "all"};
     Context(const Gamer* pl): where(zone::hand), what(nullptr), players({pl}), who(0b01) { }
-    inline std::string prompt() const {
-        return (boost::format("@%s:%s>")
+    inline std::string prompt(bool sorceryspeed) const {
+        auto ret = (boost::format("#%s:%s>")
                 % Context::descriptions[who]
                 % zone::descriptions[where]).str();
+        if(not sorceryspeed) ret += "!>";
+        return ret;
     }
     void setWho(uint l, const CliUI& ui);
     inline const std::vector<const Gamer*> getPlayers() const { return players; }
@@ -25,23 +28,22 @@ struct Context {
 
 namespace cmd {
     enum command { sel = 0, pass, concede, ls, view, cd, help, profile };
-    const char* descriptions[] = {"sel", "pass", "exit", "ls", "view", "cd", "help", "profile" };
+    std::array descriptions = {"sel", "pass", "exit", "ls", "view", "cd", "help", "profile" };
 }
-const char* zone::descriptions[] = {"hand", "graveyard", "battlefield", "stack", "exile", "commandzone"};
+std::array<const char*, 6> zone::descriptions = {"hand", "graveyard", "battlefield", "stack", "exile", "commandzone"};
 
 bool readCommand(const char* input, Context& context, cmd::command& cmd, const CliUI& ui);
 void printHelp();
-void dispPlayers(const std::vector<const Gamer*> vec, const NanoIO& io);
+void dispPlayers(const std::vector<const Gamer*>& vec, const NanoIO& io);
 
 const Option* CliUI::chooseOpt(bool sorcerySpeed) {
     using namespace cmd;
-    (void) sorcerySpeed; //TODO
     static Context context(pl);
     while(true) {
         Context temporaryContext = context;
         command cmd = cd;
         while(true) {
-            std::string input = io.getTextInput(context.prompt().c_str(),false);
+            std::string input = io.getCommandLineInput(context.prompt(sorcerySpeed));
             if(readCommand(input.c_str(), temporaryContext, cmd, *this)) break;
         }
         switch(cmd){
@@ -95,12 +97,12 @@ const Target* readTarget(const char* str, zone::zone zone, const std::vector<con
     return nullptr;
 }
 
-bool read(const char* str, const char* const* opts, uint nbopts, uint& ret, uint& j) {
-    for(ret=0; ret<nbopts; ++ret) {
+bool read(const char* str, std::span<const char* const> opts, uint& ret, uint& j) {
+    for(ret=0; ret<opts.size(); ++ret) {
         for(j=0; opts[ret][j] != '\0'; ++j) if(str[j] != opts[ret][j]) break;
         if(opts[ret][j] == '\0' and (str[j] < 'A' or 'z' < str[j] )) break;
     }
-    if(ret == nbopts){
+    if(ret == opts.size()){
         j = 0;
         std::cout << "Unrecognized value: " << str << ". Try 'help'.\n";
         return false;
@@ -109,13 +111,11 @@ bool read(const char* str, const char* const* opts, uint nbopts, uint& ret, uint
     }
 }
 
-#define ENUMERATE(list) list, sizeof(list) / sizeof(const char*)
-
 inline void readContext(const char* input, uint& offset, Context& context, const CliUI& ui) {
     uint k, l;
     if(input[offset] == '#') {
         ++offset;
-        if(read(input+offset, ENUMERATE(Context::descriptions), l, k)) {
+        if(read(input+offset, std::span(Context::descriptions), l, k)) {
             context.setWho(l, ui);
             offset += k;
             while(input[offset] == ' ') ++offset;
@@ -123,7 +123,7 @@ inline void readContext(const char* input, uint& offset, Context& context, const
     }
     if(input[offset] == ':') {
         ++offset;
-        if(read(input+offset, ENUMERATE(zone::descriptions), l, k)){
+        if(read(input+offset, std::span(zone::descriptions), l, k)){
             context.where = static_cast<zone::zone>(l);
             offset += k;
             while(input[offset++] == ' ');
@@ -134,8 +134,8 @@ inline void readContext(const char* input, uint& offset, Context& context, const
 bool readCommand(const char* input, Context& context, cmd::command& cmd, const CliUI& ui) {
     using namespace cmd;
     uint i, j;
-    if(!read(input,ENUMERATE(descriptions), i, j)) return false;
-    
+    if(!read(input,std::span(descriptions), i, j)) return false;
+
     while(input[j] == ' ') ++j;
     readContext(input, j, context, ui);
     cmd = static_cast<command>(i);
@@ -146,7 +146,7 @@ bool readCommand(const char* input, Context& context, cmd::command& cmd, const C
     return true;
 }
 
-void dispPlayers(const std::vector<const Gamer*> vec, const NanoIO& io) {
+void dispPlayers(const std::vector<const Gamer*>& vec, const NanoIO& io) {
     for(auto player: vec) {
         io.disp_player(*player, NanoIO::INLINE);
     }
