@@ -7,24 +7,15 @@
 #include "boost/format.hpp"
 #include <vector>
 #include <span>
+#include <iostream>
 
-struct Context {
-    zone::zone where;
-    const Target* what;
-    std::vector<const Gamer*> players;
-    unsigned int who : 2;
-    constexpr static std::array descriptions = {"none", "you", "opponent", "all"};
-    Context(const Gamer* pl): where(zone::hand), what(nullptr), players({pl}), who(0b01) { }
-    inline std::string prompt(bool sorceryspeed) const {
-        auto ret = (boost::format("#%s:%s>")
-                % Context::descriptions[who]
-                % zone::descriptions[where]).str();
-        if(not sorceryspeed) ret += "!>";
-        return ret;
-    }
-    void setWho(uint l, const CliUI& ui);
-    inline const std::vector<const Gamer*> getPlayers() const { return players; }
-};
+inline std::string prompt(const Context& context, bool sorceryspeed) {
+    auto ret = (boost::format("#%s:%s>")
+                % Context::descriptions[context.who]
+                % zone::descriptions[context.where]).str();
+    if(not sorceryspeed) ret += "!>";
+    return ret;
+}
 
 namespace cmd {
     enum command { sel = 0, pass, concede, ls, view, cd, help, profile };
@@ -36,21 +27,22 @@ bool readCommand(const char* input, Context& context, cmd::command& cmd, const C
 void printHelp();
 void dispPlayers(const std::vector<const Gamer*>& vec, const NanoIO& io);
 
-const Option* CliUI::chooseOpt(bool sorcerySpeed) {
+const Option* CliUI::chooseOpt(const Option::CastingContext& castingContext) {
+    assert(castingContext.player == pl);
     using namespace cmd;
     static Context context(pl);
     while(true) {
         Context temporaryContext = context;
         command cmd = cd;
         while(true) {
-            std::string input = io.getCommandLineInput(context.prompt(sorcerySpeed));
+            std::string input = io.getCommandLineInput(prompt(context, castingContext.sorcerySpeed));
             if(readCommand(input.c_str(), temporaryContext, cmd, *this)) break;
         }
         switch(cmd){
             case cd: context = temporaryContext; break;
-            case ls: list(temporaryContext.where); break;
+            case ls: list(temporaryContext, castingContext); break;
             case sel: {
-                const Option* ret = dynamic_cast<const OptionWrapper*>(temporaryContext.what)->chooseOptionAction();
+                const Option* ret = dynamic_cast<const OptionWrapper*>(temporaryContext.what)->chooseOptionAction(castingContext);
                 if(ret) return ret;
             } break;
             case view: temporaryContext.what->disp(&io); break;

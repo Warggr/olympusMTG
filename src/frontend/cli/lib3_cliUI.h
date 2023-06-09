@@ -7,6 +7,8 @@
 #include <forward_list>
 #include <memory>
 
+struct Context;
+
 class CliUI: public AbstractFrontEnd {
     NanoIO io;
 public:
@@ -34,7 +36,21 @@ public:
 
     BasicIO* getBasicIO() override { return &io; }
 
-    void list(zone::zone zone);
+    void list(const Context& context, const Option::CastingContext& castingContext);
+};
+
+struct Context {
+    unsigned int who : 2; //the selected players, described by a bitfield
+    std::vector<const Gamer*> players; // this bitfield is transformed into a vector,
+    // which we cache so we don't recalculate it when it doesn't change
+    enum PlayersBitfield { none = 0b00, you = 0b01, opponent = 0b10, all = you | opponent };
+    zone::zone where;
+    const Target* what;
+
+    constexpr static std::array descriptions = {"none", "you", "opponent", "all"};
+    Context(const Gamer* pl): who(PlayersBitfield::you), players({pl}), where(zone::hand), what(nullptr) { }
+    void setWho(uint l, const CliUI& ui);
+    inline const std::vector<const Gamer*> getPlayers() const { return players; }
 };
 
 #endif //OLYMPUS_LIB3_UI_CLI

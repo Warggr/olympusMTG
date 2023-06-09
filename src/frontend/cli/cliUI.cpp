@@ -28,24 +28,37 @@ void CliUI::disp(const fwdlist<card_ptr>& list, uint size) {
     }
 }
 
-void CliUI::list(zone::zone zone) {
+void CliUI::list(const Context& context, const Option::CastingContext& castingContext) {
     int i = 0;
-    switch (zone) {
-        case zone::hand:
-            for(const auto& card : pl->getHand()) io.disp_inrow(card.get(), i++, pl->getHand().size(), BasicIO::INLINE);
-            break;
-        case zone::battlefield:
-            for(auto perm = pl->myboard.cbegin(); perm != pl->myboard.end(); ++perm) io.disp_inrow(&(*perm), i++, pl->myboard.size(), BasicIO::INLINE);
-            break;
-        case zone::stack:
-            for(const auto& x : *Stack::god) io.disp_inrow(x.get(), i++, Stack::god->size(), BasicIO::INLINE);
-            break;
-        case zone::exile:
-        case zone::commandzone:
-        case zone::graveyard:
-            Player::myzone zn = zone == zone::exile ? Player::exile : zone == zone::commandzone ? Player::command : Player::graveyard;
-            for(const auto& card : pl->getZone(zn).getCards())
-                io.disp_inrow(raw_cardptr(card), i++, pl->getZone(zn).getSize(), BasicIO::INLINE );
+    if(context.where == zone::stack){
+        for (const auto& x: *Stack::god) io.disp_inrow(x.get(), i++, Stack::god->size(), BasicIO::INLINE);
+    } else {
+        for (const Gamer* player: context.players) {
+            switch (context.where) {
+                case zone::hand:
+                    for (const auto& card: player->getHand())
+                        io.disp_inrow(card.get(), i++, player->getHand().size(),
+                                      BasicIO::INLINE | (card.isCastable(castingContext) ? BasicIO::HIGHLIGHT : 0));
+                    break;
+                case zone::battlefield:
+                    for (auto perm = pl->myboard.cbegin(); perm != pl->myboard.end(); ++perm)
+                        io.disp_inrow(&(*perm), i++, player->myboard.size(), BasicIO::INLINE);
+                    break;
+                case zone::exile:
+                case zone::commandzone:
+                case zone::graveyard: {
+                    Player::myzone zn =
+                            context.where == zone::exile ? Player::exile : context.where == zone::commandzone
+                                                                           ? Player::command
+                                                                           : Player::graveyard;
+                    for (const auto& card: pl->getZone(zn).getCards())
+                        io.disp_inrow(raw_cardptr(card), i++, player->getZone(zn).getSize(), BasicIO::INLINE);
+                    break;
+                }
+                case zone::stack:
+                    assert(false);
+            }
+        }
     }
 }
 
